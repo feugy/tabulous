@@ -211,7 +211,7 @@ describe('given a started server', () => {
         })
 
         expect(response.json()).toEqual({
-          data: { grantAccess: null },
+          data: null,
           errors: [expect.objectContaining({ message: 'Unauthorized' })]
         })
         expect(response.statusCode).toEqual(200)
@@ -240,7 +240,7 @@ describe('given a started server', () => {
         })
 
         expect(response.json()).toEqual({
-          data: { grantAccess: null },
+          data: null,
           errors: [expect.objectContaining({ message: 'Forbidden' })]
         })
         expect(response.statusCode).toEqual(200)
@@ -333,7 +333,7 @@ describe('given a started server', () => {
         })
 
         expect(response.json()).toEqual({
-          data: { revokeAccess: null },
+          data: null,
           errors: [expect.objectContaining({ message: 'Unauthorized' })]
         })
         expect(response.statusCode).toEqual(200)
@@ -362,7 +362,7 @@ describe('given a started server', () => {
         })
 
         expect(response.json()).toEqual({
-          data: { revokeAccess: null },
+          data: null,
           errors: [expect.objectContaining({ message: 'Forbidden' })]
         })
         expect(response.statusCode).toEqual(200)

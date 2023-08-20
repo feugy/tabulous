@@ -120,7 +120,7 @@ describe('given a started server', () => {
         })
 
         expect(response.json()).toEqual({
-          data: { addPlayer: null },
+          data: null,
           errors: [expect.objectContaining({ message: 'Forbidden' })]
         })
         expect(response.statusCode).toEqual(200)
@@ -250,7 +250,7 @@ describe('given a started server', () => {
           }
         })
         expect(response.json()).toMatchObject({
-          data: { logIn: null },
+          data: null,
           errors: [{ message: 'forbidden' }]
         })
         expect(response.statusCode).toEqual(200)
@@ -313,7 +313,7 @@ describe('given a started server', () => {
           }
         })
         expect(response.json()).toEqual({
-          data: { getCurrentPlayer: null },
+          data: null,
           errors: [expect.objectContaining({ message: 'Unauthorized' })]
         })
         expect(response.statusCode).toEqual(200)
@@ -334,7 +334,7 @@ describe('given a started server', () => {
           }
         })
         expect(response.json()).toEqual({
-          data: { getCurrentPlayer: null },
+          data: null,
           errors: [expect.objectContaining({ message: 'Unauthorized' })]
         })
         expect(response.statusCode).toEqual(200)
@@ -459,7 +459,7 @@ describe('given a started server', () => {
           }
         })
         expect(response.json()).toEqual({
-          data: { listFriends: null },
+          data: null,
           errors: [expect.objectContaining({ message: 'Unauthorized' })]
         })
         expect(response.statusCode).toEqual(200)
@@ -481,7 +481,7 @@ describe('given a started server', () => {
           }
         })
         expect(response.json()).toEqual({
-          data: { listFriends: null },
+          data: null,
           errors: [expect.objectContaining({ message: 'Unauthorized' })]
         })
         expect(response.statusCode).toEqual(200)
@@ -522,7 +522,7 @@ describe('given a started server', () => {
           }
         })
         expect(response.json()).toEqual({
-          data: { acceptFriendship: null },
+          data: null,
           errors: [expect.objectContaining({ message: 'Unauthorized' })]
         })
         expect(response.statusCode).toEqual(200)
@@ -542,7 +542,7 @@ describe('given a started server', () => {
           payload: { query: `mutation { acceptFriendship(id: "${id}") }` }
         })
         expect(response.json()).toEqual({
-          data: { acceptFriendship: null },
+          data: null,
           errors: [expect.objectContaining({ message: 'Unauthorized' })]
         })
         expect(response.statusCode).toEqual(200)
@@ -583,7 +583,7 @@ describe('given a started server', () => {
           }
         })
         expect(response.json()).toEqual({
-          data: { requestFriendship: null },
+          data: null,
           errors: [expect.objectContaining({ message: 'Unauthorized' })]
         })
         expect(response.statusCode).toEqual(200)
@@ -603,7 +603,7 @@ describe('given a started server', () => {
           payload: { query: `mutation { requestFriendship(id: "${id}") }` }
         })
         expect(response.json()).toEqual({
-          data: { requestFriendship: null },
+          data: null,
           errors: [expect.objectContaining({ message: 'Unauthorized' })]
         })
         expect(response.statusCode).toEqual(200)
@@ -644,7 +644,7 @@ describe('given a started server', () => {
           }
         })
         expect(response.json()).toEqual({
-          data: { endFriendship: null },
+          data: null,
           errors: [expect.objectContaining({ message: 'Unauthorized' })]
         })
         expect(response.statusCode).toEqual(200)
@@ -664,7 +664,7 @@ describe('given a started server', () => {
           payload: { query: `mutation { endFriendship(id: "${id}") }` }
         })
         expect(response.json()).toEqual({
-          data: { endFriendship: null },
+          data: null,
           errors: [expect.objectContaining({ message: 'Unauthorized' })]
         })
         expect(response.statusCode).toEqual(200)
@@ -786,7 +786,7 @@ describe('given a started server', () => {
           }
         })
         expect(response.json()).toMatchObject({
-          data: { updateCurrentPlayer: null },
+          data: null,
           errors: [{ message: 'Username too short' }]
         })
         expect(response.statusCode).toEqual(200)
@@ -813,7 +813,7 @@ describe('given a started server', () => {
           }
         })
         expect(response.json()).toMatchObject({
-          data: { updateCurrentPlayer: null },
+          data: null,
           errors: [{ message: 'Username already used' }]
         })
         expect(response.statusCode).toEqual(200)
@@ -989,7 +989,7 @@ describe('given a started server', () => {
           }
         })
         expect(response.json()).toMatchObject({
-          data: { updateCurrentPlayer: null },
+          data: null,
           errors: [{ message: 'Username too short' }]
         })
         expect(response.statusCode).toEqual(200)
@@ -1016,7 +1016,7 @@ describe('given a started server', () => {
           }
         })
         expect(response.json()).toMatchObject({
-          data: { updateCurrentPlayer: null },
+          data: null,
           errors: [{ message: 'Username already used' }]
         })
         expect(response.statusCode).toEqual(200)
@@ -1145,7 +1145,7 @@ describe('given a started server', () => {
         })
 
         expect(response.json()).toEqual({
-          data: { listPlayers: null },
+          data: null,
           errors: [expect.objectContaining({ message: 'Forbidden' })]
         })
         expect(response.statusCode).toEqual(200)

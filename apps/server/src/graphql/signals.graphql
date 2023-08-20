@@ -9,9 +9,9 @@ input SignalInput {
 }
 
 extend type Mutation {
-  sendSignal(signal: SignalInput): Signal
+  sendSignal(signal: SignalInput!): Signal!
 }
 
 type Subscription {
-  awaitSignal(gameId: ID!): Signal
+  awaitSignal(gameId: ID!): Signal!
 }

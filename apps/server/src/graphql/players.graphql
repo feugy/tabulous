@@ -43,28 +43,28 @@ type PlayerListResult {
 }
 
 type Query {
-  getCurrentPlayer: PlayerWithTurnCredentials
-  listFriends: [Friendship]
-  searchPlayers(search: String!, includeCurrent: Boolean): [Player]
-  listPlayers(from: Int, size: Int): PlayerListResult
+  getCurrentPlayer: PlayerWithTurnCredentials!
+  listFriends: [Friendship!]!
+  searchPlayers(search: String!, includeCurrent: Boolean): [Player!]!
+  listPlayers(from: Int, size: Int): PlayerListResult!
 }
 
 type Mutation {
-  addPlayer(id: ID!, username: String!, password: String!): Player
-  logIn(id: ID!, password: String!): PlayerWithTurnCredentials
-  acceptTerms: Player
+  addPlayer(id: ID!, username: String!, password: String!): Player!
+  logIn(id: ID!, password: String!): PlayerWithTurnCredentials!
+  acceptTerms: Player!
   updateCurrentPlayer(
     username: String
     avatar: String
     usernameSearchable: Boolean
-  ): Player
+  ): Player!
   deletePlayer(id: ID!): Player
-  sendFriendRequest(id: ID!): Boolean
-  requestFriendship(id: ID!): Boolean
-  acceptFriendship(id: ID!): Boolean
-  endFriendship(id: ID!): Boolean
+  sendFriendRequest(id: ID!): Boolean!
+  requestFriendship(id: ID!): Boolean!
+  acceptFriendship(id: ID!): Boolean!
+  endFriendship(id: ID!): Boolean!
 }
 
 extend type Subscription {
-  receiveFriendshipUpdates: FriendshipUpdate
+  receiveFriendshipUpdates: FriendshipUpdate!
 }

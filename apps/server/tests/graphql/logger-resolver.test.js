@@ -121,7 +121,7 @@ describe('given a started server', () => {
         })
 
         expect(response.json()).toEqual({
-          data: { getLoggerLevels: null },
+          data: null,
           errors: [expect.objectContaining({ message: 'Unauthorized' })]
         })
         expect(response.statusCode).toEqual(200)
@@ -150,7 +150,7 @@ describe('given a started server', () => {
         })
 
         expect(response.json()).toEqual({
-          data: { getLoggerLevels: null },
+          data: null,
           errors: [expect.objectContaining({ message: 'Forbidden' })]
         })
         expect(response.statusCode).toEqual(200)
@@ -212,7 +212,7 @@ describe('given a started server', () => {
         })
 
         expect(response.json()).toEqual({
-          data: { configureLoggerLevels: null },
+          data: null,
           errors: [expect.objectContaining({ message: 'Unauthorized' })]
         })
         expect(response.statusCode).toEqual(200)
@@ -244,7 +244,7 @@ describe('given a started server', () => {
         })
 
         expect(response.json()).toEqual({
-          data: { configureLoggerLevels: null },
+          data: null,
           errors: [expect.objectContaining({ message: 'Forbidden' })]
         })
         expect(response.statusCode).toEqual(200)

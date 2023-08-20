@@ -99,7 +99,7 @@ describe('graphql plugin', () => {
     })
     expect(response.statusCode).toEqual(200)
     expect(response.json()).toEqual({
-      data: { logIn: null },
+      data: null,
       errors: [
         {
           locations: [{ column: 11, line: 2 }],
