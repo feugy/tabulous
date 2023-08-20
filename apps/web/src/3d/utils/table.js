@@ -12,6 +12,8 @@ import { CreateGround } from '@babylonjs/core/Meshes/Builders/groundBuilder.js'
 
 import { materialManager } from '../managers/material'
 
+export const TableId = 'table'
+
 /**
  * Creates ground mesh to act as table, that received shadows but can not receive rays.
  * Table is always 0.01 unit bellow (Y axis) origin.
@@ -23,7 +25,7 @@ export function createTable(
   { width = 400, height = 400, texture } = {},
   scene
 ) {
-  const table = CreateGround('table', { width: width, height: height }, scene)
+  const table = CreateGround(TableId, { width: width, height: height }, scene)
   table.setAbsolutePosition(new Vector3(0, -0.01, 0))
   table.receiveShadows = true
   table.isPickable = false

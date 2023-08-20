@@ -13,15 +13,7 @@ import { Texture } from '@babylonjs/core/Materials/Textures/texture'
 import { Vector3 } from '@babylonjs/core/Maths/math.vector'
 import { faker } from '@faker-js/faker'
 import { materialManager as manager } from '@src/3d/managers'
-import {
-  afterEach,
-  beforeAll,
-  beforeEach,
-  describe,
-  expect,
-  it,
-  vi
-} from 'vitest'
+import { beforeAll, beforeEach, describe, expect, it, vi } from 'vitest'
 
 import { configures3dTestEngine, createBox } from '../../test-utils'
 
@@ -52,11 +44,9 @@ describe('MaterialManager', () => {
   let scene
   /** @type {Scene} */
   let handScene
-  /** @type {Engine} */
-  let engine
   const gameAssetsUrl = 'https://localhost:3000'
 
-  configures3dTestEngine(created => ({ scene, handScene, engine } = created))
+  configures3dTestEngine(created => ({ scene, handScene } = created))
 
   beforeEach(() => MaterialConstructor.mockClear())
 
@@ -311,6 +301,7 @@ describe('MaterialManager', () => {
           result: undefined
         }
       ])('$text', ({ original, result }) => {
+        manager.init({ scene, handScene, gameAssetsUrl, isWebGL1: true })
         manager.configure(box, /** @type {string} */ (original ?? result))
         expect(
           /** @type {MaterialWithTexture} */ (box.material).diffuseTexture.url
@@ -318,17 +309,7 @@ describe('MaterialManager', () => {
       })
 
       describe('given an WebGL 2 engine', () => {
-        /** @type {number} */
-        let version
-
-        beforeEach(() => {
-          version = engine._webGLVersion
-          engine._webGLVersion = 2.0
-        })
-
-        afterEach(() => {
-          engine._webGLVersion = version
-        })
+        beforeAll(() => manager.init({ scene, handScene, gameAssetsUrl }))
 
         it.each([
           {

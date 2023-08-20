@@ -74,7 +74,7 @@ export function createEngine({
   locale,
   translate
 }) {
-  const engine = new Engine(canvas, true)
+  const engine = new Engine(canvas, true) //, { disableWebGL2Support: true }) // force WebGL1, useful for testing
   engine.enableOfflineSupport = false
   engine.onLoadingObservable = new Observable()
   engine.onBeforeDisposeObservable = new Observable()
@@ -101,6 +101,8 @@ export function createEngine({
       scene.render()
       handScene.render()
     })
+
+  const isWebGL1 = engine.version === 1
 
   let isLoading = false
 
@@ -155,14 +157,14 @@ export function createEngine({
           gameAssetsUrl,
           locale,
           scene,
-          handScene: handsEnabled ? handScene : undefined
+          handScene: handsEnabled ? handScene : undefined,
+          isWebGL1
         },
         game
       )
 
+      createLights({ scene, handScene, isWebGL1 })
       createTable(game.tableSpec, scene)
-      // creates light after table, so table doesn't project shadow
-      createLights({ scene, handScene })
       scene.onDataLoadedObservable.addOnce(async () => {
         isLoading = false
         // slight delay to let the UI disappear
@@ -255,11 +257,7 @@ export function createEngine({
   return engine
 }
 
-/**
- * @param {Game} game - serialized game data
- * @returns
- */
-function hasHandsEnabled({ meshes, hands }) {
+function hasHandsEnabled(/** @type {Game} */ { meshes, hands }) {
   return (
     (hands ?? []).some(({ meshes }) => meshes.length > 0) ||
     (meshes ?? []).some(({ drawable }) => drawable)

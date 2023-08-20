@@ -9,7 +9,6 @@
 // mandatory side effect
 import '@babylonjs/core/Lights/Shadows/shadowGeneratorSceneComponent.js'
 
-import { Engine } from '@babylonjs/core/Engines/engine.js'
 import { PBRBaseMaterial } from '@babylonjs/core/Materials/PBR/pbrBaseMaterial.js'
 import { PBRSpecularGlossinessMaterial } from '@babylonjs/core/Materials/PBR/pbrSpecularGlossinessMaterial.js'
 import { Texture } from '@babylonjs/core/Materials/Textures/texture.js'
@@ -57,6 +56,8 @@ class MaterialManager {
     this.mainMaterialByUrl = new Map()
     /** @internal @type {Map<string, PBRSpecularGlossinessMaterial>} map of material for the hand scene.*/
     this.handMaterialByUrl = new Map()
+    /** @internal @type {boolean} */
+    this.isWebGL1 = false
   }
 
   /**
@@ -66,13 +67,15 @@ class MaterialManager {
    * @param {Scene} [params.handScene] - scene for meshes in hand.
    * @param {string} [params.gameAssetsUrl] - base url hosting the game textures.
    * @param {string} [params.locale] - locale used to download the game textures.
+   * @param {boolean} [params.isWebGL1] - true if the rendering engine only supports WebGL1.
    * @param {Game} [game] - loaded game data.
    */
-  init({ scene, handScene, gameAssetsUrl, locale }, game) {
+  init({ scene, handScene, gameAssetsUrl, locale, isWebGL1 }, game) {
     this.scene = scene
     this.handScene = handScene
     this.gameAssetsUrl = gameAssetsUrl ?? ''
     this.locale = locale ?? 'fr'
+    this.isWebGL1 = isWebGL1 === true
     logger.debug('material manager initialized')
     this.clear()
     scene.onDisposeObservable.addOnce(() => this.clear())
@@ -98,7 +101,7 @@ class MaterialManager {
    * It is not attached to any mesh
    * @param {string} texture - texture url or hexadecimal string color.
    * @param {Scene} scene - scene used.
-   * @returns {PBRSpecularGlossinessMaterial} the build (or cached) material.
+   * @returns the build (or cached) material.
    */
   buildOnDemand(texture, scene) {
     return buildMaterials(this, texture, scene)
@@ -120,7 +123,7 @@ class MaterialManager {
 
   /**
    * @param {string} texture - material's texture.
-   * @returns {boolean} whether this material is managed or not
+   * @returns whether this material is managed or not
    */
   isManaging(texture) {
     return (
@@ -138,7 +141,7 @@ export const materialManager = new MaterialManager()
 /**
  * @param {MaterialManager} manager - manager instance.
  * @param {Scene} scene - concerned scene.
- * @returns {Map<string, PBRSpecularGlossinessMaterial>} map of cached materials for this scene.
+ * @returns map of cached materials for this scene.
  */
 function getMaterialCache(manager, scene) {
   return manager.scene === scene
@@ -163,7 +166,7 @@ function preloadMaterials(manager, game) {
  * @param {MaterialManager} manager - manager instance.
  * @param {string} url - material texture url or color code.
  * @param {Scene} usedScene - concerned scene.
- * @returns {PBRSpecularGlossinessMaterial} built material.
+ * @returns built material.
  */
 function buildMaterials(manager, url, usedScene) {
   const cachedMaterial = getMaterialCache(manager, usedScene).get(url)
@@ -186,9 +189,14 @@ function buildMaterials(manager, url, usedScene) {
  * @param {MaterialManager} manager - manager instance.
  * @param {string} url - material texture url or color code.
  * @param {Scene} scene - concerned scene.
- * @returns {PBRSpecularGlossinessMaterial} built material.
+ * @returns built material.
  */
-function buildMaterial(materialByUrl, { gameAssetsUrl, locale }, url, scene) {
+function buildMaterial(
+  materialByUrl,
+  { gameAssetsUrl, locale, isWebGL1 },
+  url,
+  scene
+) {
   const material = new PBRSpecularGlossinessMaterial(url, scene)
   if (url?.startsWith('#')) {
     material.transparencyMode = PBRBaseMaterial.PBRMATERIAL_ALPHABLEND
@@ -198,9 +206,9 @@ function buildMaterial(materialByUrl, { gameAssetsUrl, locale }, url, scene) {
   } else {
     material.transparencyMode = PBRBaseMaterial.PBRMATERIAL_ALPHATEST
     material.diffuseTexture = new Texture(
-      adaptTextureUrl(gameAssetsUrl, url, locale),
+      adaptTextureUrl(gameAssetsUrl, url, locale, isWebGL1),
       scene,
-      { invertY: false }
+      { invertY: isWebGL1 }
     )
     material.diffuseTexture.hasAlpha = true
     // new ColorizeMaterialPlugin(material)
@@ -219,13 +227,14 @@ function buildMaterial(materialByUrl, { gameAssetsUrl, locale }, url, scene) {
  * @param {string} base - base Url, without any trailing slash.
  * @param {string} texture - the texture file name.
  * @param {string} locale - locale injected into the texture file.
- * @returns {string} if the engine is WebGL 1, the input texture with ktx2 extension replaced with webp.
+ * @param {boolean} isWebGL1 - true if the rendering engine only supports WebGL1.
+ * @returns if the engine is WebGL 1, the input texture with ktx2 extension replaced with webp.
  */
-function adaptTextureUrl(base, texture, locale) {
+function adaptTextureUrl(base, texture, locale, isWebGL1) {
   return !texture
     ? texture
     : injectLocale(
-        Engine.LastCreatedEngine?.version === 1
+        isWebGL1
           ? `${base}${texture.replace('.ktx2', '.gl1.webp')}`
           : `${base}${texture}`,
         'textures',
