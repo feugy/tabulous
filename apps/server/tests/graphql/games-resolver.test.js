@@ -98,7 +98,7 @@ describe('given a started server', () => {
         expect(response.statusCode).toEqual(200)
         expect(services.listGames).not.toHaveBeenCalled()
         expect(await response.json()).toMatchObject({
-          data: { listGames: null },
+          data: null,
           errors: [{ message: 'Unauthorized' }]
         })
       })
@@ -215,7 +215,7 @@ describe('given a started server', () => {
         expect(response.statusCode).toEqual(200)
         expect(services.listGames).not.toHaveBeenCalled()
         expect(await response.json()).toMatchObject({
-          data: { createGame: null },
+          data: null,
           errors: [{ message: 'Unauthorized' }]
         })
       })

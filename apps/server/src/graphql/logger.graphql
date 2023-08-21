@@ -19,9 +19,9 @@ input InputLoggerLevel {
 }
 
 extend type Query {
-  getLoggerLevels: [LoggerLevel]
+  getLoggerLevels: [LoggerLevel!]!
 }
 
 extend type Mutation {
-  configureLoggerLevels(levels: [InputLoggerLevel!]!): [LoggerLevel]
+  configureLoggerLevels(levels: [InputLoggerLevel!]!): [LoggerLevel!]!
 }

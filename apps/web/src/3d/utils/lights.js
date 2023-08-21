@@ -12,6 +12,8 @@ import { HemisphericLight } from '@babylonjs/core/Lights/hemisphericLight.js'
 import { ShadowGenerator } from '@babylonjs/core/Lights/Shadows/shadowGenerator.js'
 import { Vector3 } from '@babylonjs/core/Maths/math.vector.js'
 
+import { TableId } from './table.js'
+
 /**
  * @typedef {object} LightResult
  * @property {DirectionalLight} light - directional light for main scene
@@ -27,14 +29,15 @@ import { Vector3 } from '@babylonjs/core/Maths/math.vector.js'
  * @param {object} params - parameters, including:
  * @param {Scene} params.scene - main scene.
  * @param {Scene} params.handScene - hand scene.
+ * @param {boolean} [params.isWebGL1] - true if the rendering engine only supports WebGL1.
  * @returns {LightResult} an object containing created light and shadowGenerator.
  */
-export function createLights({ scene, handScene }) {
+export function createLights({ scene, handScene, isWebGL1 }) {
   const light = makeDirectionalLight(scene)
   const ambientLight = makeAmbientLight(scene)
 
   const shadowGenerator = new ShadowGenerator(1024, light)
-  shadowGenerator.usePercentageCloserFiltering = true
+  shadowGenerator.usePercentageCloserFiltering = !isWebGL1
   // https://forum.babylonjs.com/t/shadow-darkness-darker-than-0/22837
   // @ts-expect-error _darkness is private
   shadowGenerator._darkness = -1.5
@@ -42,28 +45,22 @@ export function createLights({ scene, handScene }) {
   const handLight = makeAmbientLight(handScene)
   handLight.intensity = 1
   /* istanbul ignore next */
-  scene.onNewMeshAddedObservable.add(mesh =>
-    shadowGenerator.addShadowCaster(mesh, true)
-  )
+  scene.onNewMeshAddedObservable.add(mesh => {
+    if (mesh.id !== TableId) {
+      shadowGenerator.addShadowCaster(mesh, true)
+    }
+  })
   return { light, ambientLight, handLight, shadowGenerator }
 }
 
-/**
- * @param {Scene} scene
- * @returns {DirectionalLight}
- */
-function makeDirectionalLight(scene) {
+function makeDirectionalLight(/** @type {Scene} */ scene) {
   const light = new DirectionalLight('sun', new Vector3(0, -1, 0), scene)
   light.position = new Vector3(0, 20, 0)
   light.intensity = 1
   return light
 }
 
-/**
- * @param {Scene} scene
- * @returns {HemisphericLight}
- */
-function makeAmbientLight(scene) {
+function makeAmbientLight(/** @type {Scene} */ scene) {
   const light = new HemisphericLight('ambient', new Vector3(0, 1, 0), scene)
   light.intensity = 0.8
   return light

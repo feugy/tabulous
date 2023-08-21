@@ -30,10 +30,10 @@ type GameAuthor {
 }
 
 extend type Query {
-  listCatalog: [CatalogItem]
+  listCatalog: [CatalogItem!]!
 }
 
 extend type Mutation {
-  grantAccess(playerId: ID!, itemName: ID!): Boolean
-  revokeAccess(playerId: ID!, itemName: ID!): Boolean
+  grantAccess(playerId: ID!, itemName: ID!): Boolean!
+  revokeAccess(playerId: ID!, itemName: ID!): Boolean!
 }

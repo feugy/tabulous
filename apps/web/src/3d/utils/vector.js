@@ -14,6 +14,8 @@ import {
   Vector3
 } from '@babylonjs/core/Maths/math.vector.js'
 
+import { TableId } from './table.js'
+
 /**
  * @typedef {object} ScreenPosition position on screen (2D, DOM)
  * @property {number} x - x coordinate.
@@ -45,7 +47,7 @@ export function screenToGround(scene, { x, y }) {
 export function isAboveTable(scene, { x, y }) {
   /* istanbul ignore next */
   if (!table || table.isDisposed()) {
-    table = scene.getMeshById('table')
+    table = scene.getMeshById(TableId)
   }
   return table
     ? scene.createPickingRay(x, y, null, null).intersectsMesh(table).hit
@@ -61,7 +63,7 @@ export function isAboveTable(scene, { x, y }) {
 export function isPositionAboveTable(scene, position) {
   /* istanbul ignore next */
   if (!table || table.isDisposed()) {
-    table = scene.getMeshById('table')
+    table = scene.getMeshById(TableId)
   }
   return table
     ? new Ray(position, new Vector3(position.x, -1, position.z)).intersectsMesh(

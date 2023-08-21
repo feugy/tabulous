@@ -450,11 +450,11 @@ type GameParameters {
 union GameOrParameters = Game | GameParameters
 
 extend type Query {
-  listGames: [Game]
+  listGames: [Game!]!
 }
 
 extend type Mutation {
-  createGame(kind: String): Game
+  createGame(kind: String): Game!
   joinGame(gameId: ID!, parameters: String): GameOrParameters
   promoteGame(gameId: ID!, kind: String!): GameOrParameters
   saveGame(game: GameInput!): Game
@@ -464,6 +464,6 @@ extend type Mutation {
 }
 
 extend type Subscription {
-  receiveGameListUpdates: [Game]
-  receiveGameUpdates(gameId: ID!): Game
+  receiveGameListUpdates: [Game!]!
+  receiveGameUpdates(gameId: ID!): Game!
 }

@@ -51,7 +51,7 @@
   } from '@src/stores/indicators'
   import { applyGameColors, isLobby, observeDimension } from '@src/utils'
   import { onMount } from 'svelte'
-  import { locale } from 'svelte-intl'
+  import { _, locale } from 'svelte-intl'
 
   import { browser } from '$app/environment'
   import { beforeNavigate, goto } from '$app/navigation'
@@ -147,6 +147,9 @@
           goto(`/${$locale}/home`)
         }
       })
+      if (!result) {
+        throw new Error($_('errors.unexisting-game'))
+      }
       restoreColors = applyGameColors(result.colors ?? {})
       if (result && 'schemaString' in result && result.schemaString) {
         gameParameters = {

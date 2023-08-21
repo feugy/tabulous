@@ -84,6 +84,7 @@ export default defineConfig({
         }
       }
     },
+    coverage: { reportOnFailure: true },
     globals: true, // needed for Atelier
     environment: 'jsdom',
     setupFiles: ['tests/setup']

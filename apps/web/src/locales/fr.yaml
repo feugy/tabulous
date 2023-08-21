@@ -30,6 +30,7 @@ errors:
   login-failure: Pseudo ou mot de passe incorrect. Merci de réessayer.
   restricted-game: Ce jeu n'est pas accessible.
   too-many-games: Vous avez déjà {count} parties en cours, vous ne pouvez pas en créer davantage.
+  unexisting-game: Cette partie n'existe pas.
   username-too-short: Votre pseudo doit avoir au moins 3 charactères.
   username-used: Ce pseudo est déjà utilisé, veillez en choisir un autre.
 # https://github.com/format-message/format-message/tree/master/packages/format-message#formatmessagesetupoptions

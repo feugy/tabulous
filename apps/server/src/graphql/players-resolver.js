@@ -171,7 +171,7 @@ export default {
        * @param {unknown} obj - graphQL object.
        * @param {unknown} args - mutation arguments.
        * @param {GraphQLContext} context - graphQL context.
-       * @returns {Promise<?Player>} saved player.
+       * @returns {Promise<Player>} saved player.
        */
       (obj, args, { player }) => services.acceptTerms(player)
     ),

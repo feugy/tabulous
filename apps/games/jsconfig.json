@@ -1,10 +1,5 @@
 {
   "extends": "../../jsconfig.json",
-  "include": [
-    "chess/**/*.js",
-    "draughts/**/*.js",
-    "klondike/**/*.js",
-    "mah-jong/**/*.js",
-    "playground/**/*.js"
-  ]
+  "include": ["*/**/*.js"],
+  "exclude": ["*/**/*.test.js"]
 }

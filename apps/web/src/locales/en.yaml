@@ -27,6 +27,7 @@ errors:
   login-failure: Incorrect nickname or password. Please retry.
   restricted-game: This game is not accessible.
   too-many-games: You already have {count} current games, you can not start new ones.
+  unexisting-game: This game does not exist.
   username-too-short: Your nickname must have at least 3 characters.
   username-used: This nickname is altready used, please choose a different one.
 labels:

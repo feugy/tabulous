@@ -1,8 +1,4 @@
 // @ts-check
-/**
- * @typedef {import('@tabulous/server/src/graphql').CatalogItem} CatalogItem
- */
-
 import * as graphQL from '@src/graphql'
 import { get } from 'svelte/store'
 
@@ -14,7 +10,7 @@ const logger = makeLogger('players')
 
 /**
  * List all catalog items.
- * @returns {Promise<CatalogItem[]>} a list of catalog items.
+ * @returns a list of catalog items.
  */
 export async function listCatalog() {
   logger.info('list catalog')
