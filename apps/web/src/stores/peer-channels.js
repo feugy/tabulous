@@ -11,7 +11,7 @@
 import 'webrtc-adapter'
 
 import * as graphQL from '@src/graphql'
-import { auditTime, BehaviorSubject, filter, scan, Subject } from 'rxjs'
+import { auditTime, BehaviorSubject, Subject } from 'rxjs'
 
 import { makeLogger, PeerConnection } from '../utils'
 import { runMutation, runSubscription } from './graphql-client'
@@ -39,8 +39,6 @@ const connections = new Map()
 const lastMessageSent$ = new Subject()
 /** @type {Subject<Message>} */
 const lastMessageReceived$ = new Subject()
-/** @type {Subject<?Message>} */
-const unorderedMessages$ = new Subject()
 const connected$ = new BehaviorSubject(/** @type {Connected[]} */ ([]))
 /** @type {Subject<string>} */
 const lastConnectedId$ = new Subject()
@@ -50,42 +48,9 @@ const lastDisconnectedId$ = new Subject()
 let subscriptions = []
 /** @type {?{ player: Player }} */
 let current = null
-let messageId = 1
 /** @type {Stream} */
 let local
 resetLocalState()
-
-unorderedMessages$
-  .pipe(
-    // orders message, lower id first
-    scan(
-      (/** @type {?Message[]} */ list, last) =>
-        last === null
-          ? null
-          : [...(list ?? []), last].sort(
-              (a, b) => a.data.messageId - b.data.messageId
-            ),
-      []
-    ),
-    filter(list => {
-      // no list or list of one? do not emit
-      if (list === null || list.length === 1) {
-        return false
-      }
-      // emit only if all messages are in order
-      return list.every(
-        ({ data: { messageId } }, i) =>
-          i === 0 || list[i - 1].data.messageId === messageId - 1
-      )
-    })
-  )
-  .subscribe(list => {
-    // processes each ordered message, and clears list
-    for (const data of /** @type {Message[]} */ (list)) {
-      lastMessageReceived$.next(data)
-    }
-    unorderedMessages$.next(null)
-  })
 
 /**
  * Emits last data sent to another player
@@ -283,7 +248,7 @@ export function send(data, playerId = null) {
   for (const [playerId, peer] of destination) {
     if (peer.established) {
       try {
-        peer.sendData({ ...data, messageId })
+        peer.sendData(data)
       } catch (error) {
         logger.warn(
           { error, peer, data },
@@ -295,7 +260,6 @@ export function send(data, playerId = null) {
       }
     }
   }
-  messageId++
 }
 
 function refreshConnected() {
@@ -329,24 +293,7 @@ function unwire(/** @type {string} */ id) {
 
 function buildDataHandler(/** @type {string} */ playerId) {
   return function handleData(/** @type {?} */ data) {
-    const { lastMessageId } = /** @type {PeerConnection} */ (
-      connections.get(playerId)
-    )
-    if (data.messageId !== lastMessageId + 1 && lastMessageId > 0) {
-      logger.error(
-        `Invalid message ids: received ${data.messageId}, expecting: ${lastMessageId}`
-      )
-      unorderedMessages$.next({ data, playerId })
-    } else {
-      lastMessageReceived$.next({ data, playerId })
-    }
-    // stores higher last only, so unorderedMessage could get lower ones
-    if (data.messageId > lastMessageId) {
-      const connection = /** @type {PeerConnection} */ (
-        connections.get(playerId)
-      )
-      connection.lastMessageId = data.messageId
-    }
+    lastMessageReceived$.next({ data, playerId })
   }
 }
 
