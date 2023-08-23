@@ -2,7 +2,6 @@
 
 ## Refactor
 
-- try out automerge.js (can it share increments? can it support replay?)
 - replace windicss with a successor (tailwind or UnoCSS)
 - add tests for web/src/utils/peer-connection
 - group candidate target per kind for performance
@@ -201,3 +200,8 @@ For choosing game colors:
 3. make sure player colors have sufficient contrast with table texture/color.
 4. try as much as possible to have player colors with enough distance, to avoid confusion.
 5. black is a great player color! Transparent colors work as well.
+
+[Automerge](https://automerge.org) looked really promising, but isn't a good fit for Tabulous, because the storage format is binary.
+Besides being hard to debug and troubleshoot, it requires many encoding/decoding operations since GraphQL only allows text,
+discards any database migrations or server-side operations (unless rebuilding the document on server-side), and the overall effort of
+refactoring all communciation pipes and storage code does not really worth it.
