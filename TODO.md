@@ -13,7 +13,6 @@
 
 ## UI
 
-- ability to interact with main meshes throught the opened hand (how do we select multiple in hand?)
 - anchorable: flip/unflip on snap
 - hand count on peer pointers/player tab?
 - replay
