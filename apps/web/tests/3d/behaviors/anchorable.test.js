@@ -523,6 +523,78 @@ describe('AnchorBehavior', () => {
       expect(registerFeedbackSpy).not.toHaveBeenCalled()
     })
 
+    it('can flip snapped mesh when hydrating', () => {
+      const snapped = meshes[0]
+      snapped.addBehavior(new FlipBehavior(), true)
+      expectFlipped(snapped, false)
+
+      behavior.fromState({
+        anchors: [
+          {
+            id: '1',
+            width: 1,
+            height: 2,
+            depth: 0.5,
+            snappedId: snapped.id,
+            flip: true
+          }
+        ]
+      })
+      expect(behavior.state.duration).toEqual(100)
+      expect(behavior.state.anchors).toEqual([
+        {
+          id: '1',
+          width: 1,
+          height: 2,
+          depth: 0.5,
+          snappedId: 'box1',
+          flip: true
+        }
+      ])
+      expectAnchor(0, behavior.state.anchors[0], false)
+      expectSnapped(mesh, snapped, 0)
+      expectFlipped(snapped, true)
+      expect(behavior.getSnappedIds()).toEqual([snapped.id])
+      expect(recordSpy).not.toHaveBeenCalled()
+      expect(registerFeedbackSpy).not.toHaveBeenCalled()
+    })
+
+    it('can reset snapped mesh isFlipped when hydrating', () => {
+      const snapped = meshes[0]
+      snapped.addBehavior(new FlipBehavior({ isFlipped: true }), true)
+      expectFlipped(snapped)
+
+      behavior.fromState({
+        anchors: [
+          {
+            id: '1',
+            width: 1,
+            height: 2,
+            depth: 0.5,
+            snappedId: snapped.id,
+            flip: false
+          }
+        ]
+      })
+      expect(behavior.state.duration).toEqual(100)
+      expect(behavior.state.anchors).toEqual([
+        {
+          id: '1',
+          width: 1,
+          height: 2,
+          depth: 0.5,
+          snappedId: 'box1',
+          flip: false
+        }
+      ])
+      expectAnchor(0, behavior.state.anchors[0], false)
+      expectSnapped(mesh, snapped, 0)
+      expectFlipped(snapped, false)
+      expect(behavior.getSnappedIds()).toEqual([snapped.id])
+      expect(recordSpy).not.toHaveBeenCalled()
+      expect(registerFeedbackSpy).not.toHaveBeenCalled()
+    })
+
     it('snaps mesh', async () => {
       const snapped = meshes[0]
       expect(snapped.absolutePosition.asArray()).toEqual([10, 10, 10])
@@ -663,6 +735,31 @@ describe('AnchorBehavior', () => {
       expectSnapped(mesh, snapped, 0)
       expect(behavior.getSnappedIds()).toEqual([meshes[0].id])
       expectRotated(snapped, -angle)
+      expectFlipped(snapped)
+      expect(recordSpy).toHaveBeenCalledTimes(1)
+      expect(recordSpy).toHaveBeenCalledWith({
+        fn: 'snap',
+        mesh,
+        args,
+        duration: behavior.state.duration
+      })
+      expectMeshFeedback(registerFeedbackSpy, 'snap', [0, 0, 0])
+    })
+
+    it('can flip snapped mesh', async () => {
+      const snapped = meshes[0]
+      behavior.fromState({
+        anchors: [{ id: '1', width: 1, height: 2, depth: 0.5, flip: true }]
+      })
+      snapped.addBehavior(new FlipBehavior({}), true)
+      expectFlipped(snapped, false)
+      expect(snapped.absolutePosition.asArray()).toEqual([10, 10, 10])
+
+      /** @type {[string, string, boolean]} */
+      const args = [snapped.id, behavior.zones[0].mesh.id, false]
+      await mesh.metadata.snap?.(...args)
+      expectSnapped(mesh, snapped, 0)
+      expect(behavior.getSnappedIds()).toEqual([meshes[0].id])
       expectFlipped(snapped)
       expect(recordSpy).toHaveBeenCalledTimes(1)
       expect(recordSpy).toHaveBeenCalledWith({

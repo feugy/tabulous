@@ -13,9 +13,8 @@
 
 ## UI
 
-- anchorable: flip/unflip on snap
-- hand count on peer pointers/player tab?
 - replay
+- hand count on peer pointers/player tab?
 - score card (Mah-jong, Belote)
 - command to reset some mesh state and restart a game (Mah-jong, Belote)
 - "box" space for unusued/undesired meshes

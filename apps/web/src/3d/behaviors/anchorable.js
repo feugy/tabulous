@@ -32,7 +32,7 @@ import {
   getPositionAboveZone,
   getTargetableBehavior
 } from '../utils/behaviors'
-import { AnchorBehaviorName } from './names'
+import { AnchorBehaviorName, FlipBehaviorName } from './names'
 import { TargetBehavior } from './targetable'
 
 /** @typedef {AnchorableState & Required<Pick<AnchorableState, 'duration'|'anchors'>>} RequiredAnchorableState */
@@ -351,6 +351,15 @@ async function snapToAnchor(behavior, snappedId, zone, loading = false) {
     )
     if (!loading) {
       await move
+    }
+    if (
+      zone.flip !== undefined &&
+      snapped.metadata.isFlipped !== undefined &&
+      snapped.metadata.isFlipped !== zone.flip
+    ) {
+      await snapped
+        .getBehaviorByName(FlipBehaviorName)
+        ?.updateState({ isFlipped: zone.flip }, !loading)
     }
   }
 }
