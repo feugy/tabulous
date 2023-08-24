@@ -152,6 +152,7 @@ import { canAccess } from './catalog.js'
  * @property {?string} [snappedId] - id of the mesh currently snapped to this anchor.
  * @property {string} [playerId] - when set, only this player can snap meshes to this anchor.
  * @property {number} [angle] - angle applied to any rotable mesh snapped to the anchor.
+ * @property {boolean} [flip] - flip state applied to any flippable mesh snapped to the anchor.
  * @property {boolean} [ignoreParts=false] - when set, and when snapping a multi-part mesh, takes it barycenter into account.
  */
 /** @typedef {_Anchor & Point & Dimension & Targetable} Anchor */

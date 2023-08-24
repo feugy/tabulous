@@ -169,7 +169,9 @@ describe('InputManager', () => {
         // x: 1266, y: 615
         { id: 'box6', position: new Vector3(10, 0, -5), scene: handScene },
         // x: 1266, y: 512
-        { id: 'box7', position: new Vector3(10, 0, 0), scene }
+        { id: 'box7', position: new Vector3(10, 0, 0), scene },
+        // x: 1299, y: 616
+        { id: 'box8', position: new Vector3(11, 0, -4.5), scene }
       ].map(({ id, position, scene }) => {
         const mesh = createBox(id, {}, scene)
         mesh.setAbsolutePosition(position)
@@ -200,6 +202,20 @@ describe('InputManager', () => {
       )
     })
 
+    it('picks main mesh throught an open hand', () => {
+      const button = 1
+      const pointer = { x: 1300, y: 616 }
+      const pointerId = 74
+      triggerEvent(pointerDown, { ...pointer, pointerId, button })
+      const event = triggerEvent(pointerUp, { ...pointer, pointerId, button })
+      expectEvents({ taps: 1 })
+      expectsDataWithMesh(
+        taps[0],
+        { long: false, pointers: 1, type: 'tap', button, event },
+        'box8'
+      )
+    })
+
     it('does not pick non-pickable meshes', () => {
       const button = 1
       const pointer = { x: 1048, y: 525 }
@@ -222,7 +238,7 @@ describe('InputManager', () => {
     it('does not pick meshes selected by peers', () => {
       const button = 1
       const pointer = { x: 1048, y: 525 }
-      const pointerId = 71
+      const pointerId = 73
       const otherPlayerId = faker.string.uuid()
       selectionManager.updateColors(
         'currentPlayer',

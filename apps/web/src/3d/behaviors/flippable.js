@@ -67,57 +67,81 @@ export class FlipBehavior extends AnimateBehavior {
   async flip() {
     const {
       state: { duration, isFlipped },
-      mesh,
-      rotateAnimation,
-      moveAnimation
+      mesh
     } = this
     if (!mesh || isMeshLocked(mesh) || isAnimationInProgress(mesh)) {
       return
     }
-    logger.debug({ mesh }, `start flipping ${mesh.id}`)
 
     controlManager.record({ mesh, fn: actionNames.flip, duration, args: [] })
+    await this.updateState({ isFlipped: !isFlipped })
+  }
 
-    const attach = detachFromParent(mesh)
-    const [x, y, z] = mesh.position.asArray()
-    const { width } = getDimensions(mesh)
+  /**
+   * Updates the mesh and behavior state to match provided data, with optional animation.
+   * Does not report to the control manager.
+   * @param {FlippableState} state - new state applied.
+   * @param {boolean} [withAnimation] - whether to animate the change.
+   * @returns {void|Promise<void>} returns when animation (if any) is complete.
+   */
+  updateState({ isFlipped }, withAnimation = true) {
+    const {
+      state: { duration },
+      mesh,
+      rotateAnimation,
+      moveAnimation
+    } = this
+    if (!mesh) {
+      return
+    }
+    logger.debug({ mesh }, `start flipping ${mesh.id}`)
 
-    this.state.isFlipped = !isFlipped
-    let [pitch, yaw, roll] = mesh.rotation.asArray()
-    // because of JS, yaw may be very close to Math.PI or 0, but not equal to it.
-    const rotation =
-      yaw < Math.PI - Tolerance && yaw >= -Tolerance ? Math.PI : -Math.PI
-    await runAnimation(
-      this,
-      () => {
-        // keep rotation between [0..2 * PI[, without modulo because it does not keep plain values
-        if (mesh.rotation.z < 0) {
-          mesh.rotation.z += 2 * Math.PI
-        } else if (mesh.rotation.z >= 2 * Math.PI) {
-          mesh.rotation.z -= 2 * Math.PI
+    this.state.isFlipped = isFlipped
+    if (withAnimation) {
+      const attach = detachFromParent(mesh)
+      const [x, y, z] = mesh.position.asArray()
+      const { width } = getDimensions(mesh)
+
+      let [pitch, yaw, roll] = mesh.rotation.asArray()
+      // because of JS, yaw may be very close to Math.PI or 0, but not equal to it.
+      const rotation =
+        yaw < Math.PI - Tolerance && yaw >= -Tolerance ? Math.PI : -Math.PI
+      return runAnimation(
+        this,
+        () => {
+          // keep rotation between [0..2 * PI[, without modulo because it does not keep plain values
+          if (mesh.rotation.z < 0) {
+            mesh.rotation.z += 2 * Math.PI
+          } else if (mesh.rotation.z >= 2 * Math.PI) {
+            mesh.rotation.z -= 2 * Math.PI
+          }
+          attach()
+          applyGravity(mesh)
+          logger.debug({ mesh }, `end flipping ${mesh.id}`)
+        },
+        {
+          animation: rotateAnimation,
+          duration,
+          keys: [
+            { frame: 0, values: [pitch, yaw, roll] },
+            { frame: 100, values: [pitch, yaw, roll + rotation] }
+          ]
+        },
+        {
+          animation: moveAnimation,
+          duration,
+          keys: [
+            { frame: 0, values: [x, y, z] },
+            { frame: 50, values: [x, y + width, z] },
+            { frame: 100, values: [x, y, z] }
+          ]
         }
-        attach()
-        applyGravity(mesh)
-        logger.debug({ mesh }, `end flipping ${mesh.id}`)
-      },
-      {
-        animation: rotateAnimation,
-        duration,
-        keys: [
-          { frame: 0, values: [pitch, yaw, roll] },
-          { frame: 100, values: [pitch, yaw, roll + rotation] }
-        ]
-      },
-      {
-        animation: moveAnimation,
-        duration,
-        keys: [
-          { frame: 0, values: [x, y, z] },
-          { frame: 50, values: [x, y + width, z] },
-          { frame: 100, values: [x, y, z] }
-        ]
-      }
-    )
+      )
+    } else {
+      mesh.rotation.z = isFlipped ? Math.PI : 0
+      applyGravity(mesh)
+      logger.debug({ mesh }, `end flipping ${mesh.id}`)
+    }
   }
 
   /**

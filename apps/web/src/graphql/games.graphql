@@ -78,6 +78,7 @@ fragment mesh on Mesh {
       playerId
       ignoreParts
       angle
+      flip
     }
     duration
   }

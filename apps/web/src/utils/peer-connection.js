@@ -46,8 +46,6 @@ export class PeerConnection {
   }) {
     /** @type {?string} */
     this.playerId = null
-    /** @type {number} */
-    this.lastMessageId = 0
     /** @type {boolean} */
     this.established = false
     /** @type {RTCDataChannel | undefined} */

@@ -115,6 +115,7 @@ type Anchor {
   playerId: ID
   ignoreParts: Boolean
   angle: Float
+  flip: Boolean
 }
 
 type Mesh {
@@ -349,6 +350,7 @@ input AnchorInput {
   playerId: ID
   ignoreParts: Boolean
   angle: Float
+  flip: Boolean
 }
 
 input MeshInput {

@@ -42,7 +42,6 @@ vi.mock('@src/utils/peer-connection', () => {
         Object.assign(this, options)
         this.local = {}
         this.remote = {}
-        this.lastMessageId = 0
         peers.push(this)
         this.handleSignal = vi.fn()
         this.attachLocalStream = vi
@@ -87,7 +86,7 @@ vi.mock('@src/stores/stream', () => {
 let peers = /** @type {MockedObject<PeerConnection>[]} */ ([])
 
 describe('Peer channels store', () => {
-  const logger = mockLogger('peer-channels')
+  mockLogger('peer-channels')
   const playerId1 = 'Paul'
   const playerId2 = 'Jack'
   const playerId3 = 'Gene'
@@ -414,7 +413,7 @@ describe('Peer channels store', () => {
     })
 
     it('can receive message', () => {
-      const data = { message: randomUUID(), messageId: 1 }
+      const data = { message: randomUUID() }
       peers[0].onData(data)
       expect(messagesReceived).toEqual([{ data, playerId: playerId2 }])
 
@@ -425,41 +424,21 @@ describe('Peer channels store', () => {
       ])
     })
 
-    it('reorders received message', async () => {
-      logger.error.mockImplementation(() => {})
-      const msg1 = { message: randomUUID(), messageId: 1 }
-      const msg2 = { message: randomUUID(), messageId: 2 }
-      const msg3 = { message: randomUUID(), messageId: 3 }
-      const msg4 = { message: randomUUID(), messageId: 4 }
-      peers[0].onData(msg1)
-      peers[0].onData(msg4)
-      peers[0].onData(msg2)
-      peers[0].onData(msg3)
-      expect(messagesReceived).toEqual([
-        { data: msg1, playerId: playerId2 },
-        { data: msg2, playerId: playerId2 },
-        { data: msg3, playerId: playerId2 },
-        { data: msg4, playerId: playerId2 }
-      ])
-    })
-
     it('sends message to all connected peers', () => {
       const data = { message: randomUUID() }
-      const sentData = { ...data, messageId: expect.any(Number) }
       communication.send(data)
-      expect(peers[0].sendData).toHaveBeenCalledWith(sentData)
+      expect(peers[0].sendData).toHaveBeenCalledWith(data)
       expect(peers[0].sendData).toHaveBeenCalledTimes(1)
-      expect(peers[1].sendData).toHaveBeenCalledWith(sentData)
+      expect(peers[1].sendData).toHaveBeenCalledWith(data)
       expect(peers[1].sendData).toHaveBeenCalledTimes(1)
       expect(messagesSent).toEqual([{ data, playerId: playerId1 }])
     })
 
     it('sends message to a given peer', () => {
       const data = { content: randomUUID() }
-      const sentData = { ...data, messageId: expect.any(Number) }
       communication.send(data, playerId3)
       expect(peers[0].sendData).not.toHaveBeenCalled()
-      expect(peers[1].sendData).toHaveBeenCalledWith(sentData)
+      expect(peers[1].sendData).toHaveBeenCalledWith(data)
       expect(peers[1].sendData).toHaveBeenCalledTimes(1)
       expect(messagesSent).toEqual([{ data, playerId: playerId1 }])
     })
@@ -469,11 +448,10 @@ describe('Peer channels store', () => {
         throw new Error('boom!!!')
       })
       const data = { content: randomUUID() }
-      const sentData = { ...data, messageId: expect.any(Number) }
       communication.send(data)
-      expect(peers[0].sendData).toHaveBeenCalledWith(sentData)
+      expect(peers[0].sendData).toHaveBeenCalledWith(data)
       expect(peers[0].sendData).toHaveBeenCalledTimes(1)
-      expect(peers[1].sendData).toHaveBeenCalledWith(sentData)
+      expect(peers[1].sendData).toHaveBeenCalledWith(data)
       expect(peers[1].sendData).toHaveBeenCalledTimes(1)
       expect(messagesSent).toEqual([{ data, playerId: playerId1 }])
       expect(get(communication.connected)).toEqual([

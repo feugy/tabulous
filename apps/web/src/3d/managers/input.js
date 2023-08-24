@@ -10,7 +10,6 @@ import { Scene } from '@babylonjs/core/scene.js'
 import { makeLogger } from '../../utils/logger'
 import { distance } from '../../utils/math'
 import { screenToGround } from '../utils/vector'
-import { handManager } from './hand'
 import { selectionManager } from './selection'
 
 const logger = makeLogger('input')
@@ -300,9 +299,7 @@ class InputManager {
             ? event.button
             : undefined,
         // takes mesh with highest elevation, and only when they are pickable
-        mesh: handManager.isPointerInHand(event)
-          ? findPickedMesh(handScene, event)
-          : findPickedMesh(scene, event)
+        mesh: findPickedMesh(handScene, event) ?? findPickedMesh(scene, event)
       }
     }
 

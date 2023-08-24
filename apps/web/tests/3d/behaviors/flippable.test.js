@@ -125,6 +125,7 @@ describe('FlipBehavior', () => {
       expectFlipped(mesh)
       expectPosition(mesh, [x, 0.5, z])
       expect(animationEndReceived).toHaveBeenCalledOnce()
+      expect(recordSpy).toHaveBeenCalledOnce()
     })
 
     it('flips mesh anti-clockwise and apply gravity', async () => {
@@ -138,6 +139,27 @@ describe('FlipBehavior', () => {
       expectFlipped(mesh)
       expectPosition(mesh, [x, 0.5, z])
       expect(animationEndReceived).toHaveBeenCalledOnce()
+      expect(recordSpy).toHaveBeenCalledOnce()
+    })
+
+    it('updates flips state', async () => {
+      expectFlipped(mesh, false)
+      await behavior.updateState({ isFlipped: true })
+      expectFlipped(mesh)
+      expect(animationEndReceived).toHaveBeenCalledOnce()
+      expect(recordSpy).not.toHaveBeenCalled()
+    })
+
+    it('updates flips state with no animation', async () => {
+      await mesh.metadata.flip?.()
+      recordSpy.mockClear()
+      animationEndReceived.mockClear()
+      expectFlipped(mesh)
+
+      await behavior.updateState({ isFlipped: false }, false)
+      expectFlipped(mesh, false)
+      expect(animationEndReceived).not.toHaveBeenCalled()
+      expect(recordSpy).not.toHaveBeenCalled()
     })
 
     it('can not flip if locked', async () => {
