@@ -5,6 +5,8 @@
  * @typedef {import('../../src/services/games').GameData} GameData
  * @typedef {import('../../src/services/games').GameListUpdate} GameListUpdate
  * @typedef {import('../../src/services/games').CameraPosition} CameraPosition
+ * @typedef {import('../../src/services/games').PlayerAction} PlayerAction
+ * @typedef {import('../../src/services/games').PlayerMove} PlayerMove
  */
 
 import { faker } from '@faker-js/faker'
@@ -773,6 +775,28 @@ describe('given a subscription to game lists and an initialized repository', () 
             ...game,
             cameras,
             messages: []
+          })
+        })
+
+        it('can save history', async () => {
+          const history = /** @type {(PlayerMove|PlayerAction)[]} */ ([
+            {
+              time: Date.now() - 5000,
+              playerId: player.id,
+              meshId: 'box1',
+              fn: 'flip',
+              argsStr: '[]'
+            },
+            {
+              time: Date.now() - 3000,
+              playerId: player.id,
+              meshId: 'box1',
+              pos: [0, 0, 3]
+            }
+          ])
+          expect(await saveGame({ id: game.id, history }, player.id)).toEqual({
+            ...game,
+            history
           })
         })
       })

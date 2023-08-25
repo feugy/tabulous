@@ -65,6 +65,7 @@ export type Game = Pick<
       | 'hands'
       | 'preferences'
       | 'availableSeats'
+      | 'history'
     >
   > & { players?: GamePlayer[] }
 
@@ -77,11 +78,14 @@ export type {
   DrawableState,
   FlippableState,
   Hand,
+  HistoryRecord,
   InitialTransform,
   LockableState,
   Mesh,
   Message,
   MovableState,
+  PlayerAction,
+  PlayerMove,
   PlayerPreference,
   Point,
   QuantifiableState,

@@ -526,6 +526,89 @@ describe('given a started server', () => {
         expect(services.joinGame).toHaveBeenCalledOnce()
       })
 
+      it('loads history actions and move', async () => {
+        const [player] = players
+        const game = {
+          id: faker.string.uuid(),
+          name: 'Tarot',
+          locales: { en: { title: 'Tarot' }, fr: { title: 'Tarot' } },
+          availableSeats: 1,
+          kind: 'tarot',
+          created: faker.date.past().getTime(),
+          ownerId: player.id,
+          playerIds: [player.id],
+          history: [
+            {
+              time: Date.now() - 5000,
+              playerId: player.id,
+              meshId: 'box1',
+              fn: 'flip',
+              argsStr: '[]'
+            },
+            {
+              time: Date.now() - 3000,
+              playerId: player.id,
+              meshId: 'box1',
+              pos: [0, 0, 3]
+            }
+          ],
+          guestIds: [],
+          meshes: [],
+          messages: [],
+          preferences: [],
+          cameras: [],
+          hands: []
+        }
+        services.getPlayerById
+          .mockResolvedValueOnce(players[0])
+          // @ts-expect-error: Mocked inference does not support overloads
+          .mockResolvedValueOnce(players.slice(0, 1))
+        services.joinGame.mockResolvedValueOnce(game)
+
+        const response = await server.inject({
+          method: 'POST',
+          url: 'graphql',
+          headers: {
+            authorization: `Bearer ${signToken(
+              player.id,
+              configuration.auth.jwt.key
+            )}`
+          },
+          payload: {
+            query: `mutation {
+  joinGame(gameId: "${game.id}") { 
+    ... on Game { 
+      id
+      history {
+        time,
+        playerId,
+        meshId,
+        ... on PlayerAction {
+          fn,
+          argsStr
+        }
+        ... on PlayerMove {
+          pos
+        }
+      }
+    } ... on GameParameters { 
+      id 
+    } 
+  }
+}`
+          }
+        })
+
+        expect(response.json()).toEqual({
+          data: {
+            joinGame: {
+              id: game.id,
+              history: game.history
+            }
+          }
+        })
+      })
+
       it('rejects broken parameters', async () => {
         const [player] = players
         services.getPlayerById.mockResolvedValueOnce(player)

@@ -8,6 +8,8 @@
  * @typedef {import('.').InviteArgs} InviteArgs
  * @typedef {import('.').JoinGameArgs} JoinGameArgs
  * @typedef {import('.').KickArgs} KickArgs
+ * @typedef {import('.').PlayerAction} PlayerAction
+ * @typedef {import('.').PlayerMove} PlayerMove
  * @typedef {import('.').PromoteGameArgs} PromoteGameArgs
  * @typedef {import('.').ReceiveGameUpdatesArgs} ReceiveGameUpdatesArgs
  * @typedef {import('.').SaveGameArgs} SaveGameArgs
@@ -258,8 +260,8 @@ export default {
   GameOrParameters: {
     /**
      * Distinguishes returned Game from GameParameters
-     * @param {?Game|GameParameters} obj - either a Game or a GameParameters object
-     * @returns {string} the type of this object.
+     * @param {?Game|GameParameters} obj - either a Game or a GameParameters object.
+     * @returns the type of this object.
      */
     resolveType(obj) {
       return obj && 'schema' in obj ? 'GameParameters' : 'Game'
@@ -270,8 +272,18 @@ export default {
     /**
      * Serializer for schema.
      * @param {import('../services/games').GameParameters<?>} obj - serialized game parameter schema
-     * @returns {string}
      */
     schemaString: obj => JSON.stringify(obj.schema)
+  },
+
+  HistoryRecord: {
+    /**
+     * Distinguishes returned PlayerMove and PlayerAction
+     * @param {?PlayerMove|PlayerAction} obj - either a player move or action object.
+     * @returns the type of this object.
+     */
+    resolveType(obj) {
+      return obj && 'fn' in obj ? 'PlayerAction' : 'PlayerMove'
+    }
   }
 }

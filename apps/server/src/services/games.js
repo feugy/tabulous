@@ -41,6 +41,7 @@ import { canAccess } from './catalog.js'
  * @property {CameraPosition[]} cameras - player's saved camera positions, if any.
  * @property {Hand[]} hands - player's private hands, id any.
  * @property {PlayerPreference[]} preferences - preferences for each players.
+ * @property {(PlayerMove|PlayerAction)[]} history - player actions and move history.
  */
 /** @typedef {Game & GameDescriptor & _GameData} GameData */
 /** @typedef {GameData & Required<Pick<GameData, 'meshes'|'hands'|'kind'>>} StartedGameData */
@@ -217,6 +218,29 @@ import { canAccess } from './catalog.js'
  */
 
 /** @typedef { Record<string, ?> & _PlayerPreference } PlayerPreference */
+
+/**
+ * @typedef {object} PlayerRecord
+ * @property {number} time - when this record happened (timestamp).
+ * @property {string} playerId - who created this record.
+ * @property {string} meshId - modified mesh id.
+ * @property {number} [duration] - optional animation duration, in milliseconds.
+ */
+
+/**
+ * @typedef {object} _PlayerAction
+ * @property {string} fn - name of the applied action.
+ * @property {string} argsStr - stringified argument array for this action.
+ * @typedef { PlayerRecord & _PlayerAction } PlayerAction
+ */
+
+/**
+ * @typedef {object} _PlayerMove
+ * @property {number[]} pos - absolute position.
+ * @typedef { PlayerRecord & _PlayerMove } PlayerMove
+ */
+
+/** @typedef {PlayerAction|PlayerMove} HistoryRecord */
 
 /**
  * @template Parameters
@@ -638,7 +662,8 @@ export async function saveGame(game, playerId) {
     meshes: game.meshes ?? previous.meshes,
     hands: game.hands ?? previous.hands,
     messages: game.messages ?? previous.messages,
-    cameras: game.cameras ?? previous.cameras
+    cameras: game.cameras ?? previous.cameras,
+    history: game.history ?? previous.history
   })
   logger.debug({ ctx, res: serializeForLogs(saved) }, 'saved game')
   return saved
