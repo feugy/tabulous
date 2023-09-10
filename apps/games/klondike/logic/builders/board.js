@@ -26,7 +26,7 @@ export function buildBoard() {
     anchorable: {
       anchors: [
         { id: anchorIds.reserve, ...positions.reserve, ...sizes.card },
-        { id: 'discard', ...positions.discard, ...sizes.card },
+        { id: 'discard', ...positions.discard, ...sizes.card, flip: false },
         ...buildGoalAnchors(),
         ...buildColumnAnchors()
       ]
