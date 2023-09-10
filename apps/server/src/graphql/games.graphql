@@ -243,6 +243,7 @@ enum ActionName {
   flip
   flipAll
   increment
+  play
   pop
   push
   random
@@ -273,6 +274,7 @@ type PlayerAction implements HistoryRecord {
   playerId: ID!
   fn: String!
   argsStr: String
+  revertStr: String
   duration: Int
 }
 
@@ -281,6 +283,7 @@ type PlayerMove implements HistoryRecord {
   meshId: ID!
   playerId: ID!
   pos: [Float]!
+  prev: [Float]!
   duration: Int
 }
 
@@ -468,9 +471,10 @@ input HistoryRecordInput {
   playerId: ID!
   fn: String
   argsStr: String
+  revertStr: String
   pos: [Float]
+  prev: [Float]
   duration: Int
-  fromHand: Boolean
 }
 
 type GameParameters {

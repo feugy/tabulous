@@ -52,22 +52,23 @@ declare module '@src/types' {
   type ArrayItem<T> = T extends Array<infer U> ? U : T
 
   type MeshActions = {
-    snap: AnchorBehavior['snap']
-    unsnap: AnchorBehavior['unsnap']
-    unsnapAll: AnchorBehavior['unsnapAll']
+    decrement: QuantityBehavior['decrement']
     detail: DetailBehavior['detail']
     draw: DrawBehavior['draw']
     flip: FlipBehavior['flip']
-    toggleLock: LockBehavior['toggleLock']
-    increment: QuantityBehavior['increment']
-    decrement: QuantityBehavior['decrement']
-    random: RandomBehavior['random']
-    setFace: RandomBehavior['setFace']
-    rotate: RotateBehavior['rotate']
-    push: StackBehavior['push']
-    pop: StackBehavior['pop']
-    reorder: StackBehavior['reorder']
     flipAll: StackBehavior['flipAll']
+    increment: QuantityBehavior['increment']
+    play: DrawBehavior['play']
+    pop: StackBehavior['pop']
+    push: StackBehavior['push']
+    random: RandomBehavior['random']
+    reorder: StackBehavior['reorder']
+    rotate: RotateBehavior['rotate']
+    setFace: RandomBehavior['setFace']
+    snap: AnchorBehavior['snap']
+    toggleLock: LockBehavior['toggleLock']
+    unsnap: AnchorBehavior['unsnap']
+    unsnapAll: AnchorBehavior['unsnapAll']
   }
 
   type MeshMetadata = Record<string, ?> & {
@@ -83,6 +84,9 @@ declare module '@src/types' {
     detail?: DetailBehavior['detail']
 
     draw?: DrawBehavior['draw']
+    play?: DrawBehavior['play']
+    drawable?: boolean
+    playable?: boolean
 
     isFlipped?: FlippableState['isFlipped']
     flip?: FlipBehavior['flip']

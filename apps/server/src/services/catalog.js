@@ -92,7 +92,7 @@ import { makeLogger } from '../utils/index.js'
  */
 
 /**
- * @typedef {'decrement'|'detail'|'draw'|'flip'|'flipAll'|'increment'|'pop'|'push'|'random'|'reorder'|'rotate'|'setFace'|'snap'|'toggleLock'|'unsnap'|'unsnapAll'} ActionName
+ * @typedef {'decrement'|'detail'|'draw'|'flip'|'flipAll'|'increment'|'play'|'pop'|'push'|'random'|'reorder'|'rotate'|'setFace'|'snap'|'toggleLock'|'unsnap'|'unsnapAll'} ActionName
  */
 
 /**
