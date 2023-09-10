@@ -53,5 +53,10 @@
   "lint-staged": {
     "*.{js,ts,svelte}": "eslint --cache --fix",
     "*.{js,ts,svelte,css,md}": "prettier --plugin-search-dir=. --write"
+  },
+  "pnpm": {
+    "patchedDependencies": {
+      "@vitest/utils@0.34.2": "patches/@vitest__utils@0.34.2.patch"
+    }
   }
 }

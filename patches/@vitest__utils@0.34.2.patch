@@ -1,0 +1,23 @@
+diff --git a/dist/diff.js b/dist/diff.js
+index bdb7642b55b77649955f060a84d45c7a65e6c263..3d513fdd6b865371091ccd9c2899f7cc816069fa 100644
+--- a/dist/diff.js
++++ b/dist/diff.js
+@@ -953,7 +953,17 @@ const PLUGINS = [
+   DOMElement,
+   DOMCollection,
+   Immutable,
+-  AsymmetricMatcher
++  AsymmetricMatcher,
++  {
++    test: (value) => value != undefined && typeof value === "object" && "prettyFormat" in value && typeof value.prettyFormat === "function",
++    serialize: (value, config, indentation, depth, refs, printer) => {
++      const name = value.constructor.name;
++      if (++depth > config.maxDepth) {
++        return `[${name}]`;
++      }
++      return printer(value.prettyFormat(config, indentation, depth, refs), config, indentation, depth, refs);
++    }
++  }
+ ];
+ const FORMAT_OPTIONS = {
+   plugins: PLUGINS
