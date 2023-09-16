@@ -10,6 +10,7 @@ import { Scene } from '@babylonjs/core/scene.js'
 import { makeLogger } from '../../utils/logger'
 import { distance } from '../../utils/math'
 import { screenToGround } from '../utils/vector'
+import { replayManager } from './replay'
 import { selectionManager } from './selection'
 
 const logger = makeLogger('input')
@@ -298,8 +299,10 @@ class InputManager {
           'pointerType' in event && event.pointerType === 'mouse'
             ? event.button
             : undefined,
-        // takes mesh with highest elevation, and only when they are pickable
-        mesh: findPickedMesh(handScene, event) ?? findPickedMesh(scene, event)
+        // takes mesh with highest elevation, and only when they are pickable and when not replaying
+        mesh: replayManager.isReplaying
+          ? null
+          : findPickedMesh(handScene, event) ?? findPickedMesh(scene, event)
       }
     }
 

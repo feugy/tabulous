@@ -22,6 +22,7 @@ const {
   draw,
   flip,
   increment,
+  play,
   pop,
   push,
   random,
@@ -41,7 +42,6 @@ describe('buildActionNamesByKey()', () => {
     { action: flip, behavior: FlipBehaviorName },
     { action: random, behavior: RandomBehaviorName },
     { action: rotate, behavior: RotateBehaviorName },
-    { action: draw, behavior: DrawBehaviorName },
     { action: detail, behavior: DetailBehaviorName },
     { action: toggleLock, behavior: LockBehaviorName }
   ])('can return $behavior action', ({ behavior, action }) => {
@@ -129,7 +129,7 @@ describe('buildActionNamesByKey()', () => {
       new Map([
         [`shortcuts.flip`, [flip]],
         [`shortcuts.rotate`, [rotate]],
-        [`shortcuts.draw`, [draw]],
+        [`shortcuts.drawOrPlay`, [draw, play]],
         [`shortcuts.detail`, [detail]],
         [`shortcuts.random`, [random]],
         [`shortcuts.toggleLock`, [toggleLock]],

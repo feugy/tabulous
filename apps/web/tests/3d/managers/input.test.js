@@ -21,6 +21,7 @@ import { faker } from '@faker-js/faker'
 import {
   handManager,
   inputManager as manager,
+  replayManager,
   selectionManager
 } from '@src/3d/managers'
 import { beforeAll, beforeEach, describe, expect, it, vi } from 'vitest'
@@ -66,6 +67,7 @@ describe('InputManager', () => {
   const renderWidth = 2048
   const renderHeight = 1024
   const onCameraMove = new Observable()
+  const playerId = 'player-id-1'
   vi.spyOn(window, 'getComputedStyle').mockImplementation(
     () =>
       /** @type {CSSStyleDeclaration} */ ({
@@ -102,7 +104,7 @@ describe('InputManager', () => {
     manager.onKeyObservable.add(key => keys.push(key))
     manager.onPointerObservable.add(pointer => (currentPointer = pointer))
     selectionManager.init({ scene, handScene })
-    handManager.init({ scene, handScene, overlay })
+    handManager.init({ scene, handScene, overlay, playerId })
   })
 
   it('has initial state', () => {
@@ -268,20 +270,31 @@ describe('InputManager', () => {
         pointer: { x: 1266, y: 615 },
         meshId: 'box6',
         fromHand: true
+      },
+      {
+        title: ' with no mesh while replaying',
+        pointer: { x: 905, y: 573 },
+        replaying: true
       }
-    ])('identifies tap$title', ({ pointer, meshId, fromHand = false }) => {
-      const pointerId = 10
-      const button = 1
-      triggerEvent(pointerDown, { ...pointer, pointerId, button })
-      const event = triggerEvent(pointerUp, { ...pointer, pointerId, button })
-      expectEvents({ taps: 1 })
-      expectsDataWithMesh(
-        taps[0],
-        { long: false, pointers: 1, type: 'tap', button, event, fromHand },
-        meshId,
-        fromHand ? handScene : scene
-      )
-    })
+    ])(
+      'identifies tap$title',
+      ({ pointer, meshId, fromHand = false, replaying = false }) => {
+        vi.spyOn(replayManager, 'isReplaying', 'get').mockReturnValueOnce(
+          replaying
+        )
+        const pointerId = 10
+        const button = 1
+        triggerEvent(pointerDown, { ...pointer, pointerId, button })
+        const event = triggerEvent(pointerUp, { ...pointer, pointerId, button })
+        expectEvents({ taps: 1 })
+        expectsDataWithMesh(
+          taps[0],
+          { long: false, pointers: 1, type: 'tap', button, event, fromHand },
+          meshId,
+          fromHand ? handScene : scene
+        )
+      }
+    )
 
     it.each([
       { title: '', pointer: { x: 1000, y: 500 } },
@@ -349,29 +362,44 @@ describe('InputManager', () => {
 
     it.each([
       { title: '', pointer: { x: 1200, y: 358 } },
-      { title: ' on mesh', pointer: { x: 1152, y: 344 }, meshId: 'box4' }
-    ])('identifies long tap$title', async ({ pointer, meshId }) => {
-      const pointerId = 20
-      const button = 3
-      const downEvent = triggerEvent(pointerDown, {
-        ...pointer,
-        pointerId,
-        button
-      })
-      await sleep((manager.longTapDelay ?? 0) * 1.1)
-      const upEvent = triggerEvent(pointerUp, { ...pointer, pointerId, button })
-      expectEvents({ taps: 1, longs: 1 })
-      expectsDataWithMesh(
-        taps[0],
-        { long: true, pointers: 1, type: 'tap', event: upEvent },
-        meshId
-      )
-      expectsDataWithMesh(longs[0], {
-        pointers: 1,
-        type: 'longPointer',
-        event: downEvent
-      })
-    })
+      { title: ' on mesh', pointer: { x: 1152, y: 344 }, meshId: 'box4' },
+      {
+        title: ' without mesh while replaying',
+        pointer: { x: 1152, y: 344 },
+        replaying: true
+      }
+    ])(
+      'identifies long tap$title',
+      async ({ pointer, meshId, replaying = false }) => {
+        vi.spyOn(replayManager, 'isReplaying', 'get').mockReturnValueOnce(
+          replaying
+        )
+        const pointerId = 20
+        const button = 3
+        const downEvent = triggerEvent(pointerDown, {
+          ...pointer,
+          pointerId,
+          button
+        })
+        await sleep((manager.longTapDelay ?? 0) * 1.1)
+        const upEvent = triggerEvent(pointerUp, {
+          ...pointer,
+          pointerId,
+          button
+        })
+        expectEvents({ taps: 1, longs: 1 })
+        expectsDataWithMesh(
+          taps[0],
+          { long: true, pointers: 1, type: 'tap', event: upEvent },
+          meshId
+        )
+        expectsDataWithMesh(longs[0], {
+          pointers: 1,
+          type: 'longPointer',
+          event: downEvent
+        })
+      }
+    )
 
     it.each([
       { title: '', pointer: { x: 1200, y: 358 } },
@@ -484,45 +512,56 @@ describe('InputManager', () => {
 
     it.each([
       { title: '', pointer: { x: 300, y: 900 } },
-      { title: ' on mesh', pointer: { x: 1024, y: 512 }, meshId: 'box2' }
-    ])('identifies double tap$title', async ({ pointer, meshId }) => {
-      const pointerId = 13
-      const button = 2
-      triggerEvent(pointerDown, { ...pointer, pointerId, button })
-      const tapEvent = triggerEvent(pointerUp, {
-        ...pointer,
-        pointerId,
-        button
-      })
-      await sleep(Scene.DoubleClickDelay * 0.8)
-      triggerEvent(pointerDown, {
-        ...move(pointer, -2, -3),
-        pointerId,
-        button
-      })
-      const doubleTapEvent = triggerEvent(pointerUp, {
-        ...move(pointer, -2, -3),
-        pointerId,
-        button
-      })
-      expectEvents({ taps: 2 })
-      expectsDataWithMesh(
-        taps[0],
-        { long: false, pointers: 1, type: 'tap', button, event: tapEvent },
-        meshId
-      )
-      expectsDataWithMesh(
-        taps[1],
-        {
-          long: false,
-          pointers: 1,
-          type: 'doubletap',
-          button,
-          event: doubleTapEvent
-        },
-        meshId
-      )
-    })
+      { title: ' on mesh', pointer: { x: 1024, y: 512 }, meshId: 'box2' },
+      {
+        title: ' without mesh while replaying',
+        pointer: { x: 1024, y: 512 },
+        replaying: true
+      }
+    ])(
+      'identifies double tap$title',
+      async ({ pointer, meshId, replaying = false }) => {
+        vi.spyOn(replayManager, 'isReplaying', 'get')
+          .mockReturnValueOnce(replaying)
+          .mockReturnValueOnce(replaying)
+        const pointerId = 13
+        const button = 2
+        triggerEvent(pointerDown, { ...pointer, pointerId, button })
+        const tapEvent = triggerEvent(pointerUp, {
+          ...pointer,
+          pointerId,
+          button
+        })
+        await sleep(Scene.DoubleClickDelay * 0.8)
+        triggerEvent(pointerDown, {
+          ...move(pointer, -2, -3),
+          pointerId,
+          button
+        })
+        const doubleTapEvent = triggerEvent(pointerUp, {
+          ...move(pointer, -2, -3),
+          pointerId,
+          button
+        })
+        expectEvents({ taps: 2 })
+        expectsDataWithMesh(
+          taps[0],
+          { long: false, pointers: 1, type: 'tap', button, event: tapEvent },
+          meshId
+        )
+        expectsDataWithMesh(
+          taps[1],
+          {
+            long: false,
+            pointers: 1,
+            type: 'doubletap',
+            button,
+            event: doubleTapEvent
+          },
+          meshId
+        )
+      }
+    )
 
     it.each([
       { title: '', pointer: { x: 300, y: 900 } },
@@ -665,55 +704,74 @@ describe('InputManager', () => {
 
     it.each([
       { title: '', pointer: { x: 1000, y: 500 } },
-      { title: ' on mesh', pointer: { x: 1024, y: 512 }, meshId: 'box2' }
-    ])('starts and stops drag operation$title', async ({ pointer, meshId }) => {
-      const pointerId = 25
-      const button = 1
-      const events = []
-      events.push(triggerEvent(pointerDown, { ...pointer, pointerId, button }))
-      await sleep(50)
-      events.push(
-        triggerEvent(pointerMove, { ...move(pointer, 50, -25), pointerId })
-      )
-      await sleep(50)
-      events.push(
-        triggerEvent(pointerMove, { ...move(pointer, 50, -25), pointerId })
-      )
-      await sleep(50)
-      events.push(
-        triggerEvent(pointerMove, { ...move(pointer, 50, -25), pointerId })
-      )
-      await sleep(50)
-      events.push(triggerEvent(pointerUp, { ...pointer, pointerId, button }))
+      { title: ' on mesh', pointer: { x: 1024, y: 512 }, meshId: 'box2' },
+      {
+        title: ' without mesh while replaying',
+        pointer: { x: 1024, y: 512 },
+        replaying: true
+      }
+    ])(
+      'starts and stops drag operation$title',
+      async ({ pointer, meshId, replaying = false }) => {
+        vi.spyOn(replayManager, 'isReplaying', 'get').mockReturnValueOnce(
+          replaying
+        )
+        const pointerId = 25
+        const button = 1
+        const events = []
+        events.push(
+          triggerEvent(pointerDown, { ...pointer, pointerId, button })
+        )
+        await sleep(50)
+        events.push(
+          triggerEvent(pointerMove, { ...move(pointer, 50, -25), pointerId })
+        )
+        await sleep(50)
+        events.push(
+          triggerEvent(pointerMove, { ...move(pointer, 50, -25), pointerId })
+        )
+        await sleep(50)
+        events.push(
+          triggerEvent(pointerMove, { ...move(pointer, 50, -25), pointerId })
+        )
+        await sleep(50)
+        events.push(triggerEvent(pointerUp, { ...pointer, pointerId, button }))
 
-      expectEvents({ drags: 5 })
-      const pointers = 1
-      expectsDataWithMesh(
-        drags[0],
-        { long: false, pointers, type: 'dragStart', button, event: events[0] },
-        meshId
-      )
-      expectsDataWithMesh(
-        drags[1],
-        { pointers, type: 'drag', button, event: events[1] },
-        meshId
-      )
-      expectsDataWithMesh(
-        drags[2],
-        { pointers, type: 'drag', button, event: events[2] },
-        meshId
-      )
-      expectsDataWithMesh(
-        drags[3],
-        { pointers, type: 'drag', button, event: events[3] },
-        meshId
-      )
-      expectsDataWithMesh(
-        drags[4],
-        { pointers, type: 'dragStop', button, event: events[4] },
-        meshId
-      )
-    })
+        expectEvents({ drags: 5 })
+        const pointers = 1
+        expectsDataWithMesh(
+          drags[0],
+          {
+            long: false,
+            pointers,
+            type: 'dragStart',
+            button,
+            event: events[0]
+          },
+          meshId
+        )
+        expectsDataWithMesh(
+          drags[1],
+          { pointers, type: 'drag', button, event: events[1] },
+          meshId
+        )
+        expectsDataWithMesh(
+          drags[2],
+          { pointers, type: 'drag', button, event: events[2] },
+          meshId
+        )
+        expectsDataWithMesh(
+          drags[3],
+          { pointers, type: 'drag', button, event: events[3] },
+          meshId
+        )
+        expectsDataWithMesh(
+          drags[4],
+          { pointers, type: 'dragStop', button, event: events[4] },
+          meshId
+        )
+      }
+    )
 
     it.each([
       { title: '', pointer: { x: 250, y: 75 } },
@@ -1291,34 +1349,45 @@ describe('InputManager', () => {
 
     it.each([
       { title: '', pointer: { x: 900, y: 850 } },
-      { title: ' on mesh', pointer: { x: 1024, y: 512 }, meshId: 'box2' }
-    ])('identifies wheel$title', async ({ pointer, meshId }) => {
-      const pointerId = 45
-      const zoomInEvent = triggerEvent(wheel, {
-        ...pointer,
-        deltaY: 10,
-        pointerId
-      })
+      { title: ' on mesh', pointer: { x: 1024, y: 512 }, meshId: 'box2' },
+      {
+        title: ' without mesh while replaying',
+        pointer: { x: 1024, y: 512 },
+        replaying: true
+      }
+    ])(
+      'identifies wheel$title',
+      async ({ pointer, meshId, replaying = false }) => {
+        vi.spyOn(replayManager, 'isReplaying', 'get')
+          .mockReturnValueOnce(replaying)
+          .mockReturnValueOnce(replaying)
+        const pointerId = 45
+        const zoomInEvent = triggerEvent(wheel, {
+          ...pointer,
+          deltaY: 10,
+          pointerId
+        })
 
-      await sleep(50)
-      const zoomOutEvent = triggerEvent(wheel, {
-        ...pointer,
-        deltaY: -5,
-        pointerId
-      })
+        await sleep(50)
+        const zoomOutEvent = triggerEvent(wheel, {
+          ...pointer,
+          deltaY: -5,
+          pointerId
+        })
 
-      expectEvents({ wheels: 2 })
-      expectsDataWithMesh(
-        wheels[0],
-        { type: 'wheel', event: zoomInEvent },
-        meshId
-      )
-      expectsDataWithMesh(
-        wheels[1],
-        { type: 'wheel', event: zoomOutEvent },
-        meshId
-      )
-    })
+        expectEvents({ wheels: 2 })
+        expectsDataWithMesh(
+          wheels[0],
+          { type: 'wheel', event: zoomInEvent },
+          meshId
+        )
+        expectsDataWithMesh(
+          wheels[1],
+          { type: 'wheel', event: zoomOutEvent },
+          meshId
+        )
+      }
+    )
 
     it('discards horizontal wheel events', async () => {
       const pointer = { x: 1000, y: 500 }
@@ -1599,6 +1668,29 @@ describe('InputManager', () => {
     })
 
     it('detects keys over a mesh', () => {
+      const pointer = { x: 1000, y: 550 }
+      const pointerId = 50
+      const events = [
+        triggerEvent(pointerMove, { ...move(pointer, 50, -25), pointerId }),
+        triggerEvent(keyDown, { key: 'f' })
+      ]
+
+      expectEvents({ hovers: 1, keys: 1 })
+      const meshId = meshes[0].id
+      expectsDataWithMesh(
+        hovers[0],
+        { type: 'hoverStart', event: events[0] },
+        meshId
+      )
+      expectsDataWithMesh(
+        keys[0],
+        { type: 'keyDown', event: events[1], key: 'f' },
+        meshId
+      )
+    })
+
+    it('does not detects keys over a mesh while replaying', () => {
+      vi.spyOn(replayManager, 'isReplaying', 'get').mockReturnValue(false)
       const pointer = { x: 1000, y: 550 }
       const pointerId = 50
       const events = [

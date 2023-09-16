@@ -106,7 +106,7 @@ export function restoreBehaviors(behaviors, state) {
 /**
  * Creates an hash which keys are behavior names, and values their respective states, when relevant.
  * @param {Behavior[]} behaviors - list of serialized behaviors.
- * @returns {BehaviorState} an hash of behavior states.
+ * @returns an hash of behavior states.
  */
 export function serializeBehaviors(behaviors) {
   /** @type {BehaviorState} */
@@ -125,7 +125,6 @@ export function serializeBehaviors(behaviors) {
  * @param {?Vector3} rotation - its final rotation (set to null to leave unmodified).
  * @param {number} [duration] - how long, in ms, the move will last.
  * @param {boolean} [withGravity=false] - whether to apply gravity at the end.
- * @returns {void|Promise<void>}
  */
 export function animateMove(
   mesh,
@@ -181,7 +180,7 @@ export function getTargetableBehavior(mesh) {
 /**
  * Indicates whether a mesh is flipped or not.
  * @param {Mesh} [mesh] - related mesh.
- * @returns {boolean} whether the mesh is flipped.
+ * @returns whether the mesh is flipped.
  */
 export function isMeshFlipped(mesh) {
   return mesh?.metadata?.isFlipped ?? false
@@ -190,7 +189,7 @@ export function isMeshFlipped(mesh) {
 /**
  * Indicates whether a mesh has been rotated twice (its angle is PI).
  * @param {Mesh} [mesh] - related mesh.
- * @returns {boolean} whether the mesh is inverted.
+ * @returns whether the mesh is inverted.
  */
 export function isMeshInverted(mesh) {
   return mesh?.metadata?.angle === Math.PI ?? false
@@ -199,7 +198,7 @@ export function isMeshInverted(mesh) {
 /**
  * Indicates whether a mesh is locked (prevents moves and interactions)
  * @param {Mesh} [mesh] - related mesh.
- * @returns {boolean} whether the mesh is locked.
+ * @returns whether the mesh is locked.
  */
 export function isMeshLocked(mesh) {
   return mesh?.metadata?.isLocked ?? false
@@ -208,7 +207,7 @@ export function isMeshLocked(mesh) {
 /**
  * Returns absolute position of all part centers of a given mesh (after applying any transformations).
  * @param {Mesh} mesh - related mesh
- * @returns {Vector3[]} a list of absolute positions.
+ * @returns a list of absolute positions.
  */
 export function getMeshAbsolutePartCenters(mesh) {
   if (!mesh.metadata?.partCenters?.length) {
@@ -353,7 +352,7 @@ export function runAnimation({ mesh, frameRate }, onEnd, ...animationSpecs) {
  * @template {AbstractMesh} M
  * @param {M} mesh - detached mesh.
  * @param {boolean} [detachChildren=true] - set to detach the mesh from its children.
- * @returns {() => void} a function to re-attach to the original (or new) parent.
+ * @returns a function to re-attach to the original (or new) parent.
  */
 export function detachFromParent(mesh, detachChildren = true) {
   let parent = /** @type {?M} */ (mesh.parent)
@@ -388,7 +387,7 @@ export function detachFromParent(mesh, detachChildren = true) {
  * Computes the final position of a given above a drop zone
  * @param {Mesh} droppedMesh - mesh dropped above zone.
  * @param {DropZone} zone - drop zone.
- * @returns {Vector3} absolute position for this mesh.
+ * @returns absolute position for this mesh.
  */
 export function getPositionAboveZone(droppedMesh, zone) {
   zone.mesh.computeWorldMatrix(true)
@@ -490,7 +489,7 @@ function parseFloat(
  * @param {string} name - new mesh's name
  * @param {Mesh} parent - mesh to copy dimensions and shape from.
  * @param {Dimension} [dimensions] - target dimensions. When specified, prevail on parent's shape:
- * @returns {Mesh} created target mesh.
+ * @returns created target mesh.
  */
 export function buildTargetMesh(name, parent, dimensions) {
   parent.computeWorldMatrix(true)
@@ -520,7 +519,7 @@ export function buildTargetMesh(name, parent, dimensions) {
 /**
  * Returns the current face image of a Detailable mesh.
  * @param {Mesh} mesh - concerned mesh.
- * @returns {string | null} the mesh back image if it is flipped, or its front image. Defaults to null.
+ * @returns the mesh back image if it is flipped, or its front image. Defaults to null.
  */
 export function selectDetailedFace(mesh) {
   return (

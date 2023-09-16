@@ -43,6 +43,10 @@ formats:
       month: short
     date-only:
       dateStyle: medium
+    time:
+      hour: numeric
+      minute: 2-digit
+      second: 2-digit
 labels:
   accept-terms: Conditions Générales d'Utilisation
   account: Paramètres
@@ -69,23 +73,41 @@ labels:
   guest: invité·e
   help-add-to-selection: Sélectionne plusieurs objets.
   help-clear-selection: Désélectionne les objets.
-  help-decrement: Séparer un objet du groupe.
-  help-detail: Voir l'objet en plein écran.
-  help-draw: Piocher l'objet (ou la sélection) dans votre main, ou jouer depuis votre main.
+  help-decrement: Sépare un objet du groupe.
+  help-detail: Affiche l'objet en plein écran.
+  help-draw: Pioche l'objet (ou la sélection) dans votre main.
   help-flip: Retourne l'objet (ou la sélection).
-  help-increment: Regrouper la sélection d'objets.
+  help-increment: Regroupe la sélection d'objets.
   help-move: Déplace l'objet (ou la sélection), s'il n'est pas figé.
-  help-new-camera: Enregistrer la position de la caméra.
+  help-new-camera: Enregistre la position de la caméra.
   help-open-menu: Ouvre le menu des actions de l'objet (ou de la sélection).
   help-pan-camera: Déplace la caméra.
-  help-pop: Dépiler un objet de la pile.
-  help-push: Empiler la sélection d'objets.
-  help-random: Jeter le(s) dé(s).
-  help-restore-camera: Restaurer la position de la caméra.
+  help-pop: Dépile un objet de la pile.
+  help-play: Joue l'objet (ou la sélection) sur la table.
+  help-push: Empile la sélection d'objets.
+  help-random: Jete le(s) dé(s).
+  help-restore-camera: Restaure la position de la caméra.
   help-rotate-camera: Pivote et contrôle l'inclinaison de la caméra.
   help-rotate: Pivote l'objet (ou la sélection).
+  help-set-face: Fixe la face du(es) dé(s).
   help-save-camera: Mettre à jour la position de la caméra.
   help-zoom: Zoome ou dézoome.
+  history:
+    decrement: Sépare
+    draw: Pioche
+    flip: Retourne
+    flipAll: Retourne la pile
+    increment: Regroupe
+    move: Déplace
+    play: Joue
+    pop: Dépile
+    push: Empile
+    random: Jette
+    reorder: Mélange
+    rotate: Pivote
+    setFace: Choisit la face
+    snap: Attache
+    unsnap: Détache
   home: Accueil
   host: hôte
   last-updated: 'Dernière mise à jour : { published, date, date-only }'
@@ -190,7 +212,7 @@ tooltips:
   zoom: Zoomer
 shortcuts:
   detail: v
-  draw: p
+  drawOrPlay: p
   flip: r
   hand: h
   pop: d

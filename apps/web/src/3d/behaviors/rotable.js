@@ -1,6 +1,7 @@
 // @ts-check
 /**
  * @typedef {import('@babylonjs/core').Mesh} Mesh
+ * @typedef {import('@tabulous/server/src/graphql').ActionName} ActionName
  * @typedef {import('@tabulous/server/src/graphql').RotableState} RotableState
  * @typedef {import('@src/3d/utils').Vector3KeyFrame} Vector3KeyFrame
  */
@@ -82,66 +83,20 @@ export class RotateBehavior extends AnimateBehavior {
    * Does nothing if the mesh is already being animated.
    *
    * @param {number} [angle] - new rotation angle. When not set, adds PI/2 to the current rotation.
-   * @returns {Promise<void>}
    */
   async rotate(angle) {
-    const {
-      _state: { duration },
-      mesh,
-      rotateAnimation,
-      moveAnimation
-    } = this
-    if (!mesh || isMeshLocked(mesh) || isAnimationInProgress(mesh)) {
-      return
+    await internalRotate(this, angle)
+  }
+
+  /**
+   * Revert rotate actions. Ignores other actions
+   * @param {ActionName} action - reverted action.
+   * @param {any[]} [args] - reverted arguments.
+   */
+  async revert(action, args = []) {
+    if (action === actionNames.rotate && this.mesh) {
+      await internalRotate(this, args[0], true)
     }
-    logger.debug({ mesh }, `start rotating ${mesh.id}`)
-
-    const [x, y, z] = mesh.position.asArray()
-    const [pitch, yaw, roll] = mesh.rotation.asArray()
-
-    let rotation = angle ?? yaw + rotationStep
-    if (mesh.parent && getAbsoluteRotation(mesh.parent).z >= Math.PI) {
-      rotation *= -1
-    }
-
-    controlManager.record({
-      mesh,
-      fn: actionNames.rotate,
-      args: [rotation],
-      duration
-    })
-
-    await runAnimation(
-      this,
-      () => {
-        applyGravity(mesh)
-        mesh.rotation.y = mesh.rotation.y % (2 * Math.PI)
-        logger.debug({ mesh }, `end rotating ${mesh.id}`)
-      },
-      {
-        animation: rotateAnimation,
-        duration,
-        keys: [
-          { frame: 0, values: [pitch, yaw, roll] },
-          { frame: 100, values: [pitch, rotation, roll] }
-        ]
-      },
-      {
-        animation: moveAnimation,
-        duration,
-        keys: /** @type {Vector3KeyFrame[]} */ ([
-          { frame: 0, values: [x, y, z] },
-          {
-            frame: 50,
-            values: convertToLocal(
-              mesh.absolutePosition.add(new Vector3(0, 0.5, 0)),
-              mesh
-            ).asArray()
-          },
-          { frame: 100, values: [x, y, z] }
-        ])
-      }
-    )
   }
 
   /**
@@ -160,4 +115,70 @@ export class RotateBehavior extends AnimateBehavior {
     attachFunctions(this, 'rotate')
     attachProperty(this, 'angle', () => this.state.angle)
   }
+}
+
+async function internalRotate(
+  /** @type {RotateBehavior} */ behavior,
+  /** @type {number|undefined} */ angle,
+  isLocal = false
+) {
+  const {
+    _state: { duration },
+    mesh,
+    rotateAnimation,
+    moveAnimation
+  } = behavior
+  if (!mesh || isMeshLocked(mesh) || isAnimationInProgress(mesh)) {
+    return
+  }
+  logger.debug({ mesh }, `start rotating ${mesh.id}`)
+
+  const [x, y, z] = mesh.position.asArray()
+  const [pitch, yaw, roll] = mesh.rotation.asArray()
+
+  let rotation = angle ?? yaw + rotationStep
+  if (mesh.parent && getAbsoluteRotation(mesh.parent).z >= Math.PI) {
+    rotation *= -1
+  }
+
+  controlManager.record({
+    mesh,
+    fn: actionNames.rotate,
+    args: [rotation],
+    duration,
+    revert: [yaw],
+    isLocal
+  })
+
+  await runAnimation(
+    behavior,
+    () => {
+      applyGravity(mesh)
+      mesh.rotation.y = mesh.rotation.y % (2 * Math.PI)
+      logger.debug({ mesh }, `end rotating ${mesh.id}`)
+    },
+    {
+      animation: rotateAnimation,
+      duration,
+      keys: [
+        { frame: 0, values: [pitch, yaw, roll] },
+        { frame: 100, values: [pitch, rotation, roll] }
+      ]
+    },
+    {
+      animation: moveAnimation,
+      duration,
+      keys: /** @type {Vector3KeyFrame[]} */ ([
+        { frame: 0, values: [x, y, z] },
+        {
+          frame: 50,
+          values: convertToLocal(
+            mesh.absolutePosition.add(new Vector3(0, 0.5, 0)),
+            mesh
+          ).asArray()
+        },
+        { frame: 100, values: [x, y, z] }
+      ])
+    }
+  )
 }

@@ -50,7 +50,7 @@ describe('createEngine()', () => {
   it('initializes engine with parameters', () => {
     const longTapDelay = faker.number.int(999)
     engine = createEngine({
-      // @ts-expect-error different constructor signatures
+      // @ts-expect-error -- different constructor signatures
       Engine: NullEngine,
       canvas,
       interaction,
@@ -170,7 +170,8 @@ describe('createEngine()', () => {
             z: 0
           }
         ],
-        handMeshes: []
+        handMeshes: [],
+        history: []
       })
     })
 
@@ -256,6 +257,7 @@ describe('createEngine()', () => {
         scene: engine.scenes[1],
         handScene: engine.scenes[0],
         overlay: expect.anything(),
+        playerId,
         angleOnPlay
       })
       expect(handInit).toHaveBeenCalledTimes(1)
@@ -388,8 +390,9 @@ describe('createEngine()', () => {
         `)
         expect(engine.actionNamesByKey).toMatchInlineSnapshot(`
           Map {
-            "shortcuts.draw" => [
+            "shortcuts.drawOrPlay" => [
               "draw",
+              "play",
             ],
             "shortcuts.reorder" => [
               "reorder",

@@ -22,8 +22,6 @@
   export let user
   /** @type {Map<string, Player>} map of game/lobby players by their ids. */
   export let playerById
-  /** @type {Game['messages']} list of message threads*/
-  export let thread
   /** @type {Connected[]} currently connected active players. */
   export let connected
   /** @type {Engine['actionNamesByButton']} engine action names by mouse button. */
@@ -32,6 +30,12 @@
   export let actionNamesByKey = new Map()
   /** @type {?GameOrGameParameters} game data */
   export let game = null
+  /** @type {Game['messages']} list of messages. */
+  export let thread = undefined
+  /** @type {Game['history']} action history. */
+  export let history = undefined
+  /** @type {number} rank in the game history. */
+  export let replayRank = 0
   /** @type {Friendship[]} list of all friendships. */
   export let friends = []
 
@@ -113,10 +117,13 @@
         <FriendList
           {friends}
           {thread}
+          {history}
+          {replayRank}
           {playerById}
           {game}
           {user}
           on:sendMessage
+          on:replay
         />
       {/if}
     </div>

@@ -1,6 +1,7 @@
 // @ts-check
 /**
  * @typedef {import('@babylonjs/core').Mesh} Mesh
+ * @typedef {import('@tabulous/server/src/graphql').ActionName} ActionName
  * @typedef {import('@tabulous/server/src/graphql').QuantifiableState} QuantifiableState
  * @typedef {import('@tabulous/server/src/graphql').Mesh} SerializedMesh
  * @typedef {import('@src/3d/behaviors/targetable').DropZone} DropZone
@@ -77,15 +78,17 @@ export class QuantityBehavior extends TargetBehavior {
     super.attach(mesh)
     this.fromState(this.state)
 
-    this.dropObserver = this.onDropObservable.add(({ dropped, immediate }) => {
-      const ids = []
-      for (const mesh of dropped) {
-        if (this.canIncrement(mesh)) {
-          ids.push(mesh.id)
+    this.dropObserver = this.onDropObservable.add(
+      ({ dropped, immediate, isLocal }) => {
+        const ids = []
+        for (const mesh of dropped) {
+          if (this.canIncrement(mesh)) {
+            ids.push(mesh.id)
+          }
         }
+        internalIncrement(this, ids, immediate ?? false, isLocal)
       }
-      this.increment(ids, immediate)
-    })
+    )
 
     this.preMoveObserver = moveManager.onPreMoveObservable.add(({ meshes }) => {
       if (
@@ -112,7 +115,7 @@ export class QuantityBehavior extends TargetBehavior {
   /**
    * Determines whether a movable mesh can increment the current one.
    * @param {Mesh} mesh - tested (movable) mesh.
-   * @returns {boolean} true if this mesh can increment.
+   * @returns true if this mesh can increment.
    */
   canIncrement(mesh) {
     return (
@@ -133,37 +136,9 @@ export class QuantityBehavior extends TargetBehavior {
    * - destroy corresponding meshes
    * @param {string[]} meshIds - ids of the pushed mesh.
    * @param {boolean} [immediate=false] - set to true to disable animation.
-   * @returns {Promise<void>}
    */
   async increment(meshIds, immediate = false) {
-    const { mesh } = this
-    const meshes = /** @type {Mesh[]} */ (
-      meshIds?.map(id => mesh?.getScene().getMeshById(id)).filter(Boolean)
-    )
-    if (!meshes.length || !mesh) return
-
-    const duration = immediate ? 0 : this.state.duration
-
-    controlManager.record({
-      mesh,
-      fn: actionNames.increment,
-      args: [meshIds, immediate],
-      duration
-    })
-
-    for (const other of meshes) {
-      const increment = getQuantity(other)
-      logger.info(
-        { mesh, increment, other },
-        `increment ${mesh.id} by ${increment} with ${other.id}`
-      )
-      this.state.quantity += increment
-      updateIndicator(mesh, this.state.quantity)
-      if (duration) {
-        await animateMove(other, mesh.absolutePosition, null, duration)
-      }
-      other.dispose()
-    }
+    await internalIncrement(this, meshIds, immediate)
   }
 
   /**
@@ -176,13 +151,25 @@ export class QuantityBehavior extends TargetBehavior {
    *
    * @param {number} [count=1] - amount to decrement.
    * @param {boolean} [withMove=false] - when set to true, moves the created meshes aside this one.
-   * @returns {Promise<?Mesh>} the created mesh, if any.
+   * @returns the created mesh, if any.
    */
   async decrement(count = 1, withMove = false) {
     const { mesh, state } = this
     /** @type {?Mesh} */
     let created = null
     if (!mesh || state.quantity === 1) return created
+    const createdId = makeId(mesh)
+    const duration = withMove ? state.duration : undefined
+    controlManager.record({
+      mesh,
+      fn: actionNames.decrement,
+      args: [count, withMove],
+      duration,
+      // undo by incrementing created id with potential animation
+      revert: [createdId, withMove],
+      isLocal: false
+    })
+
     const quantity = Math.min(count, state.quantity - 1)
     state.quantity -= quantity
 
@@ -191,7 +178,7 @@ export class QuantityBehavior extends TargetBehavior {
         mesh.metadata.serialize()
       )
     serialized.quantifiable.quantity = quantity
-    serialized.id = makeId(mesh)
+    serialized.id = createdId
     created = /** @type {Mesh} */ (
       await createMeshFromState(serialized, mesh.getScene())
     )
@@ -200,7 +187,6 @@ export class QuantityBehavior extends TargetBehavior {
       { mesh, oldQuantity: state.quantity, created, quantity },
       `decrement ${created.id} (remains: ${state.quantity}) from ${mesh.id} (has: ${quantity})`
     )
-    const duration = withMove ? state.duration : undefined
     let move
     if (duration) {
       move = animateMove(
@@ -216,13 +202,53 @@ export class QuantityBehavior extends TargetBehavior {
       )
     }
     updateIndicator(mesh, state.quantity)
-    controlManager.record({
-      mesh,
-      fn: actionNames.decrement,
-      args: [count, withMove],
-      duration
-    })
     return move ? move.then(() => created) : created
+  }
+
+  /**
+   * Revert increment and decrement actions. Ignores other actions
+   * @param {ActionName} action - reverted action.
+   * @param {any[]} [args] - reverted arguments.
+   */
+  async revert(action, args = []) {
+    if (!this.mesh || args.length !== 2) {
+      return
+    }
+    if (action === actionNames.increment) {
+      const [states, withMove] = args
+      const {
+        mesh,
+        state: { duration }
+      } = this
+      const scene = mesh.getScene()
+      await Promise.all(
+        states.map(async (/** @type {SerializedMesh} */ state) => {
+          const count = state.quantifiable?.quantity ?? 1
+          controlManager.record({
+            mesh,
+            fn: actionNames.decrement,
+            args: [count, withMove],
+            duration,
+            revert: [state.id, withMove],
+            isLocal: true
+          })
+          this.state.quantity -= count
+          const created = await createMeshFromState(state, scene)
+          if (withMove) {
+            created.setAbsolutePosition(mesh.absolutePosition)
+            await animateMove(
+              created,
+              Vector3.FromArray([state.x ?? 0, state.y ?? 0, state.z ?? 0]),
+              null,
+              duration
+            )
+          }
+        })
+      )
+      updateIndicator(mesh, this.state.quantity)
+    } else if (action === actionNames.decrement) {
+      await internalIncrement(this, [args[0]], args[1], true)
+    }
   }
 
   /**
@@ -255,19 +281,49 @@ export class QuantityBehavior extends TargetBehavior {
   }
 }
 
-/**
- * @param {Mesh} mesh - updated mesh.
- * @returns {number} mesh's quantity.
- */
-function getQuantity(mesh) {
+async function internalIncrement(
+  /** @type {QuantityBehavior} */ { mesh, state },
+  /** @type {string[]} */ meshIds,
+  /** @type {boolean} */ immediate,
+  isLocal = false
+) {
+  const meshes = /** @type {Mesh[]} */ (
+    meshIds?.map(id => mesh?.getScene().getMeshById(id)).filter(Boolean)
+  )
+  if (!meshes.length || !mesh) return
+
+  const duration = immediate ? 0 : state.duration
+
+  controlManager.record({
+    mesh,
+    fn: actionNames.increment,
+    args: [meshIds, immediate],
+    duration,
+    // undo by decrementing and restoring states with potential animation
+    revert: [meshes.map(({ metadata }) => metadata.serialize()), immediate],
+    isLocal
+  })
+
+  for (const other of meshes) {
+    const increment = getQuantity(other)
+    logger.info(
+      { mesh, increment, other },
+      `increment ${mesh.id} by ${increment} with ${other.id}`
+    )
+    state.quantity += increment
+    updateIndicator(mesh, state.quantity)
+    if (duration) {
+      await animateMove(other, mesh.absolutePosition, null, duration)
+    }
+    other.dispose()
+  }
+}
+
+function getQuantity(/** @type {Mesh} */ mesh) {
   return mesh.metadata?.quantity ?? 1
 }
 
-/**
- * @param {Mesh} mesh - updated mesh.
- * @param {number} size - new indicator's size.
- */
-function updateIndicator(mesh, size) {
+function updateIndicator(/** @type {Mesh} */ mesh, /** @type {number} */ size) {
   const id = `${mesh.id}.quantity`
   if (size > 1) {
     indicatorManager.registerMeshIndicator({ id, mesh, size })
@@ -276,10 +332,6 @@ function updateIndicator(mesh, size) {
   }
 }
 
-/**
- * @param {Mesh} mesh - mesh to generate Id from.
- * @returns {string} generated Id.
- */
-function makeId(mesh) {
+function makeId(/** @type {Mesh} */ mesh) {
   return `${mesh.id}-${crypto.randomUUID()}`
 }

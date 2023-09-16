@@ -69,7 +69,7 @@ describe('HandManager', () => {
   let registerFeedbackSpy
   const overlay = document.createElement('div')
 
-  const playerId = faker.string.uuid()
+  const playerId = faker.person.firstName()
   const gap = 0.5
   const horizontalPadding = 2
   const verticalPadding = 0.5
@@ -111,6 +111,7 @@ describe('HandManager', () => {
     vi.clearAllMocks()
     registerFeedbackSpy = vi.spyOn(indicatorManager, 'registerFeedback')
     selectionManager.clear()
+    manager.angleOnPlay = 0
     createTable({}, scene)
   })
 
@@ -137,9 +138,28 @@ describe('HandManager', () => {
     expect(registerFeedbackSpy).not.toHaveBeenCalled()
   })
 
+  it('can not play mesh', async () => {
+    const mesh = createMesh({ id: 'box', shape: 'box', texture: '' }, scene)
+    await manager.play(mesh)
+    expect(actionRecorded).not.toHaveBeenCalled()
+    expect(registerFeedbackSpy).not.toHaveBeenCalled()
+  })
+
   it('can not apply draw', async () => {
     const id = 'box'
     await manager.applyDraw(
+      { shape: 'box', texture: '', drawable: {}, id },
+      'player'
+    )
+    expect(scene.getMeshById(id)?.id).toBeUndefined()
+    expect(handScene.getMeshById(id)?.id).toBeUndefined()
+    expect(registerFeedbackSpy).not.toHaveBeenCalled()
+    expect(registerFeedbackSpy).not.toHaveBeenCalled()
+  })
+
+  it('can not apply play', async () => {
+    const id = 'box'
+    await manager.applyPlay(
       { shape: 'box', texture: '', drawable: {}, id },
       'player'
     )
@@ -160,9 +180,11 @@ describe('HandManager', () => {
       const verticalPadding = faker.number.int(999)
       const duration = faker.number.int(999)
       const transitionMargin = faker.number.int(999)
+      const playerId = faker.string.uuid()
       manager.init({
         scene,
         handScene,
+        playerId,
         overlay,
         gap,
         horizontalPadding,
@@ -173,6 +195,7 @@ describe('HandManager', () => {
       expect(manager.scene).toEqual(scene)
       expect(manager.handScene).toEqual(handScene)
       expect(manager.gap).toEqual(gap)
+      expect(manager.playerId).toEqual(playerId)
       expect(manager.horizontalPadding).toEqual(horizontalPadding)
       expect(manager.verticalPadding).toEqual(verticalPadding)
       expect(manager.duration).toEqual(duration)
@@ -186,6 +209,7 @@ describe('HandManager', () => {
         manager.init({
           scene,
           handScene,
+          playerId,
           overlay,
           gap,
           horizontalPadding,
@@ -224,7 +248,7 @@ describe('HandManager', () => {
     const draggableToHandReceived = vi.fn()
 
     beforeAll(() => {
-      manager.init({ scene, handScene, overlay })
+      manager.init({ scene, handScene, playerId, overlay })
       controlManager.init({ scene, handScene })
       changeObserver = manager.onHandChangeObservable.add(changeReceived)
       draggableToHandObserver = manager.onDraggableToHandObservable.add(
@@ -272,6 +296,26 @@ describe('HandManager', () => {
       expect(registerFeedbackSpy).not.toHaveBeenCalled()
     })
 
+    it('can not play mesh without drawable behavior', async () => {
+      const card = createCard(
+        {
+          id: 'unplayable box',
+          texture: '',
+          width: cardWidth,
+          depth: cardDepth,
+          rotable: {},
+          flippable: {}
+        },
+        handScene
+      )
+      await waitForLayout()
+      await manager.play(card)
+      await expect(waitForLayout()).rejects.toThrow()
+      expect(handScene.getMeshById(card.id)?.id).toBeDefined()
+      expect(actionRecorded).not.toHaveBeenCalled()
+      expect(registerFeedbackSpy).not.toHaveBeenCalled()
+    })
+
     it('moves drawn mesh to hand', async () => {
       const [, card] = cards
       card.metadata.draw?.()
@@ -281,23 +325,24 @@ describe('HandManager', () => {
       const newMesh = getMeshById(handScene, card.id)
       expect(newMesh?.id).toBeDefined()
       expectPosition(newMesh, [0, 0, computeZ()])
-      expect(changeReceived).toHaveBeenCalledTimes(1)
+      expect(changeReceived).toHaveBeenCalledOnce()
+      expect(actionRecorded).toHaveBeenCalledOnce()
       expect(actionRecorded).toHaveBeenCalledWith(
         {
           meshId: newMesh.id,
           fn: 'draw',
-          args: [expect.any(Object)],
-          fromHand: false
+          args: [expect.any(Object), playerId],
+          fromHand: false,
+          isLocal: false
         },
         expect.anything()
       )
-      expect(actionRecorded).toHaveBeenCalledTimes(1)
       expect(controlManager.isManaging(newMesh)).toBe(true)
       expect(moveManager.isManaging(newMesh)).toBe(true)
       expect(registerFeedbackSpy).not.toHaveBeenCalled()
     })
 
-    it('recursively includes anchored meshes when drawing to hand', async () => {
+    it('unsnaps from anchored meshes when drawing to hand', async () => {
       const [, , card3] = cards
       const card2 = createMesh(
         {
@@ -317,70 +362,37 @@ describe('HandManager', () => {
       await waitForLayout()
       await expectAnimationEnd(card1.getBehaviorByName(DrawBehaviorName))
       expect(scene.getMeshById(card1.id)?.id).toBeUndefined()
-      expect(scene.getMeshById(card2.id)?.id).toBeUndefined()
-      expect(scene.getMeshById(card3.id)?.id).toBeUndefined()
-      const newMesh1 = getMeshById(handScene, card1.id)
-      expect(newMesh1?.id).toBeDefined()
-      const newMesh2 = getMeshById(handScene, card2.id)
-      expect(newMesh2?.id).toBeDefined()
-      const newMesh3 = getMeshById(handScene, card3.id)
-      expect(newMesh3?.id).toBeDefined()
-      expectPosition(newMesh1, [unitWidth * 1, 0.005, computeZ()])
-      expectPosition(newMesh2, [unitWidth * 0, 0.005, computeZ()])
-      expectPosition(newMesh3, [unitWidth * -1, 0.005, computeZ()])
-      expect(changeReceived).toHaveBeenCalledTimes(1)
-      expect(actionRecorded).toHaveBeenCalledWith(
+      expect(scene.getMeshById(card2.id)?.id).toBeDefined()
+      expect(scene.getMeshById(card3.id)?.id).toBeDefined()
+      const newMesh = getMeshById(handScene, card1.id)
+      expectPosition(newMesh, [0, 0.005, computeZ()])
+      expect(changeReceived).toHaveBeenCalledOnce()
+      expect(actionRecorded).toHaveBeenCalledTimes(2)
+      expect(actionRecorded).toHaveBeenNthCalledWith(
+        1,
         {
           meshId: card1.id,
           fn: 'draw',
-          args: [expect.any(Object)],
-          fromHand: false
+          args: [expect.any(Object), playerId],
+          fromHand: false,
+          isLocal: false
         },
         expect.anything()
       )
-      expect(actionRecorded).toHaveBeenCalledWith(
-        {
-          meshId: card2.id,
-          fn: 'draw',
-          args: [expect.any(Object)],
-          fromHand: false
-        },
-        expect.anything()
-      )
-      expect(actionRecorded).toHaveBeenCalledWith(
+      expect(actionRecorded).toHaveBeenNthCalledWith(
+        2,
         {
           meshId: card1.id,
           fn: 'unsnap',
           args: [card2.id],
-          fromHand: false
+          revert: [card2.id, 'box5-1'],
+          fromHand: false,
+          isLocal: true
         },
         expect.anything()
       )
-      expect(actionRecorded).toHaveBeenCalledWith(
-        {
-          meshId: card3.id,
-          fn: 'draw',
-          args: [expect.any(Object)],
-          fromHand: false
-        },
-        expect.anything()
-      )
-      expect(actionRecorded).toHaveBeenCalledWith(
-        {
-          meshId: card2.id,
-          fn: 'unsnap',
-          args: [card3.id],
-          fromHand: false
-        },
-        expect.anything()
-      )
-      expect(actionRecorded).toHaveBeenCalledTimes(5)
-      expect(controlManager.isManaging(newMesh1)).toBe(true)
-      expect(moveManager.isManaging(newMesh1)).toBe(true)
-      expect(controlManager.isManaging(newMesh2)).toBe(true)
-      expect(moveManager.isManaging(newMesh2)).toBe(true)
-      expect(controlManager.isManaging(newMesh3)).toBe(true)
-      expect(moveManager.isManaging(newMesh3)).toBe(true)
+      expect(controlManager.isManaging(newMesh)).toBe(true)
+      expect(moveManager.isManaging(newMesh)).toBe(true)
     })
 
     it('unflips flipped mesh while drawing into hand', async () => {
@@ -392,16 +404,17 @@ describe('HandManager', () => {
       const newMesh = getMeshById(handScene, card.id)
       await waitForLayout()
       expectFlipped(newMesh, false)
+      expect(actionRecorded).toHaveBeenCalledOnce()
       expect(actionRecorded).toHaveBeenCalledWith(
         {
           meshId: newMesh.id,
           fn: 'draw',
-          args: [expect.any(Object)],
-          fromHand: false
+          args: [expect.any(Object), playerId],
+          fromHand: false,
+          isLocal: false
         },
         expect.anything()
       )
-      expect(actionRecorded).toHaveBeenCalledOnce()
       expect(registerFeedbackSpy).not.toHaveBeenCalled()
     })
 
@@ -417,16 +430,17 @@ describe('HandManager', () => {
       const newMesh = getMeshById(handScene, card.id)
       await waitForLayout()
       expectRotated(newMesh, angle)
+      expect(actionRecorded).toHaveBeenCalledOnce()
       expect(actionRecorded).toHaveBeenCalledWith(
         {
           meshId: newMesh.id,
           fn: 'draw',
-          args: [expect.any(Object)],
-          fromHand: false
+          args: [expect.any(Object), playerId],
+          fromHand: false,
+          isLocal: false
         },
         expect.anything()
       )
-      expect(actionRecorded).toHaveBeenCalledOnce()
       expect(registerFeedbackSpy).not.toHaveBeenCalled()
       expect(newMesh.getBehaviorByName(RotateBehaviorName)?.state.angle).toBe(
         angle
@@ -444,28 +458,39 @@ describe('HandManager', () => {
       await expectAnimationEnd(getDrawBehavior(card))
       const newMesh = getMeshById(handScene, card.id)
       expectFlipped(newMesh, true)
+      expect(actionRecorded).toHaveBeenCalledOnce()
       expect(actionRecorded).toHaveBeenCalledWith(
         {
           meshId: newMesh.id,
           fn: 'draw',
-          args: [expect.any(Object)],
-          fromHand: false
+          args: [expect.any(Object), playerId],
+          fromHand: false,
+          isLocal: false
         },
         expect.anything()
       )
-      expect(actionRecorded).toHaveBeenCalledTimes(1)
       expect(registerFeedbackSpy).not.toHaveBeenCalled()
     })
 
     it(`removes mesh drawn into another player's hand`, async () => {
       const [, , card] = cards
       const playerId = faker.string.uuid()
-      await manager.applyDraw(card.metadata.serialize(), playerId)
+      manager.applyDraw(card.metadata.serialize(), playerId)
       await expectAnimationEnd(getDrawBehavior(card))
       expect(scene.getMeshById(card.id)?.id).toBeUndefined()
       expect(handScene.meshes.length).toEqual(0)
       expect(changeReceived).not.toHaveBeenCalled()
-      expect(actionRecorded).not.toHaveBeenCalled()
+      expect(actionRecorded).toHaveBeenCalledOnce()
+      expect(actionRecorded).toHaveBeenCalledWith(
+        {
+          meshId: card.id,
+          fn: 'draw',
+          args: [expect.any(Object), playerId],
+          fromHand: false,
+          isLocal: true
+        },
+        expect.anything()
+      )
       expect(registerFeedbackSpy).toHaveBeenCalledWith(
         expect.objectContaining({ playerId })
       )
@@ -625,7 +650,7 @@ describe('HandManager', () => {
           positions[1],
           positions[2]
         ])
-        expect(draggableToHandReceived).toHaveBeenCalledTimes(1)
+        expect(draggableToHandReceived).toHaveBeenCalledOnce()
         expect(draggableToHandReceived).toHaveBeenLastCalledWith(
           true,
           expect.anything()
@@ -687,7 +712,7 @@ describe('HandManager', () => {
           event: /** @type {PointerEvent} */ ({})
         })
         await waitForLayout()
-        expect(draggableToHandReceived).toHaveBeenCalledTimes(1)
+        expect(draggableToHandReceived).toHaveBeenCalledOnce()
         expect(draggableToHandReceived).toHaveBeenLastCalledWith(
           true,
           expect.anything()
@@ -733,7 +758,7 @@ describe('HandManager', () => {
         )
       })
 
-      it('moves mesh to main scene by dragging', async () => {
+      it('plays mesh to main scene by dragging', async () => {
         const mesh = handCards[1]
 
         let movedPosition = new Vector3(
@@ -757,16 +782,17 @@ describe('HandManager', () => {
         expectPosition(newMesh, [6, 2.005, 0])
         expectPosition(handCards[0], [unitWidth * -0.5, 0.005, computeZ()])
         expectPosition(handCards[2], [unitWidth * 0.5, 0.005, computeZ()])
+        expect(actionRecorded).toHaveBeenCalledOnce()
         expect(actionRecorded).toHaveBeenCalledWith(
           {
             meshId: newMesh.id,
-            fn: 'draw',
-            args: [expect.any(Object)],
-            fromHand: false
+            fn: 'play',
+            args: [expect.any(Object), playerId],
+            fromHand: false,
+            isLocal: false
           },
           expect.anything()
         )
-        expect(actionRecorded).toHaveBeenCalledTimes(1)
         expectCloseVector(
           extractDrawnState(),
           newMesh.absolutePosition.asArray()
@@ -803,17 +829,19 @@ describe('HandManager', () => {
         expect(actionRecorded).toHaveBeenCalledWith(
           {
             meshId: newMesh.id,
-            fn: 'draw',
+            fn: 'play',
             args: [
               expect.objectContaining({
                 flippable: expect.objectContaining({ isFlipped: true })
-              })
+              }),
+              playerId
             ],
-            fromHand: false
+            fromHand: false,
+            isLocal: false
           },
           expect.anything()
         )
-        expect(actionRecorded).toHaveBeenCalledTimes(1)
+        expect(actionRecorded).toHaveBeenCalledOnce()
         expectCloseVector(
           extractDrawnState(),
           newMesh.absolutePosition.asArray()
@@ -851,13 +879,14 @@ describe('HandManager', () => {
         expect(actionRecorded).toHaveBeenCalledWith(
           {
             meshId: newMesh.id,
-            fn: 'draw',
-            args: [expect.objectContaining({ rotable })],
-            fromHand: false
+            fn: 'play',
+            args: [expect.objectContaining({ rotable }), playerId],
+            fromHand: false,
+            isLocal: false
           },
           expect.anything()
         )
-        expect(actionRecorded).toHaveBeenCalledTimes(1)
+        expect(actionRecorded).toHaveBeenCalledOnce()
         expectCloseVector(
           extractDrawnState(),
           newMesh.absolutePosition.asArray()
@@ -894,20 +923,21 @@ describe('HandManager', () => {
         expect(actionRecorded).toHaveBeenCalledWith(
           {
             meshId: newMesh.id,
-            fn: 'draw',
-            args: [expect.any(Object)],
-            fromHand: false
+            fn: 'play',
+            args: [expect.any(Object), playerId],
+            fromHand: false,
+            isLocal: false
           },
           expect.anything()
         )
-        expect(actionRecorded).toHaveBeenCalledTimes(1)
+        expect(actionRecorded).toHaveBeenCalledOnce()
         expectCloseVector(
           extractDrawnState(),
           newMesh.absolutePosition.asArray()
         )
       })
 
-      it('moves mesh to hand by dragging', async () => {
+      it('draws mesh to hand by dragging', async () => {
         const mesh = cards[0]
         const stopDrag = vi.spyOn(inputManager, 'stopDrag')
 
@@ -921,12 +951,12 @@ describe('HandManager', () => {
           pointers: 1,
           event: /** @type {PointerEvent} */ ({ x: 289.7, y: 175 })
         })
-        expect(draggableToHandReceived).toHaveBeenCalledTimes(1)
+        expect(draggableToHandReceived).toHaveBeenCalledOnce()
         expect(draggableToHandReceived).toHaveBeenLastCalledWith(
           true,
           expect.anything()
         )
-        expect(stopDrag).toHaveBeenCalledTimes(1)
+        expect(stopDrag).toHaveBeenCalledOnce()
         inputManager.onDragObservable.notifyObservers({
           type: 'dragStop',
           mesh,
@@ -952,19 +982,21 @@ describe('HandManager', () => {
           {
             meshId: mesh.id,
             fn: 'draw',
-            args: [expect.any(Object)],
-            fromHand: false
+            args: [expect.any(Object), playerId],
+            fromHand: false,
+            isLocal: false
           },
           expect.anything()
         )
-        expect(actionRecorded).toHaveBeenCalledTimes(1)
+        expect(actionRecorded).toHaveBeenCalledOnce()
         expect(controlManager.isManaging(newMesh)).toBe(true)
         expect(moveManager.isManaging(newMesh)).toBe(true)
       })
 
-      it('moves all selected meshes to hand by dragging', async () => {
+      it('draws all selected meshes to hand by dragging', async () => {
         const [mesh1, mesh2, mesh3] = cards
-        mesh3.metadata.push?.(mesh2.id)
+        await mesh3.metadata.push?.(mesh2.id)
+        expectStacked([mesh3, mesh2])
         selectionManager.select([mesh1, mesh2, mesh3])
         actionRecorded.mockReset()
         const stopDrag = vi.spyOn(inputManager, 'stopDrag')
@@ -979,7 +1011,7 @@ describe('HandManager', () => {
           pointers: 1,
           event: /** @type {PointerEvent} */ ({ x: 289.7, y: 175 })
         })
-        expect(stopDrag).toHaveBeenCalledTimes(1)
+        expect(stopDrag).toHaveBeenCalledOnce()
         inputManager.onDragObservable.notifyObservers({
           type: 'dragStop',
           mesh: mesh1,
@@ -998,38 +1030,56 @@ describe('HandManager', () => {
         expect(newMesh3?.id).toBeDefined()
         expectPosition(handCards[1], [unitWidth * -2.5, 0.005, computeZ()])
         expectPosition(handCards[0], [unitWidth * -1.5, 0.005, computeZ()])
-        expectPosition(newMesh3, [unitWidth * -0.5, 0.005, computeZ()])
-        expectPosition(handCards[2], [unitWidth * 0.5, 0.005, computeZ()])
-        expectPosition(newMesh2, [unitWidth * 1.5, 0.005, computeZ()])
+        expectPosition(handCards[2], [unitWidth * -0.5, 0.005, computeZ()])
+        expectPosition(newMesh2, [unitWidth * 0.5, 0.005, computeZ()])
+        expectPosition(newMesh3, [unitWidth * 1.5, 0.005, computeZ()])
         expectPosition(newMesh1, [unitWidth * 2.5, 0.005, computeZ()])
-        expect(actionRecorded).toHaveBeenCalledWith(
-          {
-            meshId: mesh1.id,
-            fn: 'draw',
-            args: [expect.any(Object)],
-            fromHand: false
-          },
-          expect.anything()
-        )
-        expect(actionRecorded).toHaveBeenCalledWith(
+        expect(actionRecorded).toHaveBeenCalledTimes(4)
+        expect(actionRecorded).toHaveBeenNthCalledWith(
+          1,
           {
             meshId: mesh2.id,
             fn: 'draw',
-            args: [expect.any(Object)],
-            fromHand: false
+            args: [expect.any(Object), playerId],
+            fromHand: false,
+            isLocal: false
           },
           expect.anything()
         )
-        expect(actionRecorded).toHaveBeenCalledWith(
+        expect(actionRecorded).toHaveBeenNthCalledWith(
+          2,
+          {
+            meshId: mesh3.id,
+            fn: 'pop',
+            args: [1, false],
+            revert: [[mesh2.id], false],
+            fromHand: false,
+            isLocal: true
+          },
+          expect.anything()
+        )
+        expect(actionRecorded).toHaveBeenNthCalledWith(
+          3,
           {
             meshId: mesh3.id,
             fn: 'draw',
-            args: [expect.any(Object)],
-            fromHand: false
+            args: [expect.any(Object), playerId],
+            fromHand: false,
+            isLocal: false
           },
           expect.anything()
         )
-        expect(actionRecorded).toHaveBeenCalledTimes(3)
+        expect(actionRecorded).toHaveBeenNthCalledWith(
+          4,
+          {
+            meshId: mesh1.id,
+            fn: 'draw',
+            args: [expect.any(Object), playerId],
+            fromHand: false,
+            isLocal: false
+          },
+          expect.anything()
+        )
         expect(controlManager.isManaging(newMesh1)).toBe(true)
         expect(moveManager.isManaging(newMesh1)).toBe(true)
         expect(controlManager.isManaging(newMesh2)).toBe(true)
@@ -1068,8 +1118,9 @@ describe('HandManager', () => {
           {
             meshId: newMesh.id,
             fn: 'draw',
-            args: [expect.any(Object)],
-            fromHand: false
+            args: [expect.any(Object), playerId],
+            fromHand: false,
+            isLocal: false
           },
           expect.anything()
         )
@@ -1111,25 +1162,29 @@ describe('HandManager', () => {
         expect(newMesh2?.id).toBeDefined()
         expectRotated(newMesh, angle)
         expectRotated(newMesh2, 0)
-        expect(actionRecorded).toHaveBeenCalledWith(
+        expect(actionRecorded).toHaveBeenCalledTimes(2)
+        expect(actionRecorded).toHaveBeenNthCalledWith(
+          1,
           {
             meshId: mesh.id,
             fn: 'draw',
-            args: [expect.any(Object)],
-            fromHand: false
+            args: [expect.any(Object), playerId],
+            fromHand: false,
+            isLocal: false
           },
           expect.anything()
         )
-        expect(actionRecorded).toHaveBeenCalledWith(
+        expect(actionRecorded).toHaveBeenNthCalledWith(
+          2,
           {
             meshId: mesh2.id,
             fn: 'draw',
-            args: [expect.any(Object)],
-            fromHand: false
+            args: [expect.any(Object), playerId],
+            fromHand: false,
+            isLocal: false
           },
           expect.anything()
         )
-        expect(actionRecorded).toHaveBeenCalledTimes(2)
       })
 
       it('ignores drag operations from without mesh', async () => {
@@ -1182,9 +1237,9 @@ describe('HandManager', () => {
         expect(actionRecorded).not.toHaveBeenCalled()
       })
 
-      it('moves mesh to main scene', async () => {
+      it('plays mesh to main scene', async () => {
         const [, card] = handCards
-        card.metadata.draw?.()
+        card.metadata.play?.()
         await waitForLayout()
         expect(handScene.getMeshById(card.id)?.id).toBeUndefined()
         const newMesh = getMeshById(scene, card.id)
@@ -1193,13 +1248,14 @@ describe('HandManager', () => {
         expect(actionRecorded).toHaveBeenCalledWith(
           {
             meshId: newMesh.id,
-            fn: 'draw',
-            args: [expect.any(Object)],
-            fromHand: false
+            fn: 'play',
+            args: [expect.any(Object), playerId],
+            fromHand: false,
+            isLocal: false
           },
           expect.anything()
         )
-        expect(actionRecorded).toHaveBeenCalledTimes(1)
+        expect(actionRecorded).toHaveBeenCalledOnce()
         const finalPosition = [-3.89, 0, 0]
         expectPosition(newMesh, finalPosition)
         expectCloseVector(extractDrawnState(), finalPosition)
@@ -1208,23 +1264,25 @@ describe('HandManager', () => {
         expect(registerFeedbackSpy).not.toHaveBeenCalled()
       })
 
-      it('stacks mesh when moving to main scene', async () => {
+      it('stacks mesh when playing them to main scene', async () => {
         const [, card] = handCards
         const [base] = cards
         base.setAbsolutePosition(new Vector3(-3.89, 0, 0))
-        card.metadata.draw?.()
+        card.metadata.play?.()
         await waitForLayout()
         expect(handScene.getMeshById(card.id)?.id).toBeUndefined()
         const newMesh = getMeshById(scene, card.id)
         expect(newMesh?.id).toBeDefined()
         await expectAnimationEnd(newMesh.getBehaviorByName(DrawBehaviorName))
+        expect(actionRecorded).toHaveBeenCalledTimes(2)
         expect(actionRecorded).toHaveBeenNthCalledWith(
           1,
           {
             meshId: newMesh.id,
-            fn: 'draw',
-            args: [expect.any(Object)],
-            fromHand: false
+            fn: 'play',
+            args: [expect.any(Object), playerId],
+            fromHand: false,
+            isLocal: false
           },
           expect.anything()
         )
@@ -1234,12 +1292,22 @@ describe('HandManager', () => {
             meshId: base.id,
             fn: 'push',
             args: [newMesh.id, true],
+            revert: [
+              1,
+              true,
+              [
+                expect.numberCloseTo(-3.89, 2),
+                100,
+                expect.numberCloseTo(-0.00001, 4)
+              ],
+              0
+            ],
             fromHand: false,
-            duration: 0
+            duration: 0,
+            isLocal: true
           },
           expect.anything()
         )
-        expect(actionRecorded).toHaveBeenCalledTimes(2)
         expect(controlManager.isManaging(newMesh)).toBe(true)
         expect(moveManager.isManaging(newMesh)).toBe(true)
         expectStacked([base, newMesh])
@@ -1254,31 +1322,33 @@ describe('HandManager', () => {
         )
       })
 
-      it('can flip mesh prior to moving it to main scene', async () => {
+      it('can flip mesh prior to playing it to main scene', async () => {
         const [, card] = handCards
         getDrawBehavior(card).state.flipOnPlay = true
         expectFlipped(card, false)
-        card.metadata.draw?.()
+        card.metadata.play?.()
         await waitForLayout()
         expect(handScene.getMeshById(card.id)?.id).toBeUndefined()
         const newMesh = getMeshById(scene, card.id)
         expect(newMesh?.id).toBeDefined()
         await expectAnimationEnd(newMesh.getBehaviorByName(DrawBehaviorName))
         expectFlipped(newMesh, true)
+        expect(actionRecorded).toHaveBeenCalledOnce()
         expect(actionRecorded).toHaveBeenCalledWith(
           {
             meshId: newMesh.id,
-            fn: 'draw',
+            fn: 'play',
             args: [
               expect.objectContaining({
                 flippable: expect.objectContaining({ isFlipped: true })
-              })
+              }),
+              playerId
             ],
-            fromHand: false
+            fromHand: false,
+            isLocal: false
           },
           expect.anything()
         )
-        expect(actionRecorded).toHaveBeenCalledTimes(1)
         expect(extractDrawnState().flippable.isFlipped).toBe(true)
         expectCloseVector(
           extractDrawnState(),
@@ -1287,11 +1357,11 @@ describe('HandManager', () => {
         expect(registerFeedbackSpy).not.toHaveBeenCalled()
       })
 
-      it(`adds mesh from other player's hand to main scene`, async () => {
+      it(`plays mesh from other player's hand to main scene`, async () => {
         const positions = getPositions(handCards)
         const playerId = faker.string.uuid()
         const meshId = 'box5'
-        await manager.applyDraw(
+        manager.applyPlay(
           {
             shape: 'card',
             id: meshId,
@@ -1312,19 +1382,94 @@ describe('HandManager', () => {
         await expectAnimationEnd(newMesh.getBehaviorByName(DrawBehaviorName))
         expectPosition(newMesh, [10, 3, -20])
         expect(changeReceived).not.toHaveBeenCalled()
-        expect(actionRecorded).not.toHaveBeenCalled()
+        expect(actionRecorded).toHaveBeenCalledOnce()
+        expect(actionRecorded).toHaveBeenCalledWith(
+          {
+            meshId: newMesh.id,
+            fn: 'play',
+            args: [expect.any(Object), playerId],
+            fromHand: false,
+            isLocal: true
+          },
+          expect.anything()
+        )
         expect(controlManager.isManaging(newMesh)).toBe(true)
         expect(moveManager.isManaging(newMesh)).toBe(true)
         expect(registerFeedbackSpy).toHaveBeenCalledWith(
           expect.objectContaining({ playerId })
         )
-        expectMeshFeedback(registerFeedbackSpy, 'draw', [10, 3, -20])
+        expectMeshFeedback(registerFeedbackSpy, 'play', [10, 3, -20])
+      })
+
+      it(`plays and pushes mesh from other player's hand to main scene`, async () => {
+        const [base] = cards
+        const positions = getPositions(handCards)
+        const playerId = faker.string.uuid()
+        const meshId = 'box5'
+        const position = [base.absolutePosition.x, 3, base.absolutePosition.z]
+        manager.applyPlay(
+          {
+            shape: 'card',
+            id: meshId,
+            texture: '',
+            rotable: {},
+            drawable: {},
+            movable: {},
+            stackable: { duration: stackDuration },
+            x: position[0],
+            y: position[1],
+            z: position[2]
+          },
+          playerId
+        )
+        expect(handScene.getMeshById(meshId)?.id).toBeUndefined()
+        expect(getPositions(handCards)).toEqual(positions)
+        const newMesh = getMeshById(scene, meshId)
+        expect(newMesh?.id).toBeDefined()
+        await expectAnimationEnd(newMesh.getBehaviorByName(DrawBehaviorName))
+        expectStacked([base, newMesh])
+        expect(changeReceived).not.toHaveBeenCalled()
+        expect(actionRecorded).toHaveBeenCalledTimes(2)
+        expect(actionRecorded).toHaveBeenNthCalledWith(
+          1,
+          {
+            meshId: newMesh.id,
+            fn: 'play',
+            args: [expect.any(Object), playerId],
+            fromHand: false,
+            isLocal: true
+          },
+          expect.anything()
+        )
+        expect(actionRecorded).toHaveBeenNthCalledWith(
+          2,
+          {
+            meshId: base.id,
+            fn: 'push',
+            args: [newMesh.id, true],
+            revert: [
+              1,
+              true,
+              [base.absolutePosition.x, 3, base.absolutePosition.z],
+              0
+            ],
+            duration: 0,
+            fromHand: false,
+            isLocal: true
+          },
+          expect.anything()
+        )
+        expect(controlManager.isManaging(newMesh)).toBe(true)
+        expect(moveManager.isManaging(newMesh)).toBe(true)
+        expect(registerFeedbackSpy).toHaveBeenCalledWith(
+          expect.objectContaining({ playerId })
+        )
       })
 
       it('positions mesh according to main camera angle', async () => {
         camera.lockedTarget = new Vector3(-17, 0, -6)
         const [, card] = handCards
-        card.metadata.draw?.()
+        card.metadata.play?.()
         await waitForLayout()
         expect(handScene.getMeshById(card.id)?.id).toBeUndefined()
         const newMesh = getMeshById(scene, card.id)
@@ -1341,7 +1486,7 @@ describe('HandManager', () => {
       it('cancels playing mesh to main when position is not about above table', async () => {
         camera.setPosition(new Vector3(0, 0, 0))
         const [, card] = handCards
-        card.metadata.draw?.()
+        card.metadata.play?.()
         await expect(waitForLayout()).rejects.toThrow
         expect(handScene.getMeshById(card.id)?.id).toBeDefined()
         expect(scene.getMeshById(card.id)?.id).toBeUndefined()
@@ -1372,21 +1517,23 @@ describe('HandManager', () => {
           )
         })
 
-        it(`moves hand mesh to player's drop zone`, async () => {
+        it(`plays hand mesh to player's drop zone`, async () => {
           const [, card] = handCards
-          card.metadata.draw?.()
+          card.metadata.play?.()
           await waitForLayout()
           expect(handScene.getMeshById(card.id)?.id).toBeUndefined()
           const newMesh = getMeshById(scene, card.id)
           expect(newMesh?.id).toBeDefined()
           await expectAnimationEnd(newMesh.getBehaviorByName(DrawBehaviorName))
+          expect(actionRecorded).toHaveBeenCalledTimes(2)
           expect(actionRecorded).toHaveBeenNthCalledWith(
             1,
             {
               meshId: newMesh.id,
-              fn: 'draw',
-              args: [expect.any(Object)],
-              fromHand: false
+              fn: 'play',
+              args: [expect.any(Object), playerId],
+              fromHand: false,
+              isLocal: false
             },
             expect.anything()
           )
@@ -1396,12 +1543,22 @@ describe('HandManager', () => {
               meshId: dropZone.id,
               fn: 'snap',
               args: [newMesh.id, 'anchor-0', true],
+              revert: [
+                newMesh.id,
+                [
+                  expect.numberCloseTo(-3.89, 2),
+                  100,
+                  expect.numberCloseTo(-0.00001, 4)
+                ],
+                0,
+                false
+              ],
               fromHand: false,
-              duration: 0
+              duration: 0,
+              isLocal: true
             },
             expect.anything()
           )
-          expect(actionRecorded).toHaveBeenCalledTimes(2)
           expect(controlManager.isManaging(newMesh)).toBe(true)
           expect(moveManager.isManaging(newMesh)).toBe(true)
           expectSnapped(dropZone, newMesh)
@@ -1415,7 +1572,7 @@ describe('HandManager', () => {
         it(`moves multiple drawn meshes to player's drop zone`, async () => {
           const [mesh1, mesh2] = handCards
           selectionManager.select([mesh1, mesh2])
-          mesh2.metadata.draw?.()
+          mesh2.metadata.play?.()
           await waitForLayout()
           expect(handScene.getMeshById(mesh1.id)?.id).toBeUndefined()
           expect(handScene.getMeshById(mesh2.id)?.id).toBeUndefined()
@@ -1423,13 +1580,15 @@ describe('HandManager', () => {
           expect(newMesh1?.id).toBeDefined()
           const newMesh2 = getMeshById(scene, mesh2.id)
           expect(newMesh2?.id).toBeDefined()
+          expect(actionRecorded).toHaveBeenCalledTimes(4)
           expect(actionRecorded).toHaveBeenNthCalledWith(
             1,
             {
               meshId: newMesh1.id,
-              fn: 'draw',
-              args: [expect.any(Object)],
-              fromHand: false
+              fn: 'play',
+              args: [expect.any(Object), playerId],
+              fromHand: false,
+              isLocal: false
             },
             expect.anything()
           )
@@ -1439,8 +1598,19 @@ describe('HandManager', () => {
               meshId: dropZone.id,
               fn: 'snap',
               args: [newMesh1.id, 'anchor-0', true],
+              revert: [
+                newMesh1.id,
+                [
+                  expect.numberCloseTo(-0.00001, 4),
+                  100,
+                  expect.numberCloseTo(-0.00001, 4)
+                ],
+                0,
+                false
+              ],
               fromHand: false,
-              duration: 0
+              duration: 0,
+              isLocal: true
             },
             expect.anything()
           )
@@ -1448,9 +1618,10 @@ describe('HandManager', () => {
             3,
             {
               meshId: newMesh2.id,
-              fn: 'draw',
-              args: [expect.any(Object)],
-              fromHand: false
+              fn: 'play',
+              args: [expect.any(Object), playerId],
+              fromHand: false,
+              isLocal: false
             },
             expect.anything()
           )
@@ -1460,12 +1631,13 @@ describe('HandManager', () => {
               meshId: newMesh1.id,
               fn: 'push',
               args: [newMesh2.id, true],
+              revert: [1, true, [10, expect.numberCloseTo(105, 1), -10], 0],
               fromHand: false,
-              duration: 0
+              duration: 0,
+              isLocal: true
             },
             expect.anything()
           )
-          expect(actionRecorded).toHaveBeenCalledTimes(4)
           expect(controlManager.isManaging(newMesh1)).toBe(true)
           expect(moveManager.isManaging(newMesh1)).toBe(true)
           expect(controlManager.isManaging(newMesh2)).toBe(true)
@@ -1504,13 +1676,15 @@ describe('HandManager', () => {
           expectPosition(newMesh, [6, 0.005, 0])
           await waitForLayout()
           expect(handScene.getMeshById(mesh.id)?.id).toBeUndefined()
+          expect(actionRecorded).toHaveBeenCalledTimes(2)
           expect(actionRecorded).toHaveBeenNthCalledWith(
             1,
             {
               meshId: newMesh.id,
-              fn: 'draw',
-              args: [expect.any(Object)],
-              fromHand: false
+              fn: 'play',
+              args: [expect.any(Object), playerId],
+              fromHand: false,
+              isLocal: false
             },
             expect.anything()
           )
@@ -1520,12 +1694,22 @@ describe('HandManager', () => {
               meshId: dropZone.id,
               fn: 'snap',
               args: [newMesh.id, 'anchor-0', true],
+              revert: [
+                newMesh.id,
+                [
+                  expect.numberCloseTo(6, 1),
+                  expect.numberCloseTo(0, 1),
+                  expect.numberCloseTo(-0.00001, 4)
+                ],
+                0,
+                false
+              ],
               fromHand: false,
-              duration: 0
+              duration: 0,
+              isLocal: true
             },
             expect.anything()
           )
-          expect(actionRecorded).toHaveBeenCalledTimes(2)
           expect(controlManager.isManaging(newMesh)).toBe(true)
           expect(moveManager.isManaging(newMesh)).toBe(true)
           expectSnapped(dropZone, newMesh)
@@ -1570,13 +1754,15 @@ describe('HandManager', () => {
           await waitForLayout()
           expect(handScene.getMeshById(mesh1.id)?.id).toBeUndefined()
           expect(handScene.getMeshById(mesh2.id)?.id).toBeUndefined()
+          expect(actionRecorded).toHaveBeenCalledTimes(4)
           expect(actionRecorded).toHaveBeenNthCalledWith(
             1,
             {
               meshId: newMesh1.id,
-              fn: 'draw',
-              args: [expect.any(Object)],
-              fromHand: false
+              fn: 'play',
+              args: [expect.any(Object), playerId],
+              fromHand: false,
+              isLocal: false
             },
             expect.anything()
           )
@@ -1586,8 +1772,19 @@ describe('HandManager', () => {
               meshId: dropZone.id,
               fn: 'snap',
               args: [newMesh1.id, 'anchor-0', true],
+              revert: [
+                newMesh1.id,
+                [
+                  expect.numberCloseTo(6, 1),
+                  expect.numberCloseTo(0, 1),
+                  expect.numberCloseTo(-0.00001, 4)
+                ],
+                0,
+                false
+              ],
               fromHand: false,
-              duration: 0
+              duration: 0,
+              isLocal: true
             },
             expect.anything()
           )
@@ -1595,9 +1792,10 @@ describe('HandManager', () => {
             3,
             {
               meshId: newMesh2.id,
-              fn: 'draw',
-              args: [expect.any(Object)],
-              fromHand: false
+              fn: 'play',
+              args: [expect.any(Object), playerId],
+              fromHand: false,
+              isLocal: false
             },
             expect.anything()
           )
@@ -1607,12 +1805,13 @@ describe('HandManager', () => {
               meshId: newMesh1.id,
               fn: 'push',
               args: [newMesh2.id, true],
+              revert: [1, true, [10, expect.numberCloseTo(105, 1), -10], 0],
               fromHand: false,
-              duration: 0
+              duration: 0,
+              isLocal: true
             },
             expect.anything()
           )
-          expect(actionRecorded).toHaveBeenCalledTimes(4)
           expect(controlManager.isManaging(newMesh1)).toBe(true)
           expect(moveManager.isManaging(newMesh1)).toBe(true)
           expect(controlManager.isManaging(newMesh2)).toBe(true)

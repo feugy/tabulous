@@ -959,122 +959,372 @@ exports[`Lobby 1`] = `
           </section>
            
           <div
-            class="discussion s-4DrpFHLJm4IA"
+            class="discussion s-0ASxPKiLViNe"
           >
             <h3
-              class="s-4DrpFHLJm4IA"
+              class="s-0ASxPKiLViNe"
             >
               Discussion
             </h3>
              
             <div
-              class="messages s-4DrpFHLJm4IA"
+              class="messages s-0ASxPKiLViNe"
             >
               <span
-                class="from s-4DrpFHLJm4IA"
-                style="--player-color: #9c3096;"
+                class="s-39hAxfuGaFJz"
               >
-                Fernand Naudin
+                15 sept. 2023
               </span>
+              <!--&lt;Day&gt;-->
+              
+              <div
+                class="s-r0DnIy4wO_3-"
+              >
+                <figure
+                  class="s-engCJu8q-fNe colored"
+                  style="--dimension: 30px; --color: #9c3096; --top: undefinedpx; --left: undefinedpx; --border-width: 3px"
+                >
+                  <img
+                    alt="avatar for Fernand Naudin"
+                    class="s-engCJu8q-fNe"
+                    height="30"
+                    referrerpolicy="no-referrer"
+                    width="30"
+                  />
+                   
+                  <figcaption
+                    class="s-engCJu8q-fNe abbreviated"
+                  >
+                    FN
+                  </figcaption>
+                </figure>
+                <!--&lt;PlayerThumbnail&gt;-->
+              </div>
+               
               <span
-                class="message s-4DrpFHLJm4IA"
+                class="time s-r0DnIy4wO_3-"
+              >
+                8:44:46
+              </span>
+               
+              <span
+                class="message s-r0DnIy4wO_3-"
               >
                 Qu'est-ce qui se passe encore ?
               </span>
-              <span
-                class="from s-4DrpFHLJm4IA"
-                style="--player-color: #ff4500;"
+              <!--&lt;Message&gt;-->
+              
+              
+              <div
+                class="s-r0DnIy4wO_3-"
               >
-                Maître Follas
-              </span>
+                <figure
+                  class="s-engCJu8q-fNe colored"
+                  style="--dimension: 30px; --color: #ff4500; --top: undefinedpx; --left: undefinedpx; --border-width: 3px"
+                >
+                  <img
+                    alt="avatar for Maître Follas"
+                    class="s-engCJu8q-fNe"
+                    height="30"
+                    referrerpolicy="no-referrer"
+                    width="30"
+                  />
+                   
+                  <figcaption
+                    class="s-engCJu8q-fNe abbreviated"
+                  >
+                    MF
+                  </figcaption>
+                </figure>
+                <!--&lt;PlayerThumbnail&gt;-->
+              </div>
+               
               <span
-                class="message s-4DrpFHLJm4IA"
+                class="time s-r0DnIy4wO_3-"
+              >
+                8:44:47
+              </span>
+               
+              <span
+                class="message s-r0DnIy4wO_3-"
               >
                 Notre ami va se faire un plaisir de vous l'expliquer.
               </span>
-              <span
-                class="from s-4DrpFHLJm4IA"
-                style="--player-color: #239646;"
+              <!--&lt;Message&gt;-->
+              
+              
+              <div
+                class="s-r0DnIy4wO_3-"
               >
-                Pascal
-              </span>
+                <figure
+                  class="s-engCJu8q-fNe colored"
+                  style="--dimension: 30px; --color: #239646; --top: undefinedpx; --left: undefinedpx; --border-width: 3px"
+                >
+                  <img
+                    alt="avatar for Pascal"
+                    class="s-engCJu8q-fNe"
+                    height="30"
+                    referrerpolicy="no-referrer"
+                    width="30"
+                  />
+                   
+                  <figcaption
+                    class="s-engCJu8q-fNe abbreviated"
+                  >
+                    P
+                  </figcaption>
+                </figure>
+                <!--&lt;PlayerThumbnail&gt;-->
+              </div>
+               
               <span
-                class="message s-4DrpFHLJm4IA"
+                class="time s-r0DnIy4wO_3-"
+              >
+                8:44:47
+              </span>
+               
+              <span
+                class="message s-r0DnIy4wO_3-"
               >
                 Les Volfoni ont organisé à la péniche une petite réunion des cadres, façon meeting, si vous voyez ce que je veux dire.
 M'enfin quoi, on parle dans votre dos.
               </span>
-              <span
-                class="from s-4DrpFHLJm4IA"
-                style="--player-color: #9c3096;"
+              <!--&lt;Message&gt;-->
+              
+              
+              <div
+                class="s-r0DnIy4wO_3-"
               >
-                Fernand Naudin
-              </span>
+                <figure
+                  class="s-engCJu8q-fNe colored"
+                  style="--dimension: 30px; --color: #9c3096; --top: undefinedpx; --left: undefinedpx; --border-width: 3px"
+                >
+                  <img
+                    alt="avatar for Fernand Naudin"
+                    class="s-engCJu8q-fNe"
+                    height="30"
+                    referrerpolicy="no-referrer"
+                    width="30"
+                  />
+                   
+                  <figcaption
+                    class="s-engCJu8q-fNe abbreviated"
+                  >
+                    FN
+                  </figcaption>
+                </figure>
+                <!--&lt;PlayerThumbnail&gt;-->
+              </div>
+               
               <span
-                class="message s-4DrpFHLJm4IA"
+                class="time s-r0DnIy4wO_3-"
+              >
+                8:44:48
+              </span>
+               
+              <span
+                class="message s-r0DnIy4wO_3-"
               >
                 Et tu tiens ça d'où ?
               </span>
-              <span
-                class="from s-4DrpFHLJm4IA"
-                style="--player-color: #239646;"
+              <!--&lt;Message&gt;-->
+              
+              
+              <div
+                class="s-r0DnIy4wO_3-"
               >
-                Pascal
-              </span>
+                <figure
+                  class="s-engCJu8q-fNe colored"
+                  style="--dimension: 30px; --color: #239646; --top: undefinedpx; --left: undefinedpx; --border-width: 3px"
+                >
+                  <img
+                    alt="avatar for Pascal"
+                    class="s-engCJu8q-fNe"
+                    height="30"
+                    referrerpolicy="no-referrer"
+                    width="30"
+                  />
+                   
+                  <figcaption
+                    class="s-engCJu8q-fNe abbreviated"
+                  >
+                    P
+                  </figcaption>
+                </figure>
+                <!--&lt;PlayerThumbnail&gt;-->
+              </div>
+               
               <span
-                class="message s-4DrpFHLJm4IA"
+                class="time s-r0DnIy4wO_3-"
+              >
+                8:44:48
+              </span>
+               
+              <span
+                class="message s-r0DnIy4wO_3-"
               >
                 Je ne peux pas le dire, j'ai promis. Ce serait mal.
               </span>
-              <span
-                class="from s-4DrpFHLJm4IA"
-                style="--player-color: #9c3096;"
+              <!--&lt;Message&gt;-->
+              
+              
+              <div
+                class="s-r0DnIy4wO_3-"
               >
-                Fernand Naudin
-              </span>
+                <figure
+                  class="s-engCJu8q-fNe colored"
+                  style="--dimension: 30px; --color: #9c3096; --top: undefinedpx; --left: undefinedpx; --border-width: 3px"
+                >
+                  <img
+                    alt="avatar for Fernand Naudin"
+                    class="s-engCJu8q-fNe"
+                    height="30"
+                    referrerpolicy="no-referrer"
+                    width="30"
+                  />
+                   
+                  <figcaption
+                    class="s-engCJu8q-fNe abbreviated"
+                  >
+                    FN
+                  </figcaption>
+                </figure>
+                <!--&lt;PlayerThumbnail&gt;-->
+              </div>
+               
               <span
-                class="message s-4DrpFHLJm4IA"
+                class="time s-r0DnIy4wO_3-"
+              >
+                8:44:49
+              </span>
+               
+              <span
+                class="message s-r0DnIy4wO_3-"
               >
                 Alors ?
               </span>
-              <span
-                class="from s-4DrpFHLJm4IA"
-                style="--player-color: #ff4500;"
+              <!--&lt;Message&gt;-->
+              
+              
+              <div
+                class="s-r0DnIy4wO_3-"
               >
-                Maître Follas
-              </span>
+                <figure
+                  class="s-engCJu8q-fNe colored"
+                  style="--dimension: 30px; --color: #ff4500; --top: undefinedpx; --left: undefinedpx; --border-width: 3px"
+                >
+                  <img
+                    alt="avatar for Maître Follas"
+                    class="s-engCJu8q-fNe"
+                    height="30"
+                    referrerpolicy="no-referrer"
+                    width="30"
+                  />
+                   
+                  <figcaption
+                    class="s-engCJu8q-fNe abbreviated"
+                  >
+                    MF
+                  </figcaption>
+                </figure>
+                <!--&lt;PlayerThumbnail&gt;-->
+              </div>
+               
               <span
-                class="message s-4DrpFHLJm4IA"
+                class="time s-r0DnIy4wO_3-"
+              >
+                8:44:49
+              </span>
+               
+              <span
+                class="message s-r0DnIy4wO_3-"
               >
                 Eh bien. Euh. Y'a deux solutions : ou on se dérange, ou on méprise. 
 Oui, évidemment, n'importe comment une tournée d'inspection peut jamais nuire, bien sûr.
               </span>
-              <span
-                class="from s-4DrpFHLJm4IA"
-                style="--player-color: #9c3096;"
+              <!--&lt;Message&gt;-->
+              
+              
+              <div
+                class="s-r0DnIy4wO_3-"
               >
-                Fernand Naudin
-              </span>
+                <figure
+                  class="s-engCJu8q-fNe colored"
+                  style="--dimension: 30px; --color: #9c3096; --top: undefinedpx; --left: undefinedpx; --border-width: 3px"
+                >
+                  <img
+                    alt="avatar for Fernand Naudin"
+                    class="s-engCJu8q-fNe"
+                    height="30"
+                    referrerpolicy="no-referrer"
+                    width="30"
+                  />
+                   
+                  <figcaption
+                    class="s-engCJu8q-fNe abbreviated"
+                  >
+                    FN
+                  </figcaption>
+                </figure>
+                <!--&lt;PlayerThumbnail&gt;-->
+              </div>
+               
               <span
-                class="message s-4DrpFHLJm4IA"
+                class="time s-r0DnIy4wO_3-"
+              >
+                8:44:50
+              </span>
+               
+              <span
+                class="message s-r0DnIy4wO_3-"
               >
                 Bon, on va y aller, hmm ?
               </span>
-              <span
-                class="from s-4DrpFHLJm4IA"
-                style="--player-color: #239646;"
+              <!--&lt;Message&gt;-->
+              
+              
+              <div
+                class="s-r0DnIy4wO_3-"
               >
-                Pascal
-              </span>
+                <figure
+                  class="s-engCJu8q-fNe colored"
+                  style="--dimension: 30px; --color: #239646; --top: undefinedpx; --left: undefinedpx; --border-width: 3px"
+                >
+                  <img
+                    alt="avatar for Pascal"
+                    class="s-engCJu8q-fNe"
+                    height="30"
+                    referrerpolicy="no-referrer"
+                    width="30"
+                  />
+                   
+                  <figcaption
+                    class="s-engCJu8q-fNe abbreviated"
+                  >
+                    P
+                  </figcaption>
+                </figure>
+                <!--&lt;PlayerThumbnail&gt;-->
+              </div>
+               
               <span
-                class="message s-4DrpFHLJm4IA"
+                class="time s-r0DnIy4wO_3-"
+              >
+                8:44:50
+              </span>
+               
+              <span
+                class="message s-r0DnIy4wO_3-"
               >
                 Monsieur Fernand, y'a peut-être une place pour moi dans votre auto. Des fois que la réunion devienne houleuse ... J'ai une présence tranquillisante.
               </span>
+              <!--&lt;Message&gt;-->
+              
+              
             </div>
              
             <form
-              class="s-4DrpFHLJm4IA"
+              class="s-0ASxPKiLViNe"
             >
               <fieldset
                 class="s-Fe6WNbR-55zp"
@@ -1108,7 +1358,7 @@ Oui, évidemment, n'importe comment une tournée d'inspection peut jamais nuire,
               <!--&lt;Button&gt;-->
             </form>
           </div>
-          <!--&lt;Discussion&gt;-->
+          <!--&lt;Container&gt;-->
           
           
           <!--&lt;Container&gt;-->

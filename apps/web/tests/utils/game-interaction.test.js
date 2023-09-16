@@ -31,6 +31,7 @@ import {
   controlManager,
   inputManager,
   moveManager,
+  replayManager,
   selectionManager
 } from '@src/3d/managers'
 import {
@@ -72,6 +73,7 @@ const {
   draw,
   flip,
   increment,
+  play,
   pop,
   push,
   random,
@@ -110,7 +112,7 @@ describe('Game interaction model', () => {
         ['f', [flip]],
         ['r', [rotate]],
         ['l', [toggleLock]],
-        ['d', [draw]],
+        ['d', [draw, play]],
         ['s', [reorder]],
         ['g', [push, increment]],
         ['u', [pop, decrement]],
@@ -336,6 +338,10 @@ describe('Game interaction model', () => {
       expectMeshActions(mesh6, action)
       expectMeshActions(mesh5, action)
       expectMeshActions(mesh3)
+      // order matters when applying gravity after flip and rotate
+      expect(mesh5.metadata[action]).toHaveBeenCalledBefore(
+        mesh6.metadata[action]
+      )
     })
 
     it('can decrement multiple meshes on quantifiable', async () => {
@@ -549,8 +555,12 @@ describe('Game interaction model', () => {
       const [mesh1, mesh2] = meshes
       mesh1.metadata.stack = [mesh1]
       mesh1.metadata.canPush.mockReturnValue(true)
+      mesh1.metadata.playable = true
+      mesh1.metadata.drawable = false
       mesh2.metadata.stack = [mesh2]
       mesh2.metadata.canPush.mockReturnValue(true)
+      mesh2.metadata.playable = true
+      mesh2.metadata.drawable = false
       selectionManager.select([mesh1, mesh2])
       const menuProps = computeMenuProps(mesh2, true)
       expect(menuProps).toHaveProperty('items')
@@ -563,7 +573,7 @@ describe('Game interaction model', () => {
       await expectActionItems(menuProps, mesh2, [
         { functionName: flip, icon: flip },
         { functionName: rotate, icon: 'rotate_right' },
-        { functionName: draw, icon: 'back_hand', title: 'tooltips.play' },
+        { functionName: play, icon: 'back_hand', title: 'tooltips.play' },
         { functionName: toggleLock, icon: 'lock', title: 'tooltips.lock' },
         {
           functionName: random,
@@ -579,7 +589,7 @@ describe('Game interaction model', () => {
           max: mesh2.metadata.maxFace
         }
       ])
-      expectMeshActions(mesh1, flip, rotate, draw, toggleLock, random, setFace)
+      expectMeshActions(mesh1, flip, rotate, play, toggleLock, random, setFace)
     })
 
     it('can trigger all actions for a selection of stacks', async () => {
@@ -1081,6 +1091,22 @@ describe('Game interaction model', () => {
       expectMeshActions(mesh)
     })
 
+    it('does not open action menu while replaying', () => {
+      vi.spyOn(replayManager, 'isReplaying', 'get').mockReturnValueOnce(true)
+      const [mesh] = meshes
+      inputManager.onTapObservable.notifyObservers({
+        type: 'tap',
+        mesh,
+        event: makeMouseEvent(),
+        button: 2,
+        timestamp: Date.now(),
+        pointers: 1,
+        long: false,
+        fromHand: false
+      })
+      expect(get(actionMenuProps$)).toBeNull()
+    })
+
     it('opens action menu on two-finger tap', () => {
       const [mesh] = meshes
       inputManager.onTapObservable.notifyObservers({
@@ -1175,7 +1201,7 @@ describe('Game interaction model', () => {
       { key: 'r', action: rotate },
       { key: 'v', action: detail },
       { key: 'l', action: toggleLock }
-    ])(`triggers mesh $action on '$key' key`, ({ key, action }) => {
+    ])(`triggers mesh $action on $key key`, ({ key, action }) => {
       const [box1] = meshes
       inputManager.onKeyObservable.notifyObservers({
         type: 'keyDown',
@@ -1329,8 +1355,7 @@ describe('Game interaction model', () => {
         { action: draw },
         { action: pop },
         { action: push },
-        { action: 'lock' },
-        { action: 'unlock' }
+        { action: toggleLock }
       ])('closes menu on mesh $action action', ({ action }) => {
         controlManager.onActionObservable.notifyObservers({
           meshId: tapped.id,
@@ -1339,6 +1364,13 @@ describe('Game interaction model', () => {
           fromHand: false,
           pos: undefined
         })
+        expect(get(actionMenuProps$)).toBeNull()
+        expectMeshActions(tapped)
+      })
+
+      it('closes menu when replaying', () => {
+        vi.spyOn(replayManager, 'isReplaying', 'get').mockReturnValueOnce(true)
+        replayManager.onReplayRankObservable.notifyObservers(0)
         expect(get(actionMenuProps$)).toBeNull()
         expectMeshActions(tapped)
       })
@@ -1381,6 +1413,12 @@ describe('Game interaction model', () => {
           long: false,
           fromHand: false
         })
+        expect(selectionManager.meshes.size).toEqual(0)
+      })
+
+      it('clears selection when replaying', () => {
+        vi.spyOn(replayManager, 'isReplaying', 'get').mockReturnValueOnce(true)
+        replayManager.onReplayRankObservable.notifyObservers(0)
         expect(selectionManager.meshes.size).toEqual(0)
       })
 
@@ -1531,7 +1569,7 @@ describe('Game interaction model', () => {
           { key: 'f', action: flip, stackAction: 'flipAll' },
           { key: 'r', action: rotate, stackAction: rotate }
         ])
-      )(`triggers $action on '$key' key`, ({ key, action, stackAction }) => {
+      )(`triggers $action on $key key`, ({ key, action, stackAction }) => {
         const [box1, , box3, , box5, box6] = meshes
         inputManager.onKeyObservable.notifyObservers({
           type: 'keyDown',
@@ -1573,10 +1611,17 @@ describe('Game interaction model', () => {
       it.each(
         /** @type {{ key: string, action: ActionName }[]} */ ([
           { key: 'l', action: toggleLock },
-          { key: 'd', action: draw }
+          { key: 'd', action: draw },
+          { key: 'd', action: play }
         ])
-      )(`triggers $action on '$key' key`, ({ key, action }) => {
+      )(`triggers $action on $key key`, ({ key, action }) => {
         const [box1, , box3, , box5, box6] = meshes
+        if (action === play) {
+          for (const box of meshes) {
+            box.metadata.playable = true
+            box.metadata.drawable = false
+          }
+        }
         inputManager.onKeyObservable.notifyObservers({
           type: 'keyDown',
           mesh: null,
@@ -1730,7 +1775,7 @@ describe('Game interaction model', () => {
       { key: 'ArrowLeft', x: 1, y: 0 },
       { key: 'ArrowDown', x: 0, y: -1 },
       { key: 'ArrowRight', x: -1, y: 0 }
-    ])(`pans camera on '$key' key`, ({ key, x, y }) => {
+    ])(`pans camera on $key key`, ({ key, x, y }) => {
       inputManager.onKeyObservable.notifyObservers({
         type: 'keyDown',
         mesh: null,
@@ -1806,7 +1851,7 @@ describe('Game interaction model', () => {
       { key: 'ArrowLeft', alpha: Math.PI / -8, beta: 0 },
       { key: 'ArrowDown', alpha: 0, beta: Math.PI / 24 },
       { key: 'ArrowRight', alpha: Math.PI / 8, beta: 0 }
-    ])(`rotate camera on 'ctrl+$key' key`, ({ key, alpha, beta }) => {
+    ])(`rotate camera on ctrl+$key key`, ({ key, alpha, beta }) => {
       inputManager.onKeyObservable.notifyObservers({
         type: 'keyDown',
         mesh: null,
@@ -1969,6 +2014,39 @@ describe('Game interaction model', () => {
       expect(cameraManager.zoom).not.toHaveBeenCalled()
     })
 
+    it('does not draw select box when replaying', () => {
+      vi.spyOn(replayManager, 'isReplaying', 'get').mockReturnValueOnce(true)
+      inputManager.onDragObservable.notifyObservers({
+        type: 'dragStart',
+        event: makeMouseEvent(),
+        button: 0,
+        timestamp: Date.now(),
+        pointers: 0,
+        mesh: null
+      })
+      inputManager.onDragObservable.notifyObservers({
+        type: 'drag',
+        event: makeMouseEvent(),
+        button: 0,
+        timestamp: Date.now(),
+        pointers: 0,
+        mesh: null
+      })
+      inputManager.onDragObservable.notifyObservers({
+        type: 'dragStop',
+        event: makeMouseEvent(),
+        button: 0,
+        timestamp: Date.now(),
+        pointers: 0,
+        mesh: null
+      })
+      expect(drawSelectionBox).not.toHaveBeenCalled()
+      expect(selectWithinBox).not.toHaveBeenCalled()
+      expect(cameraManager.pan).not.toHaveBeenCalled()
+      expect(cameraManager.rotate).not.toHaveBeenCalled()
+      expect(cameraManager.zoom).not.toHaveBeenCalled()
+    })
+
     it('moves mesh on left click drag, and automatically selects it', () => {
       const [box1, box2] = meshes
       selectionManager.select(box1)
@@ -2098,6 +2176,9 @@ function buildMesh(/** @type {?} */ data) {
     reorder: vi.fn(),
     flipAll: vi.fn(),
     draw: vi.fn(),
+    play: vi.fn(),
+    drawable: true,
+    playable: false,
     snap: vi.fn(),
     unsnap: vi.fn(),
     unsnapAll: vi.fn(),
@@ -2188,7 +2269,13 @@ async function expectActionItems(
         {
           icon,
           title: title ?? `tooltips.${functionName}`,
-          badge: badge ?? `shortcuts.${functionName}`,
+          badge:
+            badge ??
+            `shortcuts.${
+              functionName === draw || functionName === play
+                ? 'drawOrPlay'
+                : functionName
+            }`,
           onClick: expect.any(Function),
           ...props
         }

@@ -6,32 +6,62 @@
 
 import { faker } from '@faker-js/faker'
 import { DrawBehavior, DrawBehaviorName } from '@src/3d/behaviors'
-import { controlManager, handManager } from '@src/3d/managers'
+import {
+  controlManager,
+  handManager,
+  indicatorManager,
+  targetManager
+} from '@src/3d/managers'
 import { createCard } from '@src/3d/meshes'
-import { beforeEach, describe, expect, it, vi } from 'vitest'
+import { altitudeGap, createTable } from '@src/3d/utils'
+import { beforeAll, beforeEach, describe, expect, it, vi } from 'vitest'
 
 import {
   configures3dTestEngine,
   createBox,
   expectAnimationEnd,
+  expectDisposed,
+  expectNotDisposed,
   expectPosition,
-  sleep
+  sleep,
+  waitForLayout
 } from '../../test-utils'
 
 /** @type {Scene} */
 let scene
+/** @type {Scene} */
+let handScene
 const actionRecorded = vi.fn()
 const animationEndReceived = vi.fn()
 const handOverlay = document.createElement('div')
+const renderWidth = 480
+const renderHeight = 350
+const playerId = 'player-id'
 
-configures3dTestEngine(created => {
-  scene = created.scene
-  handManager.init({ ...created, overlay: handOverlay })
-  controlManager.onActionObservable.add(actionRecorded)
+configures3dTestEngine(
+  created => {
+    scene = created.scene
+    handScene = created.handScene
+    handManager.init({ ...created, playerId, overlay: handOverlay })
+    controlManager.onActionObservable.add(actionRecorded)
+  },
+  { renderWidth, renderHeight }
+)
+
+beforeAll(() => {
+  vi.spyOn(window, 'getComputedStyle').mockImplementation(
+    () =>
+      /** @type {CSSStyleDeclaration} */ ({
+        height: `${renderHeight / 4}px`
+      })
+  )
+  targetManager.init({ scene, playerId: 'player', color: 'red' })
+  indicatorManager.init({ scene })
 })
 
 beforeEach(() => {
-  vi.resetAllMocks()
+  vi.clearAllMocks()
+  createTable({}, scene)
 })
 
 describe('DrawBehavior', () => {
@@ -87,13 +117,39 @@ describe('DrawBehavior', () => {
     let mesh
     /** @type {DrawBehavior} */
     let behavior
+    /** @type {Mesh} */
+    let handMesh
 
-    beforeEach(() => {
-      mesh = createCard({ id: 'box', texture: '', drawable: {} }, scene)
+    beforeEach(async () => {
+      mesh = createCard(
+        {
+          id: 'box',
+          texture: '',
+          drawable: { flipOnPlay: true, angleOnPick: 0 },
+          rotable: {},
+          flippable: {},
+          stackable: { kinds: ['box'] },
+          movable: { kind: 'box' }
+        },
+        scene
+      )
       behavior = /** @type {DrawBehavior} */ (
         mesh.getBehaviorByName(DrawBehaviorName)
       )
       mesh.onAnimationEnd.add(animationEndReceived)
+      handMesh = createCard(
+        {
+          id: 'hand-box',
+          texture: '',
+          drawable: { flipOnPlay: true, angleOnPick: 0 },
+          rotable: {},
+          flippable: {},
+          stackable: { kinds: ['box'] },
+          movable: { kind: 'box' }
+        },
+        handScene
+      )
+      await waitForLayout(handManager)
     })
 
     it('can hydrate from state', () => {
@@ -117,21 +173,171 @@ describe('DrawBehavior', () => {
       )
     })
 
+    it('is drawable only when beeing on the table', () => {
+      expect(mesh.metadata.drawable).toBe(true)
+      expect(handMesh.metadata.drawable).toBe(false)
+    })
+
+    it('is playable only when beeing in hand', () => {
+      expect(mesh.metadata.playable).toBe(false)
+      expect(handMesh.metadata.playable).toBe(true)
+    })
+
     it(`draws into player's hand`, async () => {
-      const { x, ...state } = mesh.metadata.serialize() // eslint-disable-line no-unused-vars
+      const state = mesh.metadata.serialize()
       mesh.metadata.draw?.()
+      expect(actionRecorded).toHaveBeenCalledOnce()
       expect(actionRecorded).toHaveBeenCalledWith(
         {
           meshId: mesh.id,
           fn: 'draw',
-          args: [{ x: expect.any(Number), ...state }],
-          fromHand: false
+          args: [state, playerId],
+          fromHand: false,
+          isLocal: false
         },
         expect.anything()
       )
-      expect(actionRecorded).toHaveBeenCalledTimes(1)
       await expectAnimationEnd(behavior)
-      expect(animationEndReceived).toHaveBeenCalledTimes(1)
+      expect(animationEndReceived).toHaveBeenCalledOnce()
+      expectDisposed(scene, mesh)
+      expectNotDisposed(handScene, mesh)
+    })
+
+    it(`draws into another player's hand`, async () => {
+      const state = mesh.metadata.serialize()
+      const anotherPlayerId = 'another-player-id'
+      mesh.metadata.draw?.(state, anotherPlayerId)
+      expect(actionRecorded).toHaveBeenCalledOnce()
+      expect(actionRecorded).toHaveBeenCalledWith(
+        {
+          meshId: mesh.id,
+          fn: 'draw',
+          args: [state, anotherPlayerId],
+          fromHand: false,
+          isLocal: true
+        },
+        expect.anything()
+      )
+      await expectAnimationEnd(behavior)
+      expect(animationEndReceived).toHaveBeenCalledOnce()
+      expectDisposed(scene, mesh)
+      expectDisposed(handScene, mesh)
+    })
+
+    it(`plays to the table`, async () => {
+      mesh.dispose()
+      handMesh.metadata.play?.()
+      const created = /** @type {Mesh} */ (scene.getMeshById(handMesh.id))
+      const state = created.metadata.serialize()
+      const createdBehavior = created.getBehaviorByName(DrawBehaviorName)
+      await Promise.all([
+        waitForLayout(handManager),
+        expectAnimationEnd(createdBehavior)
+      ])
+      expect(actionRecorded).toHaveBeenCalledTimes(1)
+      expect(actionRecorded).toHaveBeenCalledWith(
+        {
+          meshId: created.id,
+          fn: 'play',
+          args: [{ ...state, y: altitudeGap * 0.5 }, playerId],
+          fromHand: false,
+          isLocal: false
+        },
+        expect.anything()
+      )
+      expectDisposed(handScene, handMesh)
+    })
+
+    it(`stacks when playing to the table`, async () => {
+      handMesh.metadata.play?.()
+      const created = /** @type {Mesh} */ (scene.getMeshById(handMesh.id))
+      const position = created.absolutePosition.asArray()
+      const state = created.metadata.serialize()
+      const createdBehavior = created.getBehaviorByName(DrawBehaviorName)
+      await Promise.all([
+        waitForLayout(handManager),
+        expectAnimationEnd(createdBehavior)
+      ])
+      expect(actionRecorded).toHaveBeenCalledTimes(2)
+      expect(actionRecorded).toHaveBeenNthCalledWith(
+        1,
+        {
+          meshId: created.id,
+          fn: 'play',
+          args: [
+            {
+              ...state,
+              x: mesh.absolutePosition.x,
+              y: altitudeGap * 2,
+              z: mesh.absolutePosition.z
+            },
+            playerId
+          ],
+          fromHand: false,
+          isLocal: false
+        },
+        expect.anything()
+      )
+      expect(actionRecorded).toHaveBeenNthCalledWith(
+        2,
+        {
+          meshId: mesh.id,
+          fn: 'push',
+          duration: 0,
+          args: [created.id, true],
+          revert: [1, true, position, 0],
+          fromHand: false,
+          isLocal: true
+        },
+        expect.anything()
+      )
+      expectDisposed(handScene, handMesh)
+    })
+
+    it('can revert played to main', async () => {
+      mesh.dispose()
+      const state = handMesh.metadata.serialize()
+      handMesh.metadata.play?.()
+      expectDisposed(handScene, handMesh)
+      const created = /** @type {Mesh} */ (scene.getMeshById(handMesh.id))
+      const position = created.absolutePosition.asArray()
+      const createdBehavior = created.getBehaviorByName(DrawBehaviorName)
+      await Promise.all([
+        waitForLayout(handManager),
+        expectAnimationEnd(createdBehavior)
+      ])
+      expectNotDisposed(scene, created)
+      animationEndReceived.mockClear()
+      actionRecorded.mockClear()
+
+      await Promise.all([
+        createdBehavior?.revert('play', [state, playerId]),
+        expectAnimationEnd(createdBehavior),
+        waitForLayout(handManager)
+      ])
+      const reverted = handScene.getMeshById(handMesh.id)
+      expectDisposed(scene, handMesh)
+      expectNotDisposed(handScene, handMesh)
+      expect(reverted?.metadata.serialize()).toEqual(state)
+      expect(actionRecorded).toHaveBeenCalledOnce()
+      expect(actionRecorded).toHaveBeenCalledWith(
+        {
+          meshId: handMesh.id,
+          fn: 'draw',
+          args: [
+            {
+              ...state,
+              flippable: { ...state.flippable, isFlipped: true },
+              x: position[0],
+              z: position[2]
+            },
+            playerId
+          ],
+          fromHand: false,
+          isLocal: true
+        },
+        expect.anything()
+      )
     })
 
     it('elevates and fades out mesh when animating from main to hand', async () => {
@@ -140,7 +346,7 @@ describe('DrawBehavior', () => {
       await behavior.animateToHand()
       expectPosition(mesh, [x, y + 3, z])
       expect(mesh.visibility).toEqual(0)
-      expect(animationEndReceived).toHaveBeenCalledTimes(1)
+      expect(animationEndReceived).toHaveBeenCalledOnce()
     })
 
     it('can not animate while animating', async () => {
@@ -149,14 +355,14 @@ describe('DrawBehavior', () => {
       behavior.animateToHand()
       behavior.animateToMain()
       await sleep(behavior.state.duration * 2)
-      expect(animationEndReceived).toHaveBeenCalledTimes(1)
+      expect(animationEndReceived).toHaveBeenCalledOnce()
     })
 
     it('descend and fades in mesh when animating from hand to main', async () => {
       const position = mesh.absolutePosition.asArray()
       await behavior.animateToMain()
       expectPosition(mesh, position)
-      expect(animationEndReceived).toHaveBeenCalledTimes(1)
+      expect(animationEndReceived).toHaveBeenCalledOnce()
     })
   })
 })

@@ -126,17 +126,51 @@ describe('LockBehavior', () => {
     it(`can toggle without companion behaviors`, () => {
       mesh.metadata.toggleLock?.()
       expect(behavior.state).toEqual({ isLocked: false })
-      expect(actionRecorded).toHaveBeenCalledTimes(1)
+      expect(actionRecorded).toHaveBeenCalledOnce()
       expect(actionRecorded).toHaveBeenCalledWith(
         {
           meshId: mesh.id,
           fn: 'toggleLock',
           args: [],
-          fromHand: false
+          fromHand: false,
+          isLocal: false
         },
         expect.anything()
       )
       expectMeshFeedback(registerFeedbackSpy, 'unlock', mesh)
+    })
+
+    it('can revert toggle lock mesh', async () => {
+      mesh.metadata.toggleLock?.()
+      expect(behavior.state).toEqual({ isLocked: false })
+      actionRecorded.mockClear()
+      registerFeedbackSpy.mockClear()
+      const expectedRecord = {
+        meshId: mesh.id,
+        fn: 'toggleLock',
+        args: [],
+        fromHand: false,
+        isLocal: true
+      }
+
+      await behavior.revert('toggleLock')
+      expect(behavior.state).toEqual({ isLocked: true })
+      expectMeshFeedback(registerFeedbackSpy, 'lock', mesh)
+
+      await behavior.revert('toggleLock')
+      expect(behavior.state).toEqual({ isLocked: false })
+      expectMeshFeedback(registerFeedbackSpy, 'unlock', mesh)
+      expect(actionRecorded).toHaveBeenCalledTimes(2)
+      expect(actionRecorded).toHaveBeenNthCalledWith(
+        1,
+        expectedRecord,
+        expect.anything()
+      )
+      expect(actionRecorded).toHaveBeenNthCalledWith(
+        2,
+        expectedRecord,
+        expect.anything()
+      )
     })
   })
 
@@ -172,18 +206,20 @@ describe('LockBehavior', () => {
     })
 
     it(`updates the ${companionName} behavior on lock`, () => {
+      const expectedRecord = {
+        meshId: mesh.id,
+        fn: 'toggleLock',
+        args: [],
+        fromHand: false,
+        isLocal: false
+      }
       mesh.metadata.toggleLock?.()
       expect(companion.enabled).toBe(false)
       expect(behavior.state.isLocked).toBe(true)
-      expect(actionRecorded).toHaveBeenCalledTimes(1)
+      expect(actionRecorded).toHaveBeenCalledOnce()
       expect(actionRecorded).toHaveBeenNthCalledWith(
         1,
-        {
-          meshId: mesh.id,
-          fn: 'toggleLock',
-          args: [],
-          fromHand: false
-        },
+        expectedRecord,
         expect.anything()
       )
       expectMeshFeedback(registerFeedbackSpy, 'lock', mesh)
@@ -193,12 +229,7 @@ describe('LockBehavior', () => {
       expect(actionRecorded).toHaveBeenCalledTimes(2)
       expect(actionRecorded).toHaveBeenNthCalledWith(
         2,
-        {
-          meshId: mesh.id,
-          fn: 'toggleLock',
-          args: [],
-          fromHand: false
-        },
+        expectedRecord,
         expect.anything()
       )
       expectMeshFeedback(registerFeedbackSpy, 'unlock', mesh)

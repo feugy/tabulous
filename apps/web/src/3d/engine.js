@@ -28,6 +28,7 @@ import {
   inputManager,
   materialManager,
   moveManager,
+  replayManager,
   selectionManager,
   targetManager
 } from './managers'
@@ -162,6 +163,7 @@ export function createEngine({
         },
         game
       )
+      replayManager.init({ playerId, engine, history: game.history ?? [] })
 
       createLights({ scene, handScene, isWebGL1 })
       createTable(game.tableSpec, scene)
@@ -175,6 +177,7 @@ export function createEngine({
         handManager.init({
           scene,
           handScene,
+          playerId,
           overlay: hand,
           angleOnPlay: preferences?.angle
         })
@@ -205,10 +208,13 @@ export function createEngine({
   }
 
   engine.serialize = () => {
-    return {
-      meshes: serializeMeshes(scene),
-      handMeshes: serializeMeshes(handScene)
-    }
+    return (
+      replayManager.save ?? {
+        meshes: serializeMeshes(scene),
+        handMeshes: serializeMeshes(handScene),
+        history: replayManager.history
+      }
+    )
   }
 
   scene.onDataLoadedObservable.addOnce(() => {

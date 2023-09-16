@@ -6,13 +6,10 @@
 <ToolBox
   component={GameHand}
   name="Routes/game/[gameId]/Game Hand"
-  props={{ visible: undefined, highlight: undefined, meshes: undefined }}
+  props={{ visible: undefined, highlight: undefined, meshCount: 0 }}
   events={['resize']}
 >
   <Tool name="Default (not visible)" />
-  <Tool
-    name="With some meshes"
-    props={{ visible: true, meshes: [{ id: 'foo' }, { id: 'bar' }] }}
-  />
+  <Tool name="With some meshes" props={{ visible: true, meshCount: 2 }} />
   <Tool name="Highlighted" props={{ visible: true, highlight: true }} />
 </ToolBox>

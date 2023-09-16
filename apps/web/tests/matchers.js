@@ -1,8 +1,28 @@
 // @ts-check
 /**
+ * @typedef {import('vitest').SpyInstance<?, ?>} SpyInstance
  * @typedef {import('@vitest/expect').MatcherState} MatcherState
  * @typedef {import('@vitest/expect').SyncExpectationResult} SyncExpectationResult
  */
+
+import { isA } from '@vitest/expect'
+
+export function numberCloseTo(
+  /** @type {any} */ received,
+  /** @type {number} */ expected,
+  precision = 10
+) {
+  const pass =
+    isA('Number', received) &&
+    expected.toFixed(precision) === received.toFixed(precision)
+  return {
+    message: () =>
+      `expected ${received}${
+        pass ? ' not' : ''
+      } to be close to ${expected} (${precision} decimals)`,
+    pass
+  }
+}
 
 /**
  * @template {{ angle: number }} E

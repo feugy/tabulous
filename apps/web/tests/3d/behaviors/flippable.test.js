@@ -4,10 +4,6 @@
  * @typedef {import('@babylonjs/core').Mesh} Mesh
  * @typedef {import('@src/3d/behaviors').FlippableState} FlippableState
  */
-/**
- * @template {any[]} P, R
- * @typedef {import('vitest').SpyInstance<P, R>} SpyInstance
- */
 
 import { Vector3 } from '@babylonjs/core/Maths/math.vector'
 import { faker } from '@faker-js/faker'
@@ -17,7 +13,7 @@ import {
   FlipBehaviorName
 } from '@src/3d/behaviors'
 import { controlManager } from '@src/3d/managers'
-import { beforeEach, describe, expect, it, vi } from 'vitest'
+import { beforeAll, beforeEach, describe, expect, it, vi } from 'vitest'
 
 import {
   configures3dTestEngine,
@@ -27,16 +23,18 @@ import {
   expectPosition
 } from '../../test-utils'
 
-/** @type {SpyInstance<Parameters<typeof controlManager['record']>, void>} */
-let recordSpy
+const actionRecorded = vi.fn()
 /** @type {Mock} */
 let animationEndReceived
 
 configures3dTestEngine()
 
+beforeAll(() => {
+  controlManager.onActionObservable.add(data => actionRecorded(data))
+})
+
 beforeEach(() => {
   vi.clearAllMocks()
-  recordSpy = vi.spyOn(controlManager, 'record')
   animationEndReceived = vi.fn()
 })
 
@@ -48,6 +46,7 @@ describe('FlipBehavior', () => {
     }
     const behavior = new FlipBehavior(state)
     const mesh = createBox('box', {})
+    controlManager.registerControlable(mesh)
 
     expect(behavior.name).toEqual(FlipBehaviorName)
     expect(behavior.state).toEqual(state)
@@ -55,7 +54,7 @@ describe('FlipBehavior', () => {
 
     mesh.addBehavior(behavior, true)
     expect(behavior.mesh).toEqual(mesh)
-    expect(recordSpy).not.toHaveBeenCalled()
+    expect(actionRecorded).not.toHaveBeenCalled()
   })
 
   it('can not restore state without mesh', () => {
@@ -67,7 +66,7 @@ describe('FlipBehavior', () => {
   it('can not flip without mesh', async () => {
     const behavior = new FlipBehavior()
     await behavior.flip?.()
-    expect(recordSpy).not.toHaveBeenCalled()
+    expect(actionRecorded).not.toHaveBeenCalled()
   })
 
   it('can hydrate with default state', () => {
@@ -80,7 +79,7 @@ describe('FlipBehavior', () => {
     })
     expect(behavior.mesh?.rotation.z).toEqual(0)
     expect(behavior.mesh?.metadata.isFlipped).toEqual(false)
-    expect(recordSpy).not.toHaveBeenCalled()
+    expect(actionRecorded).not.toHaveBeenCalled()
   })
 
   describe('given attached to a mesh', () => {
@@ -112,7 +111,7 @@ describe('FlipBehavior', () => {
       expect(behavior.mesh).toEqual(mesh)
       expectFlipped(mesh)
       expect(animationEndReceived).not.toHaveBeenCalled()
-      expect(recordSpy).not.toHaveBeenCalled()
+      expect(actionRecorded).not.toHaveBeenCalled()
     })
 
     it('flips mesh clockwise and apply gravity', async () => {
@@ -125,7 +124,15 @@ describe('FlipBehavior', () => {
       expectFlipped(mesh)
       expectPosition(mesh, [x, 0.5, z])
       expect(animationEndReceived).toHaveBeenCalledOnce()
-      expect(recordSpy).toHaveBeenCalledOnce()
+      expect(actionRecorded).toHaveBeenCalledOnce()
+      expect(actionRecorded).toHaveBeenCalledWith({
+        meshId: mesh.id,
+        fn: 'flip',
+        duration: behavior.state.duration,
+        args: [],
+        fromHand: false,
+        isLocal: false
+      })
     })
 
     it('flips mesh anti-clockwise and apply gravity', async () => {
@@ -139,27 +146,40 @@ describe('FlipBehavior', () => {
       expectFlipped(mesh)
       expectPosition(mesh, [x, 0.5, z])
       expect(animationEndReceived).toHaveBeenCalledOnce()
-      expect(recordSpy).toHaveBeenCalledOnce()
+      expect(actionRecorded).toHaveBeenCalledOnce()
+      expect(actionRecorded).toHaveBeenCalledWith({
+        meshId: mesh.id,
+        fn: 'flip',
+        duration: behavior.state.duration,
+        args: [],
+        fromHand: false,
+        isLocal: false
+      })
     })
 
-    it('updates flips state', async () => {
-      expectFlipped(mesh, false)
-      await behavior.updateState({ isFlipped: true })
+    it('can revert flipped mesh', async () => {
+      const position = [11, 0.5, 12]
+      mesh.setAbsolutePosition(Vector3.FromArray(position))
+      behavior.fromState({ isFlipped: true })
       expectFlipped(mesh)
-      expect(animationEndReceived).toHaveBeenCalledOnce()
-      expect(recordSpy).not.toHaveBeenCalled()
-    })
-
-    it('updates flips state with no animation', async () => {
-      await mesh.metadata.flip?.()
-      recordSpy.mockClear()
+      expectPosition(mesh, position)
       animationEndReceived.mockClear()
-      expectFlipped(mesh)
+      actionRecorded.mockClear()
 
-      await behavior.updateState({ isFlipped: false }, false)
+      await behavior.revert('flip')
+
       expectFlipped(mesh, false)
-      expect(animationEndReceived).not.toHaveBeenCalled()
-      expect(recordSpy).not.toHaveBeenCalled()
+      expectPosition(mesh, position)
+      expect(actionRecorded).toHaveBeenCalledOnce()
+      expect(actionRecorded).toHaveBeenCalledWith({
+        meshId: mesh.id,
+        fn: 'flip',
+        duration: behavior.state.duration,
+        args: [],
+        fromHand: false,
+        isLocal: true
+      })
+      expect(animationEndReceived).toHaveBeenCalledOnce()
     })
 
     it('can not flip if locked', async () => {
@@ -222,24 +242,28 @@ describe('FlipBehavior', () => {
 
     it('records flips to controlManager', async () => {
       expectFlipped(mesh, false)
-      expect(recordSpy).toHaveBeenCalledTimes(0)
+      expect(actionRecorded).toHaveBeenCalledTimes(0)
       await mesh.metadata.flip?.()
-      expect(recordSpy).toHaveBeenCalledOnce()
-      expect(recordSpy).toHaveBeenNthCalledWith(1, {
-        mesh,
+      expect(actionRecorded).toHaveBeenCalledOnce()
+      expect(actionRecorded).toHaveBeenNthCalledWith(1, {
+        meshId: mesh.id,
         fn: 'flip',
         duration: behavior.state.duration,
-        args: []
+        args: [],
+        fromHand: false,
+        isLocal: false
       })
       expectFlipped(mesh)
 
       await mesh.metadata.flip?.()
-      expect(recordSpy).toHaveBeenCalledTimes(2)
-      expect(recordSpy).toHaveBeenNthCalledWith(2, {
-        mesh,
+      expect(actionRecorded).toHaveBeenCalledTimes(2)
+      expect(actionRecorded).toHaveBeenNthCalledWith(2, {
+        meshId: mesh.id,
         fn: 'flip',
         duration: behavior.state.duration,
-        args: []
+        args: [],
+        fromHand: false,
+        isLocal: false
       })
       expectFlipped(mesh, false)
       expect(animationEndReceived).toHaveBeenCalledTimes(2)
@@ -275,7 +299,7 @@ describe('FlipBehavior', () => {
 
       expectPickable(mesh)
       expectFlipped(mesh)
-      expect(recordSpy).toHaveBeenCalledOnce()
+      expect(actionRecorded).toHaveBeenCalledOnce()
       expect(animationEndReceived).toHaveBeenCalledOnce()
     })
 
@@ -312,7 +336,7 @@ describe('FlipBehavior', () => {
       expectFlipped(child, false)
       expectPickable(granChild)
       expectFlipped(granChild)
-      expect(recordSpy).toHaveBeenCalledOnce()
+      expect(actionRecorded).toHaveBeenCalledOnce()
       expect(animationEndReceived).not.toHaveBeenCalled()
     })
   })
@@ -326,5 +350,6 @@ function createAttachedFlippable(
   const behavior = new FlipBehavior(state)
   const mesh = createBox(id, {})
   mesh.addBehavior(behavior, true)
+  controlManager.registerControlable(mesh)
   return [behavior, mesh]
 }

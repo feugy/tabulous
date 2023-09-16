@@ -11,11 +11,15 @@
  */
 
 import { faker } from '@faker-js/faker'
-import { AnchorBehavior, FlipBehavior } from '@src/3d/behaviors'
-import { controlManager as manager, indicatorManager } from '@src/3d/managers'
+import { AnchorBehavior, FlipBehavior, MoveBehavior } from '@src/3d/behaviors'
+import {
+  controlManager as manager,
+  handManager,
+  indicatorManager
+} from '@src/3d/managers'
 import { beforeAll, beforeEach, describe, expect, it, vi } from 'vitest'
 
-import { configures3dTestEngine, createBox, sleep } from '../../test-utils'
+import { configures3dTestEngine, createBox } from '../../test-utils'
 
 describe('ControlManager', () => {
   /** @type {Scene} */
@@ -34,11 +38,30 @@ describe('ControlManager', () => {
   let snapSpy
   /** @type {SpyInstance<Parameters<FlipBehavior['flip']>, Promise<void>>} */
   let flipSpy
+  /** @type {SpyInstance<Parameters<AnchorBehavior['revert']>, Promise<void>>} */
+  let revertSpy
   const controlledChangeReceived = vi.fn()
+  const playerId = 'player-id-1'
+  const handOverlay = document.createElement('div')
+  const renderWidth = 480
+  const renderHeight = 350
 
-  configures3dTestEngine(created => ({ scene, handScene } = created))
+  configures3dTestEngine(
+    created => {
+      scene = created.scene
+      handScene = created.handScene
+      handManager.init({ ...created, playerId, overlay: handOverlay })
+    },
+    { renderWidth, renderHeight }
+  )
 
   beforeAll(() => {
+    vi.spyOn(window, 'getComputedStyle').mockImplementation(
+      () =>
+        /** @type {CSSStyleDeclaration} */ ({
+          height: `${renderHeight / 4}px`
+        })
+    )
     indicatorManager.init({ scene })
     manager.onActionObservable.add(action => actions.push(action))
     manager.onControlledObservable.add(controlledChangeReceived)
@@ -49,19 +72,21 @@ describe('ControlManager', () => {
     actions = []
 
     mesh = createBox('box1', {}, scene)
+    mesh.addBehavior(new MoveBehavior(), true)
     anchorable = createBox('box2', {})
-    anchorable.addBehavior(
-      new AnchorBehavior({
-        anchors: [{ id: 'anchor-0', width: 1, height: 1, depth: 0.5 }]
-      }),
-      true
-    )
+    const anchorableBehavior = new AnchorBehavior({
+      anchors: [{ id: 'anchor-0', width: 1, height: 1, depth: 0.5 }]
+    })
+    anchorable.addBehavior(anchorableBehavior, true)
     anchorable.addBehavior(new FlipBehavior(), true)
-    handMesh = createBox('box3', {}, handScene)
+    handMesh = createBox('hand-box', {}, handScene)
+    handMesh.addBehavior(new MoveBehavior(), true)
     snapSpy = vi.spyOn(anchorable.metadata, 'snap')
     flipSpy = vi.spyOn(anchorable.metadata, 'flip')
+    revertSpy = vi.spyOn(anchorableBehavior, 'revert')
 
     manager.registerControlable(mesh)
+    manager.registerControlable(handMesh)
     manager.registerControlable(anchorable)
     manager.init({ scene, handScene })
     controlledChangeReceived.mockReset()
@@ -74,7 +99,7 @@ describe('ControlManager', () => {
 
       manager.registerControlable(mesh)
       expect(manager.isManaging(mesh)).toBe(true)
-      expect(controlledChangeReceived).toHaveBeenCalledTimes(1)
+      expect(controlledChangeReceived).toHaveBeenCalledOnce()
       expect(controlledChangeReceived.mock.calls[0][0].has(mesh.id)).toBe(true)
     })
 
@@ -82,7 +107,7 @@ describe('ControlManager', () => {
       const mesh = createBox('box4', {})
       manager.registerControlable(mesh)
       expect(manager.isManaging(mesh)).toBe(true)
-      expect(controlledChangeReceived).toHaveBeenCalledTimes(1)
+      expect(controlledChangeReceived).toHaveBeenCalledOnce()
       expect(controlledChangeReceived.mock.calls[0][0].has(mesh.id)).toBe(true)
 
       mesh.dispose()
@@ -99,7 +124,7 @@ describe('ControlManager', () => {
 
       mesh.dispose()
       expect(manager.isManaging(mesh)).toBe(true)
-      expect(controlledChangeReceived).toHaveBeenCalledTimes(1)
+      expect(controlledChangeReceived).toHaveBeenCalledOnce()
       expect(controlledChangeReceived.mock.calls[0][0].has(mesh.id)).toBe(true)
     })
   })
@@ -111,38 +136,26 @@ describe('ControlManager', () => {
 
       manager.unregisterControlable(mesh)
       expect(manager.isManaging(mesh)).toBe(false)
-      expect(controlledChangeReceived).toHaveBeenCalledTimes(0)
+      expect(controlledChangeReceived).not.toHaveBeenCalled()
     })
   })
 
   describe('apply()', () => {
-    it('ignores uncontrolled mesh', () => {
+    it('ignores uncontrolled mesh', async () => {
       const mesh = createBox('box', {})
       mesh.addBehavior(new FlipBehavior(), true)
       const flipSpy = vi.spyOn(mesh.metadata, 'flip')
 
-      manager.apply({
-        meshId: mesh.id,
-        fn: 'flip',
-        args: [],
-        fromHand: false,
-        pos: undefined
-      })
+      await manager.apply({ meshId: mesh.id, fn: 'flip', args: [] })
       expect(flipSpy).not.toHaveBeenCalled()
       expect(actions).toHaveLength(0)
-      expect(controlledChangeReceived).toHaveBeenCalledTimes(0)
+      expect(controlledChangeReceived).not.toHaveBeenCalled()
     })
 
     it('applies an action', async () => {
       const args = [mesh.id, 'anchor-0', false]
-      manager.apply({
-        meshId: anchorable.id,
-        fn: 'snap',
-        args,
-        fromHand: false,
-        pos: undefined
-      })
-      expect(snapSpy).toHaveBeenCalledTimes(1)
+      await manager.apply({ meshId: anchorable.id, fn: 'snap', args })
+      expect(snapSpy).toHaveBeenCalledOnce()
       expect(snapSpy).toHaveBeenCalledWith(...args)
       expect(flipSpy).not.toHaveBeenCalled()
       expect(actions).toHaveLength(1)
@@ -150,50 +163,45 @@ describe('ControlManager', () => {
         meshId: anchorable.id,
         fn: 'snap',
         args,
+        revert: ['box1', [0, 0, 0], undefined, undefined],
         fromHand: false,
+        isLocal: true,
         duration: 100
       })
-      await sleep()
-      expect(controlledChangeReceived).toHaveBeenCalledTimes(2)
-      expect(controlledChangeReceived.mock.calls[0][0].has(mesh.id)).toBe(true)
     })
 
-    it('applies an action without arguments', () => {
-      manager.apply({
+    it('applies play action', async () => {
+      const meshId = 'another-box'
+      const state = { id: meshId, shape: 'box', texture: '' }
+      const playerId = 'player-id-2'
+      await manager.apply({ meshId, fn: 'play', args: [state, playerId] })
+      expect(actions).toHaveLength(1)
+      expect(actions[0]).toEqual({
+        meshId: meshId,
+        fn: 'play',
+        args: [expect.objectContaining(state), playerId],
+        fromHand: false,
+        isLocal: true
+      })
+    })
+
+    it('applies an action without arguments', async () => {
+      await manager.apply({
         meshId: anchorable.id,
         fn: 'flip',
-        args: [],
-        fromHand: false,
-        pos: undefined
+        args: []
       })
       expect(snapSpy).not.toHaveBeenCalled()
-      expect(flipSpy).toHaveBeenCalledTimes(1)
+      expect(flipSpy).toHaveBeenCalledOnce()
       expect(actions).toHaveLength(1)
       expect(actions[0]).toEqual({
         meshId: anchorable.id,
         fn: 'flip',
         fromHand: false,
+        isLocal: true,
         args: [],
         duration: 500
       })
-    })
-
-    it('applies an action without recording it', () => {
-      const args = [mesh.id, 'anchor-0', false]
-      manager.apply(
-        {
-          meshId: anchorable.id,
-          fn: 'snap',
-          args,
-          fromHand: false,
-          pos: undefined
-        },
-        true
-      )
-      expect(snapSpy).toHaveBeenCalledTimes(1)
-      expect(snapSpy).toHaveBeenCalledWith(...args)
-      expect(flipSpy).not.toHaveBeenCalled()
-      expect(actions).toHaveLength(0)
     })
 
     it('applies a move', async () => {
@@ -202,72 +210,50 @@ describe('ControlManager', () => {
         faker.number.int(999),
         faker.number.int(999)
       ]
-      manager.apply({
-        meshId: mesh.id,
-        pos,
-        fn: undefined,
-        args: undefined,
-        fromHand: false
-      })
+      const prev = [
+        faker.number.int(999),
+        faker.number.int(999),
+        faker.number.int(999)
+      ]
+      await manager.apply({ meshId: mesh.id, pos, prev })
       expect(mesh.absolutePosition.asArray()).toEqual(pos)
       expect(actions).toHaveLength(0)
       expect(snapSpy).not.toHaveBeenCalled()
       expect(flipSpy).not.toHaveBeenCalled()
-      await sleep()
-      expect(controlledChangeReceived).toHaveBeenCalledTimes(1)
-      expect(controlledChangeReceived.mock.calls[0][0].has(mesh.id)).toBe(true)
     })
 
     it('handles unsupported messages', async () => {
-      // @ts-expect-error
-      manager.apply({ meshId: mesh.id, position: [3, 3, 3] })
+      // @ts-expect-error --parameter is not a valid action
+      await manager.apply({ meshId: mesh.id, position: [3, 3, 3] })
       expect(mesh.absolutePosition.asArray()).toEqual([0, 0, 0])
       expect(snapSpy).not.toHaveBeenCalled()
       expect(flipSpy).not.toHaveBeenCalled()
       expect(actions).toHaveLength(0)
-      await sleep()
-      expect(controlledChangeReceived).toHaveBeenCalledTimes(1)
     })
 
     it('handles unsupported action', async () => {
-      manager.apply({
-        meshId: anchorable.id,
-        fn: 'rotate',
-        args: [],
-        pos: undefined,
-        fromHand: false
-      })
-      expect(snapSpy).not.toHaveBeenCalled()
-      expect(flipSpy).not.toHaveBeenCalled()
-      expect(actions).toHaveLength(0)
-      await sleep()
-      expect(controlledChangeReceived).toHaveBeenCalledTimes(1)
-    })
-
-    it('handles mesh without metadata', () => {
-      manager.apply({
-        meshId: mesh.id,
-        fn: 'snap',
-        args: [],
-        fromHand: false,
-        pos: undefined
-      })
+      await manager.apply({ meshId: anchorable.id, fn: 'rotate', args: [] })
       expect(snapSpy).not.toHaveBeenCalled()
       expect(flipSpy).not.toHaveBeenCalled()
       expect(actions).toHaveLength(0)
     })
 
-    it('stops applying on unregistered meshes', () => {
+    it('handles mesh without metadata', async () => {
+      await manager.apply({ meshId: mesh.id, fn: 'snap', args: [] })
+      expect(snapSpy).not.toHaveBeenCalled()
+      expect(flipSpy).not.toHaveBeenCalled()
+      expect(actions).toHaveLength(0)
+    })
+
+    it('stops applying on unregistered meshes', async () => {
       expect(manager.isManaging(anchorable)).toBe(true)
 
       manager.unregisterControlable(anchorable)
       expect(manager.isManaging(anchorable)).toBe(false)
-      manager.apply({
+      await manager.apply({
         meshId: anchorable.id,
         fn: 'snap',
-        args: [mesh.id, 'anchor-0'],
-        fromHand: false,
-        pos: undefined
+        args: [mesh.id, 'anchor-0']
       })
       expect(snapSpy).not.toHaveBeenCalled()
       expect(flipSpy).not.toHaveBeenCalled()
@@ -278,38 +264,175 @@ describe('ControlManager', () => {
   describe('record()', () => {
     it('ignores uncontrolled mesh', async () => {
       const mesh = createBox('box4', {})
-      manager.record({
-        mesh,
-        fn: 'flip',
-        args: [],
-        pos: undefined
-      })
+      await manager.record({ mesh, fn: 'flip', args: [] })
       expect(actions).toHaveLength(0)
-      expect(controlledChangeReceived).toHaveBeenCalledTimes(0)
     })
 
     it('handled unsupported messages', async () => {
       // @ts-expect-error
       manager.record({})
       // @ts-expect-error
-      manager.record({ id: 'box', fn: 'flip' })
+      await manager.record({ id: 'box', fn: 'flip' })
       expect(actions).toHaveLength(0)
-      expect(controlledChangeReceived).toHaveBeenCalledTimes(0)
     })
 
-    it('distunguishes action from main and hand scenes', () => {
-      manager.registerControlable(mesh)
-      manager.registerControlable(handMesh)
-      manager.record({ mesh, fn: 'flip', args: [], pos: undefined })
-      manager.record({ mesh: handMesh, fn: 'rotate', args: [], pos: undefined })
-      manager.record({ mesh: handMesh, fn: 'draw', args: [], pos: undefined })
-      manager.record({ mesh, fn: 'draw', args: [], pos: undefined })
+    it('distunguishes action from main and hand scenes', async () => {
+      await manager.record({ mesh, fn: 'flip', args: [] })
+      await manager.record({ mesh: handMesh, fn: 'rotate', args: [] })
+      await manager.record({ mesh: handMesh, fn: 'draw', args: [] })
+      await manager.record({ mesh, fn: 'draw', args: [] })
       expect(actions).toEqual([
-        { meshId: mesh.id, fn: 'flip', fromHand: false, args: [] },
-        { meshId: handMesh.id, fn: 'rotate', fromHand: true, args: [] },
-        { meshId: handMesh.id, fn: 'draw', fromHand: false, args: [] },
-        { meshId: mesh.id, fn: 'draw', fromHand: false, args: [] }
+        {
+          meshId: mesh.id,
+          fn: 'flip',
+          fromHand: false,
+          args: [],
+          isLocal: false
+        },
+        {
+          meshId: handMesh.id,
+          fn: 'rotate',
+          fromHand: true,
+          args: [],
+          isLocal: false
+        },
+        {
+          meshId: handMesh.id,
+          fn: 'draw',
+          fromHand: true,
+          args: [],
+          isLocal: false
+        },
+        {
+          meshId: mesh.id,
+          fn: 'draw',
+          fromHand: false,
+          args: [],
+          isLocal: false
+        }
       ])
+    })
+
+    it('relays action locality', async () => {
+      await manager.record({ mesh, fn: 'flip', args: [], isLocal: true })
+      expect(actions).toEqual([
+        {
+          meshId: mesh.id,
+          fn: 'flip',
+          fromHand: false,
+          args: [],
+          isLocal: true
+        }
+      ])
+    })
+
+    it('only relays moves', async () => {
+      const position = mesh.absolutePosition.asArray()
+      await manager.record({ mesh, pos: [2, 2, 2], prev: [3, 3, 3] })
+      expect(actions).toEqual([
+        {
+          meshId: mesh.id,
+          pos: [2, 2, 2],
+          prev: [3, 3, 3],
+          fromHand: false
+        }
+      ])
+      expect(mesh.absolutePosition.asArray()).toEqual(position)
+    })
+  })
+
+  describe('invokeLocal()', () => {
+    it('ignores uncontrolled mesh', async () => {
+      const mesh = createBox('box4', {})
+      await manager.invokeLocal(mesh, 'flip')
+      expect(actions).toHaveLength(0)
+    })
+
+    it('invokes an action', async () => {
+      await manager.invokeLocal(anchorable, 'flip')
+      expect(flipSpy).toHaveBeenCalledOnce()
+      expect(actions).toEqual([
+        {
+          meshId: anchorable.id,
+          fn: 'flip',
+          args: [],
+          duration: 500,
+          fromHand: false,
+          isLocal: true
+        }
+      ])
+    })
+
+    it('handles unsupported action', async () => {
+      await manager.invokeLocal(mesh, 'flip')
+      expect(actions).toHaveLength(0)
+    })
+  })
+
+  describe('revert()', () => {
+    it('ignores uncontrolled mesh', async () => {
+      vi.spyOn(console, 'warn').mockImplementation(() => void 0)
+      const mesh = createBox('box4', {})
+      await manager.revert({ meshId: mesh.id, fn: 'flip', args: [] })
+      expect(actions).toHaveLength(0)
+    })
+
+    it('reverts an action', async () => {
+      await manager.revert({ meshId: anchorable.id, fn: 'flip', args: [] })
+      expect(revertSpy).toHaveBeenCalledOnce()
+      expect(flipSpy).not.toHaveBeenCalled()
+      expect(actions).toEqual([
+        {
+          meshId: anchorable.id,
+          fn: 'flip',
+          args: [],
+          duration: 500,
+          fromHand: false,
+          isLocal: true
+        }
+      ])
+    })
+
+    it('reverts draw action', async () => {
+      const meshId = 'another-mesh'
+      const state = { id: meshId, shape: 'box', texture: '' }
+      await manager.revert({ meshId, fn: 'draw', args: [state, playerId] })
+      expect(actions).toEqual([
+        {
+          meshId,
+          fn: 'play',
+          args: [expect.objectContaining(state), playerId],
+          fromHand: false,
+          isLocal: true
+        }
+      ])
+    })
+
+    it('reverts a move', async () => {
+      const pos = [
+        faker.number.int(999),
+        faker.number.int(999),
+        faker.number.int(999)
+      ]
+      const prev = [
+        faker.number.int(999),
+        faker.number.int(999),
+        faker.number.int(999)
+      ]
+      await manager.revert({ meshId: mesh.id, pos, prev })
+      expect(mesh.absolutePosition.asArray()).toEqual(prev)
+      expect(actions).toHaveLength(0)
+    })
+
+    it('handles unsupported action', async () => {
+      await manager.revert({
+        meshId: anchorable.id,
+        // @ts-expect-error -- this is not a valid action
+        fn: 'unsupported',
+        args: []
+      })
+      expect(revertSpy).toHaveBeenCalledOnce()
+      expect(actions).toHaveLength(0)
     })
   })
 })

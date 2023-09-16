@@ -196,7 +196,9 @@ describe('RandomBehavior', () => {
             fn: 'setFace',
             args: [max],
             duration: 50,
-            fromHand: false
+            fromHand: false,
+            revert: [1],
+            isLocal: false
           },
           expect.anything()
         )
@@ -231,7 +233,36 @@ describe('RandomBehavior', () => {
             fn: 'random',
             args: [expect.any(Number)],
             duration: 150,
-            fromHand: false
+            fromHand: false,
+            revert: [1],
+            isLocal: false
+          },
+          expect.anything()
+        )
+      })
+
+      it('can revert randomized meshes', async () => {
+        const face = 3
+        behavior.fromState({ face })
+        expect(behavior.state.face).toEqual(face)
+        await mesh.metadata.random?.()
+        expect(behavior.state.face).toBeTypeOf('number')
+        actionRecorded.mockClear()
+
+        await behavior.revert('random', [face])
+
+        expect(behavior.state.face).toEqual(face)
+        expect(actionRecorded).toHaveBeenCalledOnce()
+        expect(actionRecorded).toHaveBeenNthCalledWith(
+          1,
+          {
+            meshId: mesh.id,
+            fn: 'random',
+            args: [face],
+            duration: 600,
+            fromHand: false,
+            revert: [expect.any(Number)],
+            isLocal: true
           },
           expect.anything()
         )
@@ -249,7 +280,37 @@ describe('RandomBehavior', () => {
             fn: 'random',
             args: [newFace],
             duration: 150,
-            fromHand: false
+            fromHand: false,
+            revert: [1],
+            isLocal: false
+          },
+          expect.anything()
+        )
+      })
+
+      it('can revert meshes with face set', async () => {
+        const face = 2
+        const newFace = 3
+        behavior.fromState({ face, canBeSet: true })
+        expect(behavior.state.face).toEqual(face)
+        await mesh.metadata.setFace?.(newFace)
+        expect(behavior.state.face).toEqual(newFace)
+        actionRecorded.mockClear()
+
+        await behavior.revert('setFace', [face])
+
+        expect(behavior.state.face).toEqual(face)
+        expect(actionRecorded).toHaveBeenCalledOnce()
+        expect(actionRecorded).toHaveBeenNthCalledWith(
+          1,
+          {
+            meshId: mesh.id,
+            fn: 'setFace',
+            args: [face],
+            duration: 200,
+            fromHand: false,
+            revert: [newFace],
+            isLocal: true
           },
           expect.anything()
         )

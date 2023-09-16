@@ -304,13 +304,15 @@ describe('serializeMeshes() 3D utility', () => {
       expect(serializeMeshes(handScene)).toEqual([serialized])
 
       const handMesh = /** @type {Mesh} */ (handScene.getMeshById(mesh.id))
-      handManager.draw(handMesh)
+      handManager.play(handMesh)
 
       expect(serializeMeshes(scene)).toEqual([serialized])
       expect(serializeMeshes(handScene)).toEqual([])
 
       await expectAnimationEnd(
-        getAnimatableBehavior(/** @type {Mesh} */ (scene.getMeshById(mesh.id)))
+        getAnimatableBehavior(
+          /** @type {Mesh} */ (scene.getMeshById(handMesh.id))
+        )
       )
 
       expect(serializeMeshes(scene)).toEqual([serialized])

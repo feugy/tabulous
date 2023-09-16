@@ -19,7 +19,8 @@ import { TargetBehaviorName } from './names'
  * @typedef {object} DropDetails detailed images definitions for a given mesh:
  * @property {Mesh[]} dropped - a list of dropped meshes.
  * @property {DropZone} zone - the zone onto meshes are dropped.
- * @property {boolean} [immediate=false] - when true, no animation should be ran.
+ * @property {boolean} [immediate=false] - when true, no animation should be ran.dropped.
+ * @property {boolean} [isLocal=false] - set action locality.
  */
 
 export class TargetBehavior {

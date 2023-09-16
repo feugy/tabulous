@@ -1,7 +1,9 @@
 // @ts-check
 /**
  * @typedef {import('@babylonjs/core').Mesh} Mesh
+ * @typedef {import('@tabulous/server/src/graphql').ActionName} ActionName
  * @typedef {import('@tabulous/server/src/graphql').DrawableState} DrawableState
+ * @typedef {import('@tabulous/server/src/graphql').Mesh} SerializedMesh
  * @typedef {import('@src/3d/utils').FloatKeyFrame} FloatKeyFrame
  * @typedef {import('@src/3d/utils').Vector3KeyFrame} Vector3KeyFrame
  */
@@ -9,8 +11,10 @@
 import { Animation } from '@babylonjs/core/Animations/animation'
 
 import { handManager } from '../managers/hand'
+import { actionNames } from '../utils/actions'
 import {
   attachFunctions,
+  attachProperty,
   detachFromParent,
   runAnimation
 } from '../utils/behaviors'
@@ -55,6 +59,9 @@ export class DrawBehavior extends AnimateBehavior {
   /**
    * Attaches this behavior to a mesh, adding to its metadata:
    * - the `draw()` method.
+   * - the `play()` method.
+   * - the `drawable` getter.
+   * - the `playable` getter.
    * @param {Mesh} mesh - which becomes drawable.
    */
   attach(mesh) {
@@ -70,12 +77,41 @@ export class DrawBehavior extends AnimateBehavior {
   }
 
   /**
-   * Draws the related mesh with an animation into and from the player's hand:
-   * - delegates draw to hand manager, who will call animateToHand() or animateToMain() accordingly
+   * Draws the related mesh with an animation into the player's hand:
+   * - delegates draw to hand manager, who will call animateToHand().
+   * @param {SerializedMesh} [state] - when applying drawn from peers, state of the drawn mesh.
+   * @param {string} [playerId] - the peer who drew mesh, if any.
    */
-  draw() {
+  async draw(state, playerId) {
     if (!this.mesh) return
-    handManager.draw(this.mesh)
+    if (state && playerId) {
+      await handManager.applyDraw(state, playerId)
+    } else {
+      await handManager.draw(this.mesh)
+    }
+  }
+
+  /**
+   * Plays the related mesh with an animation from the player's hand:
+   * - delegates draw to hand manager, who will call animateToMain().
+   */
+  async play() {
+    if (!this.mesh) return
+    await handManager.play(this.mesh)
+  }
+
+  /**
+   * Revert play actions. Ignores other actions.
+   * @param {ActionName} action - reverted action.
+   * @param {any[]} [args] - reverted arguments.
+   */
+  async revert(action, args = []) {
+    if (this.mesh && args.length === 2) {
+      const [state, playerId] = args
+      if (action === actionNames.play) {
+        await handManager.applyDraw(state, playerId)
+      }
+    }
   }
 
   /**
@@ -143,6 +179,17 @@ export class DrawBehavior extends AnimateBehavior {
     }
     this.state = { duration, unflipOnPick, flipOnPlay, angleOnPick }
     attachFunctions(this, 'draw')
+    attachFunctions(this, 'play')
+    attachProperty(
+      this,
+      'drawable',
+      () => this.mesh && !handManager.isManaging(this.mesh)
+    )
+    attachProperty(
+      this,
+      'playable',
+      () => this.mesh && handManager.isManaging(this.mesh)
+    )
   }
 }
 

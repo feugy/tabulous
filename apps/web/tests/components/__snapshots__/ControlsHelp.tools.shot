@@ -436,7 +436,7 @@ exports[`Components/Controls Help 1`] = `
     <dd
       class="s-IlJH5O1f0y3M"
     >
-      Voir l'objet en plein écran.
+      Affiche l'objet en plein écran.
     </dd>
     <dt
       class="s-IlJH5O1f0y3M"
@@ -1052,7 +1052,7 @@ exports[`Components/Controls Help 1`] = `
     <dd
       class="s-IlJH5O1f0y3M"
     >
-      Voir l'objet en plein écran.
+      Affiche l'objet en plein écran.
     </dd>
   </dl>
    
@@ -2090,7 +2090,7 @@ exports[`Components/Controls Help 1`] = `
     <dd
       class="s-IlJH5O1f0y3M"
     >
-      Enregistrer la position de la caméra.
+      Enregistre la position de la caméra.
     </dd>
     <dt
       class="s-IlJH5O1f0y3M"
@@ -2216,7 +2216,7 @@ exports[`Components/Controls Help 1`] = `
     <dd
       class="s-IlJH5O1f0y3M"
     >
-      Restaurer la position de la caméra.
+      Restaure la position de la caméra.
     </dd>
     <dt
       class="s-IlJH5O1f0y3M"
@@ -2708,7 +2708,7 @@ exports[`Components/Controls Help 1`] = `
     <dd
       class="s-IlJH5O1f0y3M"
     >
-      Piocher dans votre main
+      Piocher dans votre main, Jouer sur la table
     </dd>
     <dt
       class="s-IlJH5O1f0y3M"

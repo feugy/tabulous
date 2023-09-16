@@ -1,6 +1,7 @@
 // @ts-check
 /**
  * @typedef {import('@babylonjs/core').Mesh} Mesh
+ * @typedef {import('@tabulous/server/src/graphql').ActionName} ActionName
  * @typedef {import('@tabulous/server/src/graphql').FlippableState} FlippableState
  */
 
@@ -48,6 +49,8 @@ export class FlipBehavior extends AnimateBehavior {
    * - the `isFlipped` property.
    * - the `flip()` method.
    * It initializes its rotation according to the flip status.
+   *
+   * It observes other actions so it could flip this mesh when snapped to an anchor which requires it.
    * @param {Mesh} mesh - which becomes detailable.
    */
   attach(mesh) {
@@ -62,85 +65,18 @@ export class FlipBehavior extends AnimateBehavior {
    * - applies gravity
    * - returns
    * Does nothing if the mesh is already being animated.
-   * @returns {Promise<void>}
    */
   async flip() {
-    const {
-      state: { duration, isFlipped },
-      mesh
-    } = this
-    if (!mesh || isMeshLocked(mesh) || isAnimationInProgress(mesh)) {
-      return
-    }
-
-    controlManager.record({ mesh, fn: actionNames.flip, duration, args: [] })
-    await this.updateState({ isFlipped: !isFlipped })
+    await internalFlip(this)
   }
 
   /**
-   * Updates the mesh and behavior state to match provided data, with optional animation.
-   * Does not report to the control manager.
-   * @param {FlippableState} state - new state applied.
-   * @param {boolean} [withAnimation] - whether to animate the change.
-   * @returns {void|Promise<void>} returns when animation (if any) is complete.
+   * Revert flip actions. Ignores other actions
+   * @param {ActionName} action - reverted action.
    */
-  updateState({ isFlipped }, withAnimation = true) {
-    const {
-      state: { duration },
-      mesh,
-      rotateAnimation,
-      moveAnimation
-    } = this
-    if (!mesh) {
-      return
-    }
-    logger.debug({ mesh }, `start flipping ${mesh.id}`)
-
-    this.state.isFlipped = isFlipped
-    if (withAnimation) {
-      const attach = detachFromParent(mesh)
-      const [x, y, z] = mesh.position.asArray()
-      const { width } = getDimensions(mesh)
-
-      let [pitch, yaw, roll] = mesh.rotation.asArray()
-      // because of JS, yaw may be very close to Math.PI or 0, but not equal to it.
-      const rotation =
-        yaw < Math.PI - Tolerance && yaw >= -Tolerance ? Math.PI : -Math.PI
-      return runAnimation(
-        this,
-        () => {
-          // keep rotation between [0..2 * PI[, without modulo because it does not keep plain values
-          if (mesh.rotation.z < 0) {
-            mesh.rotation.z += 2 * Math.PI
-          } else if (mesh.rotation.z >= 2 * Math.PI) {
-            mesh.rotation.z -= 2 * Math.PI
-          }
-          attach()
-          applyGravity(mesh)
-          logger.debug({ mesh }, `end flipping ${mesh.id}`)
-        },
-        {
-          animation: rotateAnimation,
-          duration,
-          keys: [
-            { frame: 0, values: [pitch, yaw, roll] },
-            { frame: 100, values: [pitch, yaw, roll + rotation] }
-          ]
-        },
-        {
-          animation: moveAnimation,
-          duration,
-          keys: [
-            { frame: 0, values: [x, y, z] },
-            { frame: 50, values: [x, y + width, z] },
-            { frame: 100, values: [x, y, z] }
-          ]
-        }
-      )
-    } else {
-      mesh.rotation.z = isFlipped ? Math.PI : 0
-      applyGravity(mesh)
-      logger.debug({ mesh }, `end flipping ${mesh.id}`)
+  async revert(action) {
+    if (action === actionNames.flip && this.mesh) {
+      await internalFlip(this, true, true)
     }
   }
 
@@ -159,4 +95,71 @@ export class FlipBehavior extends AnimateBehavior {
     attachFunctions(this, 'flip')
     attachProperty(this, 'isFlipped', () => this.state.isFlipped)
   }
+}
+
+async function internalFlip(
+  /** @type {FlipBehavior} */ behavior,
+  withGravity = true,
+  isLocal = false
+) {
+  const {
+    state: { duration },
+    mesh,
+    rotateAnimation,
+    moveAnimation
+  } = behavior
+  if (!mesh || isMeshLocked(mesh) || isAnimationInProgress(mesh)) {
+    return
+  }
+  logger.debug({ mesh }, `start flipping ${mesh.id}`)
+  controlManager.record({
+    mesh,
+    fn: actionNames.flip,
+    duration,
+    args: [],
+    isLocal
+  })
+
+  behavior.state.isFlipped = !behavior.state.isFlipped
+  const attach = detachFromParent(mesh)
+  const [x, y, z] = mesh.position.asArray()
+  const { width } = getDimensions(mesh)
+
+  let [pitch, yaw, roll] = mesh.rotation.asArray()
+  // because of JS, yaw may be very close to Math.PI or 0, but not equal to it.
+  const rotation =
+    yaw < Math.PI - Tolerance && yaw >= -Tolerance ? Math.PI : -Math.PI
+  return runAnimation(
+    behavior,
+    () => {
+      // keep rotation between [0..2 * PI[, without modulo because it does not keep plain values
+      if (mesh.rotation.z < 0) {
+        mesh.rotation.z += 2 * Math.PI
+      } else if (mesh.rotation.z >= 2 * Math.PI) {
+        mesh.rotation.z -= 2 * Math.PI
+      }
+      attach()
+      if (withGravity) {
+        applyGravity(mesh)
+      }
+      logger.debug({ mesh }, `end flipping ${mesh.id}`)
+    },
+    {
+      animation: rotateAnimation,
+      duration,
+      keys: [
+        { frame: 0, values: [pitch, yaw, roll] },
+        { frame: 100, values: [pitch, yaw, roll + rotation] }
+      ]
+    },
+    {
+      animation: moveAnimation,
+      duration,
+      keys: [
+        { frame: 0, values: [x, y, z] },
+        { frame: 50, values: [x, y + width, z] },
+        { frame: 100, values: [x, y, z] }
+      ]
+    }
+  )
 }
