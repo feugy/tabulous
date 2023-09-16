@@ -89,7 +89,7 @@ let pruneUnusedPointers
 let applyAction
 /** @type {SpyInstance<Parameters<replayManager['record']>, void>} */
 let recordHistory
-/** @type {SpyInstance<Parameters<replayManager['replayHistory']>, void>} */
+/** @type {SpyInstance<Parameters<replayManager['replayHistory']>, Promise<void>>} */
 let replayHistory
 
 beforeAll(() => {

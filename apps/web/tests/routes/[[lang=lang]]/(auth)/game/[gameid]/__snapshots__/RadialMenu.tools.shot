@@ -83,7 +83,7 @@ exports[`More items 1`] = `
 HTMLCollection [
   <aside
     class="s-4nVDVOrf1Uux"
-    style="left: 25%; top: 25%; --size: 180px;"
+    style="left: 25%; top: 25%; --size: 180px; animation: __svelte_1296847330_0 0ms linear 0ms 1 both;"
   >
     <ul
       class="s-4nVDVOrf1Uux"
@@ -91,7 +91,7 @@ HTMLCollection [
     >
       <li
         class="s-4nVDVOrf1Uux"
-        style="opacity: 1; left: 90.00000000000001px; top: 0px;"
+        style="animation: __svelte_930000001_0 0ms linear 0ms 1 both;"
       >
         <button
           class="s-NMyTiX1zi6rz"
@@ -114,7 +114,7 @@ HTMLCollection [
       </li>
       <li
         class="s-4nVDVOrf1Uux"
-        style="opacity: 1; left: 160.3648334221227px; top: 33.885917832714px;"
+        style="animation: __svelte_3368425836_0 0ms linear 0ms 1 both;"
       >
         <button
           class="s-NMyTiX1zi6rz"
@@ -138,7 +138,7 @@ HTMLCollection [
       </li>
       <li
         class="s-4nVDVOrf1Uux"
-        style="opacity: 1; left: 177.74351209636413px; top: 110.02688405606831px;"
+        style="animation: __svelte_234368173_0 0ms linear 0ms 1 both;"
       >
         <button
           class="s-NMyTiX1zi6rz"
@@ -162,7 +162,7 @@ HTMLCollection [
       </li>
       <li
         class="s-4nVDVOrf1Uux"
-        style="opacity: 1; left: 129.04953652058023px; top: 171.08719811121773px;"
+        style="animation: __svelte_3699852378_0 0ms linear 0ms 1 both;"
       >
         <button
           class="s-NMyTiX1zi6rz"
@@ -185,7 +185,7 @@ HTMLCollection [
       </li>
       <li
         class="s-4nVDVOrf1Uux"
-        style="opacity: 1; left: 50.95046347941975px; top: 171.0871981112177px;"
+        style="animation: __svelte_2025481201_0 0ms linear 0ms 1 both;"
       >
         <button
           class="s-NMyTiX1zi6rz"
@@ -208,7 +208,7 @@ HTMLCollection [
       </li>
       <li
         class="s-4nVDVOrf1Uux"
-        style="opacity: 1; left: 2.2564879036358745px; top: 110.0268840560683px;"
+        style="animation: __svelte_3306837136_0 0ms linear 0ms 1 both;"
       >
         <button
           class="s-NMyTiX1zi6rz"
@@ -231,7 +231,7 @@ HTMLCollection [
       </li>
       <li
         class="s-4nVDVOrf1Uux"
-        style="opacity: 1; left: 19.635166577877328px; top: 33.88591783271398px;"
+        style="animation: __svelte_2770042485_0 0ms linear 0ms 1 both;"
       >
         <button
           class="s-NMyTiX1zi6rz"

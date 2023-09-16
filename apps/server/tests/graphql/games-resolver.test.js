@@ -2,6 +2,7 @@
 /**
  * @typedef {import('fastify').FastifyInstance} FastifyInstance
  * @typedef {import('@tabulous/server/src/services/players').Player} Player
+ * @typedef {import('@tabulous/server/src/services/games').ActionName} ActionName
  * @typedef {import('@tabulous/server/src/services/games').GameData} GameData
  * @typedef {import('@tabulous/server/src/services/games').GameListUpdate} GameListUpdate
  * @typedef {import('@tabulous/server/src/services/games').GameParameters<?>} GameParameters
@@ -542,14 +543,15 @@ describe('given a started server', () => {
               time: Date.now() - 5000,
               playerId: player.id,
               meshId: 'box1',
-              fn: 'flip',
+              fn: /** @type {ActionName} */ ('flip'),
               argsStr: '[]'
             },
             {
               time: Date.now() - 3000,
               playerId: player.id,
               meshId: 'box1',
-              pos: [0, 0, 3]
+              pos: [0, 0, 3],
+              prev: [0, 0, 0]
             }
           ],
           guestIds: [],
@@ -589,6 +591,7 @@ describe('given a started server', () => {
         }
         ... on PlayerMove {
           pos
+          prev
         }
       }
     } ... on GameParameters { 

@@ -74,6 +74,22 @@ labels:
   help-rotate: Rotates the object (or the active selection).
   help-save-camera: Updates the camera position.
   help-zoom: Zooms in or out.
+  history:
+    decrement: Splits
+    draw: Draws
+    flip: Flips
+    flipAll: Flips the stack
+    increment: Groups
+    move: Moves
+    play: Plays
+    pop: Pops
+    push: Stacks
+    random: Throws
+    reorder: Shuffles
+    rotate: Rotates
+    setFace: Sets a face
+    snap: Snaps
+    unsnap: Unsnaps
   home: Home
   host: host
   last-updated: 'Last update: { published, date, date-only }'

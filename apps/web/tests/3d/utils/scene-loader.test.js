@@ -64,6 +64,7 @@ let createRoundedTile
 const renderWidth = 2048
 const renderHeight = 1024
 const pawnFile = '/pawn.obj'
+const playerId = 'player-id-1'
 
 beforeAll(async () => {
   engine = initialize3dEngine().engine
@@ -109,7 +110,7 @@ describe('serializeMeshes() 3D utility', () => {
         renderWidth,
         renderHeight
       }))
-      handManager.init({ scene, handScene, overlay })
+      handManager.init({ scene, handScene, overlay, playerId })
     })
 
     beforeEach(() => {

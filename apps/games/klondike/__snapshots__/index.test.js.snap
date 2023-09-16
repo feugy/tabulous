@@ -21,6 +21,7 @@ exports[`klondike game descriptor > askForParameters() + addPlayer() > enrolls e
   "created": 1691859511667,
   "guestIds": [],
   "hands": [],
+  "history": [],
   "id": "game-unique-id",
   "kind": "klondike",
   "locales": {
@@ -2120,6 +2121,7 @@ exports[`klondike game descriptor > askForParameters() + addPlayer() > enrolls e
           },
           {
             "depth": 4.25,
+            "flip": false,
             "height": 0.01,
             "id": "discard",
             "width": 3,
@@ -4276,6 +4278,7 @@ exports[`klondike game descriptor > build() > builds game setup 1`] = `
           },
           {
             "depth": 4.25,
+            "flip": false,
             "height": 0.01,
             "id": "discard",
             "width": 3,

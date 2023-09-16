@@ -21,6 +21,7 @@ exports[`draughts game descriptor > askForParameters() + addPlayer() > enrolls e
   "created": 1691859511667,
   "guestIds": [],
   "hands": [],
+  "history": [],
   "id": "game-unique-id",
   "kind": "draughts",
   "locales": {
@@ -1215,6 +1216,7 @@ exports[`draughts game descriptor > askForParameters() + addPlayer() > enrolls e
   "created": 1691859511667,
   "guestIds": [],
   "hands": [],
+  "history": [],
   "id": "game-unique-id",
   "kind": "draughts",
   "locales": {
