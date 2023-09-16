@@ -58,7 +58,7 @@ exports[`Colored Text 1`] = `
 exports[`Positioned text 1`] = `
 <figure
   class="s-engCJu8q-fNe positioned colored"
-  style="--dimension: 60px; --color: red; --top: 150px; --left: 0px; --border-width: 3px"
+  style="--dimension: 60px; --color: red; --top: 150px; --left: 50px; --border-width: 3px"
 >
   <img
     alt="avatar for Joe le clodo"
@@ -79,7 +79,7 @@ exports[`Positioned text 1`] = `
 exports[`Positionned avatar 1`] = `
 <figure
   class="s-engCJu8q-fNe positioned colored"
-  style="--dimension: 60px; --color: lime; --top: 150px; --left: 0px; --border-width: 3px"
+  style="--dimension: 60px; --color: lime; --top: 150px; --left: 50px; --border-width: 3px"
 >
   <img
     alt="avatar for Joe le clodo"

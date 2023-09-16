@@ -21,26 +21,16 @@
 
 import * as graphQL from '@src/graphql'
 import {
-  BehaviorSubject,
-  combineLatest,
-  debounceTime,
-  filter,
-  map,
-  merge
-} from 'rxjs'
-import { get } from 'svelte/store'
-
+  clearThread,
+  loadThread,
+  serializeThread
+} from '@src/stores/discussion'
 import {
-  buildPlayerColors,
-  findPlayerColor,
-  findPlayerPreferences,
-  isLobby,
-  makeLogger,
-  sleep
-} from '../utils'
-import { clearThread, loadThread, serializeThread } from './discussion'
-import { runMutation, runQuery, runSubscription } from './graphql-client'
-import { notify } from './notifications'
+  runMutation,
+  runQuery,
+  runSubscription
+} from '@src/stores/graphql-client'
+import { notify } from '@src/stores/notifications'
 import {
   closeChannels,
   connectWith,
@@ -50,8 +40,25 @@ import {
   lastMessageSent,
   openChannels,
   send
-} from './peer-channels'
-import { toastInfo } from './toaster'
+} from '@src/stores/peer-channels'
+import { toastInfo } from '@src/stores/toaster'
+import {
+  buildPlayerColors,
+  findPlayerColor,
+  findPlayerPreferences,
+  isLobby,
+  makeLogger,
+  sleep
+} from '@src/utils'
+import {
+  BehaviorSubject,
+  combineLatest,
+  debounceTime,
+  filter,
+  map,
+  merge
+} from 'rxjs'
+import { get } from 'svelte/store'
 // dynamically import ./game-engine which depends on
 // This allows splitting production chunks and keep Babylonjs (1.6Mb uncompressed) on its own.
 
@@ -628,14 +635,15 @@ function serializeGame(
   /** @type {Engine} */ engine,
   /** @type {string} */ currentPlayerId
 ) {
-  const { meshes, handMeshes } =
+  const { meshes, handMeshes, history } =
     (isLobby(currentGame$.value) ? null : engine?.serialize()) ?? {}
   return {
     id: /** @type {GameOrGameParameters} */ (currentGame$.value).id,
     meshes,
     hands: mergeHands({ playerId: currentPlayerId, meshes: handMeshes }),
     messages: serializeThread(),
-    cameras
+    cameras,
+    history
   }
 }
 

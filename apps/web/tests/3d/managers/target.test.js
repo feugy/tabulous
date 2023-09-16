@@ -212,6 +212,22 @@ describe('TargetManager', () => {
         expectActiveZone(manager.findDropZone(mesh, 'box'), zone2, color)
       })
 
+      it('returns closest target below mesh regardless of elevation and priorities', () => {
+        createsTargetZone('target3', {
+          position: new Vector3(0.5, 0, 0),
+          priority: 10
+        })
+        createsTargetZone('target4', { position: new Vector3(-0.5, 1, 0) })
+        const zone5 = createsTargetZone('target5', {
+          position: new Vector3(0, 0, 0)
+        })
+
+        const mesh = createBox('box', {})
+        mesh.setAbsolutePosition(new Vector3(0, 5, 0))
+
+        expectActiveZone(manager.findDropZone(mesh, 'box'), zone5, color)
+      })
+
       it('returns highest target below mesh regardless of priorities', () => {
         createsTargetZone('target3', {
           position: new Vector3(0, 0, 0),
@@ -271,6 +287,17 @@ describe('TargetManager', () => {
             mesh: zone4.mesh,
             targetable: zone4.targetable
           })
+        })
+
+        it('gives precedence to a single drop zone that ignore part', () => {
+          createsTargetZone('target4', { position: new Vector3(0, 0, 0) })
+          createsTargetZone('target5', { position: new Vector3(1, 0, 0) })
+          const zone6 = createsTargetZone('target6', {
+            position: new Vector3(0.5, 0, 0),
+            ignoreParts: true
+          })
+
+          expect(manager.findDropZone(mesh, 'box')).toEqual(zone6)
         })
 
         it('returns null when at least one part is not covered', () => {

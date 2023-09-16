@@ -25,10 +25,13 @@
     connected,
     currentGame,
     gamePlayerById,
+    history,
     joinGame,
     leaveGame,
     listFriends,
     playerColor,
+    replayHistory,
+    replayRank,
     sendToThread,
     thread,
     toastError,
@@ -37,7 +40,7 @@
   import {
     actionMenuProps,
     engineLoading,
-    handMeshes,
+    handMeshCount,
     handVisible,
     highlightHand,
     initEngine,
@@ -183,10 +186,13 @@
     playerById={$gamePlayerById}
     connected={$connected}
     thread={$thread}
+    history={$history}
     friends={$friends}
+    replayRank={$replayRank}
     {actionNamesByButton}
     {actionNamesByKey}
     on:sendMessage={({ detail }) => sendToThread(detail.text)}
+    on:replay={({ detail }) => replayHistory(detail)}
   />
 </div>
 <GameMenu {longTapDelay} />
@@ -205,7 +211,7 @@
     <GameHand
       visible={$handVisible}
       highlight={$highlightHand}
-      meshes={$handMeshes}
+      meshCount={$handMeshCount}
       color={$playerColor}
       bind:node={hand}
     />

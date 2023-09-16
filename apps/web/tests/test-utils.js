@@ -17,6 +17,7 @@
  * @typedef {import('@src/utils').ScreenPosition} ScreenPosition
  * @typedef {import('@tabulous/server/src/graphql').ActionName} ActionName
  * @typedef {import('fastify').FastifyInstance} FastifyInstance
+ * @typedef {typeof import('@src/3d/managers/hand').handManager} HandManager
  * @typedef {typeof import('@src/3d/managers/indicator').indicatorManager} IndicatorManager
  */
 /**
@@ -561,12 +562,12 @@ export function expectDisposed(scene, ...meshes) {
 
 /**
  * @param {Scene} scene - tested scene.
- * @param {...Mesh} meshes - meshes expected to be in the scene.
+ * @param {...(?Mesh|undefined)} meshes - meshes expected to be in the scene.
  */
 export function expectNotDisposed(scene, ...meshes) {
   for (const mesh of meshes) {
     expect(
-      scene.getMeshById(mesh?.id)?.id,
+      scene.getMeshById(mesh?.id ?? '')?.id,
       `mesh id ${mesh?.id} should not be disposed`
     ).toBeDefined()
   }
@@ -640,6 +641,24 @@ export function waitForObservable(observable, timeout = 100) {
         resolve(value)
         setTimeout(() => subscription.unsubscribe(), 0)
       }
+    })
+  })
+}
+
+/**
+ * Wait for the next hand manager layout.
+ * @param {HandManager} manager - hand manager
+ * @param {number} [timeout] - time to wait for layout, in ms.
+ */
+export function waitForLayout(manager, timeout = 1000) {
+  return new Promise((resolve, reject) => {
+    const timer = setTimeout(
+      () => reject(new Error(`no hand layout after ${timeout}ms`)),
+      timeout
+    )
+    manager.onHandChangeObservable.addOnce(() => {
+      clearTimeout(timer)
+      setTimeout(resolve, 150)
     })
   })
 }

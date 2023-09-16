@@ -25,10 +25,12 @@ import {
   controlManager,
   inputManager,
   moveManager,
+  replayManager,
   selectionManager
 } from '../3d/managers'
 import { actionNames, buttonIds } from '../3d/utils/actions'
 import { selectDetailedFace } from '../3d/utils/behaviors'
+import { sortByElevation } from '../3d/utils/gravity'
 import { getMeshScreenPosition } from '../3d/utils/vector'
 import { isTouchScreen } from '../utils/dom'
 import { shuffle } from './collections'
@@ -95,6 +97,7 @@ const {
   flip,
   flipAll,
   increment,
+  play,
   pop,
   push,
   random,
@@ -137,6 +140,8 @@ export function attachInputs({ engine, hoverDelay, actionMenuProps$ }) {
   const details$ = new Subject()
   /** @type {Subject<Action|Move>} */
   const behaviorAction$ = new Subject()
+  /** @type {Subject<number>} */
+  const replayRank$ = new Subject()
 
   /** @type {BabylonToRxMapping[]} */
   const mappings = [
@@ -178,6 +183,11 @@ export function attachInputs({ engine, hoverDelay, actionMenuProps$ }) {
     {
       observable: controlManager.onActionObservable,
       subject: behaviorAction$,
+      observer: null
+    },
+    {
+      observable: replayManager.onReplayRankObservable,
+      subject: replayRank$,
       observer: null
     }
   ]
@@ -259,7 +269,7 @@ export function attachInputs({ engine, hoverDelay, actionMenuProps$ }) {
                 if (actions) {
                   applyMatchingAction(actions, mesh, fromHand)
                 }
-              } else {
+              } else if (!replayManager.isReplaying) {
                 const actions = computeMenuProps(mesh, fromHand)
                 logger.info(
                   { mesh, event, actions },
@@ -313,7 +323,7 @@ export function attachInputs({ engine, hoverDelay, actionMenuProps$ }) {
             }
             if (!moveManager.inProgress) {
               const position = { x: event.x, y: event.y }
-              if (kind === 'left') {
+              if (kind === 'left' && !replayManager.isReplaying) {
                 logger.info(
                   { button, long, pointers, event },
                   `start selecting meshes`
@@ -535,16 +545,21 @@ export function attachInputs({ engine, hoverDelay, actionMenuProps$ }) {
        * - when pushing selected mesh onto a stack, selects the entire stack
        */
       behaviorAction$.subscribe({
-        next: ({ fn, meshId, args }) => {
-          if (fn !== flip && fn !== rotate) {
+        next: actionOrMove => {
+          if (!('fn' in actionOrMove)) {
+            return
+          }
+          if (actionOrMove.fn !== flip && actionOrMove.fn !== rotate) {
             resetMenu()
           }
           if (
-            fn === push &&
-            [...selectionManager.meshes].some(({ id }) => args[0] === id)
+            actionOrMove.fn === push &&
+            [...selectionManager.meshes].some(
+              ({ id }) => actionOrMove.args[0] === id
+            )
           ) {
             const mesh = engine.scenes.reduce(
-              (mesh, scene) => mesh || scene.getMeshById(meshId),
+              (mesh, scene) => mesh || scene.getMeshById(actionOrMove.meshId),
               /** @type {?Mesh} */ (null)
             )
             setTimeout(() => {
@@ -553,6 +568,19 @@ export function attachInputs({ engine, hoverDelay, actionMenuProps$ }) {
                 selectionManager.select(stack)
               }
             }, 0)
+          }
+        }
+      }),
+
+      /**
+       * When replaying, reset the menu, mesh details and current selection.
+       */
+      replayRank$.subscribe({
+        next: () => {
+          if (replayManager.isReplaying) {
+            resetMenu()
+            resetDetails()
+            selectionManager.clear()
           }
         }
       })
@@ -614,6 +642,7 @@ export function triggerAction(mesh, actionName, ...parameters) {
  * When N quantity is applied to a stack, action is called on the N highest meshes.
  * When the flip action is triggered on a stack (and no quantity is provided), only flipAll is called on this stack's base.
  * When the rotate action is triggered on a stack (and no quantity is provided), only rotate is called on this stack's base.
+ * When an entire stack is selected, applies the action to each mesh, highest mesh first.
  * @param {Mesh} mesh - related mesh.
  * @param {ActionName} actionName - name of the triggered action.
  * @param {number} [quantity] - number of meshes of a given stack which will apply this action
@@ -625,16 +654,20 @@ export function triggerActionOnSelection(mesh, actionName, quantity) {
         if (isRotatingEntireStack(baseMesh, actionName, quantity)) {
           triggerAction(baseMesh, actionName)
         } else {
-          for (const mesh of (baseMesh.metadata.stack ?? [baseMesh])
-            .slice(-quantity)
-            .reverse()) {
-            triggerAction(mesh, actionName, quantity)
+          for (const mesh of (baseMesh.metadata.stack ?? [baseMesh]).slice(
+            -quantity
+          )) {
+            triggerAction(mesh, actionName)
           }
         }
       }
     }
   } else {
-    const meshes = new Set(selectionManager.getSelection(mesh))
+    const meshes = new Set(
+      // for replay, is it important we apply actions to highest meshes first,
+      // so they could be poped from their stack
+      sortByElevation(selectionManager.getSelection(mesh), true)
+    )
     const exclude = new Set()
     for (const mesh of meshes) {
       if (mesh?.metadata && !exclude.has(mesh)) {
@@ -726,13 +759,29 @@ const menuActionByName = new Map([
   [
     draw,
     {
-      support: (mesh, { selectedMeshes }) => canAllDo(draw, selectedMeshes),
+      support: (mesh, { selectedMeshes }) =>
+        canAllDo('drawable', selectedMeshes),
       build: (mesh, params) => ({
-        icon: params.fromHand ? 'back_hand' : 'front_hand',
-        title: params.fromHand ? 'tooltips.play' : 'tooltips.draw',
-        badge: 'shortcuts.draw',
+        icon: 'front_hand',
+        title: 'tooltips.draw',
+        badge: 'shortcuts.drawOrPlay',
         onClick: event =>
           triggerActionOnSelection(mesh, draw, getQuantity(event)),
+        max: computesStackSize(mesh, params)
+      })
+    }
+  ],
+  [
+    play,
+    {
+      support: (mesh, { selectedMeshes }) =>
+        canAllDo('playable', selectedMeshes),
+      build: (mesh, params) => ({
+        icon: 'back_hand',
+        title: 'tooltips.play',
+        badge: 'shortcuts.drawOrPlay',
+        onClick: event =>
+          triggerActionOnSelection(mesh, play, getQuantity(event)),
         max: computesStackSize(mesh, params)
       })
     }
@@ -963,7 +1012,7 @@ function canIncrement(
 }
 
 function canAllDo(
-  /** @type {ActionName} */ action,
+  /** @type {ActionName | 'playable' | 'drawable'} */ action,
   /** @type {Mesh[]} */ meshes
 ) {
   return meshes.every(mesh => Boolean(mesh.metadata?.[action]))

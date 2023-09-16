@@ -54,25 +54,42 @@ labels:
   game-min-time: "{minTime}'"
   game-publishers: 'Publisher(s): '
   guest: guest
-  help-add-to-selection: Select multiple objects.
-  help-clear-selection: Unselect objects.
-  help-decrement: Split an object from the group.
-  help-detail: See object details.
-  help-draw: Draw the object (or the current selection) in your hand, or play from your hand.
-  help-flip: Flip the object (or the active selection).
-  help-increment: Group the active selection together.
-  help-move: Move the object (or the active selection), if not locked.
-  help-new-camera: Save the camera position.
-  help-open-menu: Open action menu for this object (or the active selection).
+  help-add-to-selection: Selects multiple objects.
+  help-clear-selection: Unselects objects.
+  help-decrement: Splits an object from the group.
+  help-detail: Displays object details.
+  help-draw: Draws the object (or the current selection) in your hand.
+  help-flip: Flips the object (or the active selection).
+  help-increment: Groups the active selection together.
+  help-move: Moves the object (or the active selection), if not locked.
+  help-new-camera: Saves the camera position.
+  help-open-menu: Opens action menu for this object (or the active selection).
   help-pan-camera: Pans the camera.
+  help-play: Play the object (or the current selection) on the table.
   help-pop: Pops an object from the stack.
   help-push: Stacks objects of the active selection.
-  help-random: Throw dice.
-  help-restore-camera: Restore the camera position.
+  help-random: Throws dice.
+  help-restore-camera: Restores the camera position.
   help-rotate-camera: Rotates and inclines the camera.
   help-rotate: Rotates the object (or the active selection).
   help-save-camera: Updates the camera position.
-  help-zoom: Zoom in or out.
+  help-zoom: Zooms in or out.
+  history:
+    decrement: Splits
+    draw: Draws
+    flip: Flips
+    flipAll: Flips the stack
+    increment: Groups
+    move: Moves
+    play: Plays
+    pop: Pops
+    push: Stacks
+    random: Throws
+    reorder: Shuffles
+    rotate: Rotates
+    setFace: Sets a face
+    snap: Snaps
+    unsnap: Unsnaps
   home: Home
   host: host
   last-updated: 'Last update: { published, date, date-only }'
@@ -177,7 +194,7 @@ tooltips:
   zoom: Zoom
 shortcuts:
   detail: v
-  draw: d
+  drawOrPlay: d
   flip: f
   hand: h
   pop: p

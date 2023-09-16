@@ -109,20 +109,20 @@ class MoveManager {
     let zones = new Set()
     this.inProgress = true
     const actionObserver = controlManager.onActionObservable.add(
-      ({ meshId, fn }) => {
-        if (fn === actionNames.draw) {
-          const mesh = moved.find(({ id }) => id === meshId)
-          if (mesh && mesh.getScene() !== this.scene) {
+      actionOrMove => {
+        if ('fn' in actionOrMove && actionOrMove.fn === actionNames.play) {
+          const mesh = moved.find(({ id }) => id === actionOrMove.meshId)
+          if (mesh) {
             // mesh dragged from hand to main scene
             const idx = moved.indexOf(mesh)
             moved.splice(idx, 1)
             const wasAutoselected = this.autoSelect.delete(mesh)
-            const newMesh = this.scene.getMeshById(meshId)
+            const newMesh = this.scene.getMeshById(actionOrMove.meshId)
             if (newMesh) {
               moved.splice(idx, 0, newMesh)
               sceneUsed = this.scene
               lastPosition = newMesh.absolutePosition.clone()
-              lastPosition.y -= this.elevation
+              lastPosition.y = 0
               if (wasAutoselected) {
                 this.autoSelect.add(newMesh)
               }
@@ -148,7 +148,11 @@ class MoveManager {
       }
       const { x, y, z } = mesh.absolutePosition
       mesh.setAbsolutePosition(new Vector3(x, y + this.elevation, z))
-      controlManager.record({ mesh, pos: mesh.absolutePosition.asArray() })
+      controlManager.record({
+        mesh,
+        pos: mesh.absolutePosition.asArray(),
+        prev: [x, y, z]
+      })
       this.notifyMove(mesh)
     }
 
@@ -174,6 +178,7 @@ class MoveManager {
         }
 
         for (const mesh of moved) {
+          const prev = mesh.absolutePosition.asArray()
           mesh.setAbsolutePosition(mesh.absolutePosition.addInPlace(move))
           const zone = targetManager.findDropZone(
             mesh,
@@ -183,7 +188,11 @@ class MoveManager {
           if (zone) {
             zones.add(zone)
           }
-          controlManager.record({ mesh, pos: mesh.absolutePosition.asArray() })
+          controlManager.record({
+            mesh,
+            pos: mesh.absolutePosition.asArray(),
+            prev
+          })
         }
       } else {
         logger.info(
@@ -280,7 +289,8 @@ class MoveManager {
             .then(() =>
               controlManager.record({
                 mesh,
-                pos: mesh.absolutePosition.asArray()
+                pos: mesh.absolutePosition.asArray(),
+                prev: [x, y, z]
               })
             )
         })
@@ -343,7 +353,7 @@ class MoveManager {
 
   /**
    * @param {?Mesh} mesh - tested mesh
-   * @returns {boolean} whether this mesh is being moved
+   * @returns whether this mesh is being moved
    */
   // eslint-disable-next-line no-unused-vars
   isMoving(mesh) {
@@ -380,7 +390,7 @@ class MoveManager {
 
   /**
    * @param {?Mesh} [mesh] - tested mesh
-   * @returns {boolean} whether this mesh is controlled or not
+   * @returns whether this mesh is controlled or not
    */
   isManaging(mesh) {
     return mesh != undefined && this.meshIds.has(mesh.id)

@@ -5,7 +5,7 @@
    */
 
   import { Discussion, MinimizableSection } from '@src/components'
-  import { players, thread } from '@tests/fixtures/Discussion.testdata'
+  import { history, players, thread } from '@tests/fixtures/Discussion.testdata'
 
   export let placement = 'top'
   /** @type {number} */
@@ -28,7 +28,7 @@
     on:change
   >
     {#if !currentTab}
-      <Discussion {playerById} {thread} />
+      <Discussion {playerById} {thread} {history} />
     {/if}
     {#if currentTab === 1}
       <span class="p-4">

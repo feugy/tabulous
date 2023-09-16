@@ -21,6 +21,7 @@ exports[`chess game descriptor > askForParameters() + addPlayer() > enrolls each
   "created": 1691859511667,
   "guestIds": [],
   "hands": [],
+  "history": [],
   "id": "game-unique-id",
   "kind": "chess",
   "locales": {
@@ -1111,6 +1112,7 @@ exports[`chess game descriptor > askForParameters() + addPlayer() > enrolls each
   "created": 1691859511667,
   "guestIds": [],
   "hands": [],
+  "history": [],
   "id": "game-unique-id",
   "kind": "chess",
   "locales": {

@@ -258,7 +258,7 @@
     }
 
     .gutter {
-      @apply relative z-20 pointer-events-auto bg-$base-darker h-full w-1;
+      @apply relative z-20 pointer-events-auto bg-$base-darker h-full w-1.5;
       cursor: ew-resize;
     }
 
@@ -304,7 +304,7 @@
       }
 
       .gutter {
-        @apply w-full h-1;
+        @apply w-full h-1.5;
         cursor: ns-resize;
       }
 
@@ -327,6 +327,6 @@
   }
 
   span {
-    @apply flex-1 overflow-hidden;
+    @apply flex-1 overflow-auto;
   }
 </style>

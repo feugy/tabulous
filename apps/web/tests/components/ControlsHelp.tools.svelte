@@ -17,7 +17,7 @@
       [$_('shortcuts.flip'), [actionNames.flip]],
       [$_('shortcuts.rotate'), [actionNames.rotate]],
       [$_('shortcuts.toggleLock'), [actionNames.toggleLock]],
-      [$_('shortcuts.draw'), [actionNames.draw]],
+      [$_('shortcuts.drawOrPlay'), [actionNames.draw, actionNames.play]],
       [$_('shortcuts.reorder'), [actionNames.reorder]],
       [$_('shortcuts.push'), [actionNames.push, actionNames.increment]],
       [$_('shortcuts.pop'), [actionNames.pop, actionNames.decrement]],

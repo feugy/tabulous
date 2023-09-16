@@ -74,7 +74,7 @@ export function serializeMeshes(scene) {
  * Creates a meshes into the provided scene.
  * @param {SerializedMesh} state - serialized mesh state.
  * @param {Scene} scene - 3D scene used.
- * @returns {Promise<Mesh>} mesh created.
+ * @returns mesh created.
  */
 export async function createMeshFromState(state, scene) {
   const { shape } = state

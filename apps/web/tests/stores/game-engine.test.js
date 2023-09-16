@@ -41,6 +41,7 @@ import {
   handManager,
   indicatorManager,
   inputManager,
+  replayManager,
   selectionManager
 } from '@src/3d/managers'
 import * as gameEngine from '@src/stores/game-engine'
@@ -84,8 +85,12 @@ let loadCameraSaves
 let registerPointerIndicator
 /** @type {SpyInstance<Parameters<indicatorManager['pruneUnusedPointers']>, void>} */
 let pruneUnusedPointers
-/** @type {SpyInstance<Parameters<handManager['applyDraw']>, Promise<void>>} */
-let handManagerApplyDraw
+/** @type {SpyInstance<Parameters<controlManager['apply']>, Promise<void>>} */
+let applyAction
+/** @type {SpyInstance<Parameters<replayManager['record']>, void>} */
+let recordHistory
+/** @type {SpyInstance<Parameters<replayManager['replayHistory']>, Promise<void>>} */
+let replayHistory
 
 beforeAll(() => {
   saveCamera = vi.spyOn(cameraManager, 'save')
@@ -96,7 +101,9 @@ beforeAll(() => {
     'registerPointerIndicator'
   )
   pruneUnusedPointers = vi.spyOn(indicatorManager, 'pruneUnusedPointers')
-  handManagerApplyDraw = vi.spyOn(handManager, 'applyDraw')
+  applyAction = vi.spyOn(controlManager, 'apply')
+  recordHistory = vi.spyOn(replayManager, 'record')
+  replayHistory = vi.spyOn(replayManager, 'replayHistory')
 })
 
 beforeEach(() => {
@@ -121,9 +128,13 @@ describe('initEngine()', () => {
   const receiveCurrentCamera = vi.fn()
   const receiveLongInput = vi.fn()
   const receiveHandChange = vi.fn()
+  const receiveHandCount = vi.fn()
   const receiveHighlightHand = vi.fn()
   const receiveHandVisible = vi.fn()
   const receiveRemoteSelection = vi.fn()
+  const receiveHistory = vi.fn()
+  const receiveReplayRank = vi.fn()
+  const playerId = 'player-id-1'
   const sendToPeer = /** @type {Mock<Parameters<send>, ReturnType<send>>} */ (
     send
   )
@@ -148,10 +159,13 @@ describe('initEngine()', () => {
       gameEngine.currentCamera.subscribe({ next: receiveCurrentCamera }),
       gameEngine.longInputs.subscribe({ next: receiveLongInput }),
       gameEngine.handMeshes.subscribe({ next: receiveHandChange }),
+      gameEngine.handMeshCount.subscribe({ next: receiveHandCount }),
       gameEngine.highlightHand.subscribe({ next: receiveHighlightHand }),
       gameEngine.handVisible.subscribe({ next: receiveHandVisible }),
       gameEngine.selectedMeshes.subscribe({ next: receiveSelection }),
-      gameEngine.remoteSelection.subscribe({ next: receiveRemoteSelection })
+      gameEngine.remoteSelection.subscribe({ next: receiveRemoteSelection }),
+      gameEngine.history.subscribe({ next: receiveHistory }),
+      gameEngine.replayRank.subscribe({ next: receiveReplayRank })
     ]
   })
 
@@ -181,7 +195,7 @@ describe('initEngine()', () => {
         pointerThrottle: 10,
         longTapDelay: 100
       })
-      expect(engine.start).toHaveBeenCalledTimes(1)
+      expect(engine.start).toHaveBeenCalledOnce()
       expect(get(gameEngine.engine)).toEqual(engine)
       expect(created).toEqual(engine)
       expect(receiveHandVisible).not.toHaveBeenCalled()
@@ -202,6 +216,10 @@ describe('initEngine()', () => {
       it('reset engine observable on disposal', () => {
         engine.onDisposeObservable.notifyObservers(engine)
         expect(get(gameEngine.engine)).toBeNull()
+        expect(receiveHistory).toHaveBeenCalledWith([])
+        expect(receiveHistory).toHaveBeenCalledOnce()
+        expect(receiveReplayRank).toHaveBeenCalledWith(0)
+        expect(receiveReplayRank).toHaveBeenCalledOnce()
       })
 
       it('updates FPS on event', () => {
@@ -217,32 +235,53 @@ describe('initEngine()', () => {
       })
 
       it('sends scene actions to peers', () => {
+        /** @type {Action} */
+        const data = {
+          fn: 'pop',
+          args: [],
+          meshId: faker.string.uuid(),
+          fromHand: false
+        }
+        controlManager.onActionObservable.notifyObservers(data)
+        expect(receiveAction).toHaveBeenCalledWith(data)
+        expect(receiveAction).toHaveBeenCalledOnce()
+        expect(sendToPeer).toHaveBeenCalledWith(data)
+        expect(sendToPeer).toHaveBeenCalledOnce()
+        expect(applyAction).not.toHaveBeenCalled()
+        expect(recordHistory).not.toHaveBeenCalled()
+      })
+
+      it('does not send local actions to peers', () => {
+        /** @type {Action} */
         const data = {
           fn: 'pop',
           args: [],
           meshId: faker.string.uuid(),
           fromHand: false,
-          pos: undefined
+          isLocal: true
         }
         controlManager.onActionObservable.notifyObservers(data)
         expect(receiveAction).toHaveBeenCalledWith(data)
-        expect(receiveAction).toHaveBeenCalledTimes(1)
-        expect(sendToPeer).toHaveBeenCalledWith(data)
-        expect(sendToPeer).toHaveBeenCalledTimes(1)
+        expect(receiveAction).toHaveBeenCalledOnce()
+        expect(sendToPeer).not.toHaveBeenCalled()
+        expect(applyAction).not.toHaveBeenCalled()
+        expect(recordHistory).not.toHaveBeenCalled()
       })
 
       it('does not send hand actions to peers', () => {
+        /** @type {Action} */
         const data = {
           fn: 'pop',
           args: [],
           meshId: faker.string.uuid(),
-          fromHand: true,
-          pos: undefined
+          fromHand: true
         }
         controlManager.onActionObservable.notifyObservers(data)
         expect(receiveAction).toHaveBeenCalledWith(data)
-        expect(receiveAction).toHaveBeenCalledTimes(1)
+        expect(receiveAction).toHaveBeenCalledOnce()
         expect(sendToPeer).not.toHaveBeenCalled()
+        expect(applyAction).not.toHaveBeenCalled()
+        expect(recordHistory).not.toHaveBeenCalled()
       })
 
       it('sends selection to peers', () => {
@@ -261,6 +300,8 @@ describe('initEngine()', () => {
         expect(receiveSelection).toHaveBeenCalledTimes(2)
         expect(sendToPeer).toHaveBeenCalledTimes(2)
         expect(receiveRemoteSelection).not.toHaveBeenCalled()
+        expect(applyAction).not.toHaveBeenCalled()
+        expect(recordHistory).not.toHaveBeenCalled()
       })
 
       it('handles remote selection', () => {
@@ -274,7 +315,9 @@ describe('initEngine()', () => {
           playerId,
           selectedIds
         })
-        expect(receiveRemoteSelection).toHaveBeenCalledTimes(1)
+        expect(receiveRemoteSelection).toHaveBeenCalledOnce()
+        expect(applyAction).not.toHaveBeenCalled()
+        expect(recordHistory).not.toHaveBeenCalled()
       })
 
       it('clears remote selection on peer disconnection', () => {
@@ -287,7 +330,9 @@ describe('initEngine()', () => {
           playerId,
           selectedIds: []
         })
-        expect(receiveRemoteSelection).toHaveBeenCalledTimes(1)
+        expect(receiveRemoteSelection).toHaveBeenCalledOnce()
+        expect(applyAction).not.toHaveBeenCalled()
+        expect(recordHistory).not.toHaveBeenCalled()
       })
 
       it('moves peer pointers on message', () => {
@@ -300,44 +345,60 @@ describe('initEngine()', () => {
         ]
         lastMessageReceived.next({ data: { pointer }, playerId })
         expect(registerPointerIndicator).toHaveBeenCalledWith(playerId, pointer)
-        expect(registerPointerIndicator).toHaveBeenCalledTimes(1)
-      })
-
-      it('handles peer draw actions', () => {
-        const playerId = faker.string.uuid()
-        const state = { foo: 'bar' }
-        const action = {
-          meshId: faker.string.uuid(),
-          fn: 'draw',
-          args: [state]
-        }
-        lastMessageReceived.next({ data: action, playerId })
-        expect(handManagerApplyDraw).toHaveBeenCalledWith(state, playerId)
-        expect(handManagerApplyDraw).toHaveBeenCalledTimes(1)
-        expect(receiveAction).toHaveBeenCalledWith({
-          ...action,
-          peerId: playerId
-        })
-        expect(receiveAction).toHaveBeenCalledTimes(1)
-        expect(sendToPeer).not.toHaveBeenCalled()
+        expect(registerPointerIndicator).toHaveBeenCalledOnce()
+        expect(applyAction).not.toHaveBeenCalled()
+        expect(recordHistory).not.toHaveBeenCalled()
       })
 
       it('ignores other peer messages', () => {
         lastMessageReceived.next({ data: { foo: 'bar' }, playerId: 'foo' })
-        expect(handManagerApplyDraw).not.toHaveBeenCalled()
         expect(receiveAction).not.toHaveBeenCalled()
         expect(sendToPeer).not.toHaveBeenCalled()
         expect(registerPointerIndicator).not.toHaveBeenCalled()
+        expect(applyAction).not.toHaveBeenCalled()
+        expect(recordHistory).not.toHaveBeenCalled()
       })
 
       it('receives peer actions', () => {
-        const meshId = faker.string.uuid()
         const playerId = faker.person.firstName()
-        lastMessageReceived.next({ data: { meshId }, playerId })
-        expect(receiveAction).toHaveBeenCalledWith({ meshId, peerId: playerId })
-        expect(receiveAction).toHaveBeenCalledTimes(1)
-        expect(handManagerApplyDraw).not.toHaveBeenCalled()
+        const data = {
+          meshId: faker.string.uuid(),
+          fn: 'flip',
+          args: [],
+          fromHand: false
+        }
+        lastMessageReceived.next({ data, playerId })
+        expect(receiveAction).toHaveBeenCalledWith({
+          ...data,
+          peerId: playerId
+        })
+        expect(receiveAction).toHaveBeenCalledOnce()
         expect(sendToPeer).not.toHaveBeenCalled()
+        expect(applyAction).toHaveBeenCalledWith(data)
+        expect(applyAction).toHaveBeenCalledOnce()
+        expect(recordHistory).toHaveBeenCalledWith(data, playerId)
+        expect(recordHistory).toHaveBeenCalledOnce()
+      })
+
+      it('does not apply peer action when replaying', () => {
+        vi.spyOn(replayManager, 'isReplaying', 'get').mockReturnValueOnce(true)
+        const playerId = faker.person.firstName()
+        const data = {
+          meshId: faker.string.uuid(),
+          fn: 'flip',
+          args: [],
+          fromHand: false
+        }
+        lastMessageReceived.next({ data, playerId })
+        expect(receiveAction).toHaveBeenCalledWith({
+          ...data,
+          peerId: playerId
+        })
+        expect(receiveAction).toHaveBeenCalledOnce()
+        expect(sendToPeer).not.toHaveBeenCalled()
+        expect(applyAction).not.toHaveBeenCalled()
+        expect(recordHistory).toHaveBeenCalledWith(data, playerId)
+        expect(recordHistory).toHaveBeenCalledOnce()
       })
 
       it('regularly send pointer events to peers', async () => {
@@ -351,7 +412,9 @@ describe('initEngine()', () => {
         expect(sendToPeer).not.toHaveBeenCalled()
         await sleep(30)
         expect(sendToPeer).toHaveBeenCalledWith({ pointer: data2 })
-        expect(sendToPeer).toHaveBeenCalledTimes(1)
+        expect(sendToPeer).toHaveBeenCalledOnce()
+        expect(applyAction).not.toHaveBeenCalled()
+        expect(recordHistory).not.toHaveBeenCalled()
       })
 
       it('proxies mesh detail events', () => {
@@ -362,12 +425,12 @@ describe('initEngine()', () => {
         }
         controlManager.onDetailedObservable.notifyObservers(data)
         expect(receiveMeshDetail).toHaveBeenCalledWith(data)
-        expect(receiveMeshDetail).toHaveBeenCalledTimes(1)
+        expect(receiveMeshDetail).toHaveBeenCalledOnce()
       })
 
       it('proxies camera save events', () => {
         expect(receiveCameraSave).toHaveBeenCalledWith([])
-        expect(receiveCameraSave).toHaveBeenCalledTimes(1)
+        expect(receiveCameraSave).toHaveBeenCalledOnce()
         const data = [
           { hash: '', target: [0, 0, 0], alpha: 1, beta: 2, elevation: 3 }
         ]
@@ -378,7 +441,7 @@ describe('initEngine()', () => {
 
       it('proxies current camera events', () => {
         expect(receiveCurrentCamera).toHaveBeenCalledWith(undefined)
-        expect(receiveCurrentCamera).toHaveBeenCalledTimes(1)
+        expect(receiveCurrentCamera).toHaveBeenCalledOnce()
         const data = {
           hash: '',
           target: [0, 0, 0],
@@ -397,23 +460,27 @@ describe('initEngine()', () => {
           /** @type {LongData} */ (data)
         )
         expect(receiveLongInput).toHaveBeenCalledWith(data)
-        expect(receiveLongInput).toHaveBeenCalledTimes(1)
+        expect(receiveLongInput).toHaveBeenCalledOnce()
       })
 
       it('proxies hand change events', () => {
         /** @type {SerializedMesh[]} */
         const handMeshes = [{ shape: 'box', id: '1', texture: '' }]
-        engine.serialize.mockReturnValueOnce({ handMeshes, meshes: [] })
+        engine.serialize.mockReturnValueOnce({
+          handMeshes,
+          meshes: [],
+          history: []
+        })
         handManager.onHandChangeObservable.notifyObservers({ meshes: [] })
         expect(receiveHandChange).toHaveBeenCalledWith(handMeshes)
-        expect(receiveHandChange).toHaveBeenCalledTimes(1)
+        expect(receiveHandChange).toHaveBeenCalledOnce()
       })
 
       it('proxies hand highlight events', () => {
         const highlight = faker.datatype.boolean()
         handManager.onDraggableToHandObservable.notifyObservers(highlight)
         expect(receiveHighlightHand).toHaveBeenCalledWith(highlight)
-        expect(receiveHighlightHand).toHaveBeenCalledTimes(1)
+        expect(receiveHighlightHand).toHaveBeenCalledOnce()
       })
 
       it('prunes peer pointers on connection', () => {
@@ -430,7 +497,7 @@ describe('initEngine()', () => {
 
       it('exposes hand manager enability', () => {
         expect(receiveHandVisible).not.toHaveBeenCalled()
-        handManager.init({ scene, handScene, overlay })
+        handManager.init({ scene, handScene, overlay, playerId })
         engine.onLoadingObservable.notifyObservers(false)
         expect(receiveHandVisible).toHaveBeenNthCalledWith(1, true)
         scene.getEngine().dispose()
@@ -447,7 +514,7 @@ describe('saveCamera()', () => {
     const args = [2]
     gameEngine.saveCamera(...args)
     expect(saveCamera).toHaveBeenCalledWith(...args)
-    expect(saveCamera).toHaveBeenCalledTimes(1)
+    expect(saveCamera).toHaveBeenCalledOnce()
     expect(restoreCamera).not.toHaveBeenCalled()
     expect(loadCameraSaves).not.toHaveBeenCalled()
   })
@@ -458,7 +525,7 @@ describe('restoreCamera()', () => {
     const args = [4]
     gameEngine.restoreCamera(...args)
     expect(restoreCamera).toHaveBeenCalledWith(...args)
-    expect(restoreCamera).toHaveBeenCalledTimes(1)
+    expect(restoreCamera).toHaveBeenCalledOnce()
     expect(saveCamera).not.toHaveBeenCalled()
     expect(loadCameraSaves).not.toHaveBeenCalled()
   })
@@ -471,9 +538,17 @@ describe('loadCameraSaves()', () => {
     ]
     gameEngine.loadCameraSaves(args)
     expect(loadCameraSaves).toHaveBeenCalledWith(args)
-    expect(loadCameraSaves).toHaveBeenCalledTimes(1)
+    expect(loadCameraSaves).toHaveBeenCalledOnce()
     expect(saveCamera).not.toHaveBeenCalled()
     expect(restoreCamera).not.toHaveBeenCalled()
+  })
+})
+
+describe('replayHistory()', () => {
+  it('invokes replay manager', () => {
+    gameEngine.replayHistory(5)
+    expect(replayHistory).toHaveBeenCalledWith(5)
+    expect(replayHistory).toHaveBeenCalledOnce()
   })
 })
 

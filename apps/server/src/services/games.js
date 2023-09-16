@@ -1,6 +1,7 @@
 // @ts-check
 /**
  * @typedef {import('./players').Player} Player
+ * @typedef {import('./catalog').ActionName} ActionName
  * @typedef {import('./catalog').GameDescriptor} GameDescriptor
  * @typedef {import('../repositories/players').Friendship} Friendship
  */
@@ -41,6 +42,7 @@ import { canAccess } from './catalog.js'
  * @property {CameraPosition[]} cameras - player's saved camera positions, if any.
  * @property {Hand[]} hands - player's private hands, id any.
  * @property {PlayerPreference[]} preferences - preferences for each players.
+ * @property {HistoryRecord[]} history - player actions and move history.
  */
 /** @typedef {Game & GameDescriptor & _GameData} GameData */
 /** @typedef {GameData & Required<Pick<GameData, 'meshes'|'hands'|'kind'>>} StartedGameData */
@@ -185,7 +187,7 @@ import { canAccess } from './catalog.js'
 }
  */
 /**
- * @typedef {object} Message a message in the discussion thread:
+ * @typedef {object} Message a message in the discussion thread.
  * @property {string} playerId - sender id.
  * @property {string} text - message's textual content.
  * @property {number} time - creation timestamp.
@@ -217,6 +219,31 @@ import { canAccess } from './catalog.js'
  */
 
 /** @typedef { Record<string, ?> & _PlayerPreference } PlayerPreference */
+
+/**
+ * @typedef {object} _HistoryRecord common fields for history records.
+ * @property {number} time - when this record happened (timestamp).
+ * @property {string} playerId - who created this record.
+ * @property {string} meshId - modified mesh id.
+ * @property {number} [duration] - optional animation duration, in milliseconds.
+ */
+
+/**
+ * @typedef {object} _PlayerAction
+ * @property {ActionName} fn - name of the applied action.
+ * @property {string} argsStr - stringified arguments for this action.
+ * @property {string} [revertStr] - optional stringified arguments for reverting this action.
+ * @typedef { _HistoryRecord & _PlayerAction } PlayerAction an action in the game history.
+ */
+
+/**
+ * @typedef {object} _PlayerMove
+ * @property {number[]} pos - absolute position.
+ * @property {number[]} prev - previous absolute position.
+ * @typedef { _HistoryRecord & _PlayerMove } PlayerMove a move in the game history.
+ */
+
+/** @typedef {PlayerAction|PlayerMove} HistoryRecord */
 
 /**
  * @template Parameters
@@ -638,7 +665,8 @@ export async function saveGame(game, playerId) {
     meshes: game.meshes ?? previous.meshes,
     hands: game.hands ?? previous.hands,
     messages: game.messages ?? previous.messages,
-    cameras: game.cameras ?? previous.cameras
+    cameras: game.cameras ?? previous.cameras,
+    history: game.history ?? previous.history
   })
   logger.debug({ ctx, res: serializeForLogs(saved) }, 'saved game')
   return saved

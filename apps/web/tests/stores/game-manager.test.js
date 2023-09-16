@@ -529,12 +529,14 @@ describe('given a mocked game engine', () => {
         meshes,
         players: [player],
         hands,
-        preferences
+        preferences,
+        history: []
       })
       const colorByPlayerId = buildPlayerColors(game)
       engine.serialize.mockReturnValue({
         meshes,
-        handMeshes: hands[1].meshes
+        handMeshes: hands[1].meshes,
+        history: []
       })
       runMutation.mockResolvedValueOnce(game)
       await joinGame({ gameId, player, turnCredentials })
@@ -628,9 +630,14 @@ describe('given a mocked game engine', () => {
         meshes,
         players: [player],
         hands,
-        cameras
+        cameras,
+        history: []
       })
-      engine.serialize.mockReturnValueOnce({ meshes, handMeshes: [] })
+      engine.serialize.mockReturnValueOnce({
+        meshes,
+        handMeshes: [],
+        history: []
+      })
       serializeThread.mockReturnValueOnce([])
       runMutation.mockResolvedValueOnce(game)
       await joinGame({ gameId, player, turnCredentials })
@@ -682,9 +689,14 @@ describe('given a mocked game engine', () => {
         players: [player],
         hands,
         cameras: [],
-        messages
+        messages,
+        history: []
       }
-      engine.serialize.mockReturnValueOnce({ meshes, handMeshes: [] })
+      engine.serialize.mockReturnValueOnce({
+        meshes,
+        handMeshes: [],
+        history: []
+      })
       serializeThread.mockReturnValueOnce(messages)
       runMutation.mockResolvedValueOnce(game)
       await joinGame({ gameId, player, turnCredentials })
@@ -721,7 +733,11 @@ describe('given a mocked game engine', () => {
         players: [player],
         hands: []
       }
-      engine.serialize.mockReturnValueOnce({ meshes, handMeshes: [] })
+      engine.serialize.mockReturnValueOnce({
+        meshes,
+        handMeshes: [],
+        history: []
+      })
       runMutation.mockResolvedValueOnce(game)
       await joinGame({ gameId, player, turnCredentials })
       expect(runMutation).toHaveBeenCalledWith(graphQL.joinGame, {
@@ -819,7 +835,8 @@ describe('given a mocked game engine', () => {
           { playerId: partner1.id, color: '#0000ff' },
           { playerId: player.id, color: '#00ff00' },
           { playerId: partner2.id, color: '#ffffff' }
-        ]
+        ],
+        history: []
       })
 
       beforeEach(async () => {
@@ -829,7 +846,8 @@ describe('given a mocked game engine', () => {
         engine.serialize.mockReturnValue({
           ...game,
           meshes,
-          handMeshes: []
+          handMeshes: [],
+          history: []
         })
         await joinGame({
           gameId: game.id,
@@ -948,10 +966,9 @@ describe('given a mocked game engine', () => {
         })
         action.next({
           pos: [1, 0, 0],
+          prev: [0, 0, 0],
           meshId: meshes[0].id,
-          fromHand: false,
-          fn: undefined,
-          args: undefined
+          fromHand: false
         })
         const hands = [
           ...(game.hands ?? []),
@@ -1368,7 +1385,8 @@ describe('given a mocked game engine', () => {
           { playerId: partner1.id, color: '#0000ff' },
           { playerId: partner2.id, color: '#ffffff' },
           { playerId: player.id, color: '#00ff00' }
-        ]
+        ],
+        history: []
       }
 
       beforeEach(() => prepareGame(game))
@@ -1410,7 +1428,11 @@ describe('given a mocked game engine', () => {
 
       describe('with loaded game for peers', () => {
         beforeEach(async () => {
-          engine.serialize.mockResolvedValue({ meshes: [], handMeshes: [] })
+          engine.serialize.mockResolvedValue({
+            meshes: [],
+            handMeshes: [],
+            history: []
+          })
           connectWith.mockImplementationOnce(async () => {
             await nextPromise()
             lastMessageReceived.next({
@@ -1542,7 +1564,8 @@ describe('given a mocked game engine', () => {
           serializeThread.mockReturnValueOnce([])
           engine.serialize.mockReturnValueOnce({
             meshes: /** @type {Mesh[]} */ (game.meshes),
-            handMeshes: []
+            handMeshes: [],
+            history: []
           })
           lastDisconnectedId.next(player.id)
           await nextPromise()

@@ -30,6 +30,7 @@ type Game {
   tableSpec: TableSpec
   colors: ColorSpec
   actions: ActionSpec
+  history: [HistoryRecord]
 }
 
 type DetailableState {
@@ -242,6 +243,7 @@ enum ActionName {
   flip
   flipAll
   increment
+  play
   pop
   push
   random
@@ -259,12 +261,39 @@ type ActionSpec {
   button2: [ActionName]
 }
 
+interface HistoryRecord {
+  time: Float!
+  meshId: ID!
+  playerId: ID!
+  duration: Int
+}
+
+type PlayerAction implements HistoryRecord {
+  time: Float!
+  meshId: ID!
+  playerId: ID!
+  fn: String!
+  argsStr: String
+  revertStr: String
+  duration: Int
+}
+
+type PlayerMove implements HistoryRecord {
+  time: Float!
+  meshId: ID!
+  playerId: ID!
+  pos: [Float]!
+  prev: [Float]!
+  duration: Int
+}
+
 input GameInput {
   id: ID!
   meshes: [MeshInput]
   messages: [MessageInput]
   cameras: [CameraPositionInput]
   hands: [HandInput]
+  history: [HistoryRecordInput]
 }
 
 input DetailableStateInput {
@@ -434,6 +463,18 @@ input CameraPositionInput {
 input HandInput {
   playerId: ID!
   meshes: [MeshInput]!
+}
+
+input HistoryRecordInput {
+  time: Float!
+  meshId: ID!
+  playerId: ID!
+  fn: String
+  argsStr: String
+  revertStr: String
+  pos: [Float]
+  prev: [Float]
+  duration: Int
 }
 
 type GameParameters {

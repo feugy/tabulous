@@ -1,6 +1,7 @@
 // @ts-check
 /**
  * @typedef {import('@babylonjs/core').Mesh} Mesh
+ * @typedef {import('@tabulous/server/src/graphql').ActionName} ActionName
  * @typedef {import('@tabulous/server/src/graphql').LockableState} LockableState
  */
 
@@ -63,17 +64,21 @@ export class LockBehavior {
    * If attached, disable, or enable, some of the mesh's other behaviors.
    */
   toggleLock() {
-    const { mesh, state } = this
+    const { mesh } = this
     if (!mesh) {
       return
     }
-    controlManager.record({ mesh, fn: actionNames.toggleLock, args: [] })
-    indicatorManager.registerFeedback({
-      action: state.isLocked ? 'unlock' : 'lock',
-      position: mesh.absolutePosition.asArray()
-    })
-    state.isLocked = !state.isLocked
-    setEnabled(mesh, !state.isLocked)
+    internalToggle(this)
+  }
+
+  /**
+   * Revert flip actions. Ignores other actions
+   * @param {ActionName} action - reverted action.
+   */
+  async revert(action) {
+    if (action === actionNames.toggleLock && this.mesh) {
+      internalToggle(this, true)
+    }
   }
 
   /**
@@ -91,11 +96,27 @@ export class LockBehavior {
   }
 }
 
-/**
- * @param {Mesh} mesh - updated mesh
- * @param {boolean} enabled - whether this mesh can be moved.
- */
-function setEnabled(mesh, enabled) {
+function internalToggle(
+  /** @type {LockBehavior} */ { state, mesh },
+  isLocal = false
+) {
+  if (mesh) {
+    controlManager.record({
+      mesh,
+      fn: actionNames.toggleLock,
+      args: [],
+      isLocal
+    })
+    indicatorManager.registerFeedback({
+      action: state.isLocked ? 'unlock' : 'lock',
+      position: mesh.absolutePosition.asArray()
+    })
+    state.isLocked = !state.isLocked
+    setEnabled(mesh, !state.isLocked)
+  }
+}
+
+function setEnabled(/** @type {Mesh} */ mesh, /** @type {boolean} */ enabled) {
   const behavior = mesh.getBehaviorByName(MoveBehaviorName)
   if (
     behavior &&

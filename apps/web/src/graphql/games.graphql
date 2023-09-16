@@ -160,6 +160,21 @@ fragment fullGame on Game {
     button1
     button2
   }
+  history {
+    time
+    playerId
+    meshId
+    duration
+    ... on PlayerAction {
+      fn
+      argsStr
+      revertStr
+    }
+    ... on PlayerMove {
+      pos
+      prev
+    }
+  }
 }
 
 fragment lightGame on Game {

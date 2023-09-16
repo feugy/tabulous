@@ -4,10 +4,6 @@
  * @typedef {import('@babylonjs/core').Mesh} Mesh
  * @typedef {import('@src/3d/behaviors').RotableState} RotableState
  */
-/**
- * @template {any[]} P, R
- * @typedef {import('vitest').SpyInstance<P, R>} SpyInstance
- */
 
 import { Vector3 } from '@babylonjs/core/Maths/math.vector'
 import { faker } from '@faker-js/faker'
@@ -18,7 +14,7 @@ import {
   RotateBehaviorName
 } from '@src/3d/behaviors'
 import { controlManager } from '@src/3d/managers'
-import { beforeEach, describe, expect, it, vi } from 'vitest'
+import { beforeAll, beforeEach, describe, expect, it, vi } from 'vitest'
 
 import {
   configures3dTestEngine,
@@ -33,14 +29,16 @@ import {
 describe('RotateBehavior', () => {
   configures3dTestEngine()
 
-  /** @type {SpyInstance<Parameters<typeof controlManager['record']>, void>} */
-  let recordSpy
+  const actionRecorded = vi.fn()
   /** @type {Mock} */
   let animationEndReceived
 
+  beforeAll(() => {
+    controlManager.onActionObservable.add(data => actionRecorded(data))
+  })
+
   beforeEach(() => {
     vi.clearAllMocks()
-    recordSpy = vi.spyOn(controlManager, 'record')
     animationEndReceived = vi.fn()
   })
 
@@ -51,6 +49,7 @@ describe('RotateBehavior', () => {
     }
     const behavior = new RotateBehavior(state)
     const mesh = createBox('box', {})
+    controlManager.registerControlable(mesh)
 
     expect(behavior.name).toEqual(RotateBehaviorName)
     expect(behavior.state).toEqual(state)
@@ -58,7 +57,7 @@ describe('RotateBehavior', () => {
 
     mesh.addBehavior(behavior, true)
     expect(behavior.mesh).toEqual(mesh)
-    expect(recordSpy).not.toHaveBeenCalled()
+    expect(actionRecorded).not.toHaveBeenCalled()
   })
 
   it('can not restore state without mesh', () => {
@@ -70,7 +69,7 @@ describe('RotateBehavior', () => {
   it('can not rotate without mesh', async () => {
     const behavior = new RotateBehavior()
     await behavior.rotate?.()
-    expect(recordSpy).not.toHaveBeenCalled()
+    expect(actionRecorded).not.toHaveBeenCalled()
   })
 
   it('can hydrate with default state', () => {
@@ -83,7 +82,7 @@ describe('RotateBehavior', () => {
     })
     expect(behavior.mesh?.rotation.y).toEqual(0)
     expect(behavior.mesh?.metadata.angle).toEqual(0)
-    expect(recordSpy).not.toHaveBeenCalled()
+    expect(actionRecorded).not.toHaveBeenCalled()
   })
 
   describe('given attached to a mesh', () => {
@@ -116,7 +115,7 @@ describe('RotateBehavior', () => {
       expect(behavior.mesh).toEqual(mesh)
       expectRotated(mesh, angle)
       expect(animationEndReceived).not.toHaveBeenCalled()
-      expect(recordSpy).not.toHaveBeenCalled()
+      expect(actionRecorded).not.toHaveBeenCalled()
     })
 
     it('can restore state on existing mesh', () => {
@@ -201,35 +200,101 @@ describe('RotateBehavior', () => {
       await mesh.metadata.rotate?.(angle)
       expectRotated(mesh, angle)
       expect(animationEndReceived).toHaveBeenCalledOnce()
-      expect(recordSpy).toHaveBeenCalledOnce()
-      expect(recordSpy).toHaveBeenCalledWith({
-        mesh,
+      expect(actionRecorded).toHaveBeenCalledOnce()
+      expect(actionRecorded).toHaveBeenCalledWith({
+        meshId: mesh.id,
         fn: 'rotate',
         args: [angle],
-        duration: behavior.state.duration
+        duration: behavior.state.duration,
+        revert: [0],
+        fromHand: false,
+        isLocal: false
+      })
+    })
+
+    it('can revert rotated mesh', async () => {
+      const oldAngle = Math.PI
+      const angle = faker.number.float(1) * Math.PI
+      behavior.fromState({ angle })
+      expectRotated(mesh, angle)
+      animationEndReceived.mockClear()
+      actionRecorded.mockClear()
+
+      await behavior.revert('rotate', [oldAngle])
+      expectRotated(mesh, oldAngle)
+      expect(animationEndReceived).toHaveBeenCalledOnce()
+      expect(actionRecorded).toHaveBeenCalledOnce()
+      expect(actionRecorded).toHaveBeenCalledWith({
+        meshId: mesh.id,
+        fn: 'rotate',
+        args: [oldAngle],
+        duration: behavior.state.duration,
+        revert: [angle],
+        fromHand: false,
+        isLocal: true
+      })
+    })
+
+    it('reverts rotated children along with their parent mesh', async () => {
+      const angle = Math.PI * 0.5
+      const position = [
+        faker.number.int(10),
+        faker.number.int(10),
+        faker.number.int(10)
+      ]
+      mesh.setAbsolutePosition(Vector3.FromArray(position))
+
+      const [, child] = createAttachedRotable('child')
+      child.setParent(mesh)
+      behavior.fromState({ angle: angle })
+      expectRotated(mesh, angle)
+      expectPosition(mesh, position)
+      expectRotated(child, angle)
+      animationEndReceived.mockClear()
+      actionRecorded.mockClear()
+
+      await behavior.revert('rotate', [0])
+      expectRotated(mesh, 0)
+      expectRotated(child, 0)
+      expect(animationEndReceived).toHaveBeenCalledOnce()
+      expect(actionRecorded).toHaveBeenCalledOnce()
+      expect(actionRecorded).toHaveBeenCalledWith({
+        meshId: mesh.id,
+        fn: 'rotate',
+        args: [0],
+        duration: behavior.state.duration,
+        revert: [angle],
+        fromHand: false,
+        isLocal: true
       })
     })
 
     it('records rotations to controlManager', async () => {
       expectRotated(mesh, 0)
-      expect(recordSpy).toHaveBeenCalledTimes(0)
+      expect(actionRecorded).toHaveBeenCalledTimes(0)
       await mesh.metadata.rotate?.()
-      expect(recordSpy).toHaveBeenCalledOnce()
-      expect(recordSpy).toHaveBeenNthCalledWith(1, {
-        mesh,
+      expect(actionRecorded).toHaveBeenCalledOnce()
+      expect(actionRecorded).toHaveBeenNthCalledWith(1, {
+        meshId: mesh.id,
         fn: 'rotate',
         args: [Math.PI / 2],
-        duration: behavior.state.duration
+        duration: behavior.state.duration,
+        revert: [0],
+        fromHand: false,
+        isLocal: false
       })
       expectRotated(mesh, Math.PI * 0.5)
 
       await mesh.metadata.rotate?.()
-      expect(recordSpy).toHaveBeenCalledTimes(2)
-      expect(recordSpy).toHaveBeenNthCalledWith(2, {
-        mesh,
+      expect(actionRecorded).toHaveBeenCalledTimes(2)
+      expect(actionRecorded).toHaveBeenNthCalledWith(2, {
+        meshId: mesh.id,
         fn: 'rotate',
         args: [Math.PI],
-        duration: behavior.state.duration
+        duration: behavior.state.duration,
+        revert: [expect.numberCloseTo(Math.PI * 0.5)],
+        fromHand: false,
+        isLocal: false
       })
       expectRotated(mesh, Math.PI)
       expect(animationEndReceived).toHaveBeenCalledTimes(2)
@@ -256,7 +321,7 @@ describe('RotateBehavior', () => {
 
       expectPickable(mesh)
       expectRotated(mesh, Math.PI * 0.5)
-      expect(recordSpy).toHaveBeenCalledOnce()
+      expect(actionRecorded).toHaveBeenCalledOnce()
       expect(animationEndReceived).toHaveBeenCalledOnce()
     })
 
@@ -341,7 +406,7 @@ describe('RotateBehavior', () => {
       expectRotated(child, 0)
       expectPickable(granChild)
       expectRotated(granChild, Math.PI * 0.5)
-      expect(recordSpy).toHaveBeenCalledOnce()
+      expect(actionRecorded).toHaveBeenCalledOnce()
       expect(animationEndReceived).not.toHaveBeenCalled()
     })
   })
@@ -355,5 +420,6 @@ function createAttachedRotable(
   const behavior = new RotateBehavior(state)
   const mesh = createBox(id, {})
   mesh.addBehavior(behavior, true)
+  controlManager.registerControlable(mesh)
   return [behavior, mesh]
 }

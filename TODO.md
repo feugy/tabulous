@@ -1,8 +1,11 @@
 # TODO
 
+during replay: host save
+
 ## Refactor
 
-- replace windicss with a successor (tailwind or UnoCSS)
+- hand: reuse playMeshes() and pickMesh() in handDrag()
+- replace windicss with a successor (UnoCSS)
 - add tests for web/src/utils/peer-connection
 - group candidate target per kind for performance
 - all manager managing a collection of behaviors should check their capabilities
@@ -13,7 +16,7 @@
 
 ## UI
 
-- replay
+- when hovering target, highlight should have the dragged mesh's shape, not the target shape (what about parts?)
 - hand count on peer pointers/player tab?
 - score card (Mah-jong, Belote)
 - command to reset some mesh state and restart a game (Mah-jong, Belote)
@@ -91,6 +94,14 @@ The host player is in charge of:
 1. regularly sending the game state so all peer could sync their state
 
 When the host player disconnects, a new host is elected: the first connected player in the game player list becomes host
+
+### Action propagation and cascade
+
+1. `mesh.medatadata.fn()` are only triggered by humans and `moveManager.onMoveObservable`
+1. behavior should record action to the Control manager before applying them so they could cascade in order (extreme some rare cases like drawing and snapping)
+1. when triggering an action from a notification, behavior must report it with `isLocal` flag to avoid re-cascading
+1. `controlManager.apply()` is only applying peers and replay actions: it enrichs their notifications with `isLocal`
+1. Replay manager and Game engine ignore notifications marked as local
 
 ## Various learnings
 

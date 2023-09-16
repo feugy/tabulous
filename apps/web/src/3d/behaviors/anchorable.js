@@ -3,6 +3,7 @@
  * @typedef {import('@babylonjs/core').Mesh} Mesh
  * @typedef {import('@babylonjs/core').Scene} Scene
  * @typedef {import('@tabulous/server/src/graphql').AnchorableState} AnchorableState
+ * @typedef {import('@tabulous/server/src/graphql').ActionName} ActionName
  * @typedef {import('@src/3d/behaviors/stackable').StackBehavior} StackBehavior
  * @typedef {import('@src/3d/behaviors/targetable').DropDetails} DropDetails
  * @typedef {import('@src/3d/managers/control').Action} Action
@@ -32,7 +33,7 @@ import {
   getPositionAboveZone,
   getTargetableBehavior
 } from '../utils/behaviors'
-import { AnchorBehaviorName, FlipBehaviorName } from './names'
+import { AnchorBehaviorName } from './names'
 import { TargetBehavior } from './targetable'
 
 /** @typedef {AnchorableState & Required<Pick<AnchorableState, 'duration'|'anchors'>>} RequiredAnchorableState */
@@ -81,9 +82,15 @@ export class AnchorBehavior extends TargetBehavior {
     this.fromState(this.state)
 
     this.dropObserver = this.onDropObservable.add(
-      ({ dropped, zone, immediate }) => {
+      ({ dropped, zone, immediate, isLocal }) => {
         // only considers first dropped mesh.
-        this.snap(dropped[0]?.id, zone.mesh.id, immediate)
+        internalSnap(
+          this,
+          dropped[0]?.id,
+          zone.mesh.id,
+          immediate ?? false,
+          isLocal
+        )
       }
     )
 
@@ -103,24 +110,35 @@ export class AnchorBehavior extends TargetBehavior {
     })
 
     this.actionObserver = controlManager.onActionObservable.add(
-      ({ meshId, fn, args, fromHand }) => {
-        const zone = this.zoneBySnappedId.get(meshId)
-        if (zone && this.mesh) {
-          if (fn === actionNames.reorder || fn === actionNames.flipAll) {
-            const scene = this.mesh.getScene()
-            const stack = getMeshList(scene, meshId)
-            if (stack) {
-              const snapped =
-                fn === actionNames.flipAll
-                  ? stack.reverse()[0]
-                  : stack.find(({ id }) => id === args[0][0])
-              unsetAnchor(this, zone, stack[0])
-              if (snapped) {
-                setAnchor(this, zone, snapped)
+      async actionOrMove => {
+        // 1. unsnap all when drawing main mesh
+        // 2. unsnap drawn snapped mesh
+        if ('fn' in actionOrMove && this.mesh) {
+          const { meshId, fn, args } = actionOrMove
+          if (meshId === this.mesh.id && fn === actionNames.draw) {
+            for (const snappedId of this.getSnappedIds()) {
+              internalUnsnap(this, snappedId, undefined, true)
+            }
+          } else {
+            const zone = this.zoneBySnappedId.get(meshId)
+            if (zone) {
+              if (fn === actionNames.reorder || fn === actionNames.flipAll) {
+                const scene = this.mesh.getScene()
+                const stack = getMeshList(scene, meshId)
+                if (stack) {
+                  const snapped =
+                    fn === actionNames.flipAll
+                      ? stack.reverse()[0]
+                      : stack.find(({ id }) => id === args[0][0])
+                  unsetAnchor(this, zone, stack[0])
+                  if (snapped) {
+                    setAnchor(this, zone, snapped)
+                  }
+                }
+              } else if (fn === actionNames.draw) {
+                internalUnsnap(this, meshId, undefined, true)
               }
             }
-          } else if (fn === actionNames.draw && !fromHand) {
-            this.unsnap(meshId)
           }
         }
       }
@@ -165,6 +183,14 @@ export class AnchorBehavior extends TargetBehavior {
   }
 
   /**
+   * @param {string} zoneId - id of a tested zone.
+   * @returns whether a given zone should flip its snapped mesh.
+   */
+  getZoneFlip(zoneId) {
+    return this.state.anchors.find(({ id }) => id === zoneId)?.flip
+  }
+
+  /**
    * Span another mesh onto an anchor:
    * - records the action into the control manager
    * - disables this zone so it can not be used
@@ -175,26 +201,9 @@ export class AnchorBehavior extends TargetBehavior {
    * @param {string} snappedId - id of the snapped mesh.
    * @param {string} anchorId - id of the anchor mesh to snap onto.
    * @param {boolean} [immediate=false] - set to true to disable animation.
-   * @returns {Promise<void>}
    */
   async snap(snappedId, anchorId, immediate = false) {
-    let snapped = this.mesh?.getScene().getMeshById(snappedId)
-    const zone = this.zones.find(({ mesh }) => mesh.id === anchorId)
-    if (!snapped || !zone || !zone.enabled || !this.mesh) {
-      return
-    }
-    controlManager.record({
-      mesh: this.mesh,
-      fn: actionNames.snap,
-      args: [snappedId, anchorId, immediate],
-      duration: immediate ? 0 : this.state.duration
-    })
-    indicatorManager.registerFeedback({
-      action: actionNames.snap,
-      position: zone.mesh.absolutePosition.asArray()
-    })
-    moveManager.notifyMove(snapped)
-    await snapToAnchor(this, snappedId, zone, immediate)
+    await internalSnap(this, snappedId, anchorId, immediate)
   }
 
   /**
@@ -205,48 +214,16 @@ export class AnchorBehavior extends TargetBehavior {
    *
    * @param {string} releasedId - id of the released mesh.
    */
-  unsnap(releasedId) {
-    const meshId = this.mesh?.id
-    const released = getMeshList(this.mesh?.getScene(), releasedId)?.[0]
-
-    if (this.mesh && released) {
-      const snappedId = released.id
-      const zone = this.zoneBySnappedId.get(snappedId)
-
-      if (zone) {
-        logger.info(
-          { mesh: this.mesh, snappedId, zone },
-          `release snapped ${snappedId} from ${meshId}, zone ${zone.mesh.id}`
-        )
-        unsetAnchor(this, zone, released)
-        controlManager.record({
-          mesh: this.mesh,
-          fn: actionNames.unsnap,
-          args: [releasedId]
-        })
-        indicatorManager.registerFeedback({
-          action: actionNames.unsnap,
-          position: zone.mesh.absolutePosition.asArray()
-        })
-      }
-    }
+  async unsnap(releasedId) {
+    await internalUnsnap(this, releasedId)
   }
 
   /**
    * Release all snapped meshes
    */
   unsnapAll() {
-    const {
-      mesh,
-      state: { anchors }
-    } = this
-    if (mesh) {
-      const ids = /** @type {string[]} */ (
-        anchors.map(({ snappedId }) => snappedId).filter(Boolean)
-      )
-      for (const id of ids) {
-        this.unsnap(id)
-      }
+    for (const id of this.getSnappedIds()) {
+      this.unsnap(id)
     }
   }
 
@@ -257,6 +234,32 @@ export class AnchorBehavior extends TargetBehavior {
    */
   snappedZone(meshId) {
     return this.zoneBySnappedId.get(meshId) ?? null
+  }
+
+  /**
+   * Revert snap and unsnap actions. Ignores other actions
+   * @param {ActionName} action - reverted action.
+   * @param {any[]} [args] - reverted arguments.
+   */
+  async revert(action, args = []) {
+    if (action === actionNames.snap && args.length === 4) {
+      const [snappedId, position, angle, isFlipped] = args
+      const released = await internalUnsnap(this, snappedId, isFlipped, true)
+      if (released) {
+        await animateMove(
+          released,
+          Vector3.FromArray(position),
+          angle != undefined
+            ? new Vector3(released.rotation.x, angle, released.rotation.z)
+            : null,
+          this.state.duration,
+          false
+        )
+      }
+    } else if (action === actionNames.unsnap && args.length === 2) {
+      const [releaseId, zoneId] = args
+      await internalSnap(this, releaseId, zoneId, false, true)
+    }
   }
 
   /**
@@ -307,6 +310,93 @@ export class AnchorBehavior extends TargetBehavior {
 }
 
 /**
+ * Internal implementation of the snap/revertUnsnap methods.
+ * @param {AnchorBehavior} behavior - concerned behavior.
+ * @param {string} snappedId - the snapped mesh id.
+ * @param {string} anchorId - the anchor it is snapped to.
+ * @param {boolean} immediate - whether to animate the move.
+ * @param {boolean} [isLocal] - action locality.
+ */
+async function internalSnap(
+  behavior,
+  snappedId,
+  anchorId,
+  immediate,
+  isLocal = false
+) {
+  let snapped = behavior.mesh?.getScene().getMeshById(snappedId)
+  const zone = behavior.zones.find(({ mesh }) => mesh.id === anchorId)
+  if (!snapped || !zone || !zone.enabled || !behavior.mesh) {
+    return
+  }
+  const position = snapped.position.asArray()
+  const angle = snapped.metadata.angle
+  indicatorManager.registerFeedback({
+    action: actionNames.snap,
+    position: zone.mesh.absolutePosition.asArray()
+  })
+  moveManager.notifyMove(snapped)
+  await snapToAnchor(behavior, snappedId, zone, immediate)
+  // record after so flippable could flip on demand, after the mesh was snapped.
+  controlManager.record({
+    mesh: behavior.mesh,
+    fn: actionNames.snap,
+    args: [snappedId, anchorId, immediate],
+    duration: immediate ? 0 : behavior.state.duration,
+    revert: [snappedId, position, angle, snapped.metadata.isFlipped],
+    isLocal
+  })
+  const isFlipped = behavior.getZoneFlip(anchorId)
+  if (isFlipped != undefined && snapped.metadata.isFlipped !== isFlipped) {
+    await controlManager.invokeLocal(snapped, actionNames.flip)
+  }
+}
+
+/**
+ * Internal implementation of the unsnap/revertSnap methods.
+ * @param {AnchorBehavior} behavior - concerned behavior.
+ * @param {string} releasedId - the unsnapped mesh id.
+ * @param {boolean} [isFlipped] - new flip status to enforce, if any.
+ * @param {boolean} [isLocal] - locality for this action.
+ */
+async function internalUnsnap(
+  behavior,
+  releasedId,
+  isFlipped = undefined,
+  isLocal = false
+) {
+  const released = getMeshList(behavior.mesh?.getScene(), releasedId)?.[0]
+
+  if (behavior.mesh && released) {
+    const snappedId = released.id
+    const zone = behavior.zoneBySnappedId.get(snappedId)
+
+    if (zone) {
+      logger.info(
+        { mesh: behavior.mesh, snappedId, zone },
+        `release snapped ${snappedId} from ${behavior.mesh.id}, zone ${zone.mesh.id}`
+      )
+      if (isFlipped != undefined && released.metadata.isFlipped !== isFlipped) {
+        await controlManager.invokeLocal(released, actionNames.flip)
+      }
+      controlManager.record({
+        mesh: behavior.mesh,
+        fn: actionNames.unsnap,
+        args: [releasedId],
+        revert: [releasedId, zone.mesh.id],
+        isLocal
+      })
+      unsetAnchor(behavior, zone, released)
+      indicatorManager.registerFeedback({
+        action: actionNames.unsnap,
+        position: zone.mesh.absolutePosition.asArray()
+      })
+    }
+  }
+  return released
+}
+
+/**
  * @param {AnchorBehavior} behavior - concerned behavior.
  * @param {string} snappedId - snapped mesh id.
  * @param {SingleDropZone} zone - drop zone.
@@ -351,15 +441,6 @@ async function snapToAnchor(behavior, snappedId, zone, loading = false) {
     )
     if (!loading) {
       await move
-    }
-    if (
-      zone.flip !== undefined &&
-      snapped.metadata.isFlipped !== undefined &&
-      snapped.metadata.isFlipped !== zone.flip
-    ) {
-      await snapped
-        .getBehaviorByName(FlipBehaviorName)
-        ?.updateState({ isFlipped: zone.flip }, !loading)
     }
   }
 }

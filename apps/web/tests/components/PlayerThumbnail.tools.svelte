@@ -4,7 +4,7 @@
   import avatar from '@tests/fixtures/avatar.png'
 
   const player = { username: 'Joe le clodo' }
-  const screenPosition = { x: 0, y: 150 }
+  const screenPosition = { x: 50, y: 150 }
   const dimension = 150
 </script>
 

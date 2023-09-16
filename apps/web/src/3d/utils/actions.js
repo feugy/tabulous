@@ -31,6 +31,7 @@ export const actionNames = {
   flip: 'flip',
   flipAll: 'flipAll',
   increment: 'increment',
+  play: 'play',
   pop: 'pop',
   push: 'push',
   random: 'random',
@@ -39,8 +40,7 @@ export const actionNames = {
   setFace: 'setFace',
   snap: 'snap',
   toggleLock: 'toggleLock',
-  unsnap: 'unsnap',
-  unsnapAll: 'unsnapAll'
+  unsnap: 'unsnap'
 }
 
 /**
@@ -89,7 +89,10 @@ export function buildActionNamesByKey(meshes, translate) {
       actionNamesByKey.set(translate('shortcuts.random'), [actionNames.random])
     }
     if (state[DrawBehaviorName]) {
-      actionNamesByKey.set(translate('shortcuts.draw'), [actionNames.draw])
+      actionNamesByKey.set(translate('shortcuts.drawOrPlay'), [
+        actionNames.draw,
+        actionNames.play
+      ])
     }
     if (state[DetailBehaviorName]) {
       actionNamesByKey.set(translate('shortcuts.detail'), [actionNames.detail])

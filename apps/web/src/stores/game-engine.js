@@ -4,6 +4,7 @@
  * @typedef {import('@babylonjs/core').Mesh} Mesh
  * @typedef {import('@babylonjs/core').Observable<?>} BabylonObservable
  * @typedef {import('@babylonjs/core').Observer<?>} BabylonObserver
+ * @typedef {import('@tabulous/server/src/graphql').HistoryRecord} HistoryRecord
  * @typedef {import('@tabulous/server/src/graphql').Player} Player
  * @typedef {import('@src/3d/managers/camera').CameraPosition} CameraPosition
  * @typedef {import('@src/3d/managers/control').Action} Action
@@ -26,9 +27,9 @@ import {
   handManager,
   indicatorManager,
   inputManager,
+  replayManager,
   selectionManager
 } from '@src/3d/managers'
-import { actionNames } from '@src/3d/utils'
 import { attachInputs } from '@src/utils/game-interaction'
 import {
   auditTime,
@@ -76,6 +77,8 @@ const selectedMeshes$ = new BehaviorSubject(
 const highlightHand$ = new BehaviorSubject(false)
 /** @type {Subject<boolean>} */
 const engineLoading$ = new Subject()
+const history$ = new BehaviorSubject(/** @type {HistoryRecord[]} */ ([]))
+const replayRank$ = new BehaviorSubject(0)
 
 /**
  * Emits 3D engine when available.
@@ -150,16 +153,31 @@ export const handVisible = engineLoading$.pipe(
 )
 
 /**
- * Emits player's hand content (an array of serialized meshes).
+ * Emits player's hand content (an array of serialized meshes, fixed during replay).
  */
 export const handMeshes = handSaves$.pipe(
   map(() => engine$.value?.serialize()?.handMeshes)
 )
 
 /**
+ * Emits the number of meshes in player's hand (also during replay).
+ */
+export const handMeshCount = handSaves$.pipe(map(({ meshes }) => meshes.length))
+
+/**
  * Emits a boolean when hand's should be highlighted (for example, during drag operations).
  */
 export const highlightHand = highlightHand$.asObservable()
+
+/**
+ * Emits the game history.
+ */
+export const history = history$.asObservable()
+
+/**
+ * Emits replay rank in game history. When ranks equals the history length, the game is in live mode.
+ */
+export const replayRank = replayRank$.asObservable()
 
 /**
  * @typedef {object} EngineParams
@@ -252,6 +270,16 @@ export function initEngine({ pointerThrottle, longTapDelay, ...engineProps }) {
       observable: engine.onLoadingObservable,
       subject: engineLoading$,
       observer: null
+    },
+    {
+      observable: replayManager.onHistoryObservable,
+      subject: history$,
+      observer: null
+    },
+    {
+      observable: replayManager.onReplayRankObservable,
+      subject: replayRank$,
+      observer: null
     }
   ]
   // exposes Babylon observables as RX subjects
@@ -273,19 +301,28 @@ export function initEngine({ pointerThrottle, longTapDelay, ...engineProps }) {
       if (data?.pointer) {
         indicatorManager.registerPointerIndicator(playerId, data.pointer)
       } else if (Array.isArray(data?.selectedIds)) {
-        applyRemoteSelection(data.selectedIds, playerId)
+        if (!replayManager.isReplaying) {
+          applyRemoteSelection(data.selectedIds, playerId)
+        }
       } else if (data?.meshId) {
-        if (data.fn === actionNames.draw) {
-          handManager.applyDraw(data.args[0], playerId)
-        } else {
-          controlManager.apply(data, true)
+        replayManager.record(data, playerId)
+        if (!replayManager.isReplaying) {
+          controlManager.apply(data)
         }
         remoteAction$.next({ ...data, peerId: playerId })
       }
     }),
 
     // sends local action from main scene to other players
-    localAction$.pipe(filter(({ fromHand }) => !fromHand)).subscribe(send),
+    localAction$
+      .pipe(
+        filter(
+          actionOrMove =>
+            !actionOrMove.fromHand &&
+            (!('isLocal' in actionOrMove) || !actionOrMove.isLocal)
+        )
+      )
+      .subscribe(send),
 
     // send local selection to other players
     selectedMeshes$.subscribe(selected => {
@@ -324,6 +361,8 @@ export function initEngine({ pointerThrottle, longTapDelay, ...engineProps }) {
     for (const { observable, observer } of mappings) {
       observable.remove(observer)
     }
+    history$.next([])
+    replayRank$.next(0)
     engine$.next(null)
   })
 
@@ -339,23 +378,22 @@ function applyRemoteSelection(
   remoteSelection$.next({ selectedIds, playerId })
 }
 
-/**
- * @type {typeof cameraManager['save']}
- */
+/** @type {typeof cameraManager['save']} */
 export function saveCamera(...args) {
   cameraManager.save(...args)
 }
 
-/**
- * @type {typeof cameraManager['restore']}
- */
+/** @type {typeof cameraManager['restore']} */
 export async function restoreCamera(...args) {
   await cameraManager.restore(...args)
 }
 
-/**
- * @type {typeof cameraManager['loadSaves']}
- */
+/** @type {typeof cameraManager['loadSaves']} */
 export async function loadCameraSaves(...args) {
   await cameraManager.loadSaves(...args)
+}
+
+/** @type {typeof replayManager['replayHistory']} */
+export async function replayHistory(...args) {
+  await replayManager.replayHistory(...args)
 }

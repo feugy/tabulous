@@ -21,6 +21,7 @@ exports[`mah-jong game descriptor > askForParameters() + addPlayer() > enrolls e
   "created": 1691859511667,
   "guestIds": [],
   "hands": [],
+  "history": [],
   "id": "game-unique-id",
   "kind": "mah-jong",
   "locales": {
@@ -11116,6 +11117,7 @@ exports[`mah-jong game descriptor > askForParameters() + addPlayer() > enrolls e
   "created": 1691859511667,
   "guestIds": [],
   "hands": [],
+  "history": [],
   "id": "game-unique-id",
   "kind": "mah-jong",
   "locales": {
@@ -22418,6 +22420,7 @@ exports[`mah-jong game descriptor > askForParameters() + addPlayer() > enrolls e
   "created": 1691859511667,
   "guestIds": [],
   "hands": [],
+  "history": [],
   "id": "game-unique-id",
   "kind": "mah-jong",
   "locales": {
@@ -33927,6 +33930,7 @@ exports[`mah-jong game descriptor > askForParameters() + addPlayer() > enrolls e
   "created": 1691859511667,
   "guestIds": [],
   "hands": [],
+  "history": [],
   "id": "game-unique-id",
   "kind": "mah-jong",
   "locales": {

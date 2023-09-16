@@ -20,7 +20,7 @@ import { applyInitialTransform, setExtras } from '../utils/mesh'
  * A card's texture must have 2 faces, back then front, aligned horizontally.
  * @param {Omit<SerializedMesh, 'shape'>} params - card parameters.
  * @param {Scene} scene - scene for the created mesh.
- * @returns {Mesh} the created card mesh.
+ * @returns the created card mesh.
  */
 export function createCard(
   {

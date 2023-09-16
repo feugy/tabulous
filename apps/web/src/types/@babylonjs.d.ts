@@ -21,6 +21,7 @@ import type { MeshMetadata } from '@src/types'
 import type {
   ActionName,
   ButtonName,
+  HistoryRecord,
   Mesh as SerializedMesh,
   PlayerPreference
 } from '@tabulous/server/src/graphql'
@@ -65,7 +66,11 @@ declare module '@babylonjs/core' {
     /**
      * serializes all meshes rendered in the game engines.
      */
-    serialize(): { meshes: SerializedMesh[]; handMeshes: SerializedMesh[] }
+    serialize(): {
+      meshes: SerializedMesh[]
+      handMeshes: SerializedMesh[]
+      history: HistoryRecord[]
+    }
   }
 
   interface AbstractMesh {

@@ -63,11 +63,10 @@ import {
 describe('StackBehavior', () => {
   configures3dTestEngine(created => (scene = created.scene))
 
+  const actionRecorded = vi.fn()
   const moveRecorded = vi.fn()
   /** @type {Scene} */
   let scene
-  /** @type {SpyInstance<Parameters<typeof controlManager['record']>, void>} */
-  let recordSpy
   /** @type {SpyInstance<Parameters<typeof indicatorManager['registerFeedback']>, void>} */
   let registerFeedbackSpy
   /** @type {?Observer} */
@@ -75,12 +74,12 @@ describe('StackBehavior', () => {
 
   beforeAll(() => {
     moveObserver = moveManager.onMoveObservable.add(moveRecorded)
+    controlManager.onActionObservable.add(data => actionRecorded(data))
     indicatorManager.init({ scene })
   })
 
   beforeEach(() => {
     vi.clearAllMocks()
-    recordSpy = vi.spyOn(controlManager, 'record')
     registerFeedbackSpy = vi.spyOn(indicatorManager, 'registerFeedback')
     vi.spyOn(handManager, 'draw').mockImplementation(async mesh => {
       controlManager.record({ mesh, fn: 'draw', args: [] })
@@ -107,7 +106,7 @@ describe('StackBehavior', () => {
     expect(behavior.base).toBeNull()
     expect(behavior.inhibitControl).toBe(false)
     expect(behavior.mesh).toBeNull()
-    expect(recordSpy).not.toHaveBeenCalled()
+    expect(actionRecorded).not.toHaveBeenCalled()
     expect(registerFeedbackSpy).not.toHaveBeenCalled()
   })
 
@@ -132,7 +131,7 @@ describe('StackBehavior', () => {
     expect(behavior.mesh).toEqual(mesh)
     expect(mesh.metadata.stack).toEqual([mesh])
     expectStackIndicator(mesh)
-    expect(recordSpy).not.toHaveBeenCalled()
+    expect(actionRecorded).not.toHaveBeenCalled()
     expect(registerFeedbackSpy).not.toHaveBeenCalled()
   })
 
@@ -144,7 +143,7 @@ describe('StackBehavior', () => {
     mesh.addBehavior(new StackBehavior({ stackIds: [stacked.id] }), true)
     expectStacked([mesh, stacked])
     expectMoveRecorded(moveRecorded)
-    expect(recordSpy).not.toHaveBeenCalled()
+    expect(actionRecorded).not.toHaveBeenCalled()
     expect(registerFeedbackSpy).not.toHaveBeenCalled()
   })
 
@@ -207,7 +206,7 @@ describe('StackBehavior', () => {
           canPush: expect.any(Function)
         })
       )
-      expect(recordSpy).not.toHaveBeenCalled()
+      expect(actionRecorded).not.toHaveBeenCalled()
       expect(registerFeedbackSpy).not.toHaveBeenCalled()
     })
 
@@ -240,7 +239,7 @@ describe('StackBehavior', () => {
           canPush: expect.any(Function)
         })
       )
-      expect(recordSpy).not.toHaveBeenCalled()
+      expect(actionRecorded).not.toHaveBeenCalled()
       expect(registerFeedbackSpy).not.toHaveBeenCalled()
     })
 
@@ -280,7 +279,7 @@ describe('StackBehavior', () => {
           canPush: expect.any(Function)
         })
       )
-      expect(recordSpy).not.toHaveBeenCalled()
+      expect(actionRecorded).not.toHaveBeenCalled()
       expect(registerFeedbackSpy).not.toHaveBeenCalled()
     })
 
@@ -290,7 +289,7 @@ describe('StackBehavior', () => {
 
       behavior.fromState({ stackIds: ['box2', 'box1'] })
       expectStacked([mesh, box2, box1])
-      expect(recordSpy).not.toHaveBeenCalled()
+      expect(actionRecorded).not.toHaveBeenCalled()
       expect(registerFeedbackSpy).not.toHaveBeenCalled()
     })
 
@@ -306,7 +305,7 @@ describe('StackBehavior', () => {
       expectRotated(box3, 0)
       expectZone(behavior, { extent: 2, enabled: false, ignoreParts: true })
       expectStacked([mesh, box1, box3])
-      expect(recordSpy).not.toHaveBeenCalled()
+      expect(actionRecorded).not.toHaveBeenCalled()
       expect(registerFeedbackSpy).not.toHaveBeenCalled()
     })
 
@@ -363,23 +362,27 @@ describe('StackBehavior', () => {
           canPush: expect.any(Function)
         })
       )
-      expect(recordSpy).not.toHaveBeenCalled()
+      expect(actionRecorded).not.toHaveBeenCalled()
       expect(registerFeedbackSpy).not.toHaveBeenCalled()
     })
 
     it('pushes new mesh on stack', async () => {
       expectStacked([mesh])
-      expect(box1.absolutePosition).toEqual(Vector3.FromArray([1, 1, 1]))
+      const position = [1, 1, 1]
+      expect(box1.absolutePosition).toEqual(Vector3.FromArray(position))
 
       await mesh.metadata.push?.(box1.id)
       expectStacked([mesh, box1])
       expectRotated(box1, 0)
-      expect(recordSpy).toHaveBeenCalledTimes(1)
-      expect(recordSpy).toHaveBeenCalledWith({
+      expect(actionRecorded).toHaveBeenCalledOnce()
+      expect(actionRecorded).toHaveBeenCalledWith({
         fn: 'push',
-        mesh,
+        meshId: mesh.id,
         args: [box1.id, false],
-        duration: behavior.state.duration
+        duration: behavior.state.duration,
+        revert: [1, false, position, 0],
+        fromHand: false,
+        isLocal: false
       })
       expectMoveRecorded(moveRecorded, box1)
       expectMeshFeedback(registerFeedbackSpy, 'push', box1)
@@ -393,12 +396,15 @@ describe('StackBehavior', () => {
       expectRotated(box1, 0)
       expectRotated(box2, 0)
       expectRotated(box3, 0)
-      expect(recordSpy).toHaveBeenCalledTimes(1)
-      expect(recordSpy).toHaveBeenCalledWith({
+      expect(actionRecorded).toHaveBeenCalledOnce()
+      expect(actionRecorded).toHaveBeenCalledWith({
         fn: 'push',
-        mesh,
+        meshId: mesh.id,
         args: [box3.id, false],
-        duration: box2.getBehaviorByName(StackBehaviorName)?.state.duration
+        duration: box2.getBehaviorByName(StackBehaviorName)?.state.duration,
+        revert: [1, false, [3, 3, 3], 0],
+        fromHand: false,
+        isLocal: false
       })
       expectMoveRecorded(moveRecorded, box3)
       expectMeshFeedback(registerFeedbackSpy, 'push', box3)
@@ -411,9 +417,10 @@ describe('StackBehavior', () => {
         ?.fromState({ duration: 100, angle: baseAngle })
       expectRotated(mesh, baseAngle)
       const angle = Math.PI
+      const initialAngle = Math.PI * -0.5
       box1
         .getBehaviorByName(RotateBehaviorName)
-        ?.fromState({ duration: 100, angle: Math.PI * -0.5 })
+        ?.fromState({ duration: 100, angle: initialAngle })
       box1
         .getBehaviorByName(FlipBehaviorName)
         ?.fromState({ duration: 100, isFlipped: true })
@@ -425,12 +432,15 @@ describe('StackBehavior', () => {
       expectRotated(box1, baseAngle - angle)
       expectFlipped(box1)
       expectStacked([mesh, box1])
-      expect(recordSpy).toHaveBeenCalledTimes(1)
-      expect(recordSpy).toHaveBeenCalledWith({
+      expect(actionRecorded).toHaveBeenCalledOnce()
+      expect(actionRecorded).toHaveBeenCalledWith({
         fn: 'push',
-        mesh,
+        meshId: mesh.id,
         args: [box1.id, false],
-        duration: behavior.state.duration
+        duration: behavior.state.duration,
+        revert: [1, false, [1, 1, 1], expect.numberCloseTo(initialAngle)],
+        fromHand: false,
+        isLocal: false
       })
       expectMoveRecorded(moveRecorded, box1)
       expectMeshFeedback(registerFeedbackSpy, 'push', box1)
@@ -444,12 +454,15 @@ describe('StackBehavior', () => {
 
       await mesh.metadata.push?.(box1.id)
       expectStacked([mesh, box1], false)
-      expect(recordSpy).toHaveBeenCalledTimes(1)
-      expect(recordSpy).toHaveBeenCalledWith({
+      expect(actionRecorded).toHaveBeenCalledOnce()
+      expect(actionRecorded).toHaveBeenCalledWith({
         fn: 'push',
-        mesh,
+        meshId: mesh.id,
         args: [box1.id, false],
-        duration: behavior.state.duration
+        duration: behavior.state.duration,
+        revert: [1, false, [1, 1, 1], 0],
+        fromHand: false,
+        isLocal: false
       })
       expectMoveRecorded(moveRecorded, box1)
       expectMeshFeedback(registerFeedbackSpy, 'push', box1)
@@ -460,25 +473,33 @@ describe('StackBehavior', () => {
       const targetable = /** @type {StackBehavior} */ (
         getTargetableBehavior(box2)
       )
+      const isLocal = true
 
       targetable.onDropObservable.notifyObservers({
         dropped: [box1, box3],
+        isLocal,
         zone: targetable.zones[0]
       })
       await sleep(behavior.state.duration)
       expectStacked([mesh, box2, box1, box3])
-      expect(recordSpy).toHaveBeenCalledTimes(2)
-      expect(recordSpy).toHaveBeenNthCalledWith(1, {
+      expect(actionRecorded).toHaveBeenCalledTimes(2)
+      expect(actionRecorded).toHaveBeenNthCalledWith(1, {
         fn: 'push',
-        mesh,
+        meshId: mesh.id,
         args: [box1.id, false],
-        duration: box2.getBehaviorByName(StackBehaviorName)?.state.duration
+        duration: box2.getBehaviorByName(StackBehaviorName)?.state.duration,
+        revert: [1, false, [1, 1, 1], 0],
+        fromHand: false,
+        isLocal
       })
-      expect(recordSpy).toHaveBeenNthCalledWith(2, {
+      expect(actionRecorded).toHaveBeenNthCalledWith(2, {
         fn: 'push',
-        mesh,
+        meshId: mesh.id,
         args: [box3.id, false],
-        duration: box2.getBehaviorByName(StackBehaviorName)?.state.duration
+        duration: box2.getBehaviorByName(StackBehaviorName)?.state.duration,
+        revert: [1, false, [3, 3, 3], 0],
+        fromHand: false,
+        isLocal
       })
       expectMoveRecorded(moveRecorded, box1, box3)
       expectMeshFeedback(registerFeedbackSpy, 'push', box1, box3)
@@ -495,21 +516,107 @@ describe('StackBehavior', () => {
 
       await mesh.metadata.push?.(box2.id)
       expectStacked([mesh, box1, box2, box3])
-      expect(recordSpy).toHaveBeenCalledTimes(1)
-      expect(recordSpy).toHaveBeenCalledWith({
+      expect(actionRecorded).toHaveBeenCalledOnce()
+      expect(actionRecorded).toHaveBeenCalledWith({
         fn: 'push',
-        mesh,
+        meshId: mesh.id,
         args: [box2.id, false],
-        duration: behavior.state.duration
+        duration: behavior.state.duration,
+        revert: [1, false, [2, 2, 2], 0],
+        fromHand: false,
+        isLocal: false
       })
       expectMoveRecorded(moveRecorded, box2)
       expectMeshFeedback(registerFeedbackSpy, 'push', box2)
     })
 
+    it('can revert a single pushed mesh', async () => {
+      const position = [2, 2, 2]
+      const angle = Math.PI * 0.5
+      behavior.fromState({ stackIds: ['box1', 'box2'] })
+      expectStacked([mesh, box1, box2])
+      expectRotated(mesh, 0)
+      expectPosition(mesh, [0, 0, 0])
+      registerFeedbackSpy.mockClear()
+      actionRecorded.mockClear()
+
+      await behavior.revert('push', [1, false, position, angle])
+      expectStacked([mesh, box1])
+      expectRotated(mesh, 0)
+      expectStacked([box2])
+      expectRotated(box2, angle)
+      expectPosition(box2, position)
+      expect(registerFeedbackSpy).toHaveBeenCalledOnce()
+      expect(actionRecorded).toHaveBeenCalledOnce()
+      expect(actionRecorded).toHaveBeenCalledWith({
+        fn: 'pop',
+        meshId: mesh.id,
+        args: [1, false],
+        revert: [[box2.id], false],
+        fromHand: false,
+        isLocal: true
+      })
+    })
+
+    it('can revert a stack of pushed mesh', async () => {
+      const position = [3, 3, 3]
+      behavior.fromState({ stackIds: ['box1', 'box2', 'box3'] })
+      expectStacked([mesh, box1, box2, box3])
+      expectRotated(mesh, 0)
+      expectPosition(mesh, [0, 0, 0])
+      registerFeedbackSpy.mockClear()
+      actionRecorded.mockClear()
+
+      await behavior.revert('push', [2, false, position, undefined])
+      expectStacked([mesh, box1])
+      expectRotated(mesh, 0)
+      expectStacked([box2, box3])
+      expectRotated(box2, 0)
+      expectPosition(box2, position)
+      expect(registerFeedbackSpy).toHaveBeenCalledOnce()
+      expect(actionRecorded).toHaveBeenCalledOnce()
+      expect(actionRecorded).toHaveBeenCalledWith({
+        fn: 'pop',
+        meshId: mesh.id,
+        args: [2, false],
+        revert: [[box2.id, box3.id], false],
+        fromHand: false,
+        isLocal: true
+      })
+    })
+
+    it('can immediately revert pushed mesh', async () => {
+      const position = [1, 1, 1]
+      behavior.fromState({ stackIds: ['box1'] })
+      expectStacked([mesh, box1])
+      expectRotated(mesh, 0)
+      expectPosition(mesh, [0, 0, 0])
+      registerFeedbackSpy.mockClear()
+      actionRecorded.mockClear()
+
+      await behavior.revert('push', [1, true, position, undefined])
+      expectStacked([mesh])
+      expectRotated(mesh, 0)
+      expectStacked([box1])
+      expectRotated(box1, 0)
+      expectPosition(box1, position)
+      expect(registerFeedbackSpy).toHaveBeenCalledOnce()
+      expect(actionRecorded).toHaveBeenCalledOnce()
+      expect(actionRecorded).toHaveBeenCalledWith({
+        fn: 'pop',
+        meshId: mesh.id,
+        args: [1, true],
+        duration: behavior.state.duration,
+        revert: [[box1.id], true],
+        fromHand: false,
+        isLocal: true
+      })
+    })
+
     it('can not pop an empty stack', async () => {
       expect(await mesh.metadata.pop?.()).toEqual([])
       expectStacked([mesh])
-      expect(recordSpy).not.toHaveBeenCalled()
+      expect(actionRecorded).not.toHaveBeenCalled()
       expectMoveRecorded(moveRecorded)
       expect(registerFeedbackSpy).not.toHaveBeenCalled()
     })
@@ -517,42 +624,51 @@ describe('StackBehavior', () => {
     it('pops last mesh from stack', async () => {
       behavior.fromState({ stackIds: ['box2', 'box1', 'box3'] })
 
-      let [poped] = await (mesh.metadata.pop ? mesh.metadata.pop() : [])
+      let [poped] = (await mesh.metadata.pop?.()) ?? []
       expect(poped?.id).toBe('box3')
       expectInteractible(poped)
       expect(poped.parent?.id).toBeUndefined()
       expectStacked([mesh, box2, box1])
-      expect(recordSpy).toHaveBeenCalledTimes(1)
-      expect(recordSpy).toHaveBeenCalledWith({
+      expect(actionRecorded).toHaveBeenCalledOnce()
+      expect(actionRecorded).toHaveBeenCalledWith({
         fn: 'pop',
-        mesh,
-        args: [1, false]
+        meshId: mesh.id,
+        args: [1, false],
+        revert: [[poped?.id], false],
+        fromHand: false,
+        isLocal: false
       })
       expectStackIndicator(poped)
       expectMeshFeedback(registerFeedbackSpy, 'pop', poped)
-      ;[poped] = await (mesh.metadata.pop ? mesh.metadata.pop() : [])
+      ;[poped] = (await mesh.metadata.pop?.()) ?? []
       expect(poped?.id).toBe('box1')
       expectInteractible(poped)
       expect(poped.parent?.id).toBeUndefined()
       expectStacked([mesh, box2])
-      expect(recordSpy).toHaveBeenCalledTimes(2)
-      expect(recordSpy).toHaveBeenNthCalledWith(2, {
+      expect(actionRecorded).toHaveBeenCalledTimes(2)
+      expect(actionRecorded).toHaveBeenNthCalledWith(2, {
         fn: 'pop',
-        mesh,
-        args: [1, false]
+        meshId: mesh.id,
+        args: [1, false],
+        revert: [[poped?.id], false],
+        fromHand: false,
+        isLocal: false
       })
       expectStackIndicator(poped)
       expectMeshFeedback(registerFeedbackSpy, 'pop', poped)
-      ;[poped] = await (mesh.metadata.pop ? mesh.metadata.pop() : [])
+      ;[poped] = (await mesh.metadata.pop?.()) ?? []
       expect(poped?.id).toBe('box2')
       expectInteractible(poped)
       expect(poped.parent?.id).toBeUndefined()
       expectStacked([mesh])
-      expect(recordSpy).toHaveBeenCalledTimes(3)
-      expect(recordSpy).toHaveBeenNthCalledWith(3, {
+      expect(actionRecorded).toHaveBeenCalledTimes(3)
+      expect(actionRecorded).toHaveBeenNthCalledWith(3, {
         fn: 'pop',
-        mesh,
-        args: [1, false]
+        meshId: mesh.id,
+        args: [1, false],
+        revert: [[poped?.id], false],
+        fromHand: false,
+        isLocal: false
       })
       expectStackIndicator(poped)
       expectMeshFeedback(registerFeedbackSpy, 'pop', poped)
@@ -570,12 +686,15 @@ describe('StackBehavior', () => {
       expect(poped.parent?.id).toBeUndefined()
       expectInteractible(poped)
       expectStacked([mesh, box2, box1])
-      expect(recordSpy).toHaveBeenCalledTimes(1)
-      expect(recordSpy).toHaveBeenCalledWith({
+      expect(actionRecorded).toHaveBeenCalledOnce()
+      expect(actionRecorded).toHaveBeenCalledWith({
         fn: 'pop',
-        mesh,
+        meshId: mesh.id,
         args: [1, true],
-        duration: behavior.state.duration
+        duration: behavior.state.duration,
+        revert: [[poped?.id], true],
+        fromHand: false,
+        isLocal: false
       })
       expectPosition(poped, [1.25, 0.5, 0])
       expectMeshFeedback(registerFeedbackSpy, 'pop', poped)
@@ -597,12 +716,15 @@ describe('StackBehavior', () => {
       expectInteractible(poped2)
       expect(poped2.parent?.id).toBeUndefined()
       expectStacked([mesh, box2])
-      expect(recordSpy).toHaveBeenCalledTimes(1)
-      expect(recordSpy).toHaveBeenCalledWith({
+      expect(actionRecorded).toHaveBeenCalledOnce()
+      expect(actionRecorded).toHaveBeenCalledWith({
         fn: 'pop',
-        mesh,
+        meshId: mesh.id,
         args: [2, true],
-        duration: behavior.state.duration
+        duration: behavior.state.duration,
+        revert: [[poped2?.id, poped1?.id], true],
+        fromHand: false,
+        isLocal: false
       })
       expectPosition(poped1, [1.25, 0.5, 0])
       expectPosition(poped2, [2.5, 0.5, 0])
@@ -613,7 +735,7 @@ describe('StackBehavior', () => {
     it('pops all meshes from a stack', async () => {
       behavior.fromState({ stackIds: ['box2', 'box1', 'box3'] })
 
-      let [poped1, poped2, poped3, poped4] = await await (mesh.metadata.pop
+      let [poped1, poped2, poped3, poped4] = await (mesh.metadata.pop
         ? mesh.metadata.pop(4)
         : [])
       expect(poped1?.id).toBe('box3')
@@ -629,11 +751,14 @@ describe('StackBehavior', () => {
       expect(poped3.parent?.id).toBeUndefined()
       expect(poped4.parent?.id).toBeUndefined()
       expectStacked([mesh])
-      expect(recordSpy).toHaveBeenCalledTimes(1)
-      expect(recordSpy).toHaveBeenCalledWith({
+      expect(actionRecorded).toHaveBeenCalledOnce()
+      expect(actionRecorded).toHaveBeenCalledWith({
         fn: 'pop',
-        mesh,
-        args: [4, false]
+        meshId: mesh.id,
+        args: [4, false],
+        revert: [[poped4?.id, poped3?.id, poped2?.id, poped1?.id], false],
+        fromHand: false,
+        isLocal: false
       })
       expectMeshFeedback(registerFeedbackSpy, 'pop', poped1)
       expectMoveRecorded(moveRecorded)
@@ -647,11 +772,14 @@ describe('StackBehavior', () => {
       expectInteractible(poped)
       expect(poped.parent?.id).toBeUndefined()
       expectStacked([mesh, box3, box1])
-      expect(recordSpy).toHaveBeenCalledTimes(1)
-      expect(recordSpy).toHaveBeenCalledWith({
+      expect(actionRecorded).toHaveBeenCalledOnce()
+      expect(actionRecorded).toHaveBeenCalledWith({
         fn: 'pop',
-        mesh,
-        args: [1, false]
+        meshId: mesh.id,
+        args: [1, false],
+        revert: [[poped?.id], false],
+        fromHand: false,
+        isLocal: false
       })
       expectMeshFeedback(registerFeedbackSpy, 'pop', poped)
       expectMoveRecorded(moveRecorded)
@@ -664,11 +792,14 @@ describe('StackBehavior', () => {
       expectInteractible(box2)
       expect(box2.parent?.id).toBeUndefined()
       expectStacked([mesh, box3, box1])
-      expect(recordSpy).toHaveBeenCalledTimes(1)
-      expect(recordSpy).toHaveBeenCalledWith({
+      expect(actionRecorded).toHaveBeenCalledOnce()
+      expect(actionRecorded).toHaveBeenCalledWith({
         fn: 'pop',
-        mesh,
-        args: [1, false]
+        meshId: mesh.id,
+        args: [1, false],
+        revert: [[box2.id], false],
+        fromHand: false,
+        isLocal: false
       })
       expectMeshFeedback(registerFeedbackSpy, 'pop', box2)
     })
@@ -680,28 +811,40 @@ describe('StackBehavior', () => {
       expectInteractible(box2)
       expect(box2.parent?.id).toBeUndefined()
       expectStacked([mesh, box3, box1])
-      expect(recordSpy).toHaveBeenCalledTimes(1)
-      expect(recordSpy).toHaveBeenCalledWith({
+      expect(actionRecorded).toHaveBeenCalledTimes(2)
+      expect(actionRecorded).toHaveBeenNthCalledWith(1, {
         fn: 'draw',
-        mesh: box2,
-        args: []
+        meshId: box2.id,
+        args: expect.any(Array),
+        fromHand: false,
+        isLocal: false
+      })
+      expect(actionRecorded).toHaveBeenNthCalledWith(2, {
+        fn: 'pop',
+        meshId: mesh.id,
+        args: [1, false],
+        revert: [[box2.id], false],
+        fromHand: false,
+        isLocal: true
       })
       expectMoveRecorded(moveRecorded)
       expect(registerFeedbackSpy).not.toHaveBeenCalled()
     })
 
-    it('can not pops any mesh when drawn', async () => {
+    it('can not pop any mesh when drawn', async () => {
       behavior.fromState({ stackIds: ['box3', 'box1', 'box2'] })
 
       box3.isPickable = false
       box3.metadata.draw?.()
       expectInteractible(box3, false, false)
       expectStacked([mesh, box3, box1, box2])
-      expect(recordSpy).toHaveBeenCalledTimes(1)
-      expect(recordSpy).toHaveBeenCalledWith({
+      expect(actionRecorded).toHaveBeenCalledOnce()
+      expect(actionRecorded).toHaveBeenCalledWith({
         fn: 'draw',
-        mesh: box3,
-        args: []
+        meshId: box3.id,
+        args: expect.any(Array),
+        fromHand: false,
+        isLocal: false
       })
       expect(moveRecorded).not.toHaveBeenCalled()
       expect(registerFeedbackSpy).not.toHaveBeenCalled()
@@ -712,33 +855,109 @@ describe('StackBehavior', () => {
       expectInteractible(box3, true, false)
       behavior.fromState({ stackIds: ['box2', 'box1', 'box3'] })
 
-      let [poped] = await (mesh.metadata.pop ? mesh.metadata.pop() : [])
+      let [poped] = (await mesh.metadata.pop?.()) ?? []
       expect(poped?.id).toBe('box3')
       expectInteractible(poped, true, false)
       expect(poped.parent?.id).toBeUndefined()
       expectStacked([mesh, box2, box1])
-      expect(recordSpy).toHaveBeenCalledTimes(1)
-      expect(recordSpy).toHaveBeenCalledWith({
+      expect(actionRecorded).toHaveBeenCalledOnce()
+      expect(actionRecorded).toHaveBeenCalledWith({
         fn: 'pop',
-        mesh,
-        args: [1, false]
+        meshId: mesh.id,
+        args: [1, false],
+        revert: [[poped?.id], false],
+        fromHand: false,
+        isLocal: false
       })
       expectStackIndicator(poped)
       expectMoveRecorded(moveRecorded)
       expectMeshFeedback(registerFeedbackSpy, 'pop', poped)
     })
 
-    it('reorders stack to given order', async () => {
-      behavior.fromState({ stackIds: ['box3', 'box2', 'box1'] })
+    it('can revert a single poped mesh', async () => {
+      behavior.fromState({ stackIds: ['box1', 'box2'] })
+      const [poped] = (await mesh.metadata.pop?.()) ?? []
+      const position = poped.absolutePosition.asArray()
+      poped.metadata.rotate?.()
+      const angle = /** @type {number} */ (
+        poped.getBehaviorByName(RotateBehaviorName)?.state.angle
+      )
+      expectRotated(poped, angle)
+      expectStacked([mesh, box1])
+      registerFeedbackSpy.mockClear()
+      actionRecorded.mockClear()
 
-      await mesh.metadata.reorder?.(['box0', 'box1', 'box2', 'box3'], false)
+      await behavior.revert('pop', [[poped.id], true])
+      expectStacked([mesh, box1, box2])
+      expectRotated(box2, 0)
+      expect(registerFeedbackSpy).toHaveBeenCalledOnce()
+      expect(actionRecorded).toHaveBeenCalledOnce()
+      expect(actionRecorded).toHaveBeenCalledWith(
+        expect.objectContaining({
+          fn: 'push',
+          meshId: mesh.id,
+          args: [poped.id, true],
+          revert: [1, true, position, 0],
+          fromHand: false,
+          isLocal: true
+        })
+      )
+    })
 
+    it('can revert multiple poped mesh', async () => {
+      behavior.fromState({ stackIds: ['box1', 'box2', 'box3'] })
+      const [poped1, poped2] = (await mesh.metadata.pop?.(2, true)) ?? []
+      const position1 = [1.25, 0.5, 0]
+      expectPosition(poped1, position1)
+      const position2 = [2.5, 0.5, 0]
+      expectPosition(poped2, position2)
+      expectStacked([mesh, box1])
+      registerFeedbackSpy.mockClear()
+      actionRecorded.mockClear()
+
+      await behavior.revert('pop', [[poped2.id, poped1.id], false])
       expectStacked([mesh, box1, box2, box3])
-      expect(recordSpy).toHaveBeenCalledTimes(1)
-      expect(recordSpy).toHaveBeenCalledWith({
+      expect(registerFeedbackSpy).toHaveBeenCalledTimes(2)
+      expect(actionRecorded).toHaveBeenCalledTimes(2)
+      expect(actionRecorded).toHaveBeenNthCalledWith(
+        1,
+        expect.objectContaining({
+          fn: 'push',
+          meshId: mesh.id,
+          args: [poped2.id, false],
+          revert: [1, false, position2, 0],
+          fromHand: false,
+          isLocal: true
+        })
+      )
+      expect(actionRecorded).toHaveBeenNthCalledWith(
+        2,
+        expect.objectContaining({
+          fn: 'push',
+          meshId: mesh.id,
+          args: [poped1.id, false],
+          revert: [1, false, position1, 0],
+          fromHand: false,
+          isLocal: true
+        })
+      )
+    })
+
+    it('reorders stack to given order', async () => {
+      behavior.fromState({ stackIds: ['box1', 'box2', 'box3'] })
+      expectStacked([mesh, box1, box2, box3])
+
+      await mesh.metadata.reorder?.(['box3', 'box2', 'box1', 'box0'], false)
+
+      expectStacked([box3, box2, box1, mesh])
+      expect(actionRecorded).toHaveBeenCalledOnce()
+      expect(actionRecorded).toHaveBeenCalledWith({
         fn: 'reorder',
-        mesh,
-        args: [['box0', 'box1', 'box2', 'box3'], false]
+        meshId: mesh.id,
+        args: [['box3', 'box2', 'box1', 'box0'], false],
+        revert: [['box0', 'box1', 'box2', 'box3'], false],
+        fromHand: false,
+        isLocal: false
       })
       expectMoveRecorded(moveRecorded)
       expect(registerFeedbackSpy).not.toHaveBeenCalled()
@@ -746,15 +965,19 @@ describe('StackBehavior', () => {
 
     it('reorders with animation', async () => {
       behavior.fromState({ stackIds: ['box1', 'box2', 'box3'] })
+      expectStacked([mesh, box1, box2, box3])
 
       await mesh.metadata.reorder?.(['box2', 'box0', 'box3', 'box1'])
 
       expectStacked([box2, mesh, box3, box1])
-      expect(recordSpy).toHaveBeenCalledTimes(1)
-      expect(recordSpy).toHaveBeenCalledWith({
+      expect(actionRecorded).toHaveBeenCalledOnce()
+      expect(actionRecorded).toHaveBeenCalledWith({
         fn: 'reorder',
-        mesh,
-        args: [['box2', 'box0', 'box3', 'box1'], true]
+        meshId: mesh.id,
+        args: [['box2', 'box0', 'box3', 'box1'], true],
+        revert: [['box0', 'box1', 'box2', 'box3'], true],
+        fromHand: false,
+        isLocal: false
       })
       expectMoveRecorded(moveRecorded)
       expect(registerFeedbackSpy).not.toHaveBeenCalled()
@@ -766,18 +989,22 @@ describe('StackBehavior', () => {
         anchors: [{ id: '1', x: -0.5, snappedId: 'box0' }]
       })
       expectSnapped(box3, mesh)
+      expectStacked([mesh, box1, box2], true, 'box3')
 
       await mesh.metadata.reorder?.(['box1', 'box0', 'box2'])
 
       expectStacked([box1, mesh, box2], true, 'box3')
       expectSnapped(box3, box1)
 
-      expect(recordSpy).toHaveBeenCalledWith({
+      expect(actionRecorded).toHaveBeenCalledWith({
         fn: 'reorder',
-        mesh,
-        args: [['box1', 'box0', 'box2'], true]
+        meshId: mesh.id,
+        args: [['box1', 'box0', 'box2'], true],
+        revert: [['box0', 'box1', 'box2'], true],
+        fromHand: false,
+        isLocal: false
       })
-      expect(recordSpy).toHaveBeenCalledTimes(1)
+      expect(actionRecorded).toHaveBeenCalledOnce()
       expectMoveRecorded(moveRecorded)
       expect(registerFeedbackSpy).not.toHaveBeenCalled()
     })
@@ -795,11 +1022,14 @@ describe('StackBehavior', () => {
       await firstReordering
 
       expectStacked([box2, mesh, box3, box1])
-      expect(recordSpy).toHaveBeenCalledTimes(1)
-      expect(recordSpy).toHaveBeenCalledWith({
+      expect(actionRecorded).toHaveBeenCalledOnce()
+      expect(actionRecorded).toHaveBeenCalledWith({
         fn: 'reorder',
-        mesh,
-        args: [['box2', 'box0', 'box3', 'box1'], true]
+        meshId: mesh.id,
+        args: [['box2', 'box0', 'box3', 'box1'], true],
+        revert: [['box0', 'box1', 'box2', 'box3'], true],
+        fromHand: false,
+        isLocal: false
       })
       expect(registerFeedbackSpy).not.toHaveBeenCalled()
     })
@@ -810,11 +1040,14 @@ describe('StackBehavior', () => {
       box3.metadata.reorder?.(['box0', 'box1', 'box2', 'box3'], false)
 
       expectStacked([mesh, box1, box2, box3])
-      expect(recordSpy).toHaveBeenCalledTimes(1)
-      expect(recordSpy).toHaveBeenCalledWith({
+      expect(actionRecorded).toHaveBeenCalledOnce()
+      expect(actionRecorded).toHaveBeenCalledWith({
         fn: 'reorder',
-        mesh,
-        args: [['box0', 'box1', 'box2', 'box3'], false]
+        meshId: mesh.id,
+        args: [['box0', 'box1', 'box2', 'box3'], false],
+        revert: [['box0', 'box2', 'box1', 'box3'], false],
+        fromHand: false,
+        isLocal: false
       })
       expect(registerFeedbackSpy).not.toHaveBeenCalled()
     })
@@ -825,13 +1058,39 @@ describe('StackBehavior', () => {
       mesh.metadata.reorder?.(['box3', 'box0', 'box2', 'box1'], false)
 
       expectStacked([box3, mesh, box2, box1])
-      expect(recordSpy).toHaveBeenCalledTimes(1)
-      expect(recordSpy).toHaveBeenCalledWith({
+      expect(actionRecorded).toHaveBeenCalledOnce()
+      expect(actionRecorded).toHaveBeenCalledWith({
         fn: 'reorder',
-        mesh,
-        args: [['box3', 'box0', 'box2', 'box1'], false]
+        meshId: mesh.id,
+        args: [['box3', 'box0', 'box2', 'box1'], false],
+        revert: [['box0', 'box3', 'box2', 'box1'], false],
+        fromHand: false,
+        isLocal: false
       })
       expect(registerFeedbackSpy).not.toHaveBeenCalled()
+    })
+
+    it('can revert reordered meshes', async () => {
+      behavior.fromState({ stackIds: ['box1', 'box2', 'box3'] })
+      expectStacked([mesh, box1, box2, box3])
+      registerFeedbackSpy.mockClear()
+      actionRecorded.mockClear()
+
+      await behavior.revert('reorder', [
+        ['box3', 'box2', 'box1', 'box0'],
+        false
+      ])
+      expectStacked([box3, box2, box1, mesh])
+      expect(registerFeedbackSpy).not.toHaveBeenCalled()
+      expect(actionRecorded).toHaveBeenCalledOnce()
+      expect(actionRecorded).toHaveBeenCalledWith({
+        fn: 'reorder',
+        meshId: mesh.id,
+        args: [['box3', 'box2', 'box1', 'box0'], false],
+        revert: [['box0', 'box1', 'box2', 'box3'], false],
+        fromHand: false,
+        isLocal: true
+      })
     })
 
     it('flips the entire stack', async () => {
@@ -839,40 +1098,53 @@ describe('StackBehavior', () => {
 
       await mesh.metadata.flipAll?.()
       expectStacked([box3, box2, box1, mesh])
-      expect(recordSpy).toHaveBeenCalledTimes(6)
-      expect(recordSpy).toHaveBeenNthCalledWith(1, {
+      expect(actionRecorded).toHaveBeenCalledTimes(6)
+      expect(actionRecorded).toHaveBeenNthCalledWith(1, {
         fn: 'flipAll',
-        mesh,
-        args: []
-      })
-      expect(recordSpy).toHaveBeenNthCalledWith(2, {
-        fn: 'flip',
-        mesh,
+        meshId: mesh.id,
         args: [],
-        duration: 100
+        fromHand: false,
+        isLocal: false
       })
-      expect(recordSpy).toHaveBeenNthCalledWith(3, {
+      expect(actionRecorded).toHaveBeenNthCalledWith(2, {
         fn: 'flip',
-        mesh: box1,
+        meshId: mesh.id,
         args: [],
-        duration: 100
+        duration: 100,
+        fromHand: false,
+        isLocal: true
       })
-      expect(recordSpy).toHaveBeenNthCalledWith(4, {
+      expect(actionRecorded).toHaveBeenNthCalledWith(3, {
         fn: 'flip',
-        mesh: box2,
+        meshId: box1.id,
         args: [],
-        duration: 100
+        duration: 100,
+        fromHand: false,
+        isLocal: true
       })
-      expect(recordSpy).toHaveBeenNthCalledWith(5, {
+      expect(actionRecorded).toHaveBeenNthCalledWith(4, {
         fn: 'flip',
-        mesh: box3,
+        meshId: box2.id,
         args: [],
-        duration: 100
+        duration: 100,
+        fromHand: false,
+        isLocal: true
       })
-      expect(recordSpy).toHaveBeenNthCalledWith(6, {
+      expect(actionRecorded).toHaveBeenNthCalledWith(5, {
+        fn: 'flip',
+        meshId: box3.id,
+        args: [],
+        duration: 100,
+        fromHand: false,
+        isLocal: true
+      })
+      expect(actionRecorded).toHaveBeenNthCalledWith(6, {
         fn: 'reorder',
-        mesh,
-        args: [['box3', 'box2', 'box1', 'box0'], false]
+        meshId: mesh.id,
+        args: [['box3', 'box2', 'box1', 'box0'], false],
+        revert: [['box0', 'box1', 'box2', 'box3'], false],
+        fromHand: false,
+        isLocal: true
       })
       expectMoveRecorded(moveRecorded)
       expect(registerFeedbackSpy).not.toHaveBeenCalled()
@@ -882,43 +1154,56 @@ describe('StackBehavior', () => {
       behavior.fromState({ stackIds: ['box1', 'box2', 'box3'] })
       await mesh.metadata.flip?.()
       expectFlipped(mesh, true)
-      recordSpy.mockClear()
+      actionRecorded.mockClear()
       await mesh.metadata.flipAll?.()
       expectStacked([box3, box2, box1, mesh])
-      expect(recordSpy).toHaveBeenCalledTimes(6)
-      expect(recordSpy).toHaveBeenNthCalledWith(1, {
+      expect(actionRecorded).toHaveBeenCalledTimes(6)
+      expect(actionRecorded).toHaveBeenNthCalledWith(1, {
         fn: 'flipAll',
-        mesh,
-        args: []
+        meshId: mesh.id,
+        args: [],
+        fromHand: false,
+        isLocal: false
       })
-      expect(recordSpy).toHaveBeenNthCalledWith(2, {
+      expect(actionRecorded).toHaveBeenNthCalledWith(2, {
         fn: 'reorder',
-        mesh,
-        args: [['box3', 'box2', 'box1', 'box0'], false]
+        meshId: mesh.id,
+        args: [['box3', 'box2', 'box1', 'box0'], false],
+        revert: [['box0', 'box1', 'box2', 'box3'], false],
+        fromHand: false,
+        isLocal: true
       })
-      expect(recordSpy).toHaveBeenNthCalledWith(3, {
+      expect(actionRecorded).toHaveBeenNthCalledWith(3, {
         fn: 'flip',
-        mesh: box3,
+        meshId: box3.id,
         args: [],
-        duration: 100
+        duration: 100,
+        fromHand: false,
+        isLocal: true
       })
-      expect(recordSpy).toHaveBeenNthCalledWith(4, {
+      expect(actionRecorded).toHaveBeenNthCalledWith(4, {
         fn: 'flip',
-        mesh: box2,
+        meshId: box2.id,
         args: [],
-        duration: 100
+        duration: 100,
+        fromHand: false,
+        isLocal: true
       })
-      expect(recordSpy).toHaveBeenNthCalledWith(5, {
+      expect(actionRecorded).toHaveBeenNthCalledWith(5, {
         fn: 'flip',
-        mesh: box1,
+        meshId: box1.id,
         args: [],
-        duration: 100
+        duration: 100,
+        fromHand: false,
+        isLocal: true
       })
-      expect(recordSpy).toHaveBeenNthCalledWith(6, {
+      expect(actionRecorded).toHaveBeenNthCalledWith(6, {
         fn: 'flip',
-        mesh,
+        meshId: mesh.id,
         args: [],
-        duration: 100
+        duration: 100,
+        fromHand: false,
+        isLocal: true
       })
       expectMoveRecorded(moveRecorded)
       expect(registerFeedbackSpy).not.toHaveBeenCalled()
@@ -928,17 +1213,21 @@ describe('StackBehavior', () => {
       await mesh.metadata.flipAll?.()
       expectStacked([mesh])
       expectFlipped(mesh, true)
-      expect(recordSpy).toHaveBeenCalledTimes(2)
-      expect(recordSpy).toHaveBeenNthCalledWith(1, {
+      expect(actionRecorded).toHaveBeenCalledTimes(2)
+      expect(actionRecorded).toHaveBeenNthCalledWith(1, {
         fn: 'flipAll',
-        mesh,
-        args: []
-      })
-      expect(recordSpy).toHaveBeenNthCalledWith(2, {
-        fn: 'flip',
-        mesh,
+        meshId: mesh.id,
         args: [],
-        duration: 100
+        fromHand: false,
+        isLocal: false
+      })
+      expect(actionRecorded).toHaveBeenNthCalledWith(2, {
+        fn: 'flip',
+        meshId: mesh.id,
+        args: [],
+        duration: 100,
+        fromHand: false,
+        isLocal: true
       })
       expectMoveRecorded(moveRecorded)
       expect(registerFeedbackSpy).not.toHaveBeenCalled()
@@ -946,19 +1235,7 @@ describe('StackBehavior', () => {
 
     it('flips the entire stack from peer', async () => {
       behavior.fromState({ stackIds: ['box1', 'box2', 'box3'] })
-      const extras = { args: [], fromHand: false, pos: undefined }
-      controlManager.apply({ fn: 'flipAll', meshId: mesh.id, ...extras }, true)
-      controlManager.apply({ fn: 'flipAll', meshId: mesh.id, ...extras }, true)
-      controlManager.apply({ fn: 'flip', meshId: mesh.id, ...extras }, true)
-      controlManager.apply({ fn: 'flip', meshId: box1.id, ...extras }, true)
-      controlManager.apply({ fn: 'flip', meshId: box2.id, ...extras }, true)
-      controlManager.apply({ fn: 'flip', meshId: box3.id, ...extras }, true)
-      controlManager.apply({
-        fn: 'reorder',
-        meshId: mesh.id,
-        ...extras,
-        args: [['box3', 'box2', 'box1', 'box0'], false]
-      })
+      controlManager.apply({ fn: 'flipAll', meshId: mesh.id, args: [] })
 
       await sleep(200)
       expectStacked([box3, box2, box1, mesh])
@@ -976,35 +1253,46 @@ describe('StackBehavior', () => {
       await mesh.metadata.flipAll?.()
       expectStacked([box2, box1, mesh], true, 'box3')
       expectSnapped(box3, box2)
-      expect(recordSpy).toHaveBeenNthCalledWith(1, {
+      expect(actionRecorded).toHaveBeenNthCalledWith(1, {
         fn: 'flipAll',
-        mesh,
-        args: []
-      })
-      expect(recordSpy).toHaveBeenNthCalledWith(2, {
-        fn: 'flip',
-        mesh,
+        meshId: mesh.id,
         args: [],
-        duration: 100
+        fromHand: false,
+        isLocal: false
       })
-      expect(recordSpy).toHaveBeenNthCalledWith(3, {
+      expect(actionRecorded).toHaveBeenNthCalledWith(2, {
         fn: 'flip',
-        mesh: box1,
+        meshId: mesh.id,
         args: [],
-        duration: 100
+        duration: 100,
+        fromHand: false,
+        isLocal: true
       })
-      expect(recordSpy).toHaveBeenNthCalledWith(4, {
+      expect(actionRecorded).toHaveBeenNthCalledWith(3, {
         fn: 'flip',
-        mesh: box2,
+        meshId: box1.id,
         args: [],
-        duration: 100
+        duration: 100,
+        fromHand: false,
+        isLocal: true
       })
-      expect(recordSpy).toHaveBeenNthCalledWith(5, {
+      expect(actionRecorded).toHaveBeenNthCalledWith(4, {
+        fn: 'flip',
+        meshId: box2.id,
+        args: [],
+        duration: 100,
+        fromHand: false,
+        isLocal: true
+      })
+      expect(actionRecorded).toHaveBeenNthCalledWith(5, {
         fn: 'reorder',
-        mesh,
-        args: [['box2', 'box1', 'box0'], false]
+        meshId: mesh.id,
+        args: [['box2', 'box1', 'box0'], false],
+        revert: [['box0', 'box1', 'box2'], false],
+        fromHand: false,
+        isLocal: true
       })
-      expect(recordSpy).toHaveBeenCalledTimes(5)
+      expect(actionRecorded).toHaveBeenCalledTimes(5)
       expectMoveRecorded(moveRecorded)
       expect(registerFeedbackSpy).not.toHaveBeenCalled()
     })
@@ -1014,12 +1302,15 @@ describe('StackBehavior', () => {
 
       await mesh.metadata.rotate?.()
       expectStacked([mesh, box1, box2, box3])
-      expect(recordSpy).toHaveBeenCalledTimes(1)
-      expect(recordSpy).toHaveBeenNthCalledWith(1, {
+      expect(actionRecorded).toHaveBeenCalledOnce()
+      expect(actionRecorded).toHaveBeenNthCalledWith(1, {
         fn: 'rotate',
-        mesh,
+        meshId: mesh.id,
         args: [Math.PI / 2],
-        duration: 100
+        duration: 100,
+        revert: [0],
+        fromHand: false,
+        isLocal: false
       })
       expectMoveRecorded(moveRecorded)
       expect(registerFeedbackSpy).not.toHaveBeenCalled()
@@ -1028,12 +1319,15 @@ describe('StackBehavior', () => {
     it('rotates an entire stack of one', async () => {
       await mesh.metadata.rotate?.()
       expectStacked([mesh])
-      expect(recordSpy).toHaveBeenCalledTimes(1)
-      expect(recordSpy).toHaveBeenCalledWith({
+      expect(actionRecorded).toHaveBeenCalledOnce()
+      expect(actionRecorded).toHaveBeenCalledWith({
         fn: 'rotate',
-        mesh,
+        meshId: mesh.id,
         args: [Math.PI / 2],
-        duration: 100
+        duration: 100,
+        revert: [0],
+        fromHand: false,
+        isLocal: false
       })
       expectMoveRecorded(moveRecorded)
       expect(registerFeedbackSpy).not.toHaveBeenCalled()

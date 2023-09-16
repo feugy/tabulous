@@ -162,7 +162,8 @@ async function buildGame(/** @type {GameDescriptor} */ descriptor) {
     cameras: [],
     hands: [],
     preferences: [],
-    messages: []
+    messages: [],
+    history: []
   }
 }
 
@@ -213,6 +214,7 @@ const actionNames = [
   'flip',
   'flipAll',
   'increment',
+  'play',
   'pop',
   'push',
   'random',

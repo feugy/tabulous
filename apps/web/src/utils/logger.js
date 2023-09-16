@@ -36,6 +36,7 @@ const levels = {
   'peer-connection': 'warn',
   quantifiable: 'warn',
   randomizable: 'warn',
+  replay: 'warn',
   rotable: 'warn',
   selection: 'warn',
   'scene-loader': 'warn',
@@ -95,10 +96,20 @@ export function makeLogger(name) {
 /**
  * Allows changing logger levels at runtime.
  * Performs basic validation to avoid setting unknown loggers, or configuring unsupported level.
- * @param {Record<string, LevelWithOnOff>} newLevels - partial logger level map, merged into the current map.
+ * @param {Record<string, LevelWithOnOff>|LevelWithOnOff} newLevels - partial logger level map, merged into the current map, or same level for all loggers.
  * @returns {Record<string, LevelWithOnOff>} the new, merged logger level map.
  */
 globalThis.configureLoggers = function (newLevels) {
+  if (typeof newLevels !== 'object') {
+    if (!(newLevels in levelMap)) {
+      console.warn(`ignoring unknown logger ${newLevels}`)
+    } else {
+      for (const logger in levels) {
+        levels[logger] = newLevels
+      }
+    }
+    return levels
+  }
   for (const logger in newLevels) {
     if (!(logger in levels)) {
       console.warn(`ignoring unknown logger ${logger}`)

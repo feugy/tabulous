@@ -2,6 +2,7 @@
 /**
  * @typedef {import('@babylonjs/core').Mesh} Mesh
  * @typedef {import('@babylonjs/core').Scene} Scene
+ * @typedef {import('@tabulous/server/src/graphql').ActionName} ActionName
  * @typedef {import('@tabulous/server/src/graphql').ZoomSpec} ZoomSpec
  * @typedef {import('@src/3d/managers/camera').CameraPosition} CameraPosition
  * @typedef {import('@src/3d/utils').ScreenPosition} ScreenPosition
@@ -11,29 +12,34 @@ import { Vector3 } from '@babylonjs/core/Maths/math.vector.js'
 import { Observable } from '@babylonjs/core/Misc/observable.js'
 
 import { actionNames } from '../utils/actions'
+import { animateMove } from '../utils/behaviors'
+import { handManager } from './hand'
 
 /**
  * @typedef {object} _Action
  * @property {string} meshId - modified mesh id.
  * @property {boolean} fromHand - indicates whether this action comes from hand or main scene.
  *
- * @typedef {Omit<RecordedAction, 'mesh'> & _Action & { pos: undefined }} Action applied action to a given mesh.
+ * @typedef {Omit<RecordedAction, 'mesh'> & _Action} Action applied action to a given mesh.
  *
  * @typedef {object} _Move applied move to a given mesh:
  * @property {string} meshId - modified mesh id.
  * @property {boolean} fromHand - indicates whether this action comes from hand or main scene.
  *
- * @typedef {Omit<RecordedMove, 'mesh'> & _Move & { fn: undefined, args: undefined }} Move applied move to a given mesh.
+ * @typedef {Omit<RecordedMove, 'mesh'> & _Move} Move applied move to a given mesh.
  *
  * @typedef {object} RecordedAction applied action to a given mesh:
  * @property {Mesh} mesh - modified mesh.
- * @property {string} fn - name of the applied action.
+ * @property {ActionName} fn - name of the applied action.
  * @property {any[]} args - argument array for this action.
+ * @property {any[]} [revert] - when action can't be reverted with the same args, specific data required.
  * @property {number} [duration] - optional animation duration, in milliseconds.
+ * @property {boolean} [isLocal] - indicates a local action that should not be re-recorded nor sent to peers.
  *
  * @typedef {object} RecordedMove applied action to a given mesh:
  * @property {Mesh} mesh - modified mesh.
  * @property {number[]} pos - absolute position.
+ * @property {number[]} prev - absolute position before the move.
  * @property {number} [duration] - optional animation duration, in milliseconds.
  *
  * @typedef {object} MeshDetails details of a given mesh.
@@ -64,7 +70,7 @@ class ControlManager {
     this.controlables = new Map()
     // prevents loops when applying an received action
     /** @private @type {Set<string>} */
-    this.inhibitedKeys = new Set()
+    this.localKeys = new Set()
   }
 
   /**
@@ -124,21 +130,79 @@ class ControlManager {
    */
   record(action) {
     const { mesh, ...actionProps } = action
-    if (
-      !this.inhibitedKeys.has(getKey({ meshId: mesh?.id, ...actionProps })) &&
-      this.isManaging(mesh)
-    ) {
-      this.onActionObservable.notifyObservers({
-        pos: undefined,
-        fn: undefined,
-        args: undefined,
+    if (this.isManaging(mesh)) {
+      const notification = {
         ...actionProps,
         meshId: mesh.id,
-        fromHand:
-          this.handScene === mesh.getScene() &&
-          /** @type {RecordedAction} */ (actionProps).fn !== actionNames.draw
-      })
-      this.onControlledObservable.notifyObservers(this.controlables)
+        fromHand: this.handScene === mesh.getScene()
+      }
+      if ('fn' in actionProps) {
+        this.onActionObservable.notifyObservers({
+          ...notification,
+          fromHand:
+            actionProps.fn === actionNames.play ? false : notification.fromHand,
+          isLocal:
+            actionProps.isLocal ||
+            this.localKeys.has(getKey({ meshId: mesh.id, ...actionProps }))
+        })
+      } else {
+        this.onActionObservable.notifyObservers(notification)
+      }
+    }
+  }
+
+  /**
+   * Invokes a mesh's function as if it was local (does not propagate to peer).
+   * Used by cascading actions.
+   * @param {?Mesh} mesh - mesh on which the action is called.
+   * @param {ActionName} fn - incoked function name.
+   * @param  {...any} args - invokation arguments, if any.
+   */
+  async invokeLocal(mesh, fn, ...args) {
+    if (!mesh || !this.isManaging(mesh)) {
+      return
+    }
+    // inhibits to avoid looping when this mesh will invoke apply()
+    const key = getKey({ meshId: mesh?.id, fn })
+    this.localKeys.add(key)
+    // @ts-expect-error -- args can not be narrowed
+    await mesh?.metadata[fn]?.(...args)
+    this.localKeys.delete(key)
+  }
+
+  /**
+   * Reverts an action by calling a mesh's behavior revert() function.
+   * Reverts a move by positioning it back to its previous position.
+   * @param {Omit<Action, 'fromHand'>|Omit<Move, 'fromHand'>} actionOrMove - reverted action or move.
+   */
+  async revert(actionOrMove) {
+    const mesh = this.controlables.get(actionOrMove.meshId)
+    /* c8 ignore start */
+    if (!mesh && 'fn' in actionOrMove && actionOrMove.fn !== actionNames.draw) {
+      console.warn(
+        { actionOrMove },
+        `failed to revert action/move on mesh ${actionOrMove.meshId}: mesh not controlled.`
+      )
+    }
+    /* c8 ignore stop */
+    if ('fn' in actionOrMove) {
+      const { fn, args } = actionOrMove
+      if (fn === actionNames.draw) {
+        await handManager.applyPlay(args[0], args[1])
+      } else {
+        for (const behavior of mesh?.behaviors ?? []) {
+          if ('revert' in behavior) {
+            await behavior.revert(fn, args)
+          }
+        }
+      }
+    } else if (mesh) {
+      await animateMove(
+        mesh,
+        Vector3.FromArray(actionOrMove.prev),
+        null,
+        actionOrMove.duration ?? 0
+      )
     }
   }
 
@@ -146,26 +210,30 @@ class ControlManager {
    * Applies an actions to a controlled meshes (`fn` in its metadatas), or changes its position (action.pos is defined).
    * Does nothing if the target mesh is not controlled.
    * Returns when the action is fully applied.
-   * @param {Action|Move} action - applied action.
-   * @param {boolean} fromPeer - true to indicate this action comes from a remote peer.
-   * @returns {Promise<void>}
+   * @param {Omit<Action, 'fromHand'>|Omit<Move, 'fromHand'>} action - applied action.
    */
-  async apply(action, fromPeer = false) {
+  async apply(action) {
     const mesh = this.controlables.get(action?.meshId)
-    if (!mesh) return
-
     const key = getKey(action)
     // inhibits to avoid looping when this mesh will invoke apply()
-    if (fromPeer) {
-      this.inhibitedKeys.add(key)
+    this.localKeys.add(key)
+    if ('fn' in action) {
+      const args = action.args || []
+      if (action.fn === actionNames.play) {
+        await handManager.applyPlay(args[0], args[1])
+      } else {
+        // @ts-expect-error -- args can not be narrowed
+        await mesh?.metadata?.[action.fn]?.(...args)
+      }
+    } else if (action.pos && mesh) {
+      await animateMove(
+        mesh,
+        Vector3.FromArray(action.pos),
+        null,
+        action.duration ?? 0
+      )
     }
-    if (action.fn) {
-      await mesh.metadata?.[action.fn]?.(...(action.args || []))
-    } else if (action.pos) {
-      mesh.setAbsolutePosition(Vector3.FromArray(action.pos))
-    }
-    this.onControlledObservable.notifyObservers(this.controlables)
-    this.inhibitedKeys.delete(key)
+    this.localKeys.delete(key)
   }
 }
 

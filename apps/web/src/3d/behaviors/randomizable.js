@@ -2,6 +2,7 @@
 /**
  * @typedef {import('@babylonjs/core').Axis} Axis
  * @typedef {import('@babylonjs/core').Mesh} Mesh
+ * @typedef {import('@tabulous/server/src/graphql').ActionName} ActionName
  * @typedef {import('@tabulous/server/src/graphql').RandomizableState} RandomizableState
  * @typedef {import('@src/3d/utils').AnimationSpec} AnimationSpec
  * @typedef {import('@src/3d/utils').QuaternionKeyFrame} QuaternionKeyFrame
@@ -14,6 +15,7 @@ import { Quaternion, Vector3 } from '@babylonjs/core/Maths/math.vector'
 
 import { makeLogger } from '../../utils/logger'
 import { controlManager } from '../managers/control'
+import { actionNames } from '../utils/actions'
 import {
   attachFunctions,
   attachProperty,
@@ -103,11 +105,9 @@ export class RandomBehavior extends AnimateBehavior {
    */
   async setFace(face) {
     const {
-      state: { face: oldFace, duration, canBeSet },
+      state: { canBeSet },
       max,
-      quaternionPerFace,
-      mesh,
-      rollAnimation
+      mesh
     } = this
     if (!mesh || !canBeSet || isAnimationInProgress(mesh)) {
       return
@@ -117,21 +117,7 @@ export class RandomBehavior extends AnimateBehavior {
         `Can not set randomizable face for mesh ${mesh.id}: ${face} is not in [1..${max}]`
       )
     }
-    await animate(this, 'setFace', face, duration / 3, {
-      animation: rollAnimation,
-      duration: duration / 3,
-      keys: /** @type {QuaternionKeyFrame[]} */ ([
-        {
-          frame: 0,
-          values: /** @type {Quaternion} */ (quaternionPerFace.get(oldFace))
-            .multiply(
-              /** @type {Quaternion} */ (quaternionPerFace.get(face)).invert()
-            )
-            .asArray()
-        },
-        { frame: 100, values: [0, 0, 0, 1] }
-      ])
-    })
+    await internalSetFace(this, face)
   }
 
   /**
@@ -146,80 +132,26 @@ export class RandomBehavior extends AnimateBehavior {
    * @returns {Promise<void>}
    */
   async random(face) {
-    const {
-      state: { face: oldFace, duration },
-      max,
-      quaternionPerFace,
-      mesh,
-      rollAnimation,
-      moveAnimation
-    } = this
-    if (!mesh || isAnimationInProgress(mesh)) {
+    if (!face) {
+      face = floor(random() * this.max + 1)
+    }
+    await internalRandom(this, face)
+  }
+
+  /**
+   * Revert setFace and random actions. Ignores other actions
+   * @param {ActionName} action - reverted action.
+   * @param {any[]} [args] - reverted arguments.
+   */
+  async revert(action, args = []) {
+    if (!this.mesh || args.length !== 1) {
       return
     }
-    if (!face) {
-      face = floor(random() * max + 1)
+    if (action === actionNames.random) {
+      await internalRandom(this, args[0], true)
+    } else if (action === actionNames.setFace) {
+      await internalSetFace(this, args[0], true)
     }
-    await animate(
-      this,
-      'random',
-      face,
-      duration,
-      {
-        animation: rollAnimation,
-        duration,
-        keys: /** @type {QuaternionKeyFrame[]} */ ([
-          {
-            frame: 0,
-            values: /** @type {Quaternion} */ (
-              quaternionPerFace.get(oldFace ?? 0)
-            )
-              .multiply(
-                /** @type {Quaternion} */ (quaternionPerFace.get(face)).invert()
-              )
-              .asArray()
-          },
-          {
-            frame: 25,
-            values: makeRandomRotation('x')
-              .multiply(makeRandomRotation('z'))
-              .asArray()
-          },
-          {
-            frame: 50,
-            values: makeRandomRotation('z')
-              .multiply(makeRandomRotation('y'))
-              .asArray()
-          },
-          {
-            frame: 75,
-            values: makeRandomRotation('y')
-              .multiply(makeRandomRotation('x'))
-              .asArray()
-          },
-          {
-            frame: 100,
-            values: makeRandomRotation('y', 0.5 * PI).asArray()
-          }
-        ])
-      },
-      {
-        animation: moveAnimation,
-        duration,
-        keys: /** @type {Vector3KeyFrame[]} */ ([
-          { frame: 0, values: mesh.position.asArray() },
-          {
-            frame: 50,
-            values: [
-              mesh.position.x,
-              mesh.position.y + getDimensions(mesh).height * 2,
-              mesh.position.z
-            ]
-          },
-          { frame: 100, values: mesh.position.asArray() }
-        ])
-      }
-    )
   }
 
   /**
@@ -265,10 +197,123 @@ export class RandomBehavior extends AnimateBehavior {
   }
 }
 
-/**
- * @param {RandomBehavior} behavior - animated behavior.
- */
-function applyRotation({ mesh, quaternionPerFace, state: { face }, save }) {
+function internalRandom(
+  /** @type {RandomBehavior} */ behavior,
+  /** @type {number} */ face,
+  isLocal = false
+) {
+  const {
+    state: { face: oldFace, duration },
+    quaternionPerFace,
+    mesh,
+    rollAnimation,
+    moveAnimation
+  } = behavior
+  if (!mesh || isAnimationInProgress(mesh)) {
+    return
+  }
+  return animate(
+    behavior,
+    isLocal,
+    'random',
+    face,
+    duration,
+    {
+      animation: rollAnimation,
+      duration,
+      keys: /** @type {QuaternionKeyFrame[]} */ ([
+        {
+          frame: 0,
+          values: /** @type {Quaternion} */ (
+            quaternionPerFace.get(oldFace ?? 0)
+          )
+            .multiply(
+              /** @type {Quaternion} */ (quaternionPerFace.get(face)).invert()
+            )
+            .asArray()
+        },
+        {
+          frame: 25,
+          values: makeRandomRotation('x')
+            .multiply(makeRandomRotation('z'))
+            .asArray()
+        },
+        {
+          frame: 50,
+          values: makeRandomRotation('z')
+            .multiply(makeRandomRotation('y'))
+            .asArray()
+        },
+        {
+          frame: 75,
+          values: makeRandomRotation('y')
+            .multiply(makeRandomRotation('x'))
+            .asArray()
+        },
+        {
+          frame: 100,
+          values: makeRandomRotation('y', 0.5 * PI).asArray()
+        }
+      ])
+    },
+    {
+      animation: moveAnimation,
+      duration,
+      keys: /** @type {Vector3KeyFrame[]} */ ([
+        { frame: 0, values: mesh.position.asArray() },
+        {
+          frame: 50,
+          values: [
+            mesh.position.x,
+            mesh.position.y + getDimensions(mesh).height * 2,
+            mesh.position.z
+          ]
+        },
+        { frame: 100, values: mesh.position.asArray() }
+      ])
+    }
+  )
+}
+
+function internalSetFace(
+  /** @type {RandomBehavior} */ behavior,
+  /** @type {number} */ face,
+  isLocal = false
+) {
+  const {
+    state: { face: oldFace, duration },
+    quaternionPerFace,
+    mesh,
+    rollAnimation
+  } = behavior
+  if (!mesh || isAnimationInProgress(mesh)) {
+    return
+  }
+  return animate(behavior, isLocal, 'setFace', face, duration / 3, {
+    animation: rollAnimation,
+    duration: duration / 3,
+    keys: /** @type {QuaternionKeyFrame[]} */ ([
+      {
+        frame: 0,
+        values: /** @type {Quaternion} */ (quaternionPerFace.get(oldFace))
+          .multiply(
+            /** @type {Quaternion} */ (quaternionPerFace.get(face)).invert()
+          )
+          .asArray()
+      },
+      { frame: 100, values: [0, 0, 0, 1] }
+    ])
+  })
+}
+
+function applyRotation(
+  /** @type {RandomBehavior} */ {
+    mesh,
+    quaternionPerFace,
+    state: { face },
+    save
+  }
+) {
   if (!mesh) return
   const restore = saveTranslation(mesh)
   mesh.updateVerticesData(VertexBuffer.PositionKind, [...save.positions])
@@ -284,7 +329,7 @@ function applyRotation({ mesh, quaternionPerFace, state: { face }, save }) {
 /**
  * Temporary set a mesh's absolute position to the origin.
  * @param {Mesh} mesh - concerned mesh.
- * @returns {() => void} - function used to restore absolute position.
+ * @returns function used to restore absolute position.
  */
 function saveTranslation(mesh) {
   const translation = mesh.absolutePosition.clone()
@@ -297,13 +342,14 @@ function saveTranslation(mesh) {
 
 /**
  * @param {RandomBehavior} behavior - animated behavior.
- * @param {string} fn - function name, for logging.
+ * @param {boolean} isLocal - action locality.
+ * @param {ActionName} fn - function name, for logging.
  * @param {number} face - face to animate to.
  * @param {number|undefined} duration - animation duration.
  * @param  {...AnimationSpec} animations - animation spec used.
- * @returns {Promise<void>} resolves when animation is completed.
+ * @returns resolves when animation is completed.
  */
-async function animate(behavior, fn, face, duration, ...animations) {
+async function animate(behavior, isLocal, fn, face, duration, ...animations) {
   const {
     mesh,
     state: { face: oldFace }
@@ -314,9 +360,16 @@ async function animate(behavior, fn, face, duration, ...animations) {
     { mesh, face, oldFace },
     `starts ${fn} on ${mesh.id} (${oldFace} > ${face})`
   )
-  behavior.state.face = face
-  controlManager.record({ mesh, fn, args: [face], duration })
+  controlManager.record({
+    mesh,
+    fn,
+    args: [face],
+    duration,
+    revert: [oldFace],
+    isLocal
+  })
 
+  behavior.state.face = face
   const attach = detachFromParent(mesh)
   applyRotation(behavior)
 
@@ -338,7 +391,6 @@ async function animate(behavior, fn, face, duration, ...animations) {
  * Builds a random quaterion on a given axis.
  * @param {Axis} axis - concerned mesh.
  * @param {number} [limit] - maximum rotation allowed.
- * @returns {Quaternion}
  */
 function makeRandomRotation(axis, limit = 2 * PI) {
   const angle = random() * limit

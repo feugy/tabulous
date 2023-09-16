@@ -1310,7 +1310,8 @@ describe('reportReusedIds()', () => {
     cameras: [],
     messages: [],
     playerIds: [],
-    guestIds: []
+    guestIds: [],
+    history: []
   }
 
   beforeEach(() => {

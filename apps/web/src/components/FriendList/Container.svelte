@@ -29,8 +29,12 @@
   export let playerById = null
   /** @type {Friendship[]} list of all friendships. */
   export let friends = []
-  /** @type {Game['messages']} list of message threads*/
+  /** @type {Game['messages']} list of messages. */
   export let thread = undefined
+  /** @type {Game['history']} action history. */
+  export let history = undefined
+  /** @type {number} rank in the game history. */
+  export let replayRank = 0
 
   /** @type {?HTMLInputElement} */
   let inputRef
@@ -129,7 +133,14 @@
     {/if}
   </section>
   {#if playerById}
-    <Discussion {thread} {playerById} on:sendMessage />
+    <Discussion
+      {thread}
+      {history}
+      {replayRank}
+      {playerById}
+      on:sendMessage
+      on:replay
+    />
   {/if}
 {:else}
   <section aria-roledescription="friend-list">

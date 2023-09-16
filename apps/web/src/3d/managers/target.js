@@ -41,6 +41,8 @@ const logger = makeLogger('target')
 
 /** @typedef {SingleDropZone|MultiDropZone} DropZone */
 
+/** @typedef {{ zone: SingleDropZone, distance: number }} Candidate */
+
 class TargetManager {
   /**
    * Creates a manager to manages drop targets for draggable meshes:
@@ -241,6 +243,7 @@ export const targetManager = new TargetManager()
 function findZone(manager, dragged, isMatching, kind) {
   const { behaviors, scene: mainScene } = manager
   const partCenters = getMeshAbsolutePartCenters(dragged)
+  /** @type {Candidate[]} */
   const zones = []
   const scene = dragged.getScene()
   if (scene !== mainScene) {
@@ -253,7 +256,16 @@ function findZone(manager, dragged, isMatching, kind) {
     if (!excluded.includes(mesh) && mesh.getScene() === scene) {
       for (const zone of targetable.zones) {
         if (isMatching(zone, partCenters)) {
-          zones.push(zone)
+          zones.push({
+            zone,
+            distance: distance(
+              { x: dragged.absolutePosition.x, y: dragged.absolutePosition.z },
+              {
+                x: zone.mesh.absolutePosition.x,
+                y: zone.mesh.absolutePosition.z
+              }
+            )
+          })
         }
       }
     }
@@ -265,8 +277,8 @@ function findZone(manager, dragged, isMatching, kind) {
   }
   const zone =
     partCenters?.length === 1
-      ? zones[0]
-      : zones.find(({ ignoreParts }) => ignoreParts) ??
+      ? zones[0].zone
+      : zones.find(({ zone: { ignoreParts } }) => ignoreParts)?.zone ??
         buildMultiZone(partCenters, zones)
   return highlightZone(manager, zone, dragged, kind)
 }
@@ -300,10 +312,7 @@ function highlightZone(manager, zone, dragged, kind) {
   return zone
 }
 
-/**
- * @param {?SingleDropZone} zone
- */
-function clearZone(zone) {
+function clearZone(/** @type {?SingleDropZone} */ zone) {
   if (zone?.mesh) {
     zone.mesh.visibility = 0
     zone.mesh.disableEdgesRendering()
@@ -311,18 +320,20 @@ function clearZone(zone) {
 }
 
 /**
- * @param {SingleDropZone[]} candidates - candidate zone.
- * @returns {SingleDropZone[]} the sorted zones, highest and most priority first.
+ * @param {Candidate[]} candidates - candidate zone.
+ * @returns the sorted zones, closest, highest and most priority first.
  */
 function sortCandidates(candidates) {
   return candidates.sort(
     (
-      { mesh: meshA, priority: priorityA },
-      { mesh: meshB, priority: priorityB }
+      { zone: { mesh: meshA, priority: priorityA }, distance: distanceA },
+      { zone: { mesh: meshB, priority: priorityB }, distance: distanceB }
     ) =>
-      meshB.absolutePosition.y === meshA.absolutePosition.y
-        ? priorityB - priorityA
-        : meshB.absolutePosition.y - meshA.absolutePosition.y
+      distanceA === distanceB
+        ? meshB.absolutePosition.y === meshA.absolutePosition.y
+          ? priorityB - priorityA
+          : meshB.absolutePosition.y - meshA.absolutePosition.y
+        : distanceA - distanceB
   )
 }
 
@@ -330,7 +341,7 @@ function sortCandidates(candidates) {
  * @param {Mesh} mesh - considered mesh.
  * @param {Vector3[]} partCenters - part position for this mesh.
  * @param {SingleDropZone} zone - candidate zone.
- * @returns {boolean} whether this zone is close to the mesh or one of its part.
+ * @returns whether this zone is close to the mesh or one of its part.
  */
 function isAPartCenterClose(mesh, partCenters, zone) {
   if (zone.ignoreParts) {
@@ -347,7 +358,7 @@ function isAPartCenterClose(mesh, partCenters, zone) {
 /**
  * @param {Vector3} position - checked position.
  * @param {SingleDropZone} zone - candidate zone.
- * @returns {boolean} whether this candidate is close enough to the point.
+ * @returns whether this candidate is close enough to the point.
  */
 function isCloseTo(
   { x, z },
@@ -363,8 +374,8 @@ function isCloseTo(
 
 /**
  * @param {Vector3[]} partCenters - absolute position of the mesh parts.
- * @param {SingleDropZone[]} candidates - list of drop zones to group together.
- * @returns {?MultiDropZone} the built multi drop zone, if all parts have a matching zone.
+ * @param {Candidate[]} candidates - list of drop zones to group together.
+ * @returns the built multi drop zone, if all parts have a matching zone.
  */
 function buildMultiZone(partCenters, candidates) {
   const multiZone = /** @type {MultiDropZone} */ ({
@@ -374,8 +385,8 @@ function buildMultiZone(partCenters, candidates) {
   for (const point of partCenters) {
     let covered = false
     for (const [i, candidate] of remainingCandidates.entries()) {
-      if (isCloseTo(point, candidate)) {
-        multiZone.parts.push(candidate)
+      if (isCloseTo(point, candidate.zone)) {
+        multiZone.parts.push(candidate.zone)
         // do not use the same zone for several points
         remainingCandidates.splice(i, 1)
         covered = true
