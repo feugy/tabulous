@@ -182,7 +182,7 @@ async function apply({ moveDuration }, record, reverting = false) {
         duration: moveDuration
       })
     } else {
-      await controlManager.apply(record)
+      await controlManager.apply({ ...record, duration: moveDuration })
     }
   } else if ('fn' in record && record.fn) {
     if (reverting) {
