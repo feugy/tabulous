@@ -12,7 +12,7 @@ import { PBRSpecularGlossinessMaterial } from '@babylonjs/core/Materials/PBR/pbr
 import { Texture } from '@babylonjs/core/Materials/Textures/texture'
 import { Vector3 } from '@babylonjs/core/Maths/math.vector'
 import { faker } from '@faker-js/faker'
-import { materialManager as manager } from '@src/3d/managers'
+import { MaterialManager } from '@src/3d/managers'
 import { beforeAll, beforeEach, describe, expect, it, vi } from 'vitest'
 
 import { configures3dTestEngine, createBox } from '../../test-utils'
@@ -44,108 +44,105 @@ describe('MaterialManager', () => {
   let scene
   /** @type {Scene} */
   let handScene
-  const gameAssetsUrl = 'https://localhost:3000'
+  /** @type {import('@src/3d/managers').Managers} */
+  let managers
+  /** @type {string} */
+  let gameAssetsUrl
 
-  configures3dTestEngine(created => ({ scene, handScene } = created))
+  configures3dTestEngine(
+    created => ({ scene, handScene, managers, gameAssetsUrl } = created)
+  )
 
   beforeEach(() => MaterialConstructor.mockClear())
 
   it('has initial state', () => {
-    expect(manager.scene).toBeUndefined()
-    expect(manager.handScene).toBeUndefined()
-    expect(manager.gameAssetsUrl).toBe('')
+    expect(managers.material.scene).toEqual(scene)
+    expect(managers.material.handScene).toEqual(handScene)
+    expect(managers.material.gameAssetsUrl).toBe(gameAssetsUrl)
   })
 
   describe('isManaging()', () => {
     it('returns false for unmanaged texture or color', () => {
-      expect(manager.isManaging('#0066ff66')).toBe(false)
-      expect(manager.isManaging(faker.internet.url())).toBe(false)
+      expect(managers.material.isManaging('#0066ff66')).toBe(false)
+      expect(managers.material.isManaging(faker.internet.url())).toBe(false)
     })
   })
 
   describe('clear()', () => {
     it('does nothing', () => {
-      expect(() => manager.clear()).not.toThrow()
+      expect(() => managers.material.clear()).not.toThrow()
     })
   })
 
   describe('init()', () => {
-    it('configures scenes', () => {
-      manager.init({ scene, handScene, gameAssetsUrl })
-      expect(manager.scene).toEqual(scene)
-      expect(manager.handScene).toEqual(handScene)
-    })
-
     it('preloads game materials', () => {
       const texture1 = faker.internet.url()
       const texture2 = faker.internet.url()
       const texture3 = faker.internet.url()
       const color1 = '#0066ff66'
       const color2 = '#ff6600ff'
-      manager.init(
-        { scene, gameAssetsUrl },
-        {
-          id: 'whatever',
-          created: Date.now(),
-          meshes: [
-            { id: 'm1', shape: 'box', texture: texture1 },
-            { id: 'm2', shape: 'box', texture: texture2 }
-          ],
-          hands: [
-            {
-              playerId: '1',
-              meshes: [{ id: 'm3', shape: 'box', texture: texture3 }]
-            },
-            {
-              playerId: '2',
-              meshes: [
-                { id: 'm4', shape: 'box', texture: color1 },
-                { id: 'm5', shape: 'box', texture: color2 }
-              ]
-            }
-          ]
-        }
-      )
-      expect(manager.isManaging(color1)).toBe(true)
-      expect(manager.isManaging(color2)).toBe(true)
-      expect(manager.isManaging(texture1)).toBe(true)
-      expect(manager.isManaging(texture2)).toBe(true)
-      expect(manager.isManaging(texture3)).toBe(true)
-      expect(MaterialConstructor).toHaveBeenCalledTimes(5)
+      managers.material.init({
+        id: 'whatever',
+        created: Date.now(),
+        meshes: [
+          { id: 'm1', shape: 'box', texture: texture1 },
+          { id: 'm2', shape: 'box', texture: texture2 }
+        ],
+        hands: [
+          {
+            playerId: '1',
+            meshes: [{ id: 'm3', shape: 'box', texture: texture3 }]
+          },
+          {
+            playerId: '2',
+            meshes: [
+              { id: 'm4', shape: 'box', texture: color1 },
+              { id: 'm5', shape: 'box', texture: color2 }
+            ]
+          }
+        ]
+      })
+      expect(managers.material.isManaging(color1)).toBe(true)
+      expect(managers.material.isManaging(color2)).toBe(true)
+      expect(managers.material.isManaging(texture1)).toBe(true)
+      expect(managers.material.isManaging(texture2)).toBe(true)
+      expect(managers.material.isManaging(texture3)).toBe(true)
+      // 5 in main, 5 in hand
+      expect(MaterialConstructor).toHaveBeenCalledTimes(10)
     })
 
     it('does not load the same material twice', () => {
       const texture1 = faker.internet.url()
       const texture2 = faker.internet.url()
-      const color2 = '#ff6600ff'
-      manager.init(
-        { scene, gameAssetsUrl },
-        {
-          id: 'whatever',
-          created: Date.now(),
-          meshes: [
-            { id: 'm1', shape: 'box', texture: color2 },
-            { id: 'm2', shape: 'box', texture: texture1 }
-          ],
-          hands: [
-            {
-              playerId: '1',
-              meshes: [{ id: 'm3', shape: 'box', texture: texture1 }]
-            },
-            {
-              playerId: '2',
-              meshes: [
-                { id: 'm4', shape: 'box', texture: color2 },
-                { id: 'm5', shape: 'box', texture: texture2 }
-              ]
-            }
-          ]
-        }
-      )
-      expect(manager.isManaging(color2)).toBe(true)
-      expect(manager.isManaging(texture1)).toBe(true)
-      expect(manager.isManaging(texture2)).toBe(true)
-      expect(MaterialConstructor).toHaveBeenCalledTimes(3)
+      const color2 = '#ff3300ff'
+
+      managers.material.init({
+        id: 'whatever',
+        created: Date.now(),
+        meshes: [
+          { id: 'm1', shape: 'box', texture: color2 },
+          { id: 'm2', shape: 'box', texture: texture1 },
+          { id: 'm6', shape: 'box', texture: texture1 }
+        ],
+        hands: [
+          {
+            playerId: '1',
+            meshes: [{ id: 'm3', shape: 'box', texture: texture1 }]
+          },
+          {
+            playerId: '2',
+            meshes: [
+              { id: 'm4', shape: 'box', texture: color2 },
+              { id: 'm5', shape: 'box', texture: texture2 }
+            ]
+          }
+        ]
+      })
+      expect(managers.material.isManaging(color2)).toBe(true)
+      expect(managers.material.isManaging(texture1)).toBe(true)
+      expect(managers.material.isManaging(texture2)).toBe(true)
+      // 3 textures in main, 3 in hand
+      expect(MaterialConstructor).toHaveBeenCalledTimes(6)
     })
   })
 
@@ -158,40 +155,38 @@ describe('MaterialManager', () => {
     /** @type {Mesh} */
     let handBox
 
-    beforeAll(() => manager.init({ scene, handScene, gameAssetsUrl }))
-
     beforeEach(() => {
-      manager.clear()
+      managers.material.clear()
       box = createBox('box', {}, scene)
       handBox = createBox('hand-box', {}, handScene)
     })
 
     describe('isManaging()', () => {
       it('returns false for unmanaged texture or color', () => {
-        expect(manager.isManaging('#0066ff66')).toBe(false)
-        expect(manager.isManaging(faker.internet.url())).toBe(false)
+        expect(managers.material.isManaging('#0066ff66')).toBe(false)
+        expect(managers.material.isManaging(faker.internet.url())).toBe(false)
       })
 
       it('returns true for managed color', () => {
         const color1 = '#0066ff66'
         const color2 = '#ff6600ff'
-        manager.configure(box, color1)
-        expect(manager.isManaging(color1)).toBe(true)
-        expect(manager.isManaging(color2)).toBe(false)
-        manager.configure(handBox, color2)
-        expect(manager.isManaging(color1)).toBe(true)
-        expect(manager.isManaging(color2)).toBe(true)
+        managers.material.configure(box, color1)
+        expect(managers.material.isManaging(color1)).toBe(true)
+        expect(managers.material.isManaging(color2)).toBe(false)
+        managers.material.configure(handBox, color2)
+        expect(managers.material.isManaging(color1)).toBe(true)
+        expect(managers.material.isManaging(color2)).toBe(true)
       })
 
       it('returns true for managed texture', () => {
         const texture1 = faker.internet.url()
         const texture2 = faker.internet.url()
-        manager.configure(box, texture1)
-        expect(manager.isManaging(texture1)).toBe(true)
-        expect(manager.isManaging(texture2)).toBe(false)
-        manager.configure(handBox, texture2)
-        expect(manager.isManaging(texture1)).toBe(true)
-        expect(manager.isManaging(texture2)).toBe(true)
+        managers.material.configure(box, texture1)
+        expect(managers.material.isManaging(texture1)).toBe(true)
+        expect(managers.material.isManaging(texture2)).toBe(false)
+        managers.material.configure(handBox, texture2)
+        expect(managers.material.isManaging(texture1)).toBe(true)
+        expect(managers.material.isManaging(texture2)).toBe(true)
       })
     })
 
@@ -202,18 +197,18 @@ describe('MaterialManager', () => {
         const disposeHandBoxMaterial = vi.fn()
         const texture = faker.internet.url()
         const color = '#ff6600ff'
-        manager.configure(box, texture)
-        expect(manager.isManaging(texture)).toBe(true)
-        manager.configure(handBox, color)
-        expect(manager.isManaging(color)).toBe(true)
+        managers.material.configure(box, texture)
+        expect(managers.material.isManaging(texture)).toBe(true)
+        managers.material.configure(handBox, color)
+        expect(managers.material.isManaging(color)).toBe(true)
         const material = /** @type {Material} */ (box.material)
         material.onDisposeObservable.addOnce(disposeBoxMaterial)
         material.diffuseTexture?.onDisposeObservable.addOnce(disposeBoxTexture)
         handBox.material?.onDisposeObservable.addOnce(disposeHandBoxMaterial)
 
-        manager.clear()
-        expect(manager.isManaging(texture)).toBe(false)
-        expect(manager.isManaging(color)).toBe(false)
+        managers.material.clear()
+        expect(managers.material.isManaging(texture)).toBe(false)
+        expect(managers.material.isManaging(color)).toBe(false)
         expect(disposeBoxMaterial).toHaveBeenCalledTimes(1)
         expect(disposeBoxTexture).toHaveBeenCalledTimes(1)
         expect(disposeHandBoxMaterial).toHaveBeenCalledTimes(1)
@@ -222,7 +217,7 @@ describe('MaterialManager', () => {
 
     describe('configure()', () => {
       it('creates a material with a color', () => {
-        manager.configure(box, '#0066ff66')
+        managers.material.configure(box, '#0066ff66')
         const material = /** @type {Material} */ (box.material)
         expect(material).toBeInstanceOf(PBRSpecularGlossinessMaterial)
         expect(material.diffuseColor.asArray()).toEqual([
@@ -234,7 +229,7 @@ describe('MaterialManager', () => {
 
       it('creates a material with a texture', () => {
         const texture = faker.internet.url()
-        manager.configure(box, texture)
+        managers.material.configure(box, texture)
         const material = /** @type {Material} */ (box.material)
         expect(material).toBeInstanceOf(PBRSpecularGlossinessMaterial)
         expect(material.diffuseTexture).toBeInstanceOf(Texture)
@@ -242,7 +237,7 @@ describe('MaterialManager', () => {
 
       it('reuses existing color material on the same scene', () => {
         const color = '#0066ff66'
-        manager.configure(box, color)
+        managers.material.configure(box, color)
         const material = /** @type {Material} */ (box.material)
         expect(material).toBeInstanceOf(PBRSpecularGlossinessMaterial)
         expect(material.diffuseColor?.asArray()).toEqual([
@@ -251,29 +246,29 @@ describe('MaterialManager', () => {
         expect(material.diffuseTexture).toBeNull()
 
         const box2 = createBox('box2', {}, box.getScene())
-        manager.configure(box2, color)
+        managers.material.configure(box2, color)
         expect(box2.material).toBeInstanceOf(PBRSpecularGlossinessMaterial)
         expect(box2.material === box.material).toBe(true)
 
-        manager.configure(handBox, color)
+        managers.material.configure(handBox, color)
         expect(handBox.material).toBeInstanceOf(PBRSpecularGlossinessMaterial)
         expect(handBox.material === box.material).toBe(false)
       })
 
       it('reuses existing texture material on the same scene', () => {
         const texture = faker.internet.url()
-        manager.configure(box, texture)
+        managers.material.configure(box, texture)
         expect(box.material).toBeInstanceOf(PBRSpecularGlossinessMaterial)
         expect(
           /** @type {Material} */ (box.material).diffuseTexture
         ).toBeInstanceOf(Texture)
 
         const box2 = createBox('box2', {}, box.getScene())
-        manager.configure(box2, texture)
+        managers.material.configure(box2, texture)
         expect(box2.material).toBeInstanceOf(PBRSpecularGlossinessMaterial)
         expect(box2.material === box.material).toBe(true)
 
-        manager.configure(handBox, texture)
+        managers.material.configure(handBox, texture)
         expect(handBox.material).toBeInstanceOf(PBRSpecularGlossinessMaterial)
         expect(handBox.material === box.material).toBe(false)
         expect(
@@ -288,12 +283,12 @@ describe('MaterialManager', () => {
         {
           text: 'downgrades KTX2 texture to WebP',
           original: ktx2,
-          result: `${gameAssetsUrl}${webp}`
+          result: webp
         },
         {
           text: 'keeps WebP texture as WebP',
           original: webp,
-          result: `${gameAssetsUrl}${webp}`
+          result: webp
         },
         { text: 'handles null texture', result: null },
         {
@@ -301,34 +296,44 @@ describe('MaterialManager', () => {
           result: undefined
         }
       ])('$text', ({ original, result }) => {
-        manager.init({ scene, handScene, gameAssetsUrl, isWebGL1: true })
+        const manager = new MaterialManager({
+          scene,
+          handScene,
+          gameAssetsUrl,
+          isWebGL1: true
+        })
         manager.configure(box, /** @type {string} */ (original ?? result))
         expect(
           /** @type {MaterialWithTexture} */ (box.material).diffuseTexture.url
-        ).toEqual(result)
+        ).toEqual(
+          typeof result === 'string' ? `${gameAssetsUrl}${result}` : result
+        )
       })
 
       describe('given an WebGL 2 engine', () => {
-        beforeAll(() => manager.init({ scene, handScene, gameAssetsUrl }))
-
         it.each([
           {
             text: 'keeps KTX2 texture to WebP',
             original: ktx2,
-            result: `${gameAssetsUrl}${ktx2}`
+            result: ktx2
           },
           {
             text: 'keeps WebP texture as WebP',
             original: webp,
-            result: `${gameAssetsUrl}${webp}`
+            result: webp
           },
           { text: 'handles null texture', result: null },
           { text: 'handles undefined texture', result: undefined }
         ])('$text', ({ original, result }) => {
-          manager.configure(box, /** @type {string} */ (original ?? result))
+          managers.material.configure(
+            box,
+            /** @type {string} */ (original ?? result)
+          )
           expect(
             /** @type {MaterialWithTexture} */ (box.material).diffuseTexture.url
-          ).toEqual(result)
+          ).toEqual(
+            typeof result === 'string' ? `${gameAssetsUrl}${result}` : result
+          )
         })
       })
 
@@ -347,7 +352,7 @@ describe('MaterialManager', () => {
           // @ts-expect-error: _filter is an internal field
           shadowGenerator._filter = ShadowGenerator.FILTER_PCF
           expect(shadowGenerator.usePercentageCloserFiltering).toBe(true)
-          manager.configure(box, ktx2)
+          managers.material.configure(box, ktx2)
           material = /** @type {Material} */ (box.material)
         })
 
@@ -372,43 +377,43 @@ describe('MaterialManager', () => {
     describe('buildOnDemand()', () => {
       it('creates a material with a color', () => {
         const texture = `${faker.internet.color()}ff`.toUpperCase()
-        expect(manager.isManaging(texture)).toBe(false)
-        const material = manager.buildOnDemand(texture, scene)
+        expect(managers.material.isManaging(texture)).toBe(false)
+        const material = managers.material.buildOnDemand(texture, scene)
         expect(material).toBeInstanceOf(PBRSpecularGlossinessMaterial)
         expect(material.diffuseColor?.toGammaSpace().toHexString()).toEqual(
           texture.slice(0, -2)
         )
         expect(material.diffuseTexture).toBeNull()
-        expect(manager.isManaging(texture)).toBe(true)
+        expect(managers.material.isManaging(texture)).toBe(true)
       })
 
       it('creates a material with a texture', () => {
         const texture = faker.internet.url()
-        expect(manager.isManaging(texture)).toBe(false)
-        const material = manager.buildOnDemand(texture, scene)
+        expect(managers.material.isManaging(texture)).toBe(false)
+        const material = managers.material.buildOnDemand(texture, scene)
         expect(material).toBeInstanceOf(PBRSpecularGlossinessMaterial)
         expect(material.diffuseTexture).toBeInstanceOf(Texture)
-        expect(manager.isManaging(texture)).toBe(true)
+        expect(managers.material.isManaging(texture)).toBe(true)
       })
 
       it('reuses existing color material on the same scene', () => {
         const texture = `${faker.internet.color()}ff`.toUpperCase()
-        expect(manager.isManaging(texture)).toBe(false)
-        const material = manager.buildOnDemand(texture, scene)
+        expect(managers.material.isManaging(texture)).toBe(false)
+        const material = managers.material.buildOnDemand(texture, scene)
         expect(material).toBeInstanceOf(PBRSpecularGlossinessMaterial)
 
-        expect(manager.isManaging(texture)).toBe(true)
-        expect(manager.buildOnDemand(texture, scene)).toBe(material)
+        expect(managers.material.isManaging(texture)).toBe(true)
+        expect(managers.material.buildOnDemand(texture, scene)).toBe(material)
       })
 
       it('reuses existing texture material on the same scene', () => {
         const texture = faker.internet.url()
-        expect(manager.isManaging(texture)).toBe(false)
-        const material = manager.buildOnDemand(texture, scene)
+        expect(managers.material.isManaging(texture)).toBe(false)
+        const material = managers.material.buildOnDemand(texture, scene)
         expect(material).toBeInstanceOf(PBRSpecularGlossinessMaterial)
 
-        expect(manager.isManaging(texture)).toBe(true)
-        expect(manager.buildOnDemand(texture, scene)).toBe(material)
+        expect(managers.material.isManaging(texture)).toBe(true)
+        expect(managers.material.buildOnDemand(texture, scene)).toBe(material)
       })
     })
   })
@@ -417,29 +422,27 @@ describe('MaterialManager', () => {
     /** @type {Mesh} */
     let box
 
-    beforeAll(() => manager.init({ scene }))
-
     beforeEach(() => {
-      manager.clear()
+      managers.material.clear()
       box = createBox('box', {}, scene)
     })
 
     describe('isManaging()', () => {
       it('returns false for unmanaged texture or color', () => {
-        expect(manager.isManaging('#0066ff66')).toBe(false)
-        expect(manager.isManaging(faker.internet.url())).toBe(false)
+        expect(managers.material.isManaging('#0066ff66')).toBe(false)
+        expect(managers.material.isManaging(faker.internet.url())).toBe(false)
       })
 
       it('returns true for managed color', () => {
         const color = '#0066ff66'
-        manager.configure(box, color)
-        expect(manager.isManaging(color)).toBe(true)
+        managers.material.configure(box, color)
+        expect(managers.material.isManaging(color)).toBe(true)
       })
 
       it('returns true for managed texture', () => {
         const texture = faker.internet.url()
-        manager.configure(box, texture)
-        expect(manager.isManaging(texture)).toBe(true)
+        managers.material.configure(box, texture)
+        expect(managers.material.isManaging(texture)).toBe(true)
       })
     })
 
@@ -449,15 +452,15 @@ describe('MaterialManager', () => {
         const disposeBoxTexture = vi.fn()
         const texture = faker.internet.url()
         const color = '#ff6600ff'
-        manager.configure(box, texture)
-        expect(manager.isManaging(texture)).toBe(true)
+        managers.material.configure(box, texture)
+        expect(managers.material.isManaging(texture)).toBe(true)
         const material = /** @type {Material} */ (box.material)
         material.onDisposeObservable.addOnce(disposeBoxMaterial)
         material.diffuseTexture?.onDisposeObservable.addOnce(disposeBoxTexture)
 
-        manager.clear()
-        expect(manager.isManaging(texture)).toBe(false)
-        expect(manager.isManaging(color)).toBe(false)
+        managers.material.clear()
+        expect(managers.material.isManaging(texture)).toBe(false)
+        expect(managers.material.isManaging(color)).toBe(false)
         expect(disposeBoxMaterial).toHaveBeenCalledTimes(1)
         expect(disposeBoxTexture).toHaveBeenCalledTimes(1)
       })
@@ -465,7 +468,7 @@ describe('MaterialManager', () => {
 
     describe('configure()', () => {
       it('creates a material with a color', () => {
-        manager.configure(box, '#0066ff66')
+        managers.material.configure(box, '#0066ff66')
         const material = /** @type {Material} */ (box.material)
         expect(material).toBeInstanceOf(PBRSpecularGlossinessMaterial)
         expect(material.diffuseColor?.asArray()).toEqual([
@@ -477,7 +480,7 @@ describe('MaterialManager', () => {
 
       it('creates a material with a texture', () => {
         const texture = faker.internet.url()
-        manager.configure(box, texture)
+        managers.material.configure(box, texture)
         const material = /** @type {Material} */ (box.material)
         expect(material).toBeInstanceOf(PBRSpecularGlossinessMaterial)
         expect(material.diffuseTexture).toBeInstanceOf(Texture)
@@ -485,7 +488,7 @@ describe('MaterialManager', () => {
 
       it('reuses existing color material', () => {
         const color = '#0066ff99'
-        manager.configure(box, color)
+        managers.material.configure(box, color)
         const material = /** @type {Material} */ (box.material)
         expect(material).toBeInstanceOf(PBRSpecularGlossinessMaterial)
         expect(material.diffuseColor?.asArray()).toEqual([
@@ -495,20 +498,20 @@ describe('MaterialManager', () => {
         expect(material.diffuseTexture).toBeNull()
 
         const box2 = createBox('box2', {}, box.getScene())
-        manager.configure(box2, color)
+        managers.material.configure(box2, color)
         expect(box2.material).toBeInstanceOf(PBRSpecularGlossinessMaterial)
         expect(box2.material === box.material).toBe(true)
       })
 
       it('reuses existing texture material', () => {
         const texture = faker.internet.url()
-        manager.configure(box, texture)
+        managers.material.configure(box, texture)
         const material = /** @type {Material} */ (box.material)
         expect(material).toBeInstanceOf(PBRSpecularGlossinessMaterial)
         expect(material.diffuseTexture).toBeInstanceOf(Texture)
 
         const box2 = createBox('box2', {}, box.getScene())
-        manager.configure(box2, texture)
+        managers.material.configure(box2, texture)
         expect(box2.material).toBeInstanceOf(PBRSpecularGlossinessMaterial)
         expect(box2.material === box.material).toBe(true)
       })

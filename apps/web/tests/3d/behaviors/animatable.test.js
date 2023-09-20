@@ -20,7 +20,7 @@ describe('AnimateBehavior', () => {
   const animationEndReceived = vi.fn()
 
   beforeEach(() => {
-    vi.resetAllMocks()
+    vi.clearAllMocks()
   })
 
   it('has initial state', () => {

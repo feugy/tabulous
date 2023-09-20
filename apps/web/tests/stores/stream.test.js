@@ -54,7 +54,7 @@ describe('Media Stream store', () => {
   })
 
   beforeEach(() => {
-    vi.resetAllMocks()
+    vi.clearAllMocks()
   })
 
   afterAll(() => {

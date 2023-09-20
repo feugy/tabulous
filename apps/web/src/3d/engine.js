@@ -20,17 +20,17 @@ import { Observable } from '@babylonjs/core/Misc/observable'
 
 import { gameAssetsUrl, sleep } from '../utils'
 import {
-  cameraManager,
-  controlManager,
-  customShapeManager,
-  handManager,
-  indicatorManager,
-  inputManager,
-  materialManager,
-  moveManager,
-  replayManager,
-  selectionManager,
-  targetManager
+  CameraManager,
+  ControlManager,
+  CustomShapeManager,
+  HandManager,
+  IndicatorManager,
+  InputManager,
+  MaterialManager,
+  MoveManager,
+  ReplayManager,
+  SelectionManager,
+  TargetManager
 } from './managers'
 import {
   actionNames,
@@ -84,26 +84,39 @@ export function createEngine({
   const handScene = new ExtendedScene(engine)
   const scene = new ExtendedScene(engine)
   handScene.autoClear = false
+  const isWebGL1 = engine.version === 1
 
-  cameraManager.init({ scene, handScene })
-  inputManager.init({
-    scene,
-    handScene,
-    longTapDelay,
-    interaction,
-    onCameraMove: cameraManager.onMoveObservable
-  })
-  moveManager.init({ scene })
-  controlManager.init({ scene, handScene })
-  indicatorManager.init({ scene })
+  /** @type {import('@src/3d/managers').Managers} */
+  const managers = {
+    camera: new CameraManager({ scene, handScene }),
+    input: new InputManager({
+      scene,
+      handScene,
+      longTapDelay,
+      interaction
+    }),
+    move: new MoveManager({ scene }),
+    control: new ControlManager({ scene, handScene }),
+    indicator: new IndicatorManager({ scene }),
+    selection: new SelectionManager({ scene, handScene }),
+    customShape: new CustomShapeManager({ gameAssetsUrl }),
+    target: new TargetManager({ scene }),
+    material: new MaterialManager({
+      gameAssetsUrl,
+      locale,
+      scene,
+      handScene,
+      isWebGL1
+    }),
+    hand: new HandManager({ scene, handScene, overlay: hand }),
+    replay: new ReplayManager({ engine })
+  }
 
   engine.start = () =>
     engine.runRenderLoop(() => {
       scene.render()
       handScene.render()
     })
-
-  const isWebGL1 = engine.version === 1
 
   let isLoading = false
 
@@ -117,6 +130,7 @@ export function createEngine({
   Object.defineProperty(engine, 'actionNamesByButton', {
     get: () => actionNamesByButton
   })
+  Object.defineProperty(engine, 'managers', { get: () => managers })
 
   engine.load = async (
     gameData,
@@ -124,8 +138,8 @@ export function createEngine({
     initial
   ) => {
     const game = removeNulls(gameData)
-    cameraManager.adjustZoomLevels(game.zoomSpec)
-    const handsEnabled = hasHandsEnabled(game)
+    managers.camera.adjustZoomLevels(game.zoomSpec)
+    managers.hand.enabled = hasHandsEnabled(game)
     if (initial) {
       actionNamesByButton.clear()
       for (const [button, actions] of Object.entries(
@@ -146,62 +160,47 @@ export function createEngine({
         ],
         translate
       )
-
-      selectionManager.init({ scene, handScene })
-      targetManager.init({
-        scene,
+      managers.target.init({
+        managers,
         playerId,
         color: colorByPlayerId.get(playerId) ?? 'red'
       })
-      materialManager.init(
-        {
-          gameAssetsUrl,
-          locale,
-          scene,
-          handScene: handsEnabled ? handScene : undefined,
-          isWebGL1
-        },
-        game
-      )
-      replayManager.init({ playerId, engine, history: game.history ?? [] })
+      managers.material.init(game)
+      managers.replay.init({ managers, playerId, history: game.history })
+      managers.control.init({ managers })
+      managers.input.init({ managers })
+      managers.move.init({ managers })
+      managers.hand.init({
+        managers,
+        playerId,
+        angleOnPlay: preferences?.angle
+      })
 
       createLights({ scene, handScene, isWebGL1 })
-      createTable(game.tableSpec, scene)
+      createTable(game.tableSpec, managers, scene)
       scene.onDataLoadedObservable.addOnce(async () => {
         isLoading = false
         // slight delay to let the UI disappear
         await sleep(100)
         engine.onLoadingObservable.notifyObservers(isLoading)
       })
-      if (handsEnabled) {
-        handManager.init({
-          scene,
-          handScene,
-          playerId,
-          overlay: hand,
-          angleOnPlay: preferences?.angle
-        })
-      }
     }
-    selectionManager.updateColors(playerId, colorByPlayerId)
+    managers.selection.init({ managers, playerId, colorByPlayerId })
+    await managers.customShape.init(game)
 
-    await customShapeManager.init({
-      gameAssetsUrl,
-      meshes: game.meshes ?? [],
-      hands: game.hands ?? []
-    })
-    await loadMeshes(scene, game.meshes ?? [])
-    if (handsEnabled) {
+    await loadMeshes(scene, game.meshes ?? [], managers)
+    if (managers.hand.enabled) {
       await loadMeshes(
         handScene,
         (game.hands ?? []).find(hand => playerId === hand.playerId)?.meshes ??
-          []
+          [],
+        managers
       )
     }
     if (gameData.selections) {
       for (const { playerId: peerId, selectedIds } of gameData.selections) {
         if (peerId !== playerId) {
-          selectionManager.apply(selectedIds, peerId)
+          managers.selection.apply(selectedIds, peerId)
         }
       }
     }
@@ -209,27 +208,27 @@ export function createEngine({
 
   engine.serialize = () => {
     return (
-      replayManager.save ?? {
+      managers.replay.save ?? {
         meshes: serializeMeshes(scene),
         handMeshes: serializeMeshes(handScene),
-        history: replayManager.history
+        history: managers.replay.history
       }
     )
   }
 
   scene.onDataLoadedObservable.addOnce(() => {
-    inputManager.enabled = true
+    managers.input.enabled = true
   })
 
   interaction.addEventListener('pointerleave', handleLeave)
 
   engine.onDisposeObservable.addOnce(() => {
     interaction.removeEventListener('pointerleave', handleLeave)
-    customShapeManager.clear()
+    managers.customShape.clear()
   })
 
   function handleLeave(/** @type {Event} */ event) {
-    inputManager.stopAll(event)
+    managers.input.stopAll(event)
   }
 
   /* c8 ignore start */

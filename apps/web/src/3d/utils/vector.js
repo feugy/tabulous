@@ -30,7 +30,7 @@ let table = null
  * Useful to know where on the ground a player has clicked.
  * @param {Scene} scene - current scene.
  * @param {ScreenPosition} position - screen position.
- * @returns {Vector3} 3D point on the ground plane (Y axis) for this position, if any.
+ * @returns 3D point on the ground plane (Y axis) for this position, if any.
  */
 export function screenToGround(scene, { x, y }) {
   return /** @type {Vector3} */ (
@@ -42,7 +42,7 @@ export function screenToGround(scene, { x, y }) {
  * Indicates whether a screen position (2D, DOM) is above the table mesh.
  * @param {Scene} scene - current scene.
  * @param {ScreenPosition} position - screen position.
- * @returns {boolean} true if the point is within the table area, false otherwise.
+ * @returns true if the point is within the table area, false otherwise.
  */
 export function isAboveTable(scene, { x, y }) {
   /* istanbul ignore next */
@@ -58,7 +58,7 @@ export function isAboveTable(scene, { x, y }) {
  * Indicates whether a world position (3D, scene) is above the table mesh.
  * @param {Scene} scene - current scene.
  * @param {Vector3} position - 3D position.
- * @returns {boolean} true if the point is within the table area, false otherwise.
+ * @returns true if the point is within the table area, false otherwise.
  */
 export function isPositionAboveTable(scene, position) {
   /* istanbul ignore next */
@@ -77,7 +77,7 @@ export function isPositionAboveTable(scene, position) {
  * @template {AbstractMesh} T
  * @param {T?} [mesh] - the tested mesh.
  * @param {[number, number, number]} [offset = [0, 0, 0]] - optional offset (3D coordinates) applied.
- * @returns {ScreenPosition|null} this mesh's screen position.
+ * @returns this mesh's screen position.
  */
 export function getMeshScreenPosition(mesh, offset = [0, 0, 0]) {
   if (!mesh || !mesh.getScene()?.activeCamera) {
@@ -115,7 +115,7 @@ export function getScreenPosition(scene, position) {
  * @template {AbstractMesh} T
  * @param {Vector3} absolutePosition - absolute position to convert.
  * @param {T} mesh - mesh into which position is converted.
- * @returns {Vector3} the converted position in mesh's local space.
+ * @returns the converted position in mesh's local space.
  */
 export function convertToLocal(absolutePosition, mesh) {
   if (!mesh.parent) {
@@ -130,7 +130,7 @@ export function convertToLocal(absolutePosition, mesh) {
  * Returns mesh local rotation in world space.
  * @template {Node} T
  * @param {T} mesh - related mesh.
- * @returns {Vector3} absolute rotation (Euler angles).
+ * @returns absolute rotation (Euler angles).
  */
 export function getAbsoluteRotation(mesh) {
   const rotation = Quaternion.Identity()

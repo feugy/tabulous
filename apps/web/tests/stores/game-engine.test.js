@@ -35,15 +35,6 @@
 import { Observable } from '@babylonjs/core/Misc/observable'
 import { faker } from '@faker-js/faker'
 import { createEngine } from '@src/3d'
-import {
-  cameraManager,
-  controlManager,
-  handManager,
-  indicatorManager,
-  inputManager,
-  replayManager,
-  selectionManager
-} from '@src/3d/managers'
 import * as gameEngine from '@src/stores/game-engine'
 import {
   connected,
@@ -56,7 +47,6 @@ import { get } from 'svelte/store'
 import {
   afterAll,
   afterEach,
-  beforeAll,
   beforeEach,
   describe,
   expect,
@@ -75,36 +65,22 @@ vi.mock('@src/stores/peer-channels', () => {
   }
 })
 
-/** @type {SpyInstance<Parameters<cameraManager['save']>, void>} */
+/** @type {SpyInstance<Parameters<import('@src/3d/managers').CameraManager['save']>, void>} */
 let saveCamera
-/** @type {SpyInstance<Parameters<cameraManager['restore']>, Promise<void>>} */
+/** @type {SpyInstance<Parameters<import('@src/3d/managers').CameraManager['restore']>, Promise<void>>} */
 let restoreCamera
-/** @type {SpyInstance<Parameters<cameraManager['loadSaves']>, Promise<void>>} */
+/** @type {SpyInstance<Parameters<import('@src/3d/managers').CameraManager['loadSaves']>, Promise<void>>} */
 let loadCameraSaves
-/** @type {SpyInstance<Parameters<indicatorManager['registerPointerIndicator']>, ReturnType<indicatorManager['registerPointerIndicator']>>} */
+/** @type {SpyInstance<Parameters<import('@src/3d/managers').IndicatorManager['registerPointerIndicator']>, ReturnType<import('@src/3d/managers').IndicatorManager['registerPointerIndicator']>>} */
 let registerPointerIndicator
-/** @type {SpyInstance<Parameters<indicatorManager['pruneUnusedPointers']>, void>} */
+/** @type {SpyInstance<Parameters<import('@src/3d/managers').IndicatorManager['pruneUnusedPointers']>, void>} */
 let pruneUnusedPointers
-/** @type {SpyInstance<Parameters<controlManager['apply']>, Promise<void>>} */
+/** @type {SpyInstance<Parameters<import('@src/3d/managers').ControlManager['apply']>, Promise<void>>} */
 let applyAction
-/** @type {SpyInstance<Parameters<replayManager['record']>, void>} */
+/** @type {SpyInstance<Parameters<import('@src/3d/managers').ReplayManager['record']>, void>} */
 let recordHistory
-/** @type {SpyInstance<Parameters<replayManager['replayHistory']>, Promise<void>>} */
+/** @type {SpyInstance<Parameters<import('@src/3d/managers').ReplayManager['replayHistory']>, Promise<void>>} */
 let replayHistory
-
-beforeAll(() => {
-  saveCamera = vi.spyOn(cameraManager, 'save')
-  restoreCamera = vi.spyOn(cameraManager, 'restore')
-  loadCameraSaves = vi.spyOn(cameraManager, 'loadSaves')
-  registerPointerIndicator = vi.spyOn(
-    indicatorManager,
-    'registerPointerIndicator'
-  )
-  pruneUnusedPointers = vi.spyOn(indicatorManager, 'pruneUnusedPointers')
-  applyAction = vi.spyOn(controlManager, 'apply')
-  recordHistory = vi.spyOn(replayManager, 'record')
-  replayHistory = vi.spyOn(replayManager, 'replayHistory')
-})
 
 beforeEach(() => {
   vi.resetAllMocks()
@@ -115,11 +91,10 @@ describe('initEngine()', () => {
   let subscriptions
   /** @type {Scene} */
   let scene
-  /** @type {Scene} */
-  let handScene
+  /** @type {import('@src/3d/managers').Managers} */
+  let managers
   const canvas = document.createElement('canvas')
   const interaction = document.createElement('div')
-  const overlay = document.createElement('div')
   const hand = document.createElement('div')
   const receiveAction = vi.fn()
   const receiveSelection = vi.fn()
@@ -134,7 +109,6 @@ describe('initEngine()', () => {
   const receiveRemoteSelection = vi.fn()
   const receiveHistory = vi.fn()
   const receiveReplayRank = vi.fn()
-  const playerId = 'player-id-1'
   const sendToPeer = /** @type {Mock<Parameters<send>, ReturnType<send>>} */ (
     send
   )
@@ -148,10 +122,18 @@ describe('initEngine()', () => {
 
   configures3dTestEngine(created => {
     scene = created.scene
-    handScene = created.handScene
-  })
-
-  beforeAll(async () => {
+    managers = created.managers
+    saveCamera = vi.spyOn(managers.camera, 'save')
+    restoreCamera = vi.spyOn(managers.camera, 'restore')
+    loadCameraSaves = vi.spyOn(managers.camera, 'loadSaves')
+    registerPointerIndicator = vi.spyOn(
+      managers.indicator,
+      'registerPointerIndicator'
+    )
+    pruneUnusedPointers = vi.spyOn(managers.indicator, 'pruneUnusedPointers')
+    applyAction = vi.spyOn(managers.control, 'apply')
+    recordHistory = vi.spyOn(managers.replay, 'record')
+    replayHistory = vi.spyOn(managers.replay, 'replayHistory')
     subscriptions = [
       gameEngine.action.subscribe({ next: receiveAction }),
       gameEngine.meshDetails.subscribe({ next: receiveMeshDetail }),
@@ -179,8 +161,7 @@ describe('initEngine()', () => {
       engine = create3DEngineMock()
       const createEngineMock =
         /** @type {Mock<Parameters<createEngine>, Engine>} */ (createEngine)
-      createEngineMock.mockReturnValueOnce(engine)
-      engine.serialize = vi.fn()
+      createEngineMock.mockReturnValue(engine)
     })
 
     afterEach(() => {
@@ -242,7 +223,7 @@ describe('initEngine()', () => {
           meshId: faker.string.uuid(),
           fromHand: false
         }
-        controlManager.onActionObservable.notifyObservers(data)
+        managers.control.onActionObservable.notifyObservers(data)
         expect(receiveAction).toHaveBeenCalledWith(data)
         expect(receiveAction).toHaveBeenCalledOnce()
         expect(sendToPeer).toHaveBeenCalledWith(data)
@@ -260,7 +241,7 @@ describe('initEngine()', () => {
           fromHand: false,
           isLocal: true
         }
-        controlManager.onActionObservable.notifyObservers(data)
+        managers.control.onActionObservable.notifyObservers(data)
         expect(receiveAction).toHaveBeenCalledWith(data)
         expect(receiveAction).toHaveBeenCalledOnce()
         expect(sendToPeer).not.toHaveBeenCalled()
@@ -276,7 +257,7 @@ describe('initEngine()', () => {
           meshId: faker.string.uuid(),
           fromHand: true
         }
-        controlManager.onActionObservable.notifyObservers(data)
+        managers.control.onActionObservable.notifyObservers(data)
         expect(receiveAction).toHaveBeenCalledWith(data)
         expect(receiveAction).toHaveBeenCalledOnce()
         expect(sendToPeer).not.toHaveBeenCalled()
@@ -288,13 +269,13 @@ describe('initEngine()', () => {
         const data = /** @type {Set<Mesh>} */ (
           new Set([{ id: 'mesh1' }, { id: 'mesh2' }])
         )
-        selectionManager.onSelectionObservable.notifyObservers(data)
+        managers.selection.onSelectionObservable.notifyObservers(data)
         expect(receiveSelection).toHaveBeenNthCalledWith(1, data)
         expect(sendToPeer).toHaveBeenNthCalledWith(1, {
           selectedIds: ['mesh1', 'mesh2']
         })
 
-        selectionManager.onSelectionObservable.notifyObservers(new Set())
+        managers.selection.onSelectionObservable.notifyObservers(new Set())
         expect(receiveSelection).toHaveBeenNthCalledWith(2, new Set())
         expect(sendToPeer).toHaveBeenNthCalledWith(2, { selectedIds: [] })
         expect(receiveSelection).toHaveBeenCalledTimes(2)
@@ -305,7 +286,7 @@ describe('initEngine()', () => {
       })
 
       it('handles remote selection', () => {
-        vi.spyOn(selectionManager, 'apply').mockImplementationOnce(() => {})
+        vi.spyOn(managers.selection, 'apply').mockImplementationOnce(() => {})
         const playerId = faker.string.uuid()
         const selectedIds = ['mesh1', 'mesh2']
         lastMessageReceived.next({ data: { selectedIds }, playerId })
@@ -321,7 +302,7 @@ describe('initEngine()', () => {
       })
 
       it('clears remote selection on peer disconnection', () => {
-        vi.spyOn(selectionManager, 'apply').mockImplementationOnce(() => {})
+        vi.spyOn(managers.selection, 'apply').mockImplementationOnce(() => {})
         const playerId = faker.string.uuid()
         lastDisconnectedId.next(playerId)
 
@@ -381,7 +362,7 @@ describe('initEngine()', () => {
       })
 
       it('does not apply peer action when replaying', () => {
-        vi.spyOn(replayManager, 'isReplaying', 'get').mockReturnValueOnce(true)
+        vi.spyOn(managers.replay, 'isReplaying', 'get').mockReturnValue(true)
         const playerId = faker.person.firstName()
         const data = {
           meshId: faker.string.uuid(),
@@ -405,9 +386,9 @@ describe('initEngine()', () => {
         expect(sendToPeer).not.toHaveBeenCalled()
         const data1 = [1, 1, 1]
         const data2 = [1, 1, 1]
-        inputManager.onPointerObservable.notifyObservers(data1)
+        managers.input.onPointerObservable.notifyObservers(data1)
         expect(sendToPeer).not.toHaveBeenCalled()
-        inputManager.onPointerObservable.notifyObservers(data2)
+        managers.input.onPointerObservable.notifyObservers(data2)
         await sleep(5)
         expect(sendToPeer).not.toHaveBeenCalled()
         await sleep(30)
@@ -423,25 +404,23 @@ describe('initEngine()', () => {
           position: { x: 0, y: 10 },
           images: [faker.image.avatar()]
         }
-        controlManager.onDetailedObservable.notifyObservers(data)
+        managers.control.onDetailedObservable.notifyObservers(data)
         expect(receiveMeshDetail).toHaveBeenCalledWith(data)
         expect(receiveMeshDetail).toHaveBeenCalledOnce()
       })
 
       it('proxies camera save events', () => {
-        expect(receiveCameraSave).toHaveBeenCalledWith([])
-        expect(receiveCameraSave).toHaveBeenCalledOnce()
+        receiveCameraSave.mockReset()
         const data = [
           { hash: '', target: [0, 0, 0], alpha: 1, beta: 2, elevation: 3 }
         ]
-        cameraManager.onSaveObservable.notifyObservers(data)
-        expect(receiveCameraSave).toHaveBeenNthCalledWith(2, data)
-        expect(receiveCameraSave).toHaveBeenCalledTimes(2)
+        managers.camera.onSaveObservable.notifyObservers(data)
+        expect(receiveCameraSave).toHaveBeenCalledWith(data)
+        expect(receiveCameraSave).toHaveBeenCalledOnce()
       })
 
       it('proxies current camera events', () => {
-        expect(receiveCurrentCamera).toHaveBeenCalledWith(undefined)
-        expect(receiveCurrentCamera).toHaveBeenCalledOnce()
+        receiveCurrentCamera.mockReset()
         const data = {
           hash: '',
           target: [0, 0, 0],
@@ -449,14 +428,14 @@ describe('initEngine()', () => {
           beta: 2,
           elevation: 1
         }
-        cameraManager.onMoveObservable.notifyObservers(data)
-        expect(receiveCurrentCamera).toHaveBeenNthCalledWith(2, data)
-        expect(receiveCurrentCamera).toHaveBeenCalledTimes(2)
+        managers.camera.onMoveObservable.notifyObservers(data)
+        expect(receiveCurrentCamera).toHaveBeenCalledWith(data)
+        expect(receiveCurrentCamera).toHaveBeenCalledOnce()
       })
 
       it('proxies long input events', () => {
         const data = { timestamp: Date.now(), type: 'longTap' }
-        inputManager.onLongObservable.notifyObservers(
+        managers.input.onLongObservable.notifyObservers(
           /** @type {LongData} */ (data)
         )
         expect(receiveLongInput).toHaveBeenCalledWith(data)
@@ -471,14 +450,14 @@ describe('initEngine()', () => {
           meshes: [],
           history: []
         })
-        handManager.onHandChangeObservable.notifyObservers({ meshes: [] })
+        managers.hand.onHandChangeObservable.notifyObservers({ meshes: [] })
         expect(receiveHandChange).toHaveBeenCalledWith(handMeshes)
         expect(receiveHandChange).toHaveBeenCalledOnce()
       })
 
       it('proxies hand highlight events', () => {
         const highlight = faker.datatype.boolean()
-        handManager.onDraggableToHandObservable.notifyObservers(highlight)
+        managers.hand.onDraggableToHandObservable.notifyObservers(highlight)
         expect(receiveHighlightHand).toHaveBeenCalledWith(highlight)
         expect(receiveHighlightHand).toHaveBeenCalledOnce()
       })
@@ -497,7 +476,7 @@ describe('initEngine()', () => {
 
       it('exposes hand manager enability', () => {
         expect(receiveHandVisible).not.toHaveBeenCalled()
-        handManager.init({ scene, handScene, overlay, playerId })
+        engine.managers.hand.enabled = true
         engine.onLoadingObservable.notifyObservers(false)
         expect(receiveHandVisible).toHaveBeenNthCalledWith(1, true)
         scene.getEngine().dispose()
@@ -505,59 +484,61 @@ describe('initEngine()', () => {
         expect(receiveHandVisible).toHaveBeenNthCalledWith(2, false)
         expect(receiveHandVisible).toHaveBeenCalledTimes(2)
       })
+
+      describe('saveCamera()', () => {
+        it('invokes camera manager', () => {
+          const args = [2]
+          gameEngine.saveCamera(...args)
+          expect(saveCamera).toHaveBeenCalledWith(...args)
+          expect(saveCamera).toHaveBeenCalledOnce()
+          expect(restoreCamera).not.toHaveBeenCalled()
+          expect(loadCameraSaves).not.toHaveBeenCalled()
+        })
+      })
+
+      describe('restoreCamera()', () => {
+        it('invokes camera manager', () => {
+          const args = [4]
+          gameEngine.restoreCamera(...args)
+          expect(restoreCamera).toHaveBeenCalledWith(...args)
+          expect(restoreCamera).toHaveBeenCalledOnce()
+          expect(saveCamera).not.toHaveBeenCalled()
+          expect(loadCameraSaves).not.toHaveBeenCalled()
+        })
+      })
+
+      describe('loadCameraSaves()', () => {
+        it('invokes camera manager', () => {
+          const args = [
+            { hash: '', target: [0, 0, 0], alpha: 1, beta: 2, elevation: 3 }
+          ]
+          gameEngine.loadCameraSaves(args)
+          expect(loadCameraSaves).toHaveBeenCalledWith(args)
+          expect(loadCameraSaves).toHaveBeenCalledOnce()
+          expect(saveCamera).not.toHaveBeenCalled()
+        })
+      })
+
+      describe('replayHistory()', () => {
+        it('invokes replay manager', async () => {
+          managers.replay.engine = engine
+          await gameEngine.replayHistory(5)
+          expect(replayHistory).toHaveBeenCalledWith(5)
+          expect(replayHistory).toHaveBeenCalledOnce()
+        })
+      })
     })
   })
-})
 
-describe('saveCamera()', () => {
-  it('invokes camera manager', () => {
-    const args = [2]
-    gameEngine.saveCamera(...args)
-    expect(saveCamera).toHaveBeenCalledWith(...args)
-    expect(saveCamera).toHaveBeenCalledOnce()
-    expect(restoreCamera).not.toHaveBeenCalled()
-    expect(loadCameraSaves).not.toHaveBeenCalled()
-  })
+  function create3DEngineMock() {
+    return /** @type {MockedObject<Engine>} */ ({
+      onEndFrameObservable: new Observable(),
+      onDisposeObservable: new Observable(),
+      onLoadingObservable: new Observable(),
+      getFps: vi.fn(),
+      start: vi.fn(),
+      managers,
+      serialize: vi.fn()
+    })
+  }
 })
-
-describe('restoreCamera()', () => {
-  it('invokes camera manager', () => {
-    const args = [4]
-    gameEngine.restoreCamera(...args)
-    expect(restoreCamera).toHaveBeenCalledWith(...args)
-    expect(restoreCamera).toHaveBeenCalledOnce()
-    expect(saveCamera).not.toHaveBeenCalled()
-    expect(loadCameraSaves).not.toHaveBeenCalled()
-  })
-})
-
-describe('loadCameraSaves()', () => {
-  it('invokes camera manager', () => {
-    const args = [
-      { hash: '', target: [0, 0, 0], alpha: 1, beta: 2, elevation: 3 }
-    ]
-    gameEngine.loadCameraSaves(args)
-    expect(loadCameraSaves).toHaveBeenCalledWith(args)
-    expect(loadCameraSaves).toHaveBeenCalledOnce()
-    expect(saveCamera).not.toHaveBeenCalled()
-    expect(restoreCamera).not.toHaveBeenCalled()
-  })
-})
-
-describe('replayHistory()', () => {
-  it('invokes replay manager', () => {
-    gameEngine.replayHistory(5)
-    expect(replayHistory).toHaveBeenCalledWith(5)
-    expect(replayHistory).toHaveBeenCalledOnce()
-  })
-})
-
-function create3DEngineMock() {
-  return /** @type {MockedObject<Engine>} */ ({
-    onEndFrameObservable: new Observable(),
-    onDisposeObservable: new Observable(),
-    onLoadingObservable: new Observable(),
-    getFps: vi.fn(),
-    start: vi.fn()
-  })
-}

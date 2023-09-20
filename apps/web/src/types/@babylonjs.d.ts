@@ -14,6 +14,7 @@ import type {
   StackBehavior,
   TargetBehavior
 } from '@src/3d/behaviors'
+import type { Managers } from '@src/3d/managers'
 import type { Behavior } from '@src/3d/utils'
 import type { Game } from '@src/graphql'
 import type { GameWithSelections } from '@src/stores'
@@ -47,6 +48,8 @@ declare module '@babylonjs/core' {
     onLoadingObservable: Observable<boolean>
     /** emits just before disposing the engien, to allow synchronous access to its content. */
     onBeforeDisposeObservable: Observable<void>
+    /** managers configures with this engine. */
+    managers: Managers
     /** starts the renderig loop. */
     start(): void
     /**

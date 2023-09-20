@@ -48,7 +48,7 @@ describe('Aside component', () => {
   const [user] = players
 
   beforeEach(() => {
-    vi.resetAllMocks()
+    vi.clearAllMocks()
     stream$.next({
       getAudioTracks: vi.fn().mockReturnValue([]),
       getVideoTracks: vi.fn().mockReturnValue([])

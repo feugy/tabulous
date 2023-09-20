@@ -1,18 +1,10 @@
 // @ts-check
-/**
- * @typedef {import('@babylonjs/core').Mesh} Mesh
- * @typedef {import('@babylonjs/core').Scene} Scene
- * @typedef {import('@src/3d/utils/behaviors').SerializedMesh} SerializedMesh
- */
-
 import { Axis } from '@babylonjs/core/Maths/math.axis.js'
 import { Vector3, Vector4 } from '@babylonjs/core/Maths/math.vector.js'
 import { CreateBox } from '@babylonjs/core/Meshes/Builders/boxBuilder.js'
 import { CreateCylinder } from '@babylonjs/core/Meshes/Builders/cylinderBuilder.js'
 import { CSG } from '@babylonjs/core/Meshes/csg.js'
 
-import { controlManager } from '../managers/control'
-import { materialManager } from '../managers/material'
 import { registerBehaviors, serializeBehaviors } from '../utils/behaviors'
 import { applyInitialTransform, setExtras } from '../utils/mesh'
 
@@ -21,9 +13,10 @@ import { applyInitialTransform, setExtras } from '../utils/mesh'
  * Tiles are boxes, so their position is their center.
  * A tile's texture must have 2 faces, back then front, aligned horizontally.
  * By default tiles have a width and depth of 3 with a border radius of 0.4.
- * @param {Omit<SerializedMesh, 'shape'>} params - token parameters.
- * @param {Scene} scene - scene for the created mesh.
- * @returns {Mesh} the created tile mesh.
+ * @param {Omit<import('@src/3d/utils/behaviors').SerializedMesh, 'shape'>} params - token parameters.
+ * @param {import('@src/3d/managers').Managers} managers - current managers.
+ * @param {import('@babylonjs/core').Scene} scene - scene for the created mesh.
+ * @returns the created tile mesh.
  */
 export function createRoundedTile(
   {
@@ -47,6 +40,7 @@ export function createRoundedTile(
     transform = undefined,
     ...behaviorStates
   },
+  managers,
   scene
 ) {
   const tileMesh = CreateBox(
@@ -75,7 +69,7 @@ export function createRoundedTile(
   tileCSG.subtractInPlace(makeCornerMesh(cornerParams, false, false))
   const mesh = tileCSG.toMesh(id, undefined, scene)
   mesh.name = 'roundedTile'
-  materialManager.configure(mesh, texture)
+  managers.material.configure(mesh, texture)
   applyInitialTransform(mesh, transform)
   mesh.setAbsolutePosition(new Vector3(x, y, z))
   mesh.isPickable = false
@@ -101,17 +95,17 @@ export function createRoundedTile(
     }
   })
 
-  registerBehaviors(mesh, behaviorStates)
+  registerBehaviors(mesh, behaviorStates, managers)
 
-  controlManager.registerControlable(mesh)
+  managers.control.registerControlable(mesh)
   return mesh
 }
 
 /**
- * @param {Required<Pick<SerializedMesh, 'borderRadius'|'width'|'height'|'depth'> & { faceUV: Vector4 }>} cornerParams - corner parameters
+ * @param {Required<Pick<import('@src/3d/utils/behaviors').SerializedMesh, 'borderRadius'|'width'|'height'|'depth'> & { faceUV: Vector4 }>} cornerParams - corner parameters
  * @param {boolean} isTop  - whether if this corner is on the top or the bottom.
  * @param {boolean} isLeft - whether if this corner is on the left or the right.
- * @returns {CSG} Constructive Solid Geometry built for this corner.
+ * @returns Constructive Solid Geometry built for this corner.
  */
 function makeCornerMesh(
   { borderRadius, width, height, depth, faceUV },

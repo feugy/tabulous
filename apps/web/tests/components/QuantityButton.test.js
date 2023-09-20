@@ -11,7 +11,7 @@ describe('QuantityButton component', () => {
   const quantity$ = writable()
 
   beforeEach(() => {
-    vi.resetAllMocks()
+    vi.clearAllMocks()
     quantity$.set(1)
   })
 

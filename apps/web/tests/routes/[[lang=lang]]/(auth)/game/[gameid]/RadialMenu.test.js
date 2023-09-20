@@ -6,7 +6,7 @@ import { beforeEach, describe, expect, it, vi } from 'vitest'
 
 describe('/game/[gameId] Radial Menu component', () => {
   beforeEach(() => {
-    vi.resetAllMocks()
+    vi.clearAllMocks()
   })
 
   function renderComponent(props = {}) {

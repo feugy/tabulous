@@ -5,7 +5,6 @@
  * @typedef {import('../utils').ScreenPosition} ScreenPosition
  */
 
-import { controlManager } from '../managers/control'
 import {
   attachFunctions,
   attachProperty,
@@ -18,8 +17,11 @@ export class DetailBehavior {
   /**
    * Creates behavior to get details of a mesh.
    * @param {DetailableState} state - behavior state.
+   * @param {import('@src/3d/managers').Managers} managers - current managers.
    */
-  constructor(state = { frontImage: '' }) {
+  constructor(state, managers) {
+    /** @internal */
+    this.managers = managers
     /** @type {?Mesh} mesh - the related mesh. */
     this.mesh = null
     /**  @type {DetailableState} state - the behavior's current state. */
@@ -64,7 +66,7 @@ export class DetailBehavior {
   detail() {
     if (!this.mesh) return
     const stackable = this.mesh.getBehaviorByName(StackBehaviorName)
-    controlManager.onDetailedObservable.notifyObservers({
+    this.managers.control.onDetailedObservable.notifyObservers({
       position: /** @type {ScreenPosition} */ (
         getMeshScreenPosition(this.mesh)
       ),

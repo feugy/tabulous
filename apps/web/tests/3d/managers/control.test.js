@@ -12,12 +12,7 @@
 
 import { faker } from '@faker-js/faker'
 import { AnchorBehavior, FlipBehavior, MoveBehavior } from '@src/3d/behaviors'
-import {
-  controlManager as manager,
-  handManager,
-  indicatorManager
-} from '@src/3d/managers'
-import { beforeAll, beforeEach, describe, expect, it, vi } from 'vitest'
+import { beforeEach, describe, expect, it, vi } from 'vitest'
 
 import { configures3dTestEngine, createBox } from '../../test-utils'
 
@@ -41,46 +36,41 @@ describe('ControlManager', () => {
   /** @type {SpyInstance<Parameters<AnchorBehavior['revert']>, Promise<void>>} */
   let revertSpy
   const controlledChangeReceived = vi.fn()
-  const playerId = 'player-id-1'
-  const handOverlay = document.createElement('div')
-  const renderWidth = 480
-  const renderHeight = 350
+  /** @type {import('@src/3d/managers').Managers} */
+  let managers
+  /** @type {import('@src/3d/managers').ControlManager} */
+  let manager
+  /** @type {string} */
+  let playerId
 
-  configures3dTestEngine(
-    created => {
-      scene = created.scene
-      handScene = created.handScene
-      handManager.init({ ...created, playerId, overlay: handOverlay })
-    },
-    { renderWidth, renderHeight }
-  )
-
-  beforeAll(() => {
-    vi.spyOn(window, 'getComputedStyle').mockImplementation(
-      () =>
-        /** @type {CSSStyleDeclaration} */ ({
-          height: `${renderHeight / 4}px`
-        })
-    )
-    indicatorManager.init({ scene })
+  configures3dTestEngine(created => {
+    scene = created.scene
+    handScene = created.handScene
+    managers = created.managers
+    playerId = created.playerId
+    manager = managers.control
+    managers.hand.enabled = true
     manager.onActionObservable.add(action => actions.push(action))
     manager.onControlledObservable.add(controlledChangeReceived)
   })
 
   beforeEach(() => {
-    vi.resetAllMocks()
+    vi.clearAllMocks()
     actions = []
 
     mesh = createBox('box1', {}, scene)
-    mesh.addBehavior(new MoveBehavior(), true)
+    mesh.addBehavior(new MoveBehavior({}, managers), true)
     anchorable = createBox('box2', {})
-    const anchorableBehavior = new AnchorBehavior({
-      anchors: [{ id: 'anchor-0', width: 1, height: 1, depth: 0.5 }]
-    })
+    const anchorableBehavior = new AnchorBehavior(
+      {
+        anchors: [{ id: 'anchor-0', width: 1, height: 1, depth: 0.5 }]
+      },
+      managers
+    )
     anchorable.addBehavior(anchorableBehavior, true)
-    anchorable.addBehavior(new FlipBehavior(), true)
+    anchorable.addBehavior(new FlipBehavior({}, managers), true)
     handMesh = createBox('hand-box', {}, handScene)
-    handMesh.addBehavior(new MoveBehavior(), true)
+    handMesh.addBehavior(new MoveBehavior({}, managers), true)
     snapSpy = vi.spyOn(anchorable.metadata, 'snap')
     flipSpy = vi.spyOn(anchorable.metadata, 'flip')
     revertSpy = vi.spyOn(anchorableBehavior, 'revert')
@@ -88,7 +78,6 @@ describe('ControlManager', () => {
     manager.registerControlable(mesh)
     manager.registerControlable(handMesh)
     manager.registerControlable(anchorable)
-    manager.init({ scene, handScene })
     controlledChangeReceived.mockReset()
   })
 
@@ -143,7 +132,7 @@ describe('ControlManager', () => {
   describe('apply()', () => {
     it('ignores uncontrolled mesh', async () => {
       const mesh = createBox('box', {})
-      mesh.addBehavior(new FlipBehavior(), true)
+      mesh.addBehavior(new FlipBehavior({}, managers), true)
       const flipSpy = vi.spyOn(mesh.metadata, 'flip')
 
       await manager.apply({ meshId: mesh.id, fn: 'flip', args: [] })

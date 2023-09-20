@@ -10,7 +10,6 @@
 
 import { Animation } from '@babylonjs/core/Animations/animation'
 
-import { handManager } from '../managers/hand'
 import { actionNames } from '../utils/actions'
 import {
   attachFunctions,
@@ -28,9 +27,12 @@ export class DrawBehavior extends AnimateBehavior {
   /**
    * Creates behavior to draw mesh from and to player's hand.
    * @param {DrawableState} state - behavior state.
+   * @param {import('@src/3d/managers').Managers} managers - current managers.
    */
-  constructor(state = {}) {
+  constructor(state, managers) {
     super()
+    /** @internal */
+    this.managers = managers
     /** @type {RequiredDrawableState} state - the behavior's current state. */
     this.state = /** @type {RequiredDrawableState} */ (state)
     /** @protected @type {Animation} */
@@ -85,9 +87,9 @@ export class DrawBehavior extends AnimateBehavior {
   async draw(state, playerId) {
     if (!this.mesh) return
     if (state && playerId) {
-      await handManager.applyDraw(state, playerId)
+      await this.managers.hand.applyDraw(state, playerId)
     } else {
-      await handManager.draw(this.mesh)
+      await this.managers.hand.draw(this.mesh)
     }
   }
 
@@ -97,7 +99,7 @@ export class DrawBehavior extends AnimateBehavior {
    */
   async play() {
     if (!this.mesh) return
-    await handManager.play(this.mesh)
+    await this.managers.hand.play(this.mesh)
   }
 
   /**
@@ -109,14 +111,13 @@ export class DrawBehavior extends AnimateBehavior {
     if (this.mesh && args.length === 2) {
       const [state, playerId] = args
       if (action === actionNames.play) {
-        await handManager.applyDraw(state, playerId)
+        await this.managers.hand.applyDraw(state, playerId)
       }
     }
   }
 
   /**
    * Runs the animation to move mesh from main scene to hand.
-   * @returns {Promise<void>}
    */
   async animateToHand() {
     const {
@@ -142,7 +143,6 @@ export class DrawBehavior extends AnimateBehavior {
 
   /**
    * Runs the animation to move mesh from hand to main scene
-   * @returns {Promise<void>}
    */
   async animateToMain() {
     const {
@@ -183,12 +183,12 @@ export class DrawBehavior extends AnimateBehavior {
     attachProperty(
       this,
       'drawable',
-      () => this.mesh && !handManager.isManaging(this.mesh)
+      () => this.mesh && !this.managers.hand.isManaging(this.mesh)
     )
     attachProperty(
       this,
       'playable',
-      () => this.mesh && handManager.isManaging(this.mesh)
+      () => this.mesh && this.managers.hand.isManaging(this.mesh)
     )
   }
 }

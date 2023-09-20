@@ -29,7 +29,7 @@ describe.each([
     const bearer = `Bearer ${faker.string.uuid()}`
 
     beforeEach(() => {
-      vi.resetAllMocks()
+      vi.clearAllMocks()
       locals = {
         bearer,
         timeZone: 'GMT',

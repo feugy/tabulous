@@ -6,15 +6,9 @@
 
 import { faker } from '@faker-js/faker'
 import { DrawBehavior, DrawBehaviorName } from '@src/3d/behaviors'
-import {
-  controlManager,
-  handManager,
-  indicatorManager,
-  targetManager
-} from '@src/3d/managers'
 import { createCard } from '@src/3d/meshes'
 import { altitudeGap, createTable } from '@src/3d/utils'
-import { beforeAll, beforeEach, describe, expect, it, vi } from 'vitest'
+import { beforeEach, describe, expect, it, vi } from 'vitest'
 
 import {
   configures3dTestEngine,
@@ -31,37 +25,25 @@ import {
 let scene
 /** @type {Scene} */
 let handScene
+/** @type {import('@src/3d/managers').Managers} */
+let managers
+/** @type {string} */
+let playerId
 const actionRecorded = vi.fn()
 const animationEndReceived = vi.fn()
-const handOverlay = document.createElement('div')
-const renderWidth = 480
-const renderHeight = 350
-const playerId = 'player-id'
 
-configures3dTestEngine(
-  created => {
-    scene = created.scene
-    handScene = created.handScene
-    handManager.init({ ...created, playerId, overlay: handOverlay })
-    controlManager.onActionObservable.add(actionRecorded)
-  },
-  { renderWidth, renderHeight }
-)
-
-beforeAll(() => {
-  vi.spyOn(window, 'getComputedStyle').mockImplementation(
-    () =>
-      /** @type {CSSStyleDeclaration} */ ({
-        height: `${renderHeight / 4}px`
-      })
-  )
-  targetManager.init({ scene, playerId: 'player', color: 'red' })
-  indicatorManager.init({ scene })
+configures3dTestEngine(created => {
+  scene = created.scene
+  handScene = created.handScene
+  managers = created.managers
+  playerId = created.playerId
+  managers.control.onActionObservable.add(actionRecorded)
+  managers.hand.enabled = true
 })
 
 beforeEach(() => {
   vi.clearAllMocks()
-  createTable({}, scene)
+  createTable({}, managers, scene)
 })
 
 describe('DrawBehavior', () => {
@@ -72,7 +54,7 @@ describe('DrawBehavior', () => {
       flipOnPlay: faker.datatype.boolean(),
       angleOnPick: faker.number.int(1) * Math.PI
     }
-    const behavior = new DrawBehavior(state)
+    const behavior = new DrawBehavior(state, managers)
     const mesh = createBox('box', {})
 
     expect(behavior.mesh).toBeNull()
@@ -85,19 +67,19 @@ describe('DrawBehavior', () => {
   })
 
   it('can not restore state without mesh', () => {
-    expect(() => new DrawBehavior().fromState({})).toThrow(
+    expect(() => new DrawBehavior({}, managers).fromState({})).toThrow(
       'Can not restore state without mesh'
     )
   })
 
   it('can not draw in hand without mesh', () => {
-    const behavior = new DrawBehavior()
+    const behavior = new DrawBehavior({}, managers)
     behavior.draw?.()
     expect(actionRecorded).not.toHaveBeenCalled()
   })
 
   it('can hydrate with default state', () => {
-    const behavior = new DrawBehavior()
+    const behavior = new DrawBehavior({}, managers)
     const mesh = createBox('box', {})
     mesh.addBehavior(behavior, true)
 
@@ -131,6 +113,7 @@ describe('DrawBehavior', () => {
           stackable: { kinds: ['box'] },
           movable: { kind: 'box' }
         },
+        managers,
         scene
       )
       behavior = /** @type {DrawBehavior} */ (
@@ -147,9 +130,10 @@ describe('DrawBehavior', () => {
           stackable: { kinds: ['box'] },
           movable: { kind: 'box' }
         },
+        managers,
         handScene
       )
-      await waitForLayout(handManager)
+      await waitForLayout(managers.hand)
     })
 
     it('can hydrate from state', () => {
@@ -231,7 +215,7 @@ describe('DrawBehavior', () => {
       const state = created.metadata.serialize()
       const createdBehavior = created.getBehaviorByName(DrawBehaviorName)
       await Promise.all([
-        waitForLayout(handManager),
+        waitForLayout(managers.hand),
         expectAnimationEnd(createdBehavior)
       ])
       expect(actionRecorded).toHaveBeenCalledTimes(1)
@@ -255,7 +239,7 @@ describe('DrawBehavior', () => {
       const state = created.metadata.serialize()
       const createdBehavior = created.getBehaviorByName(DrawBehaviorName)
       await Promise.all([
-        waitForLayout(handManager),
+        waitForLayout(managers.hand),
         expectAnimationEnd(createdBehavior)
       ])
       expect(actionRecorded).toHaveBeenCalledTimes(2)
@@ -303,7 +287,7 @@ describe('DrawBehavior', () => {
       const position = created.absolutePosition.asArray()
       const createdBehavior = created.getBehaviorByName(DrawBehaviorName)
       await Promise.all([
-        waitForLayout(handManager),
+        waitForLayout(managers.hand),
         expectAnimationEnd(createdBehavior)
       ])
       expectNotDisposed(scene, created)
@@ -313,7 +297,7 @@ describe('DrawBehavior', () => {
       await Promise.all([
         createdBehavior?.revert('play', [state, playerId]),
         expectAnimationEnd(createdBehavior),
-        waitForLayout(handManager)
+        waitForLayout(managers.hand)
       ])
       const reverted = handScene.getMeshById(handMesh.id)
       expectDisposed(scene, handMesh)

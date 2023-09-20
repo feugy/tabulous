@@ -8,7 +8,7 @@ import { readFile } from 'node:fs/promises'
 import { resolve } from 'node:path'
 
 import { faker } from '@faker-js/faker'
-import { customShapeManager as manager } from '@src/3d/managers'
+import { CustomShapeManager } from '@src/3d/managers'
 import { getDieModelFile } from '@src/3d/meshes'
 import { makeLogger } from '@src/utils'
 import { rest } from 'msw'
@@ -54,10 +54,12 @@ describe('CustomShapeManager', () => {
     })
   )
 
+  const manager = new CustomShapeManager({ gameAssetsUrl })
+
   beforeAll(() => server.listen())
 
   beforeEach(() => {
-    vi.resetAllMocks()
+    vi.clearAllMocks()
     server.resetHandlers()
     error = vi.spyOn(logger, 'error')
     vi.spyOn(console, 'warn').mockImplementation(() => {})
@@ -82,12 +84,12 @@ describe('CustomShapeManager', () => {
         )
       )
       await manager.init({
-        gameAssetsUrl,
+        id: 'game',
+        created: Date.now(),
         meshes: [
           { id: '', texture: '', shape: 'custom', file },
           { id: '', texture: '', shape: 'die', faces: 4 }
-        ],
-        hands: undefined
+        ]
       })
       expect(manager.get(file)).toEqual(expectedData.pawn)
       expect(manager.get(getDieModelFile(4))).toEqual(expectedData.die)
@@ -109,8 +111,8 @@ describe('CustomShapeManager', () => {
         )
       )
       await manager.init({
-        gameAssetsUrl,
-        meshes: undefined,
+        id: 'game',
+        created: Date.now(),
         hands: [
           {
             playerId: '1',
@@ -139,7 +141,8 @@ describe('CustomShapeManager', () => {
         )
       )
       await manager.init({
-        gameAssetsUrl,
+        id: 'game',
+        created: Date.now(),
         meshes: [
           { id: '', texture: '', shape: 'card', file: file1 },
           { id: '', texture: '', shape: 'custom', file: file2 }
@@ -154,7 +157,8 @@ describe('CustomShapeManager', () => {
       const file = `/${faker.lorem.word()}`
       await expect(
         manager.init({
-          gameAssetsUrl,
+          id: 'game',
+          created: Date.now(),
           meshes: [{ id: '', texture: '', shape: 'custom', file: file }],
           hands: undefined
         })
@@ -174,7 +178,8 @@ describe('CustomShapeManager', () => {
         })
       )
       await manager.init({
-        gameAssetsUrl,
+        id: 'game',
+        created: Date.now(),
         meshes: [
           { id: '', texture: '', shape: 'custom', file: file },
           { id: '', texture: '', shape: 'custom', file: file }
@@ -189,7 +194,8 @@ describe('CustomShapeManager', () => {
       const id = faker.string.uuid()
       await expect(
         manager.init({
-          gameAssetsUrl,
+          id: 'game',
+          created: Date.now(),
           meshes: [{ id, texture: '', shape: 'custom' }],
           hands: undefined
         })
@@ -200,7 +206,8 @@ describe('CustomShapeManager', () => {
       const id = faker.string.uuid()
       await expect(
         manager.init({
-          gameAssetsUrl,
+          id: 'game',
+          created: Date.now(),
           meshes: [{ id, texture: '', shape: 'die' }],
           hands: undefined
         })
@@ -215,10 +222,11 @@ describe('CustomShapeManager', () => {
     const knightPath = '/knight.obj'
 
     beforeEach(async () => {
-      vi.resetAllMocks()
+      vi.clearAllMocks()
       server.resetHandlers()
       await manager.init({
-        gameAssetsUrl,
+        id: 'game',
+        created: Date.now(),
         meshes: [
           { id: '', texture: '', shape: 'custom', file: pawnPath },
           { id: '', texture: '', shape: 'custom', file: avatarPath }
@@ -235,7 +243,8 @@ describe('CustomShapeManager', () => {
           )
         )
         await manager.init({
-          gameAssetsUrl,
+          id: 'game',
+          created: Date.now(),
           meshes: [{ id: '', texture: '', shape: 'custom', file: diePath }],
           hands: undefined
         })
@@ -255,7 +264,8 @@ describe('CustomShapeManager', () => {
           )
         )
         await manager.init({
-          gameAssetsUrl,
+          id: 'game',
+          created: Date.now(),
           meshes: [{ id: '', texture: '', shape: 'custom', file: knightPath }],
           hands: undefined
         })
@@ -271,7 +281,7 @@ describe('CustomShapeManager', () => {
       })
 
       it('throws on unknown file', () => {
-        const file = faker.image.abstract()
+        const file = faker.image.url()
         expect(() => manager.get(file)).toThrow(
           `${file} must be cached with init()`
         )

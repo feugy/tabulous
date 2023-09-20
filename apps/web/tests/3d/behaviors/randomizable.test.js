@@ -5,7 +5,6 @@
  */
 
 import { RandomBehavior, RandomBehaviorName } from '@src/3d/behaviors'
-import { controlManager, customShapeManager } from '@src/3d/managers'
 import {
   createBox,
   createDie,
@@ -19,35 +18,50 @@ import die6Data from '../../../../games/assets/models/die6.obj?raw'
 import die8Data from '../../../../games/assets/models/die8.obj?raw'
 import { configures3dTestEngine } from '../../test-utils'
 
-vi.mock('@src/3d/managers/custom-shape', () => ({
-  customShapeManager: new Map()
-}))
-
 describe('RandomBehavior', () => {
   const actionRecorded = vi.fn()
   /** @type {Scene} */
   let scene
+  /** @type {import('@src/3d/managers').Managers} */
+  let managers
 
-  configures3dTestEngine(created => (scene = created.scene))
+  configures3dTestEngine(async created => {
+    scene = created.scene
+    managers = created.managers
+    vi.spyOn(global, 'fetch').mockImplementation(file =>
+      Promise.resolve(
+        new Response(
+          file.toString().endsWith(getDieModelFile(8))
+            ? die8Data
+            : file.toString().endsWith(getDieModelFile(6))
+            ? die6Data
+            : die4Data
+        )
+      )
+    )
+    await managers.customShape.init({
+      id: 'game',
+      created: Date.now(),
+      meshes: [
+        { id: 'die4', shape: 'die', faces: 4, texture: '' },
+        { id: 'die6', shape: 'die', faces: 6, texture: '' },
+        { id: 'die8', shape: 'die', faces: 8, texture: '' }
+      ]
+    })
+  })
 
   beforeAll(() => {
-    controlManager.onActionObservable.add(actionRecorded)
-    // @ts-expect-error customShapeManager is not a map
-    customShapeManager.set(getDieModelFile(4), btoa(die4Data))
-    // @ts-expect-error
-    customShapeManager.set(getDieModelFile(6), btoa(die6Data))
-    // @ts-expect-error
-    customShapeManager.set(getDieModelFile(8), btoa(die8Data))
+    managers.control.onActionObservable.add(actionRecorded)
   })
 
   beforeEach(() => {
-    vi.resetAllMocks()
+    vi.clearAllMocks()
   })
 
   it('has initial state', async () => {
     const state = { face: 3, quaternionPerFace: getQuaternions(6), max: 6 }
-    const behavior = new RandomBehavior(state)
-    const mesh = await createBox({ id: 'box', texture: '' }, scene)
+    const behavior = new RandomBehavior(state, managers)
+    const mesh = createBox({ id: 'box', texture: '' }, managers, scene)
 
     expect(behavior.mesh).toBeNull()
     expect(behavior.name).toEqual(RandomBehaviorName)
@@ -66,23 +80,31 @@ describe('RandomBehavior', () => {
 
   it('can not build without maximum', () => {
     expect(
-      // @ts-expect-error
-      () => new RandomBehavior({ quaternionPerFace: getQuaternions(8) })
+      () =>
+        // @ts-expect-error -- missing max property
+        new RandomBehavior({ quaternionPerFace: getQuaternions(8) }, managers)
     ).toThrow(`RandomBehavior's max should be higher than 1`)
   })
 
   it('can not build without positive maximum', () => {
     expect(
-      () => new RandomBehavior({ max: 0, quaternionPerFace: getQuaternions(8) })
+      () =>
+        new RandomBehavior(
+          { max: 0, quaternionPerFace: getQuaternions(8) },
+          managers
+        )
     ).toThrow(`RandomBehavior's max should be higher than 1`)
   })
 
   it('can not restore state without mesh', () => {
     expect(() =>
-      new RandomBehavior({
-        max: 4,
-        quaternionPerFace: getQuaternions(4)
-      }).fromState({ face: 1 })
+      new RandomBehavior(
+        {
+          max: 4,
+          quaternionPerFace: getQuaternions(4)
+        },
+        managers
+      ).fromState({ face: 1 })
     ).toThrow('Can not restore state without mesh')
   })
 
@@ -93,6 +115,7 @@ describe('RandomBehavior', () => {
         texture: '',
         randomizable: { max: 4, quaternionPerFace: getQuaternions(8), face: 1 }
       },
+      managers,
       scene
     )
     const behavior = getRandomizable(mesh)
@@ -103,11 +126,14 @@ describe('RandomBehavior', () => {
 
   it('can not random without mesh', () => {
     const face = 2
-    const behavior = new RandomBehavior({
-      face,
-      max: 4,
-      quaternionPerFace: getQuaternions(4)
-    })
+    const behavior = new RandomBehavior(
+      {
+        face,
+        max: 4,
+        quaternionPerFace: getQuaternions(4)
+      },
+      managers
+    )
     behavior.random()
     expect(behavior.state).toMatchObject({ face })
     expect(actionRecorded).not.toHaveBeenCalled()
@@ -115,11 +141,14 @@ describe('RandomBehavior', () => {
 
   it('can not set face without mesh', () => {
     const face = 2
-    const behavior = new RandomBehavior({
-      face,
-      max: 4,
-      quaternionPerFace: getQuaternions(4)
-    })
+    const behavior = new RandomBehavior(
+      {
+        face,
+        max: 4,
+        quaternionPerFace: getQuaternions(4)
+      },
+      managers
+    )
     behavior.setFace?.(1)
     expect(behavior.state).toMatchObject({ face })
     expect(actionRecorded).not.toHaveBeenCalled()
@@ -141,6 +170,7 @@ describe('RandomBehavior', () => {
             faces: max,
             randomizable: { canBeSet: true, duration: 150 }
           },
+          managers,
           scene
         )
         behavior = getRandomizable(mesh)

@@ -18,18 +18,21 @@ import { isMeshLocked } from '../utils/behaviors'
 import { sortByElevation } from '../utils/gravity'
 import { isContaining } from '../utils/mesh'
 import { screenToGround } from '../utils/vector'
-import { handManager } from './hand'
 
 const logger = makeLogger('selection')
 
-class SelectionManager {
+export class SelectionManager {
   /**
    * Creates a manager to manages mesh selection:
    * - draw a selection box (a single rectangle on the table)
    * - select all meshes contained in the selection box, highlighting them
    * - clear previous selection
+   * Invokes init() before any other function.
+   * @param {object} params - parameters, including:
+   * @param {Scene} params.scene - scene attached to.
+   * @param {Scene} params.handScene - scene for meshes in hand.
    */
-  constructor() {
+  constructor({ scene, handScene }) {
     // we need to keep this set immutable, because it is referenced when adding to it
     const meshes = new Set()
     /** @type {Set<Mesh>} meshes - active selection of meshes. */
@@ -37,41 +40,34 @@ class SelectionManager {
     Object.defineProperty(this, 'meshes', { get: () => meshes })
     /** @type {Observable<Set<Mesh>>} emits when selection is modified. */
     this.onSelectionObservable = new Observable()
-    /** @type {Scene} */
-    this.scene
-    /** @type {Scene} */
-    this.handScene
-    /** @type {Color4} */
-    this.color = Color4.FromHexString('#00ff00')
-    /** @protected @type {?LinesMesh} */
-    this.box = null
-    /** @protected @type {boolean} */
-    this.skipNotify = false
-    /** @protected @type {Map<string, Set<Mesh>>} */
-    this.selectionByPeerId = new Map()
-    /** @protected @type {Map<string, Color4>} */
-    this.colorByPlayerId = new Map()
-  }
-
-  /**
-   * Gives a scene to the manager.
-   * @param {object} params - parameters, including:
-   * @param {Scene} params.scene - scene attached to.
-   * @param {Scene} params.handScene - scene for meshes in hand.
-   */
-  init({ scene, handScene }) {
+    /** main scene */
     this.scene = scene
+    /** hand scene */
     this.handScene = handScene
-    this.color = Color4.FromHexString('#00ff00ff')
+    /** @type {Color4} current player color, for selection */
+    this.color
+    /** @internal @type {?LinesMesh} */
+    this.box = null
+    /** @internal @type {boolean} */
+    this.skipNotify = false
+    /** @internal @type {Map<string, Set<Mesh>>} */
+    this.selectionByPeerId = new Map()
+    /** @internal @type {Map<string, Color4>} */
     this.colorByPlayerId = new Map()
+    /** @internal @type {import('@src/3d/managers').Managers} */
+    this.managers
   }
 
   /**
+   * Initializes with game data.
    * Updates colors to reflect players in game.
-   * @param {string} playerId - current player id, to find selection box color.
-   * @param {Map<string, string>} colorByPlayerId - map of hexadecimal color strings used for selection box, and selected mesh overlay, by player id.
+   * @param {object} params - parameters, including:
+   * @param {string} params.playerId - current player id, to find selection box color.
+   * @param {import('@src/3d/managers').Managers} params.managers - other managers.
+   * @param {Map<string, string>} params.colorByPlayerId - map of hexadecimal color strings used for selection box, and selected mesh overlay, by player id.
    */
-  updateColors(playerId, colorByPlayerId) {
+  init({ managers, playerId, colorByPlayerId }) {
+    this.managers = managers
     this.colorByPlayerId = new Map(
       [...colorByPlayerId.entries()].map(([playerId, color]) => [
         playerId,
@@ -87,9 +83,8 @@ class SelectionManager {
    * @param {ScreenPosition} end - selection box's end screen position.
    */
   drawSelectionBox(start, end) {
-    if (!this.scene) return
     logger.debug({ start, end }, `draw selection box`)
-    const scene = handManager.isPointerInHand(start)
+    const scene = this.managers.hand.isPointerInHand(start)
       ? this.handScene
       : this.scene
 
@@ -204,7 +199,6 @@ class SelectionManager {
    * Removes meshes from the selection, including anchored meshes.
    * Ignores meshes selected by other players.
    * @param {Mesh[]|Mesh} meshes - mesh(es) to remove from the active selection.
-   * @returns {void}
    */
   unselect(meshes) {
     if (!Array.isArray(meshes)) {
@@ -244,7 +238,7 @@ class SelectionManager {
 
   /**
    * @param {Mesh} mesh - tested mesh.
-   * @returns {Mesh[]} the tested mesh, or if it is contained in current selection, the entire selection.
+   * @returns the tested mesh, or if it is contained in current selection, the entire selection.
    */
   getSelection(mesh) {
     return this.meshes.has(mesh) ? [...this.meshes] : [mesh]
@@ -282,7 +276,7 @@ class SelectionManager {
 
   /**
    * @param {Mesh} mesh - tested mesh.
-   * @returns {boolean} whether this mesh is selected by another player or not.
+   * @returns whether this mesh is selected by another player or not.
    */
   isSelectedByPeer(mesh) {
     for (const selection of this.selectionByPeerId.values()) {
@@ -293,12 +287,6 @@ class SelectionManager {
     return false
   }
 }
-
-/**
- * Selection manager singleton.
- * @type {SelectionManager}
- */
-export const selectionManager = new SelectionManager()
 
 /**
  * @param {Set<Mesh>[]} allSelections - list of all players' active selection.
@@ -331,7 +319,7 @@ function addToSelection(allSelections, selection, observable, mesh, color) {
 
 /**
  * @param {?Mesh} mesh - tested mesh.
- * @returns {Mesh[]} list of snapped meshes, if any.
+ * @returns list of snapped meshes, if any.
  */
 function findSnapped(mesh) {
   if (!mesh || (mesh.metadata?.anchors?.length ?? 0) === 0) {
@@ -376,7 +364,7 @@ function reorderSelection(manager) {
 
 /**
  * @param {SelectionManager} manager - manager instance.
- * @returns {Mesh|undefined} first selected mesh.
+ * @returns first selected mesh.
  */
 function getFirstSelected(manager) {
   return manager.meshes.values().next().value

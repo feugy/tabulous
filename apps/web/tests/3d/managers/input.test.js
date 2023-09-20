@@ -15,16 +15,10 @@
  */
 
 import { Vector3 } from '@babylonjs/core/Maths/math.vector'
-import { Observable } from '@babylonjs/core/Misc/observable'
 import { Scene } from '@babylonjs/core/scene'
 import { faker } from '@faker-js/faker'
-import {
-  handManager,
-  inputManager as manager,
-  replayManager,
-  selectionManager
-} from '@src/3d/managers'
-import { beforeAll, beforeEach, describe, expect, it, vi } from 'vitest'
+import { InputManager } from '@src/3d/managers'
+import { beforeEach, describe, expect, it, vi } from 'vitest'
 
 import {
   configures3dTestEngine,
@@ -39,11 +33,13 @@ const pointerMove = 'pointermove'
 const wheel = 'wheel'
 const keyDown = 'keydown'
 
-describe('InputManager', () => {
+describe('managers.Input', () => {
   /** @type {Scene} */
   let scene
   /** @type {Scene} */
   let handScene
+  /** @type {import('@src/3d/managers').Managers} */
+  let managers
   /** @type {ArcRotateCamera} */
   let camera
   /** @type {TapData[]} */
@@ -62,28 +58,13 @@ describe('InputManager', () => {
   let keys
   /** @type {number[]} */
   let currentPointer
-  const interaction = document.createElement('div')
-  const overlay = document.createElement('div')
-  const renderWidth = 2048
-  const renderHeight = 1024
-  const onCameraMove = new Observable()
-  const playerId = 'player-id-1'
-  vi.spyOn(window, 'getComputedStyle').mockImplementation(
-    () =>
-      /** @type {CSSStyleDeclaration} */ ({
-        height: `${renderHeight / 2.5}px`
-      })
-  )
 
-  configures3dTestEngine(
-    created => {
-      ;({ scene, handScene, camera } = created)
-    },
-    { renderWidth, renderHeight }
-  )
+  configures3dTestEngine(created => {
+    ;({ scene, handScene, camera, managers } = created)
+  })
 
   beforeEach(() => {
-    vi.resetAllMocks()
+    vi.clearAllMocks()
     taps = []
     drags = []
     pinches = []
@@ -91,55 +72,27 @@ describe('InputManager', () => {
     wheels = []
     longs = []
     keys = []
-    onCameraMove.clear()
-  })
-
-  beforeAll(() => {
-    manager.onTapObservable.add(tap => taps.push(tap))
-    manager.onDragObservable.add(drag => drags.push(drag))
-    manager.onPinchObservable.add(pinch => pinches.push(pinch))
-    manager.onHoverObservable.add(hover => hovers.push(hover))
-    manager.onWheelObservable.add(wheel => wheels.push(wheel))
-    manager.onLongObservable.add(long => longs.push(long))
-    manager.onKeyObservable.add(key => keys.push(key))
-    manager.onPointerObservable.add(pointer => (currentPointer = pointer))
-    selectionManager.init({ scene, handScene })
-    handManager.init({ scene, handScene, overlay, playerId })
+    managers.hand.enabled = true
   })
 
   it('has initial state', () => {
-    expect(manager.enabled).toBe(false)
+    expect(managers.input.enabled).toBe(false)
   })
 
   it('can stop all', () => {
-    expect(() => manager.stopAll(new Event('blur'))).not.toThrowError()
+    expect(() => managers.input.stopAll(new Event('blur'))).not.toThrowError()
   })
 
-  describe('init()', () => {
+  describe('constructor', () => {
     it('assigns default properties', () => {
       const longTapDelay = faker.number.int(999)
-      manager.init({
+      const manager = new InputManager({
         scene,
         handScene,
         longTapDelay,
-        interaction,
-        onCameraMove
+        interaction: document.createElement('div')
       })
       expect(manager.enabled).toBe(false)
-      expect(manager.longTapDelay).toBe(longTapDelay)
-    })
-
-    it('assigns custom properties', () => {
-      const longTapDelay = 100
-      manager.init({
-        scene,
-        handScene,
-        enabled: true,
-        longTapDelay,
-        interaction,
-        onCameraMove
-      })
-      expect(manager.enabled).toBe(true)
       expect(manager.longTapDelay).toBe(longTapDelay)
     })
   })
@@ -149,14 +102,19 @@ describe('InputManager', () => {
     let meshes
 
     beforeEach(() => {
-      manager.init({
-        scene,
-        handScene,
-        enabled: true,
-        longTapDelay: 100,
-        interaction,
-        onCameraMove
-      })
+      scene.onDisposeObservable.notifyObservers(scene)
+      managers.input.init({ managers })
+      managers.input.onTapObservable.add(tap => taps.push(tap))
+      managers.input.onDragObservable.add(drag => drags.push(drag))
+      managers.input.onPinchObservable.add(pinch => pinches.push(pinch))
+      managers.input.onHoverObservable.add(hover => hovers.push(hover))
+      managers.input.onWheelObservable.add(wheel => wheels.push(wheel))
+      managers.input.onLongObservable.add(long => longs.push(long))
+      managers.input.onKeyObservable.add(key => keys.push(key))
+      managers.input.onPointerObservable.add(
+        pointer => (currentPointer = pointer)
+      )
+      managers.input.enabled = true
       meshes = [
         // x: 1048, y: 525
         { id: 'box1', position: new Vector3(1, 1, -1), scene },
@@ -242,11 +200,12 @@ describe('InputManager', () => {
       const pointer = { x: 1048, y: 525 }
       const pointerId = 73
       const otherPlayerId = faker.string.uuid()
-      selectionManager.updateColors(
-        'currentPlayer',
-        new Map([[otherPlayerId, 'red']])
-      )
-      selectionManager.apply(
+      managers.selection.init({
+        managers,
+        playerId: 'currentPlayer',
+        colorByPlayerId: new Map([[otherPlayerId, 'red']])
+      })
+      managers.selection.apply(
         meshes.map(({ id }) => id),
         otherPlayerId
       )
@@ -279,7 +238,7 @@ describe('InputManager', () => {
     ])(
       'identifies tap$title',
       ({ pointer, meshId, fromHand = false, replaying = false }) => {
-        vi.spyOn(replayManager, 'isReplaying', 'get').mockReturnValueOnce(
+        vi.spyOn(managers.replay, 'isReplaying', 'get').mockReturnValueOnce(
           replaying
         )
         const pointerId = 10
@@ -371,7 +330,7 @@ describe('InputManager', () => {
     ])(
       'identifies long tap$title',
       async ({ pointer, meshId, replaying = false }) => {
-        vi.spyOn(replayManager, 'isReplaying', 'get').mockReturnValueOnce(
+        vi.spyOn(managers.replay, 'isReplaying', 'get').mockReturnValueOnce(
           replaying
         )
         const pointerId = 20
@@ -381,7 +340,7 @@ describe('InputManager', () => {
           pointerId,
           button
         })
-        await sleep((manager.longTapDelay ?? 0) * 1.1)
+        await sleep((managers.input.longTapDelay ?? 0) * 1.1)
         const upEvent = triggerEvent(pointerUp, {
           ...pointer,
           pointerId,
@@ -415,7 +374,7 @@ describe('InputManager', () => {
           button
         })
         triggerEvent(pointerMove, { ...move(pointer, 0, 0), pointerId })
-        await sleep((manager.longTapDelay ?? 0) * 1.1)
+        await sleep((managers.input.longTapDelay ?? 0) * 1.1)
         triggerEvent(pointerMove, { ...move(pointer, 0, 0), pointerId })
         const upEvent = triggerEvent(pointerUp, {
           ...pointer,
@@ -482,7 +441,7 @@ describe('InputManager', () => {
           },
           'tap'
         )
-        await sleep((manager.longTapDelay ?? 0) * 1.1)
+        await sleep((managers.input.longTapDelay ?? 0) * 1.1)
         triggerEvent(pointerUp, { ...pointerA, pointerId: idA }, 'tap')
         await sleep(10)
         const upEvent = triggerEvent(
@@ -521,7 +480,7 @@ describe('InputManager', () => {
     ])(
       'identifies double tap$title',
       async ({ pointer, meshId, replaying = false }) => {
-        vi.spyOn(replayManager, 'isReplaying', 'get')
+        vi.spyOn(managers.replay, 'isReplaying', 'get')
           .mockReturnValueOnce(replaying)
           .mockReturnValueOnce(replaying)
         const pointerId = 13
@@ -576,7 +535,7 @@ describe('InputManager', () => {
           pointerId,
           button
         })
-        await sleep((manager.longTapDelay ?? 0) * 1.1)
+        await sleep((managers.input.longTapDelay ?? 0) * 1.1)
         const tapEvent = triggerEvent(pointerUp, {
           ...pointer,
           pointerId,
@@ -713,7 +672,7 @@ describe('InputManager', () => {
     ])(
       'starts and stops drag operation$title',
       async ({ pointer, meshId, replaying = false }) => {
-        vi.spyOn(replayManager, 'isReplaying', 'get').mockReturnValueOnce(
+        vi.spyOn(managers.replay, 'isReplaying', 'get').mockReturnValueOnce(
           replaying
         )
         const pointerId = 25
@@ -781,7 +740,7 @@ describe('InputManager', () => {
       const button = 1
       const events = []
       events.push(triggerEvent(pointerDown, { ...pointer, pointerId, button }))
-      await sleep((manager.longTapDelay ?? 0) * 1.1)
+      await sleep((managers.input.longTapDelay ?? 0) * 1.1)
       events.push(
         triggerEvent(pointerMove, { ...move(pointer, 100, 0), pointerId })
       )
@@ -1165,7 +1124,7 @@ describe('InputManager', () => {
         events.push(
           triggerEvent(pointerDown, { ...pointerB, pointerId: idB }, 'tap')
         )
-        await sleep((manager.longTapDelay ?? 0) * 1.1)
+        await sleep((managers.input.longTapDelay ?? 0) * 1.1)
         events.push(
           triggerEvent(
             pointerMove,
@@ -1358,7 +1317,7 @@ describe('InputManager', () => {
     ])(
       'identifies wheel$title',
       async ({ pointer, meshId, replaying = false }) => {
-        vi.spyOn(replayManager, 'isReplaying', 'get')
+        vi.spyOn(managers.replay, 'isReplaying', 'get')
           .mockReturnValueOnce(replaying)
           .mockReturnValueOnce(replaying)
         const pointerId = 45
@@ -1441,7 +1400,7 @@ describe('InputManager', () => {
       )
       const finalEvent = new Event('focus')
 
-      manager.stopPinch(finalEvent)
+      managers.input.stopPinch(finalEvent)
 
       expectEvents({ pinches: 4 })
       const pointers = 2
@@ -1484,7 +1443,7 @@ describe('InputManager', () => {
       await sleep(50)
       const finalEvent = new Event('focus')
 
-      manager.stopDrag(finalEvent)
+      managers.input.stopDrag(finalEvent)
 
       expectEvents({ drags: 3 })
       const pointers = 1
@@ -1690,7 +1649,7 @@ describe('InputManager', () => {
     })
 
     it('does not detects keys over a mesh while replaying', () => {
-      vi.spyOn(replayManager, 'isReplaying', 'get').mockReturnValue(false)
+      vi.spyOn(managers.replay, 'isReplaying', 'get').mockReturnValue(false)
       const pointer = { x: 1000, y: 550 }
       const pointerId = 50
       const events = [
@@ -1740,7 +1699,7 @@ describe('InputManager', () => {
         pointerId
       })
       const finalEvent = new Event('focus')
-      manager.stopHover(finalEvent)
+      managers.input.stopHover(finalEvent)
 
       expectEvents({ hovers: 2 })
       const meshId = meshes[1].id
@@ -1764,7 +1723,7 @@ describe('InputManager', () => {
         pointerId
       })
       const finalEvent = new Event('focus')
-      manager.stopAll(finalEvent)
+      managers.input.stopAll(finalEvent)
 
       expectEvents({ hovers: 2 })
       const meshId = meshes[1].id
@@ -1792,27 +1751,33 @@ describe('InputManager', () => {
 
       camera.lockedTarget.x = 1
       camera.lockedTarget.z = -1
-      onCameraMove.notifyObservers(undefined)
+      managers.camera.onMoveObservable.notifyObservers({
+        hash: '',
+        alpha: 1,
+        beta: 1,
+        elevation: 10,
+        target: [1, 2, 3]
+      })
       expectEvents({ hovers: 1 })
       expectsDataWithMesh(hovers[0], { type: 'hoverStart', event }, meshId)
 
       camera.lockedTarget.x = 10
-      onCameraMove.notifyObservers(undefined)
+      managers.camera.onMoveObservable.notifyObservers({
+        hash: '',
+        alpha: 1,
+        beta: 1,
+        elevation: 10,
+        target: [1, 2, 3]
+      })
       expectEvents({ hovers: 2 })
       expectsDataWithMesh(hovers[1], { type: 'hoverStop', event }, meshId)
     })
   })
 
   describe('given a disabled manager', () => {
-    beforeEach(() =>
-      manager.init({
-        scene,
-        handScene,
-        longTapDelay: 100,
-        interaction,
-        onCameraMove
-      })
-    )
+    beforeEach(() => {
+      managers.input.enabled = false
+    })
 
     it('ignores pointer down', () => {
       triggerEvent(pointerDown, { x: 1000, y: 500, pointerId: 1, button: 1 })
@@ -1869,7 +1834,7 @@ describe('InputManager', () => {
     const event = /** @type {?} */ (new CustomEvent(type))
     event.pointerType = pointerType
     Object.assign(event, data)
-    interaction.dispatchEvent(event)
+    managers.input.interaction.dispatchEvent(event)
     return /** @type {PointerEvent} */ (event)
   }
 

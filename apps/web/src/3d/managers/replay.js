@@ -12,15 +12,20 @@ import { Observable } from '@babylonjs/core/Misc/observable.js'
 
 import { makeLogger } from '../../utils'
 import { actionNames } from '../utils/actions'
-import { controlManager } from './control'
 
 const logger = makeLogger('replay')
 
-class ReplayManager {
-  constructor() {
-    /** @type {Engine} */
-    this.engine
-    /** @type {HistoryRecord[]} */
+export class ReplayManager {
+  /**
+   * Builds a manager to orchestrate replaying, backward and forward, history records.
+   * Invokes init() before any other function.
+   * @param {object} params - parameters, including:
+   * @param {Engine} params.engine - 3d engine.
+   */
+  constructor({ engine }) {
+    /** game engin. */
+    this.engine = engine
+    /** @type {HistoryRecord[]} list of available history records. */
     this.history = []
     /** @type {number} current rank when replaying records */
     this.rank = 0
@@ -36,32 +41,33 @@ class ReplayManager {
     this.inhibitReplay = false
     /** @internal */
     this.moveDuration = 200
+    /** @internal @type {import('@src/3d/managers').Managers} */
+    this.managers
+
+    this.engine.onDisposeObservable.addOnce(() => {
+      this.managers?.control.onActionObservable.remove(this.actionObserver)
+      this.onHistoryObservable.clear()
+      this.onReplayRankObservable.clear()
+    })
   }
 
   /**
+   * Initializes with game data.
    * Set the initial history, and connects to the control manager to record new local actions.
    * @param {object} params - parameters, including:
-   * @param {HistoryRecord[]} params.history - initial history.
    * @param {string} params.playerId - id of the local player.
-   * @param {Engine} params.engine - 3d engine.
+   * @param {import('@src/3d/managers').Managers} params.managers - current managers.
+   * @param {HistoryRecord[]} [params.history] - initial history.
    */
-  init({ history, engine, playerId }) {
-    this.engine = engine
-    this.actionObserver = controlManager.onActionObservable.add(action => {
+  init({ managers, history = [], playerId }) {
+    this.managers = managers
+    this.reset(history)
+    this.actionObserver = managers.control.onActionObservable.add(action => {
       if (!('isLocal' in action) || !action.isLocal) {
         this.record(action, playerId)
       }
     })
-    engine.onDisposeObservable.addOnce(() => {
-      controlManager.onActionObservable.remove(this.actionObserver)
-      this.onHistoryObservable.clear()
-      this.onReplayRankObservable.clear()
-    })
-    this.reset(history)
-    logger.debug(
-      { history, playerId, rank: this.rank },
-      'replay manager initialized'
-    )
+    logger.debug({ history, rank: this.rank }, 'replay manager initialized')
   }
 
   /** Whether a replay is in progress. */
@@ -161,28 +167,22 @@ class ReplayManager {
 }
 
 /**
- * Replay manager singleton.
- * @type {ReplayManager}
- */
-export const replayManager = new ReplayManager()
-
-/**
  * Apply or revert a given revord.
  * @param {ReplayManager} manager - current manager.
  * @param {HistoryRecord} record - concerned record.
  * @param {boolean} [reverting] - whether the record should be reverted (true) or applied (false).
  */
-async function apply({ moveDuration }, record, reverting = false) {
+async function apply({ moveDuration, managers }, record, reverting = false) {
   logger.debug({ record, reverting }, 'replaying record')
 
   if ('prev' in record && record.prev) {
     if (reverting) {
-      await controlManager.revert({
+      await managers.control.revert({
         ...record,
         duration: moveDuration
       })
     } else {
-      await controlManager.apply({ ...record, duration: moveDuration })
+      await managers.control.apply({ ...record, duration: moveDuration })
     }
   } else if ('fn' in record && record.fn) {
     if (reverting) {
@@ -192,9 +192,9 @@ async function apply({ moveDuration }, record, reverting = false) {
         : record.argsStr
         ? JSON.parse(record.argsStr)
         : []
-      await controlManager.revert({ ...record, args })
+      await managers.control.revert({ ...record, args })
     } else {
-      await controlManager.apply({
+      await managers.control.apply({
         ...record,
         args:
           'argsStr' in record && record.argsStr

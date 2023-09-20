@@ -17,11 +17,6 @@
 import { Vector3 } from '@babylonjs/core/Maths/math.vector'
 
 import { makeLogger } from '../../utils/logger'
-import { controlManager } from '../managers/control'
-import { indicatorManager } from '../managers/indicator'
-import { moveManager } from '../managers/move'
-import { selectionManager } from '../managers/selection'
-import { targetManager } from '../managers/target'
 import { actionNames } from '../utils/actions'
 import {
   animateMove,
@@ -44,9 +39,10 @@ export class QuantityBehavior extends TargetBehavior {
    * Dropped meshes are destroyed while quantity is incremented.
    * Poped meshes are created on the fly, except when the quantity is 1.
    * @param {QuantifiableState} state - behavior state.
+   * @param {import('@src/3d/managers').Managers} managers - current managers.
    */
-  constructor(state = {}) {
-    super()
+  constructor(state, managers) {
+    super({}, managers)
     /** @type {RequiredQuantifiableState} state - the behavior's current state. */
     this.state = /** @type {RequiredQuantifiableState} */ (state)
     /** @protected @type {?Observer<PreMoveDetails>} */
@@ -90,24 +86,26 @@ export class QuantityBehavior extends TargetBehavior {
       }
     )
 
-    this.preMoveObserver = moveManager.onPreMoveObservable.add(({ meshes }) => {
-      if (
-        this.mesh &&
-        !selectionManager.meshes.has(this.mesh) &&
-        meshes.some(({ id }) => id === this.mesh?.id) &&
-        this.state.quantity > 1
-      ) {
-        moveManager.exclude(this.mesh)
-        this.decrement().then(mesh => moveManager.include(mesh))
+    this.preMoveObserver = this.managers.move.onPreMoveObservable.add(
+      ({ meshes }) => {
+        if (
+          this.mesh &&
+          !this.managers.selection.meshes.has(this.mesh) &&
+          meshes.some(({ id }) => id === this.mesh?.id) &&
+          this.state.quantity > 1
+        ) {
+          this.managers.move.exclude(this.mesh)
+          this.decrement().then(mesh => this.managers.move.include(mesh))
+        }
       }
-    })
+    )
   }
 
   /**
    * Detaches this behavior from its mesh, unsubscribing observables
    */
   detach() {
-    moveManager.onPreMoveObservable.remove(this.preMoveObserver)
+    this.managers.move.onPreMoveObservable.remove(this.preMoveObserver)
     this.onDropObservable?.remove(this.dropObserver)
     super.detach()
   }
@@ -121,7 +119,7 @@ export class QuantityBehavior extends TargetBehavior {
     return (
       Boolean(mesh) &&
       Boolean(mesh.getBehaviorByName(QuantityBehaviorName)) &&
-      targetManager.canAccept(
+      this.managers.target.canAccept(
         this.dropZone,
         mesh.getBehaviorByName(MoveBehaviorName)?.state.kind
       )
@@ -160,7 +158,7 @@ export class QuantityBehavior extends TargetBehavior {
     if (!mesh || state.quantity === 1) return created
     const createdId = makeId(mesh)
     const duration = withMove ? state.duration : undefined
-    controlManager.record({
+    this.managers.control.record({
       mesh,
       fn: actionNames.decrement,
       args: [count, withMove],
@@ -180,7 +178,7 @@ export class QuantityBehavior extends TargetBehavior {
     serialized.quantifiable.quantity = quantity
     serialized.id = createdId
     created = /** @type {Mesh} */ (
-      await createMeshFromState(serialized, mesh.getScene())
+      await createMeshFromState(serialized, mesh.getScene(), this.managers)
     )
 
     logger.info(
@@ -201,7 +199,7 @@ export class QuantityBehavior extends TargetBehavior {
         true
       )
     }
-    updateIndicator(mesh, state.quantity)
+    updateIndicator(this.managers, mesh, state.quantity)
     return move ? move.then(() => created) : created
   }
 
@@ -224,7 +222,7 @@ export class QuantityBehavior extends TargetBehavior {
       await Promise.all(
         states.map(async (/** @type {SerializedMesh} */ state) => {
           const count = state.quantifiable?.quantity ?? 1
-          controlManager.record({
+          this.managers.control.record({
             mesh,
             fn: actionNames.decrement,
             args: [count, withMove],
@@ -233,7 +231,7 @@ export class QuantityBehavior extends TargetBehavior {
             isLocal: true
           })
           this.state.quantity -= count
-          const created = await createMeshFromState(state, scene)
+          const created = await createMeshFromState(state, scene, this.managers)
           if (withMove) {
             created.setAbsolutePosition(mesh.absolutePosition)
             await animateMove(
@@ -245,7 +243,7 @@ export class QuantityBehavior extends TargetBehavior {
           }
         })
       )
-      updateIndicator(mesh, this.state.quantity)
+      updateIndicator(this.managers, mesh, this.state.quantity)
     } else if (action === actionNames.decrement) {
       await internalIncrement(this, [args[0]], args[1], true)
     }
@@ -266,7 +264,7 @@ export class QuantityBehavior extends TargetBehavior {
       throw new Error('Can not restore state without mesh')
     }
     this.state = { quantity, kinds, priority, extent, duration }
-    updateIndicator(this.mesh, quantity)
+    updateIndicator(this.managers, this.mesh, quantity)
     // dispose previous drop zone
     if (this.dropZone) {
       this.removeZone(/** @type {SingleDropZone} */ (this.dropZone))
@@ -282,7 +280,7 @@ export class QuantityBehavior extends TargetBehavior {
 }
 
 async function internalIncrement(
-  /** @type {QuantityBehavior} */ { mesh, state },
+  /** @type {QuantityBehavior} */ { mesh, state, managers },
   /** @type {string[]} */ meshIds,
   /** @type {boolean} */ immediate,
   isLocal = false
@@ -294,7 +292,7 @@ async function internalIncrement(
 
   const duration = immediate ? 0 : state.duration
 
-  controlManager.record({
+  managers.control.record({
     mesh,
     fn: actionNames.increment,
     args: [meshIds, immediate],
@@ -311,7 +309,7 @@ async function internalIncrement(
       `increment ${mesh.id} by ${increment} with ${other.id}`
     )
     state.quantity += increment
-    updateIndicator(mesh, state.quantity)
+    updateIndicator(managers, mesh, state.quantity)
     if (duration) {
       await animateMove(other, mesh.absolutePosition, null, duration)
     }
@@ -323,12 +321,16 @@ function getQuantity(/** @type {Mesh} */ mesh) {
   return mesh.metadata?.quantity ?? 1
 }
 
-function updateIndicator(/** @type {Mesh} */ mesh, /** @type {number} */ size) {
+function updateIndicator(
+  /** @type {import('@src/3d/managers').Managers} */ { indicator },
+  /** @type {Mesh} */ mesh,
+  /** @type {number} */ size
+) {
   const id = `${mesh.id}.quantity`
   if (size > 1) {
-    indicatorManager.registerMeshIndicator({ id, mesh, size })
+    indicator.registerMeshIndicator({ id, mesh, size })
   } else {
-    indicatorManager.unregisterIndicator({ id })
+    indicator.unregisterIndicator({ id })
   }
 }
 

@@ -4,7 +4,6 @@
  * @typedef {import('@tabulous/server/src/graphql').MovableState} MovableState
  */
 
-import { moveManager } from '../managers/move'
 import { attachProperty } from '../utils/behaviors'
 import { AnimateBehavior } from './animatable'
 import { MoveBehaviorName } from './names'
@@ -17,9 +16,12 @@ export class MoveBehavior extends AnimateBehavior {
    * When moving mesh, its final position will snap to a virtual grid.
    * A mesh can only be dropped onto zones with the same kind.
    * @param {MovableState} state - behavior state.
+   * @param {import('@src/3d/managers').Managers} managers - current managers.
    */
-  constructor(state = {}) {
+  constructor(state, managers) {
     super()
+    /** @internal */
+    this.managers = managers
     /** @type {RequiredMovableState} state - the behavior's current state. */
     this.state = /** @type {RequiredMovableState} */ (state)
     /** @type {boolean} enabled - activity status (true by default). */
@@ -42,7 +44,7 @@ export class MoveBehavior extends AnimateBehavior {
     super.attach(mesh)
     mesh.isPickable = true
     this.fromState(this.state)
-    moveManager.registerMovable(this)
+    this.managers.move.registerMovable(this)
   }
 
   /**
@@ -51,7 +53,7 @@ export class MoveBehavior extends AnimateBehavior {
   detach() {
     if (this.mesh) {
       this.mesh.isPickable = false
-      moveManager.unregisterMovable(this)
+      this.managers.move.unregisterMovable(this)
     }
     super.detach()
   }

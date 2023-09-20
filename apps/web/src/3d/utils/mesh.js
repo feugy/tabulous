@@ -47,7 +47,7 @@ export function isAnimationInProgress(mesh) {
  * @template {AbstractMesh} M
  * @param {M} container - container that may contain the mesh.
  * @param {M} mesh - tested mesh.
- * @returns {boolean} true if container contains mesh, false otherwise.
+ * @returns true if container contains mesh, false otherwise.
  */
 export function isContaining(container, mesh) {
   container.computeWorldMatrix(true)
@@ -71,7 +71,7 @@ export function isContaining(container, mesh) {
  * **Requires a fresh world matrix**.
  * @template {AbstractMesh} T
  * @param {T} mesh - sized mesh.
- * @returns {{ width: number, height: number, depth: number }} mesh's dimensions.
+ * @returns mesh's dimensions.
  */
 export function getDimensions(mesh) {
   mesh.computeWorldMatrix(true)

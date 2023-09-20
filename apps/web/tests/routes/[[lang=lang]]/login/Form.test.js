@@ -32,7 +32,7 @@ describe('Login Form component', () => {
   })
 
   beforeEach(() => {
-    vi.resetAllMocks()
+    vi.clearAllMocks()
     id$.set(undefined)
     password$.set(undefined)
   })

@@ -10,8 +10,6 @@ import { Scene } from '@babylonjs/core/scene.js'
 import { makeLogger } from '../../utils/logger'
 import { distance } from '../../utils/math'
 import { screenToGround } from '../utils/vector'
-import { replayManager } from './replay'
-import { selectionManager } from './selection'
 
 const logger = makeLogger('input')
 
@@ -109,7 +107,7 @@ const DragMinimumDistance = 5
  * @property {ReturnType<typeof window.setTimeout>} deferLong - timeout id for long press.
  */
 
-class InputManager {
+export class InputManager {
   /**
    * Creates a manager to manages user inputs, and notify observers for:
    * - single and double taps with fingers, stylus or mouse, on table or on mesh
@@ -117,9 +115,21 @@ class InputManager {
    * - mouse hovering a given mesh
    * - mouse wheel
    * Clears all observers on scene disposal.
+   * Invokes init() before any other function.
+   * @param {object} params - parameters, including:
+   * @param {Scene} params.scene - scene attached to.
+   * @param {Scene} params.handScene - hand scene overlay.
+   * @param {HTMLElement} params.interaction - the DOM element to attach event handlers to
+   * @param {number} [params.longTapDelay=500] - number of milliseconds to hold pointer down before it is considered as long.
    */
-  constructor() {
-    /** @type {boolean} whether inputs are handled or ignored. */
+  constructor({ scene, handScene, longTapDelay = 500, interaction }) {
+    /** main scene. */
+    this.scene = scene
+    /** hand scene. */
+    this.handScene = handScene
+    this.longTapDelay = longTapDelay
+
+    /** whether inputs are handled or ignored. */
     this.enabled = false
     /** @type {Observable<TapData>} emits single and double tap events. */
     this.onTapObservable = new Observable()
@@ -137,28 +147,20 @@ class InputManager {
     this.onKeyObservable = new Observable()
     /** @type {Observable<number[]>} emits Vector3 components describing the current pointer position in 3D engine. */
     this.onPointerObservable = new Observable()
-    /** @protected @type {?() => void} */
-    this.dispose = null
+    this.interaction = interaction
+    /** @internal */
+    interaction.style.setProperty('--cursor', 'move')
+    /** @internal @type {import('@src/3d/managers').Managers} */
+    this.managers
+    /** @internal */
   }
 
   /**
-   * Gives a scene to the manager, so it can bind to underlying events.
+   * Initializes with other managers.
    * @param {object} params - parameters, including:
-   * @param {Scene} params.scene - scene attached to.
-   * @param {Scene} params.handScene - hand scene overlay.
-   * @param {HTMLElement} params.interaction - the DOM element to attach event handlers to
-   * @param {Observable<CameraPosition>} params.onCameraMove - observable triggered when the main camera is moving.
-   * @param {number} params.longTapDelay - number of milliseconds to hold pointer down before it is considered as long.
-   * @param {boolean} [params.enabled=false] - whether the input manager actively handles inputs or not.
+   * @param {import('@src/3d/managers').Managers} params.managers - current managers.
    */
-  init({
-    scene,
-    handScene,
-    enabled = false,
-    longTapDelay,
-    interaction,
-    onCameraMove
-  }) {
+  init({ managers }) {
     // same finger/stylus/mouse will have same pointerId for down, move(s) and up events
     // different fingers will have different ids
     /** @type {Map<number, StoredPointer>} */
@@ -180,10 +182,6 @@ class InputManager {
     let lastMoveEvent = /** @type {PointerEvent} */ ({})
     /** @type {Set<number>} */
     let pressedPointerIds = new Set()
-    this.enabled = enabled
-    this.longTapDelay = longTapDelay
-    this.dispose?.()
-    interaction.style.setProperty('--cursor', 'move')
 
     const handleCameraMove = () => {
       const { mesh } = computeMetas(lastMoveEvent)
@@ -206,7 +204,7 @@ class InputManager {
         logger.info(data, `start hovering ${mesh.id}`)
         hoveredByPointerId.set(event.pointerId, mesh)
         this.onHoverObservable.notifyObservers(data)
-        interaction.style.setProperty('--cursor', 'grab')
+        this.interaction.style.setProperty('--cursor', 'grab')
       }
     }
 
@@ -220,7 +218,7 @@ class InputManager {
           logger.info(data, `stop hovering ${mesh.id}`)
           hoveredByPointerId.delete(event.pointerId)
           this.onHoverObservable.notifyObservers(data)
-          interaction.style.setProperty('--cursor', 'move')
+          this.interaction.style.setProperty('--cursor', 'move')
         }
       } else {
         for (const pointerId of hoveredByPointerId.keys()) {
@@ -239,7 +237,8 @@ class InputManager {
           ...dragOrigin,
           // in case mesh was moved between scenes by dragging, return the new one
           mesh: meshId
-            ? scene.getMeshById(meshId) ?? handScene?.getMeshById(meshId)
+            ? this.scene.getMeshById(meshId) ??
+              this.handScene?.getMeshById(meshId)
             : null,
           event,
           pointers: pointers.size,
@@ -289,22 +288,17 @@ class InputManager {
       pressedPointerIds.clear()
     }
 
-    /**
-     * @param {PointerEvent|WheelEvent} event
-     * @returns {{ button?: PointerEvent['button'], mesh: ?Mesh}}
-     */
-    function computeMetas(event) {
-      return {
-        button:
-          'pointerType' in event && event.pointerType === 'mouse'
-            ? event.button
-            : undefined,
-        // takes mesh with highest elevation, and only when they are pickable and when not replaying
-        mesh: replayManager.isReplaying
-          ? null
-          : findPickedMesh(handScene, event) ?? findPickedMesh(scene, event)
-      }
-    }
+    const computeMetas = (/** @type {PointerEvent|WheelEvent} */ event) => ({
+      button:
+        'pointerType' in event && event.pointerType === 'mouse'
+          ? event.button
+          : undefined,
+      // takes mesh with highest elevation, and only when they are pickable and when not replaying
+      mesh: managers.replay.isReplaying
+        ? null
+        : findPickedMesh(this.handScene, managers, event) ??
+          findPickedMesh(this.scene, managers, event)
+    })
 
     const handlePointerDown = (/** @type {PointerEvent} */ event) => {
       if (!this.enabled) return
@@ -350,7 +344,7 @@ class InputManager {
     const handlePointerMove = (/** @type {PointerEvent} */ event) => {
       if (!this.enabled || !hasMoved(pointers, event)) return
       lastMoveEvent = event
-      const pointer = screenToGround(scene, event).asArray()
+      const pointer = screenToGround(this.scene, event).asArray()
       if (pointer) {
         this.onPointerObservable.notifyObservers(pointer)
       }
@@ -479,7 +473,7 @@ class InputManager {
             Date.now() - lastTap < Scene.DoubleClickDelay ? 'doubletap' : 'tap',
           pointers: pointers.size,
           ...storedPointer,
-          fromHand: storedPointer.mesh?.getScene() === handScene,
+          fromHand: storedPointer.mesh?.getScene() === this.handScene,
           event
         }
         // for multiple pointers, potentially use long, timestamp and mesh from others
@@ -493,7 +487,7 @@ class InputManager {
             }
             if (mesh && !data.mesh) {
               data.mesh = mesh
-              data.fromHand = mesh.getScene() === handScene
+              data.fromHand = mesh.getScene() === this.handScene
             }
           }
         }
@@ -550,30 +544,33 @@ class InputManager {
       this.stopAll(event)
     }
 
-    interaction.addEventListener('blur', handleBlur)
-    interaction.addEventListener('pointerdown', handlePointerDown)
-    interaction.addEventListener('pointermove', handlePointerMove)
-    interaction.addEventListener('pointerup', handlePointerUp)
-    interaction.addEventListener('wheel', handleWheel, { passive: true })
-    interaction.addEventListener('keydown', handleKeyDown)
-    const cameraObserver = onCameraMove.add(handleCameraMove)
-    this.dispose = () => {
-      interaction.removeEventListener('blur', handleBlur)
-      interaction.removeEventListener('pointerdown', handlePointerDown)
-      interaction.removeEventListener('pointermove', handlePointerMove)
-      interaction.removeEventListener('pointerup', handlePointerUp)
-      interaction.removeEventListener('wheel', handleWheel)
-      interaction.removeEventListener('keydown', handleKeyDown)
-      onCameraMove.remove(cameraObserver)
+    this.interaction.addEventListener('blur', handleBlur)
+    this.interaction.addEventListener('pointerdown', handlePointerDown)
+    this.interaction.addEventListener('pointermove', handlePointerMove)
+    this.interaction.addEventListener('pointerup', handlePointerUp)
+    this.interaction.addEventListener('wheel', handleWheel, { passive: true })
+    this.interaction.addEventListener('keydown', handleKeyDown)
+    const cameraObserver =
+      managers.camera.onMoveObservable.add(handleCameraMove)
+    const dispose = () => {
+      this.interaction.removeEventListener('blur', handleBlur)
+      this.interaction.removeEventListener('pointerdown', handlePointerDown)
+      this.interaction.removeEventListener('pointermove', handlePointerMove)
+      this.interaction.removeEventListener('pointerup', handlePointerUp)
+      this.interaction.removeEventListener('wheel', handleWheel)
+      this.interaction.removeEventListener('keydown', handleKeyDown)
+      managers.camera.onMoveObservable.remove(cameraObserver)
     }
-    scene.onDisposeObservable.addOnce(() => {
+    this.scene.onDisposeObservable.addOnce(() => {
       this.onTapObservable.clear()
       this.onDragObservable.clear()
       this.onHoverObservable.clear()
       this.onWheelObservable.clear()
       this.onKeyObservable.clear()
       this.onPointerObservable.clear()
-      this.dispose?.()
+      this.onLongObservable.clear()
+      this.onPinchObservable.clear()
+      dispose?.()
     })
   }
 
@@ -610,24 +607,19 @@ class InputManager {
 }
 
 /**
- * Input manager singleton.
- * @type {InputManager}
- */
-export const inputManager = new InputManager()
-
-/**
  * @param {Scene} scene - scene in which mesh are picked.
+ * @param {import('@src/3d/managers').Managers} managers - other managers.
  * @param {MouseEvent} event - picking event.
- * @returns {?Mesh} picked mesh, if any.
+ * @returns picked mesh, if any.
  */
-function findPickedMesh(scene, { x, y }) {
+function findPickedMesh(scene, { selection }, { x, y }) {
   return /** @type {?Mesh} */ (
     scene
       .multiPickWithRay(
         scene.createPickingRay(x, y, null, null),
         mesh =>
           mesh.isPickable &&
-          !selectionManager.isSelectedByPeer(/** @type {Mesh} */ (mesh))
+          !selection.isSelectedByPeer(/** @type {Mesh} */ (mesh))
       )
       ?.sort((a, b) => a.distance - b.distance)[0]?.pickedMesh ?? null
   )
@@ -636,7 +628,7 @@ function findPickedMesh(scene, { x, y }) {
 /**
  * @param {Map<number, StoredPointer>} pointers - map of pointers.
  * @param {PointerEvent} event - tested event.
- * @returns {boolean} whether this pointer has moved or not
+ * @returns whether this pointer has moved or not
  */
 function hasMoved(pointers, event) {
   const { x, y } = (event && 'pointerId' in event

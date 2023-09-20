@@ -56,7 +56,7 @@ export const buttonIds = {
  * Parse game data to build a map of supported action names by their shortcuts.
  * @param {SerializedMesh[]} meshes - serialized meshes to be analyzed.
  * @param {Translate} translate - translation
- * @returns {Map<string, ActionName[]>} map of supported action names by shortcut.
+ * @returns map of supported action names by shortcut.
  */
 export function buildActionNamesByKey(meshes, translate) {
   /** @type {Map<string, ActionName[]>} */

@@ -24,15 +24,7 @@ import {
   TargetBehavior
 } from '@src/3d/behaviors'
 import { StackBehavior } from '@src/3d/behaviors/stackable'
-import {
-  controlManager,
-  handManager,
-  indicatorManager,
-  inputManager,
-  moveManager as manager,
-  selectionManager,
-  targetManager
-} from '@src/3d/managers'
+import { MoveManager } from '@src/3d/managers'
 import { createCard } from '@src/3d/meshes'
 import { createTable, getDimensions } from '@src/3d/utils'
 import {
@@ -56,10 +48,9 @@ import {
   sleep
 } from '../../test-utils'
 
-describe('MoveManager', () => {
+describe('managers.Move', () => {
   const centerX = 1024
   const centerY = 512
-  const playerId = faker.person.firstName()
   /** @type {Mock<[Move|Action], void>} */
   const actionRecorded = vi.fn()
   /** @type {Mock<[MoveDetails], void>} */
@@ -70,6 +61,8 @@ describe('MoveManager', () => {
   let scene
   /** @type {Scene} */
   let handScene
+  /** @type {import('@src/3d/managers').Managers} */
+  let managers
   /** @type {ArcRotateCamera} */
   let camera
   /** @type {?Observer} */
@@ -80,60 +73,55 @@ describe('MoveManager', () => {
   let preMoveObserver
   /** @type {DropDetails[]} */
   let drops
+  /** @type {string} */
+  let playerId
 
   configures3dTestEngine(created => {
-    scene = created.scene
-    handScene = created.handScene
-    camera = created.camera
-  })
-
-  beforeAll(() => {
-    controlManager.init({ scene, handScene })
-    targetManager.init({ scene, color: '#0000ff', playerId })
-    indicatorManager.init({ scene })
-    actionObserver = controlManager.onActionObservable.add(actionRecorded)
-    moveObserver = manager.onMoveObservable.add(moveRecorded)
-    preMoveObserver = manager.onPreMoveObservable.add(preMoveRecorded)
+    ;({ scene, handScene, camera, managers, playerId } = created)
+    managers.hand.enabled = true
+    actionObserver = managers.control.onActionObservable.add(actionRecorded)
+    moveObserver = managers.move.onMoveObservable.add(moveRecorded)
+    preMoveObserver = managers.move.onPreMoveObservable.add(preMoveRecorded)
   })
 
   beforeEach(() => {
     vi.clearAllMocks()
-    createTable(undefined, scene)
+    createTable(undefined, managers, scene)
     drops = []
-    selectionManager.clear()
+    managers.selection.clear()
   })
 
   afterAll(() => {
-    controlManager.onActionObservable.remove(actionObserver)
-    manager.onMoveObservable.remove(moveObserver)
-    manager.onMoveObservable.remove(preMoveObserver)
+    managers.control.onActionObservable.remove(actionObserver)
+    managers.move.onMoveObservable.remove(moveObserver)
+    managers.move.onMoveObservable.remove(preMoveObserver)
   })
 
   it('has initial state', () => {
-    expect(manager.inProgress).toBe(false)
-    expect(manager.elevation).toBeUndefined()
+    expect(managers.move.inProgress).toBe(false)
+    expect(managers.move.elevation).toEqual(0.5)
   })
 
   it('can not continue before start', () => {
-    expect(manager.continue({ x: 100, y: 100 }))
-    expect(manager.inProgress).toBe(false)
+    expect(managers.move.continue({ x: 100, y: 100 }))
+    expect(managers.move.inProgress).toBe(false)
     expectMoveRecorded(moveRecorded)
   })
 
   it('can not stop before start', () => {
-    expect(manager.stop())
-    expect(manager.inProgress).toBe(false)
+    expect(managers.move.stop())
+    expect(managers.move.inProgress).toBe(false)
     expectMoveRecorded(moveRecorded)
   })
 
   it('has no active zones', () => {
-    expect(manager.getActiveZones()).toEqual([])
+    expect(managers.move.getActiveZones()).toEqual([])
   })
 
-  describe('init()', () => {
+  describe('constructor', () => {
     it('assigns properties', () => {
       const elevation = faker.number.int(999)
-      manager.init({ scene, elevation })
+      const manager = new MoveManager({ scene, elevation })
       expect(manager.inProgress).toBe(false)
       expect(manager.elevation).toBe(elevation)
       expect(manager.scene).toEqual(scene)
@@ -143,54 +131,54 @@ describe('MoveManager', () => {
   describe('registerMovable()', () => {
     it('registers a mesh', () => {
       const mesh = createBox('box3', {})
-      mesh.addBehavior(new MoveBehavior(), true)
-      expect(manager.isManaging(mesh)).toBe(true)
+      mesh.addBehavior(new MoveBehavior({}, managers), true)
+      expect(managers.move.isManaging(mesh)).toBe(true)
     })
 
     it('automatically unregisters a mesh upon disposal', () => {
       const mesh = createBox('box3', {})
-      mesh.addBehavior(new MoveBehavior(), true)
-      expect(manager.isManaging(mesh)).toBe(true)
+      mesh.addBehavior(new MoveBehavior({}, managers), true)
+      expect(managers.move.isManaging(mesh)).toBe(true)
 
       mesh.dispose()
-      expect(manager.isManaging(mesh)).toBe(false)
+      expect(managers.move.isManaging(mesh)).toBe(false)
     })
 
     it('automatically unregisters a mesh upon behavior detachment', () => {
       const mesh = createBox('box3', {})
-      const behavior = new MoveBehavior()
+      const behavior = new MoveBehavior({}, managers)
       mesh.addBehavior(behavior, true)
-      expect(manager.isManaging(mesh)).toBe(true)
+      expect(managers.move.isManaging(mesh)).toBe(true)
 
       behavior.detach()
-      expect(manager.isManaging(mesh)).toBe(false)
+      expect(managers.move.isManaging(mesh)).toBe(false)
     })
 
     it('handles invalid behavior', () => {
-      const behavior = new MoveBehavior()
-      manager.registerMovable(behavior)
+      const behavior = new MoveBehavior({}, managers)
+      managers.move.registerMovable(behavior)
       // @ts-expect-error: undefined is not allowed
-      manager.registerMovable()
+      managers.move.registerMovable()
     })
   })
 
   describe('unregisterMovable()', () => {
     it('handles invalid behavior', () => {
-      const behavior = new MoveBehavior()
-      manager.unregisterMovable(behavior)
+      const behavior = new MoveBehavior({}, managers)
+      managers.move.unregisterMovable(behavior)
       // @ts-expect-error: undefined is not allowed
-      manager.unregisterMovable()
+      managers.move.unregisterMovable()
     })
 
     it('does not unregisters a phantom mesh', () => {
       const mesh = createBox('box3', {})
       mesh.isPhantom = true
-      const behavior = new MoveBehavior()
+      const behavior = new MoveBehavior({}, managers)
       mesh.addBehavior(behavior, true)
-      expect(manager.isManaging(mesh)).toBe(true)
+      expect(managers.move.isManaging(mesh)).toBe(true)
 
       mesh.dispose()
-      expect(manager.isManaging(mesh)).toBe(true)
+      expect(managers.move.isManaging(mesh)).toBe(true)
     })
   })
 
@@ -199,8 +187,6 @@ describe('MoveManager', () => {
     let moved
     /** @type {Mesh[]} */
     let targets
-
-    beforeAll(() => manager.init({ scene }))
 
     beforeEach(() => {
       moved = createMovable()
@@ -213,32 +199,32 @@ describe('MoveManager', () => {
     describe('start()', () => {
       it('ignores uncontrolled mesh', () => {
         const mesh = createBox('box4', {})
-        manager.start(mesh, { x: centerX, y: centerY })
-        expect(manager.inProgress).toBe(false)
-        expect(manager.isMoving(mesh)).toBe(false)
+        managers.move.start(mesh, { x: centerX, y: centerY })
+        expect(managers.move.inProgress).toBe(false)
+        expect(managers.move.isMoving(mesh)).toBe(false)
         expectMoveRecorded(moveRecorded)
         expect(preMoveRecorded).not.toHaveBeenCalled()
       })
 
       it('ignores disabled mesh', () => {
         const mesh = createBox('box4', {})
-        const behavior = new MoveBehavior()
+        const behavior = new MoveBehavior({}, managers)
         mesh.addBehavior(behavior, true)
         behavior.enabled = false
 
-        manager.start(mesh, { x: centerX, y: centerY })
-        expect(manager.inProgress).toBe(false)
-        expect(manager.isMoving(mesh)).toBe(false)
+        managers.move.start(mesh, { x: centerX, y: centerY })
+        expect(managers.move.inProgress).toBe(false)
+        expect(managers.move.isMoving(mesh)).toBe(false)
         expectMoveRecorded(moveRecorded)
         expect(preMoveRecorded).not.toHaveBeenCalled()
       })
 
       it('elevates moved mesh', () => {
         const prev = moved.absolutePosition.asArray()
-        manager.start(moved, { x: centerX, y: centerY })
-        expect(manager.inProgress).toBe(true)
-        expect(manager.isMoving(moved)).toBe(true)
-        expectPosition(moved, [1, 1 + manager.elevation, 1])
+        managers.move.start(moved, { x: centerX, y: centerY })
+        expect(managers.move.inProgress).toBe(true)
+        expect(managers.move.isMoving(moved)).toBe(true)
+        expectPosition(moved, [1, 1 + managers.move.elevation, 1])
         expect(actionRecorded).toHaveBeenCalledWith(
           {
             meshId: moved.id,
@@ -259,17 +245,17 @@ describe('MoveManager', () => {
       it('can change moved mesh', () => {
         const moved2 = createMovable('box2')
         const prev = moved2.absolutePosition.asArray()
-        expect(selectionManager.meshes.has(moved2)).toBe(false)
-        manager.onPreMoveObservable.addOnce(({ meshes }) => {
+        expect(managers.selection.meshes.has(moved2)).toBe(false)
+        managers.move.onPreMoveObservable.addOnce(({ meshes }) => {
           meshes.splice(0, meshes.length, moved2)
         })
-        manager.start(moved, { x: centerX, y: centerY })
-        expect(manager.inProgress).toBe(true)
-        expect(manager.isMoving(moved)).toBe(false)
-        expect(manager.isMoving(moved2)).toBe(true)
-        expect(selectionManager.meshes.has(moved2)).toBe(true)
+        managers.move.start(moved, { x: centerX, y: centerY })
+        expect(managers.move.inProgress).toBe(true)
+        expect(managers.move.isMoving(moved)).toBe(false)
+        expect(managers.move.isMoving(moved2)).toBe(true)
+        expect(managers.selection.meshes.has(moved2)).toBe(true)
         expectPosition(moved, [1, 1, 1])
-        expectPosition(moved2, [1, 1 + manager.elevation, 1])
+        expectPosition(moved2, [1, 1 + managers.move.elevation, 1])
         expect(actionRecorded).toHaveBeenCalledWith(
           {
             meshId: moved2.id,
@@ -293,19 +279,23 @@ describe('MoveManager', () => {
       let prev
 
       beforeEach(() => {
-        manager.start(moved, { x: centerX, y: centerY })
+        managers.move.start(moved, { x: centerX, y: centerY })
         actionRecorded.mockReset()
         moveRecorded.mockReset()
-        expect(selectionManager.meshes.has(moved)).toBe(true)
+        expect(managers.selection.meshes.has(moved)).toBe(true)
         prev = moved.absolutePosition.asArray()
       })
 
       it('updates moved mesh position', () => {
         const deltaX = 2.029703140258789
         const deltaZ = -2.196934700012207
-        manager.continue({ x: centerX + 50, y: centerY + 50 })
-        expect(manager.isMoving(moved)).toBe(true)
-        expectPosition(moved, [1 + deltaX, 1 + manager.elevation, 1 + deltaZ])
+        managers.move.continue({ x: centerX + 50, y: centerY + 50 })
+        expect(managers.move.isMoving(moved)).toBe(true)
+        expectPosition(moved, [
+          1 + deltaX,
+          1 + managers.move.elevation,
+          1 + deltaZ
+        ])
         expect(actionRecorded).toHaveBeenCalledWith(
           {
             meshId: moved.id,
@@ -316,17 +306,17 @@ describe('MoveManager', () => {
           expect.anything()
         )
         expect(actionRecorded).toHaveBeenCalledTimes(1)
-        expect(manager.getActiveZones()).toHaveLength(0)
+        expect(managers.move.getActiveZones()).toHaveLength(0)
         expectMoveRecorded(moveRecorded)
       })
 
       it('updates possible targets', () => {
-        manager.continue({ x: centerX + 50, y: centerY + 20 })
-        expect(manager.getActiveZones()).toHaveLength(1)
+        managers.move.continue({ x: centerX + 50, y: centerY + 20 })
+        expect(managers.move.getActiveZones()).toHaveLength(1)
         expectZoneForMeshes(targets[0].id, [moved])
 
-        manager.continue({ x: centerX - 50, y: centerY + 120 })
-        expect(manager.getActiveZones()).toHaveLength(1)
+        managers.move.continue({ x: centerX - 50, y: centerY + 120 })
+        expect(managers.move.getActiveZones()).toHaveLength(1)
         expectZoneForMeshes(targets[1].id, [moved])
       })
 
@@ -334,7 +324,7 @@ describe('MoveManager', () => {
         const obstacle = createBox('obstacle', { size: 2 })
         obstacle.setAbsolutePosition(new Vector3(1, 0.5, 1))
 
-        manager.continue({ x: centerX + 20, y: centerY })
+        managers.move.continue({ x: centerX + 20, y: centerY })
         expectPosition(moved, [
           1.8257662057876587,
           getAltitudeOnCollision(moved, obstacle),
@@ -350,7 +340,7 @@ describe('MoveManager', () => {
         const obstacle3 = createBox('obstacle3', {})
         obstacle3.setAbsolutePosition(new Vector3(1, 3.5, 1))
 
-        manager.continue({ x: centerX + 20, y: centerY })
+        managers.move.continue({ x: centerX + 20, y: centerY })
         expectPosition(moved, [
           1.8257662057876587,
           getAltitudeOnCollision(moved, obstacle3),
@@ -359,7 +349,7 @@ describe('MoveManager', () => {
       })
 
       it('stops when pointer is leaving table', async () => {
-        manager.continue({ x: centerX * 100, y: centerY * 100 })
+        managers.move.continue({ x: centerX * 100, y: centerY * 100 })
         await expectAnimationEnd(moved.getBehaviorByName(MoveBehaviorName))
         await sleep()
         expectPosition(moved, [1, getDimensions(moved).height / 2, 1])
@@ -373,10 +363,10 @@ describe('MoveManager', () => {
           expect.anything()
         )
         expect(actionRecorded).toHaveBeenCalledTimes(1)
-        expect(manager.getActiveZones()).toHaveLength(0)
-        expect(manager.inProgress).toBe(false)
+        expect(managers.move.getActiveZones()).toHaveLength(0)
+        expect(managers.move.inProgress).toBe(false)
         expectMoveRecorded(moveRecorded)
-        expect(selectionManager.meshes.has(moved)).toBe(false)
+        expect(managers.selection.meshes.has(moved)).toBe(false)
       })
     })
 
@@ -385,16 +375,16 @@ describe('MoveManager', () => {
       let prev
 
       beforeEach(() => {
-        manager.start(moved, { x: centerX, y: centerY })
+        managers.move.start(moved, { x: centerX, y: centerY })
         actionRecorded.mockReset()
         moveRecorded.mockReset()
-        expect(selectionManager.meshes.has(moved)).toBe(true)
+        expect(managers.selection.meshes.has(moved)).toBe(true)
         prev = moved.absolutePosition.asArray()
       })
 
       it('descends moved mesh', async () => {
-        await manager.stop()
-        expect(manager.isMoving(moved)).toBe(false)
+        await managers.move.stop()
+        expect(managers.move.isMoving(moved)).toBe(false)
         expectPosition(moved, [1, getDimensions(moved).height / 2, 1])
         expect(actionRecorded).toHaveBeenCalledWith(
           {
@@ -406,22 +396,22 @@ describe('MoveManager', () => {
           expect.anything()
         )
         expect(actionRecorded).toHaveBeenCalledTimes(1)
-        expect(manager.getActiveZones()).toHaveLength(0)
-        expect(manager.inProgress).toBe(false)
+        expect(managers.move.getActiveZones()).toHaveLength(0)
+        expect(managers.move.inProgress).toBe(false)
         expect(drops).toHaveLength(0)
         expectMoveRecorded(moveRecorded)
-        expect(selectionManager.meshes.has(moved)).toBe(false)
+        expect(managers.selection.meshes.has(moved)).toBe(false)
       })
 
       it('drops moved mesh to active target', async () => {
         const deltaX = 2.050389051437378
         const deltaZ = -0.8877299800515175
-        manager.continue({ x: centerX + 50, y: centerY + 20 })
-        expect(manager.getActiveZones()).toHaveLength(1)
+        managers.move.continue({ x: centerX + 50, y: centerY + 20 })
+        expect(managers.move.getActiveZones()).toHaveLength(1)
         expectZoneForMeshes(targets[0].id, [moved])
 
-        await manager.stop()
-        expect(manager.isMoving(moved)).toBe(false)
+        await managers.move.stop()
+        expect(managers.move.isMoving(moved)).toBe(false)
         expectPosition(moved, [
           1 + deltaX,
           moved.absolutePosition.y,
@@ -437,18 +427,18 @@ describe('MoveManager', () => {
           expect.anything()
         )
         expect(actionRecorded).toHaveBeenCalledTimes(1)
-        expect(manager.getActiveZones()).toHaveLength(0)
-        expect(manager.inProgress).toBe(false)
+        expect(managers.move.getActiveZones()).toHaveLength(0)
+        expect(managers.move.inProgress).toBe(false)
         expect(drops).toHaveLength(1)
         expectDroppedEvent(0, targets[0], [moved])
         expectMoveRecorded(moveRecorded)
-        expect(selectionManager.meshes.has(moved)).toBe(false)
+        expect(managers.selection.meshes.has(moved)).toBe(false)
       })
 
       it('disables other operations', async () => {
-        await manager.stop()
-        manager.continue({ x: 0, y: 0 })
-        await manager.stop()
+        await managers.move.stop()
+        managers.move.continue({ x: 0, y: 0 })
+        await managers.move.stop()
         expectPosition(moved, [1, getDimensions(moved).height / 2, 1])
         expect(actionRecorded).toHaveBeenCalledWith(
           {
@@ -460,9 +450,9 @@ describe('MoveManager', () => {
           expect.anything()
         )
         expect(actionRecorded).toHaveBeenCalledTimes(1)
-        expect(manager.inProgress).toBe(false)
+        expect(managers.move.inProgress).toBe(false)
         expect(drops).toHaveLength(0)
-        expect(manager.getActiveZones()).toHaveLength(0)
+        expect(managers.move.getActiveZones()).toHaveLength(0)
       })
     })
   })
@@ -475,23 +465,14 @@ describe('MoveManager', () => {
     /** @type {number[]} */
     let prev
 
-    const handOverlay = document.createElement('div')
-    vi.spyOn(window, 'getComputedStyle').mockImplementation(
-      () =>
-        /** @type {CSSStyleDeclaration} */ ({
-          height: `${centerY / 2}px`
-        })
-    )
-
     beforeAll(() => {
-      manager.init({ scene })
-      handManager.init({ scene, handScene, playerId, overlay: handOverlay })
       cameraPosition = camera.position.clone()
     })
 
     beforeEach(() => {
       moved = createCard(
         { id: 'box', texture: '', x: 1, y: 1, z: 1, drawable: {}, movable: {} },
+        managers,
         handScene
       )
       camera.setPosition(cameraPosition)
@@ -501,32 +482,36 @@ describe('MoveManager', () => {
     it('moves according to hand camera', async () => {
       const camera = /** @type {ArcRotateCamera} */ (scene.activeCamera)
       camera.setPosition(new Vector3(10, 0, 0))
-      manager.start(moved, { x: centerX, y: centerY })
-      expect(manager.inProgress).toBe(true)
-      expectPosition(moved, [1, 1 + manager.elevation, 1])
+      managers.move.start(moved, { x: centerX, y: centerY })
+      expect(managers.move.inProgress).toBe(true)
+      expectPosition(moved, [1, 1 + managers.move.elevation, 1])
 
       const deltaX = 2.029703140258789
       const deltaZ = -2.196934700012207
-      manager.continue({ x: centerX + 50, y: centerY + 50 })
+      managers.move.continue({ x: centerX + 50, y: centerY + 50 })
 
-      expectPosition(moved, [1 + deltaX, 1 + manager.elevation, 1 + deltaZ])
+      expectPosition(moved, [
+        1 + deltaX,
+        1 + managers.move.elevation,
+        1 + deltaZ
+      ])
 
-      await manager.stop()
+      await managers.move.stop()
       expectPosition(moved, [3, getDimensions(moved).height / 2, -1.25])
-      expect(manager.inProgress).toBe(false)
+      expect(managers.move.inProgress).toBe(false)
       expect(drops).toHaveLength(0)
       expectMoveRecorded(moveRecorded, moved)
     })
 
     it('keeps moving mesh after drawn', async () => {
       let event = { x: centerX, y: centerY }
-      manager.start(moved, event)
-      expect(manager.inProgress).toBe(true)
-      expect(selectionManager.meshes.has(moved)).toBe(true)
-      const y = 1 + manager.elevation
+      managers.move.start(moved, event)
+      expect(managers.move.inProgress).toBe(true)
+      expect(managers.selection.meshes.has(moved)).toBe(true)
+      const y = 1 + managers.move.elevation
       expectPosition(moved, [1, y, 1])
 
-      inputManager.onDragObservable.notifyObservers({
+      managers.input.onDragObservable.notifyObservers({
         type: 'dragStart',
         mesh: moved,
         button: 1,
@@ -537,7 +522,7 @@ describe('MoveManager', () => {
       const deltaX = 2.029703219946068
       const deltaZ = -2.1969471586981797
       event = { x: centerX + 50, y: centerY + 50 }
-      inputManager.onDragObservable.notifyObservers({
+      managers.input.onDragObservable.notifyObservers({
         type: 'drag',
         mesh: moved,
         button: 1,
@@ -546,21 +531,21 @@ describe('MoveManager', () => {
         event: /** @type {PointerEvent} */ (event)
       })
       await sleep()
-      manager.continue(event)
+      managers.move.continue(event)
 
       const mainMoved = /** @type {Mesh} */ (scene.getMeshById(moved.id))
       expect(mainMoved).not.toBeNull()
       expectPosition(mainMoved, [deltaX, y, deltaZ])
-      expect(manager.inProgress).toBe(true)
+      expect(managers.move.inProgress).toBe(true)
       expect(drops).toHaveLength(0)
 
-      manager.stop()
+      managers.move.stop()
 
       expect(actionRecorded).toHaveBeenNthCalledWith(
         1,
         {
           meshId: moved.id,
-          pos: [1, 1 + manager.elevation, 1],
+          pos: [1, 1 + managers.move.elevation, 1],
           prev,
           fromHand: true
         },
@@ -594,10 +579,10 @@ describe('MoveManager', () => {
         [deltaX, y, deltaZ]
       )
       expect(actionRecorded).toHaveBeenCalledTimes(3)
-      expect(manager.getActiveZones()).toHaveLength(0)
+      expect(managers.move.getActiveZones()).toHaveLength(0)
       expectMoveRecorded(moveRecorded, moved)
-      expect(selectionManager.meshes.has(moved)).toBe(false)
-      expect(selectionManager.meshes.has(mainMoved)).toBe(false)
+      expect(managers.selection.meshes.has(moved)).toBe(false)
+      expect(managers.selection.meshes.has(mainMoved)).toBe(false)
     })
 
     it(
@@ -608,21 +593,25 @@ describe('MoveManager', () => {
           createMovable('box1', positions[0]),
           createMovable('box2', positions[1])
         ]
-        selectionManager.select([...meshes, moved])
+        managers.selection.select([...meshes, moved])
 
-        manager.start(moved, { x: centerX, y: centerY })
-        expect(manager.inProgress).toBe(true)
-        expectPosition(moved, [1, 1 + manager.elevation, 1])
+        managers.move.start(moved, { x: centerX, y: centerY })
+        expect(managers.move.inProgress).toBe(true)
+        expectPosition(moved, [1, 1 + managers.move.elevation, 1])
 
         const deltaX = 2.029703140258789
         const deltaZ = -2.196934700012207
-        manager.continue({ x: centerX + 50, y: centerY + 50 })
+        managers.move.continue({ x: centerX + 50, y: centerY + 50 })
 
-        expectPosition(moved, [1 + deltaX, 1 + manager.elevation, 1 + deltaZ])
+        expectPosition(moved, [
+          1 + deltaX,
+          1 + managers.move.elevation,
+          1 + deltaZ
+        ])
 
-        await manager.stop()
+        await managers.move.stop()
         expectPosition(moved, [3, getDimensions(moved).height / 2, -1.25])
-        expect(manager.inProgress).toBe(false)
+        expect(managers.move.inProgress).toBe(false)
         expect(drops).toHaveLength(0)
         expectPosition(meshes[0], positions[0].asArray())
         expectPosition(meshes[1], positions[1].asArray())
@@ -640,8 +629,6 @@ describe('MoveManager', () => {
     /** @type {(number[])[]} */
     let prevs
 
-    beforeAll(() => manager.init({ scene }))
-
     function updatePrevs() {
       prevs = moved.map(mesh => mesh.absolutePosition.asArray())
     }
@@ -652,7 +639,7 @@ describe('MoveManager', () => {
         createMovable('box1', new Vector3(0, 5, 0)),
         createMovable('box2', new Vector3(-3, 0.5, -3))
       ]
-      selectionManager.select(moved)
+      managers.selection.select(moved)
       targets = [
         createsTarget(1, new Vector3(3, 0, 0)),
         createsTarget(2, new Vector3(-1, 0, -4.1))
@@ -662,16 +649,16 @@ describe('MoveManager', () => {
 
     describe('start()', () => {
       it('elevates entire selection', () => {
-        manager.start(moved[1], { x: centerX, y: centerY })
-        expect(manager.isMoving(moved[0])).toBe(true)
-        expect(manager.isMoving(moved[1])).toBe(true)
-        expect(manager.isMoving(moved[2])).toBe(true)
-        expect(selectionManager.meshes.has(moved[0])).toBe(true)
-        expect(selectionManager.meshes.has(moved[1])).toBe(true)
-        expect(selectionManager.meshes.has(moved[2])).toBe(true)
-        expectPosition(moved[0], [1, 1 + manager.elevation, 1])
-        expectPosition(moved[1], [0, 5 + manager.elevation, 0])
-        expectPosition(moved[2], [-3, 0.5 + manager.elevation, -3])
+        managers.move.start(moved[1], { x: centerX, y: centerY })
+        expect(managers.move.isMoving(moved[0])).toBe(true)
+        expect(managers.move.isMoving(moved[1])).toBe(true)
+        expect(managers.move.isMoving(moved[2])).toBe(true)
+        expect(managers.selection.meshes.has(moved[0])).toBe(true)
+        expect(managers.selection.meshes.has(moved[1])).toBe(true)
+        expect(managers.selection.meshes.has(moved[2])).toBe(true)
+        expectPosition(moved[0], [1, 1 + managers.move.elevation, 1])
+        expectPosition(moved[1], [0, 5 + managers.move.elevation, 0])
+        expectPosition(moved[2], [-3, 0.5 + managers.move.elevation, -3])
         expect(actionRecorded).toHaveBeenNthCalledWith(
           1,
           {
@@ -703,7 +690,7 @@ describe('MoveManager', () => {
           expect.anything()
         )
         expect(actionRecorded).toHaveBeenCalledTimes(moved.length)
-        expect(manager.getActiveZones()).toHaveLength(0)
+        expect(managers.move.getActiveZones()).toHaveLength(0)
         expectMoveRecorded(moveRecorded, moved[2], moved[0], moved[1])
         expect(preMoveRecorded).toHaveBeenCalledTimes(1)
         expect(
@@ -712,16 +699,16 @@ describe('MoveManager', () => {
       })
 
       it('ignores disabled, selected mesh', () => {
-        const behavior = new MoveBehavior()
+        const behavior = new MoveBehavior({}, managers)
         moved[2].addBehavior(behavior, true)
         behavior.enabled = false
 
-        manager.start(moved[1], { x: centerX, y: centerY })
-        expect(manager.isMoving(moved[0])).toBe(true)
-        expect(manager.isMoving(moved[1])).toBe(true)
-        expect(manager.isMoving(moved[2])).toBe(false)
-        expectPosition(moved[0], [1, 1 + manager.elevation, 1])
-        expectPosition(moved[1], [0, 5 + manager.elevation, 0])
+        managers.move.start(moved[1], { x: centerX, y: centerY })
+        expect(managers.move.isMoving(moved[0])).toBe(true)
+        expect(managers.move.isMoving(moved[1])).toBe(true)
+        expect(managers.move.isMoving(moved[2])).toBe(false)
+        expectPosition(moved[0], [1, 1 + managers.move.elevation, 1])
+        expectPosition(moved[1], [0, 5 + managers.move.elevation, 0])
         expectPosition(moved[2], [-3, 0.5, -3])
         expect(actionRecorded).toHaveBeenNthCalledWith(
           1,
@@ -744,14 +731,14 @@ describe('MoveManager', () => {
           expect.anything()
         )
         expect(actionRecorded).toHaveBeenCalledTimes(2)
-        expect(manager.getActiveZones()).toHaveLength(0)
+        expect(managers.move.getActiveZones()).toHaveLength(0)
         expectMoveRecorded(moveRecorded, moved[0], moved[1])
       })
     })
 
     describe('continue()', () => {
       beforeEach(() => {
-        manager.start(moved[0], { x: centerX, y: centerY })
+        managers.move.start(moved[0], { x: centerX, y: centerY })
         actionRecorded.mockReset()
         moveRecorded.mockReset()
       })
@@ -761,16 +748,16 @@ describe('MoveManager', () => {
         const deltaZ = -2.196934700012207
         updatePrevs()
 
-        manager.continue({ x: centerX + 50, y: centerY + 50 })
+        managers.move.continue({ x: centerX + 50, y: centerY + 50 })
         expectPosition(moved[0], [
           1 + deltaX,
-          1 + manager.elevation,
+          1 + managers.move.elevation,
           1 + deltaZ
         ])
-        expectPosition(moved[1], [deltaX, 5 + manager.elevation, deltaZ])
+        expectPosition(moved[1], [deltaX, 5 + managers.move.elevation, deltaZ])
         expectPosition(moved[2], [
           -3 + deltaX,
-          0.5 + manager.elevation,
+          0.5 + managers.move.elevation,
           -3 + deltaZ
         ])
         expect(actionRecorded).toHaveBeenNthCalledWith(
@@ -804,18 +791,18 @@ describe('MoveManager', () => {
           expect.anything()
         )
         expect(actionRecorded).toHaveBeenCalledTimes(moved.length)
-        expect(manager.getActiveZones()).toHaveLength(0)
+        expect(managers.move.getActiveZones()).toHaveLength(0)
         expectMoveRecorded(moveRecorded)
       })
 
       it('updates target for individual selected meshes', () => {
-        manager.continue({ x: centerX + 50, y: centerY + 20 })
-        expect(manager.getActiveZones()).toHaveLength(2)
+        managers.move.continue({ x: centerX + 50, y: centerY + 20 })
+        expect(managers.move.getActiveZones()).toHaveLength(2)
         expectZoneForMeshes(targets[0].id, [moved[0]])
         expectZoneForMeshes(targets[1].id, [moved[2]])
 
-        manager.continue({ x: centerX + 50, y: centerY + 35 })
-        expect(manager.getActiveZones()).toHaveLength(1)
+        managers.move.continue({ x: centerX + 50, y: centerY + 35 })
+        expect(managers.move.getActiveZones()).toHaveLength(1)
         expectZoneForMeshes(targets[1].id, [moved[2]])
       })
 
@@ -826,7 +813,7 @@ describe('MoveManager', () => {
         const obstacle2 = createBox('obstacle2', { size: 2 })
         obstacle2.setAbsolutePosition(new Vector3(-10, 0, -10))
 
-        manager.continue({ x: centerX + 20, y: centerY })
+        managers.move.continue({ x: centerX + 20, y: centerY })
         expectPosition(moved[0], [
           1 + deltaX,
           getAltitudeOnCollision(moved[0], obstacle1, 0.5),
@@ -845,20 +832,22 @@ describe('MoveManager', () => {
       })
 
       it('does not checks collision within selection', () => {
-        moved[0].setAbsolutePosition(new Vector3(-2.5, manager.elevation, -2.5))
+        moved[0].setAbsolutePosition(
+          new Vector3(-2.5, managers.move.elevation, -2.5)
+        )
         const deltaX = 2.029703140258789
         const deltaZ = -2.196934700012207
 
-        manager.continue({ x: centerX + 50, y: centerY + 50 })
+        managers.move.continue({ x: centerX + 50, y: centerY + 50 })
         expectPosition(moved[0], [
           -2.5 + deltaX,
-          manager.elevation,
+          managers.move.elevation,
           -2.5 + deltaZ
         ])
-        expectPosition(moved[1], [deltaX, 5 + manager.elevation, deltaZ])
+        expectPosition(moved[1], [deltaX, 5 + managers.move.elevation, deltaZ])
         expectPosition(moved[2], [
           -3 + deltaX,
-          0.5 + manager.elevation,
+          0.5 + managers.move.elevation,
           -3 + deltaZ
         ])
       })
@@ -866,25 +855,25 @@ describe('MoveManager', () => {
 
     describe('exclude()', () => {
       it('removes mesh from selection', () => {
-        manager.start(moved[0], { x: centerX, y: centerY })
-        expect(manager.isMoving(moved[0])).toBe(true)
-        expect(manager.isMoving(moved[1])).toBe(true)
-        expect(manager.isMoving(moved[2])).toBe(true)
+        managers.move.start(moved[0], { x: centerX, y: centerY })
+        expect(managers.move.isMoving(moved[0])).toBe(true)
+        expect(managers.move.isMoving(moved[1])).toBe(true)
+        expect(managers.move.isMoving(moved[2])).toBe(true)
         actionRecorded.mockReset()
 
-        manager.exclude(moved[0], moved[2])
-        expect(manager.isMoving(moved[0])).toBe(false)
-        expect(manager.isMoving(moved[1])).toBe(true)
-        expect(manager.isMoving(moved[2])).toBe(false)
+        managers.move.exclude(moved[0], moved[2])
+        expect(managers.move.isMoving(moved[0])).toBe(false)
+        expect(managers.move.isMoving(moved[1])).toBe(true)
+        expect(managers.move.isMoving(moved[2])).toBe(false)
 
         const deltaX = 2.029703140258789
         const deltaZ = -2.196934700012207
 
         const prev = moved[1].absolutePosition.asArray()
-        manager.continue({ x: centerX + 50, y: centerY + 50 })
+        managers.move.continue({ x: centerX + 50, y: centerY + 50 })
         expectPosition(moved[0], [1, 1.5, 1])
-        expectPosition(moved[1], [deltaX, 5 + manager.elevation, deltaZ])
-        expectPosition(moved[2], [-3, 0.5 + manager.elevation, -3])
+        expectPosition(moved[1], [deltaX, 5 + managers.move.elevation, deltaZ])
+        expectPosition(moved[2], [-3, 0.5 + managers.move.elevation, -3])
         expect(actionRecorded).toHaveBeenCalledWith(
           {
             meshId: moved[1].id,
@@ -895,31 +884,31 @@ describe('MoveManager', () => {
           expect.anything()
         )
         expect(actionRecorded).toHaveBeenCalledTimes(1)
-        expect(manager.getActiveZones()).toHaveLength(0)
-        expect(selectionManager.meshes.has(moved[0])).toBe(true)
-        expect(selectionManager.meshes.has(moved[1])).toBe(true)
-        expect(selectionManager.meshes.has(moved[2])).toBe(true)
+        expect(managers.move.getActiveZones()).toHaveLength(0)
+        expect(managers.selection.meshes.has(moved[0])).toBe(true)
+        expect(managers.selection.meshes.has(moved[1])).toBe(true)
+        expect(managers.selection.meshes.has(moved[2])).toBe(true)
       })
 
       it('ignores unknow meshes', () => {
-        selectionManager.clear()
-        selectionManager.select(moved.slice(0, 2))
-        manager.start(moved[1], { x: centerX, y: centerY })
+        managers.selection.clear()
+        managers.selection.select(moved.slice(0, 2))
+        managers.move.start(moved[1], { x: centerX, y: centerY })
         actionRecorded.mockReset()
 
-        manager.exclude(moved[2])
+        managers.move.exclude(moved[2])
 
         const deltaX = 2.029703140258789
         const deltaZ = -2.196934700012207
 
         updatePrevs()
-        manager.continue({ x: centerX + 50, y: centerY + 50 })
+        managers.move.continue({ x: centerX + 50, y: centerY + 50 })
         expectPosition(moved[0], [
           1 + deltaX,
-          1 + manager.elevation,
+          1 + managers.move.elevation,
           1 + deltaZ
         ])
-        expectPosition(moved[1], [deltaX, 5 + manager.elevation, deltaZ])
+        expectPosition(moved[1], [deltaX, 5 + managers.move.elevation, deltaZ])
         expectPosition(moved[2], [-3, 0.5, -3])
         expect(actionRecorded).toHaveBeenNthCalledWith(
           1,
@@ -942,51 +931,51 @@ describe('MoveManager', () => {
           expect.anything()
         )
         expect(actionRecorded).toHaveBeenCalledTimes(2)
-        expect(manager.getActiveZones()).toHaveLength(0)
+        expect(managers.move.getActiveZones()).toHaveLength(0)
       })
     })
 
     describe('include()', () => {
       it('adds new mesh from selection', () => {
-        selectionManager.unselect(moved.slice(1))
-        manager.start(moved[0], { x: centerX, y: centerY })
-        expect(manager.isMoving(moved[0])).toBe(true)
-        expect(manager.isMoving(moved[1])).toBe(false)
-        expect(manager.isMoving(moved[2])).toBe(false)
-        expect(selectionManager.meshes.has(moved[0])).toBe(true)
-        expect(selectionManager.meshes.has(moved[1])).toBe(false)
-        expect(selectionManager.meshes.has(moved[2])).toBe(false)
+        managers.selection.unselect(moved.slice(1))
+        managers.move.start(moved[0], { x: centerX, y: centerY })
+        expect(managers.move.isMoving(moved[0])).toBe(true)
+        expect(managers.move.isMoving(moved[1])).toBe(false)
+        expect(managers.move.isMoving(moved[2])).toBe(false)
+        expect(managers.selection.meshes.has(moved[0])).toBe(true)
+        expect(managers.selection.meshes.has(moved[1])).toBe(false)
+        expect(managers.selection.meshes.has(moved[2])).toBe(false)
         actionRecorded.mockReset()
 
-        manager.include(moved[1], moved[2])
-        expect(manager.isMoving(moved[0])).toBe(true)
-        expect(manager.isMoving(moved[1])).toBe(true)
-        expect(manager.isMoving(moved[2])).toBe(true)
-        expect(selectionManager.meshes.has(moved[0])).toBe(true)
-        expect(selectionManager.meshes.has(moved[1])).toBe(true)
-        expect(selectionManager.meshes.has(moved[2])).toBe(true)
+        managers.move.include(moved[1], moved[2])
+        expect(managers.move.isMoving(moved[0])).toBe(true)
+        expect(managers.move.isMoving(moved[1])).toBe(true)
+        expect(managers.move.isMoving(moved[2])).toBe(true)
+        expect(managers.selection.meshes.has(moved[0])).toBe(true)
+        expect(managers.selection.meshes.has(moved[1])).toBe(true)
+        expect(managers.selection.meshes.has(moved[2])).toBe(true)
 
         const deltaX = 2.029703140258789
         const deltaZ = -2.196934700012207
 
         const prevs2 = moved.map(mesh => mesh.absolutePosition.asArray())
-        manager.continue({ x: centerX + 50, y: centerY + 50 })
+        managers.move.continue({ x: centerX + 50, y: centerY + 50 })
         expectPosition(moved[0], [
           deltaX + 1,
-          1 + manager.elevation,
+          1 + managers.move.elevation,
           deltaZ + 1
         ])
-        expectPosition(moved[1], [deltaX, 5 + manager.elevation, deltaZ])
+        expectPosition(moved[1], [deltaX, 5 + managers.move.elevation, deltaZ])
         expectPosition(moved[2], [
           deltaX - 3,
-          0.5 + manager.elevation,
+          0.5 + managers.move.elevation,
           deltaZ - 3
         ])
         expect(actionRecorded).toHaveBeenNthCalledWith(
           1,
           {
             meshId: moved[1].id,
-            pos: [0, 5 + manager.elevation, 0],
+            pos: [0, 5 + managers.move.elevation, 0],
             prev: prevs[1],
             fromHand: false
           },
@@ -996,7 +985,7 @@ describe('MoveManager', () => {
           2,
           {
             meshId: moved[2].id,
-            pos: [-3, 0.5 + manager.elevation, -3],
+            pos: [-3, 0.5 + managers.move.elevation, -3],
             prev: prevs[2],
             fromHand: false
           },
@@ -1033,29 +1022,29 @@ describe('MoveManager', () => {
           expect.anything()
         )
         expect(actionRecorded).toHaveBeenCalledTimes(5)
-        expect(manager.getActiveZones()).toHaveLength(0)
+        expect(managers.move.getActiveZones()).toHaveLength(0)
       })
 
       it('ignores already selected meshes', () => {
-        manager.start(moved[0], { x: centerX, y: centerY })
+        managers.move.start(moved[0], { x: centerX, y: centerY })
         actionRecorded.mockReset()
 
-        manager.include(moved[0], moved[1])
+        managers.move.include(moved[0], moved[1])
 
         const deltaX = 2.029703140258789
         const deltaZ = -2.196934700012207
 
         updatePrevs()
-        manager.continue({ x: centerX + 50, y: centerY + 50 })
+        managers.move.continue({ x: centerX + 50, y: centerY + 50 })
         expectPosition(moved[0], [
           deltaX + 1,
-          1 + manager.elevation,
+          1 + managers.move.elevation,
           deltaZ + 1
         ])
-        expectPosition(moved[1], [deltaX, 5 + manager.elevation, deltaZ])
+        expectPosition(moved[1], [deltaX, 5 + managers.move.elevation, deltaZ])
         expectPosition(moved[2], [
           deltaX - 3,
-          0.5 + manager.elevation,
+          0.5 + managers.move.elevation,
           deltaZ - 3
         ])
         expect(actionRecorded).toHaveBeenNthCalledWith(
@@ -1089,34 +1078,34 @@ describe('MoveManager', () => {
           expect.anything()
         )
         expect(actionRecorded).toHaveBeenCalledTimes(3)
-        expect(manager.getActiveZones()).toHaveLength(0)
+        expect(managers.move.getActiveZones()).toHaveLength(0)
       })
     })
 
     describe('stop()', () => {
       beforeEach(() => {
-        manager.start(moved[0], { x: centerX, y: centerY })
+        managers.move.start(moved[0], { x: centerX, y: centerY })
         actionRecorded.mockReset()
         moveRecorded.mockReset()
-        expect(selectionManager.meshes.has(moved[0])).toBe(true)
-        expect(selectionManager.meshes.has(moved[1])).toBe(true)
-        expect(selectionManager.meshes.has(moved[2])).toBe(true)
+        expect(managers.selection.meshes.has(moved[0])).toBe(true)
+        expect(managers.selection.meshes.has(moved[1])).toBe(true)
+        expect(managers.selection.meshes.has(moved[2])).toBe(true)
       })
 
       it('drops relevant meshes on their target and move others', async () => {
         const deltaX = 2.050389051437378
         const deltaZ = -0.8877299800515175
-        manager.continue({ x: centerX + 50, y: centerY + 20 })
-        expect(manager.getActiveZones()).toHaveLength(2)
+        managers.move.continue({ x: centerX + 50, y: centerY + 20 })
+        expect(managers.move.getActiveZones()).toHaveLength(2)
         expectZoneForMeshes(targets[0].id, [moved[0]])
         expectZoneForMeshes(targets[1].id, [moved[2]])
         const prev = moved[1].absolutePosition.asArray()
         actionRecorded.mockReset()
 
-        await manager.stop()
-        expect(manager.isMoving(moved[0])).toBe(false)
-        expect(manager.isMoving(moved[1])).toBe(false)
-        expect(manager.isMoving(moved[2])).toBe(false)
+        await managers.move.stop()
+        expect(managers.move.isMoving(moved[0])).toBe(false)
+        expect(managers.move.isMoving(moved[1])).toBe(false)
+        expect(managers.move.isMoving(moved[2])).toBe(false)
         expectPosition(moved[0], [
           1 + deltaX,
           moved[0].absolutePosition.y,
@@ -1129,15 +1118,15 @@ describe('MoveManager', () => {
           moved[2].absolutePosition.y,
           -3 + deltaZ
         ])
-        expect(manager.getActiveZones()).toHaveLength(0)
-        expect(manager.inProgress).toBe(false)
+        expect(managers.move.getActiveZones()).toHaveLength(0)
+        expect(managers.move.inProgress).toBe(false)
         expect(drops).toHaveLength(2)
         expectDroppedEvent(0, targets[1], [moved[2]])
         expectDroppedEvent(1, targets[0], [moved[0]])
         expectMoveRecorded(moveRecorded)
-        expect(selectionManager.meshes.has(moved[0])).toBe(true)
-        expect(selectionManager.meshes.has(moved[1])).toBe(true)
-        expect(selectionManager.meshes.has(moved[2])).toBe(true)
+        expect(managers.selection.meshes.has(moved[0])).toBe(true)
+        expect(managers.selection.meshes.has(moved[1])).toBe(true)
+        expect(managers.selection.meshes.has(moved[2])).toBe(true)
 
         expect(actionRecorded).toHaveBeenCalledTimes(1)
         expect(actionRecorded).toHaveBeenNthCalledWith(
@@ -1153,8 +1142,6 @@ describe('MoveManager', () => {
     /** @type {Mesh[]} */
     let moved
 
-    beforeAll(() => manager.init({ scene }))
-
     beforeEach(() => {
       moved = [
         createMovable(),
@@ -1163,16 +1150,16 @@ describe('MoveManager', () => {
       ]
       moved[1].setParent(moved[0])
       moved[2].setParent(moved[1])
-      selectionManager.select([moved[0], moved[1]])
+      managers.selection.select([moved[0], moved[1]])
     })
 
     describe('start()', () => {
       it('elevates unselected children mesh', () => {
         const prev = moved[0].absolutePosition.asArray()
-        manager.start(moved[1], { x: centerX, y: centerY })
-        expectPosition(moved[0], [1, 1 + manager.elevation, 1])
-        expectPosition(moved[1], [0, 5 + manager.elevation, 0])
-        expectPosition(moved[2], [-3, 0.5 + manager.elevation, -3])
+        managers.move.start(moved[1], { x: centerX, y: centerY })
+        expectPosition(moved[0], [1, 1 + managers.move.elevation, 1])
+        expectPosition(moved[1], [0, 5 + managers.move.elevation, 0])
+        expectPosition(moved[2], [-3, 0.5 + managers.move.elevation, -3])
         expect(actionRecorded).toHaveBeenCalledWith(
           {
             meshId: moved[0].id,
@@ -1183,14 +1170,14 @@ describe('MoveManager', () => {
           expect.anything()
         )
         expect(actionRecorded).toHaveBeenCalledTimes(1)
-        expect(manager.getActiveZones()).toHaveLength(0)
+        expect(managers.move.getActiveZones()).toHaveLength(0)
         expectMoveRecorded(moveRecorded, moved[0])
       })
     })
 
     describe('continue()', () => {
       beforeEach(() => {
-        manager.start(moved[1], { x: centerX, y: centerY })
+        managers.move.start(moved[1], { x: centerX, y: centerY })
         actionRecorded.mockReset()
       })
 
@@ -1199,16 +1186,16 @@ describe('MoveManager', () => {
         const deltaZ = -2.196934700012207
 
         const prev = moved[0].absolutePosition.asArray()
-        manager.continue({ x: centerX + 50, y: centerY + 50 })
+        managers.move.continue({ x: centerX + 50, y: centerY + 50 })
         expectPosition(moved[0], [
           1 + deltaX,
-          1 + manager.elevation,
+          1 + managers.move.elevation,
           1 + deltaZ
         ])
-        expectPosition(moved[1], [deltaX, 5 + manager.elevation, deltaZ])
+        expectPosition(moved[1], [deltaX, 5 + managers.move.elevation, deltaZ])
         expectPosition(moved[2], [
           -3 + deltaX,
-          0.5 + manager.elevation,
+          0.5 + managers.move.elevation,
           -3 + deltaZ
         ])
         expect(actionRecorded).toHaveBeenCalledWith(
@@ -1221,7 +1208,7 @@ describe('MoveManager', () => {
           expect.anything()
         )
         expect(actionRecorded).toHaveBeenCalledTimes(1)
-        expect(manager.getActiveZones()).toHaveLength(0)
+        expect(managers.move.getActiveZones()).toHaveLength(0)
       })
     })
   })
@@ -1232,15 +1219,13 @@ describe('MoveManager', () => {
     /** @type {(number[])[]} */
     let prevs
 
-    beforeAll(() => manager.init({ scene }))
-
     beforeEach(() => {
       moved = [
         createMovable(),
         createMovable('box1', new Vector3(0, 5, 0)),
         createMovable('box2', new Vector3(-3, 0.5, -3))
       ].map(movable => {
-        movable.addBehavior(new StackBehavior(), true)
+        movable.addBehavior(new StackBehavior({}, managers), true)
         return movable
       })
       moved[0].metadata.push?.(moved[1].id, true)
@@ -1250,13 +1235,13 @@ describe('MoveManager', () => {
       prevs = moved.map(mesh => mesh.absolutePosition.asArray())
     })
 
-    afterEach(() => manager.stop())
+    afterEach(() => managers.move.stop())
 
     it('can move highest mesh', () => {
-      manager.start(moved[2], { x: centerX, y: centerY })
+      managers.move.start(moved[2], { x: centerX, y: centerY })
       expectPosition(moved[0], [1, 1, 1])
       expectPosition(moved[1], [1, 2, 1])
-      expectPosition(moved[2], [1, 3 + manager.elevation, 1])
+      expectPosition(moved[2], [1, 3 + managers.move.elevation, 1])
       expect(actionRecorded).toHaveBeenNthCalledWith(
         1,
         {
@@ -1284,7 +1269,7 @@ describe('MoveManager', () => {
     })
 
     it('can not move base mesh', () => {
-      manager.start(moved[0], { x: centerX, y: centerY })
+      managers.move.start(moved[0], { x: centerX, y: centerY })
       expectPosition(moved[0], [1, 1, 1])
       expectPosition(moved[1], [1, 2, 1])
       expectPosition(moved[2], [1, 3, 1])
@@ -1293,7 +1278,7 @@ describe('MoveManager', () => {
     })
 
     it('can not intermediate mesh', () => {
-      manager.start(moved[1], { x: centerX, y: centerY })
+      managers.move.start(moved[1], { x: centerX, y: centerY })
       expectPosition(moved[0], [1, 1, 1])
       expectPosition(moved[1], [1, 2, 1])
       expectPosition(moved[2], [1, 3, 1])
@@ -1302,17 +1287,17 @@ describe('MoveManager', () => {
     })
 
     describe('given the entire stack is selected', () => {
-      beforeEach(() => selectionManager.select(moved))
+      beforeEach(() => managers.selection.select(moved))
 
       it.each([
         { title: 'highest mesh', rank: 2 },
         { title: 'intermediate mesh', rank: 1 },
         { title: 'base mesh', rank: 0 }
       ])('moves entire stack from $title', ({ rank }) => {
-        manager.start(moved[rank], { x: centerX, y: centerY })
-        expectPosition(moved[0], [1, 1 + manager.elevation, 1])
-        expectPosition(moved[1], [1, 2 + manager.elevation, 1])
-        expectPosition(moved[2], [1, 3 + manager.elevation, 1])
+        managers.move.start(moved[rank], { x: centerX, y: centerY })
+        expectPosition(moved[0], [1, 1 + managers.move.elevation, 1])
+        expectPosition(moved[1], [1, 2 + managers.move.elevation, 1])
+        expectPosition(moved[2], [1, 3 + managers.move.elevation, 1])
         expect(actionRecorded).toHaveBeenNthCalledWith(
           1,
           {
@@ -1336,15 +1321,15 @@ describe('MoveManager', () => {
   ) {
     const movable = createBox(id, {}, sceneUsed)
     movable.setAbsolutePosition(position)
-    movable.addBehavior(new MoveBehavior(), true)
-    controlManager.registerControlable(movable)
+    movable.addBehavior(new MoveBehavior({}, managers), true)
+    managers.control.registerControlable(movable)
     return movable
   }
 
   function createsTarget(rank = 1, position = new Vector3(0, 0, 0)) {
     const targetable = createBox(`targetable-${rank}`, {})
     targetable.isHittable = false
-    const behavior = new TargetBehavior()
+    const behavior = new TargetBehavior({}, managers)
     behavior.onDropObservable.add(drop => drops.push(drop))
     targetable.addBehavior(behavior, true)
 
@@ -1362,33 +1347,33 @@ describe('MoveManager', () => {
     expect(drops[rank]?.zone.mesh.id).toEqual(target.id)
     expect(getIds(drops[rank]?.dropped)).toEqual(getIds(moved))
   }
+
+  function expectZoneForMeshes(
+    /** @type {string} */ targetId,
+    /** @type {Mesh[]} */ meshes
+  ) {
+    const zone = /** @type {DropZone}) */ (
+      managers.move.getActiveZones().find(({ mesh }) => mesh.id === targetId)
+    )
+    expect(zone).toBeDefined()
+    expect(getIds(managers.target.droppablesByDropZone.get(zone))).toEqual(
+      getIds(meshes)
+    )
+  }
+
+  function getAltitudeOnCollision(
+    /** @type {Mesh} */ moved,
+    /** @type {Mesh} */ obstacle,
+    offset = 0
+  ) {
+    return (
+      obstacle.getBoundingInfo().boundingBox.maximumWorld.y +
+      getDimensions(moved).height * 0.5 +
+      offset +
+      managers.move.elevation
+    )
+  }
 })
-
-function expectZoneForMeshes(
-  /** @type {string} */ targetId,
-  /** @type {Mesh[]} */ meshes
-) {
-  const zone = /** @type {DropZone}) */ (
-    manager.getActiveZones().find(({ mesh }) => mesh.id === targetId)
-  )
-  expect(zone).toBeDefined()
-  expect(getIds(targetManager.droppablesByDropZone.get(zone))).toEqual(
-    getIds(meshes)
-  )
-}
-
-function getAltitudeOnCollision(
-  /** @type {Mesh} */ moved,
-  /** @type {Mesh} */ obstacle,
-  offset = 0
-) {
-  return (
-    obstacle.getBoundingInfo().boundingBox.maximumWorld.y +
-    getDimensions(moved).height * 0.5 +
-    offset +
-    manager.elevation
-  )
-}
 
 function getIds(/** @type {Mesh[]} */ meshes = []) {
   return meshes.map(({ id }) => id)

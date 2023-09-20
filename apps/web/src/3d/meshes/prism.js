@@ -1,15 +1,7 @@
 // @ts-check
-/**
- * @typedef {import('@babylonjs/core').Mesh} Mesh
- * @typedef {import('@babylonjs/core').Scene} Scene
- * @typedef {import('@src/3d/utils/behaviors').SerializedMesh} SerializedMesh
- */
-
 import { Vector3, Vector4 } from '@babylonjs/core/Maths/math.vector.js'
 import { CreateCylinder } from '@babylonjs/core/Meshes/Builders/cylinderBuilder.js'
 
-import { controlManager } from '../managers/control'
-import { materialManager } from '../managers/material'
 import { registerBehaviors, serializeBehaviors } from '../utils/behaviors'
 import { applyInitialTransform, setExtras } from '../utils/mesh'
 
@@ -17,9 +9,10 @@ import { applyInitialTransform, setExtras } from '../utils/mesh'
  * Creates a prism, with a given number of base edge (starting at 3).
  * A prism's texture must have edges + 2 faces, starting with back and ending with front, aligned horizontally.
  * By default, prisms have 6 edges and a width of 3.
- * @param {Omit<SerializedMesh, 'shape'>} params - prism parameters.
- * @param {Scene} scene - scene for the created mesh.
- * @returns {Mesh} the created prism mesh.
+ * @param {Omit<import('@src/3d/utils/behaviors').SerializedMesh, 'shape'>} params - prism parameters.
+ * @param {import('@src/3d/managers').Managers} managers - current managers.
+ * @param {import('@babylonjs/core').Scene} scene - scene for the created mesh.
+ * @returns the created prism mesh.
  */
 export function createPrism(
   {
@@ -39,6 +32,7 @@ export function createPrism(
     transform = undefined,
     ...behaviorStates
   },
+  managers,
   scene
 ) {
   const mesh = CreateCylinder(
@@ -52,7 +46,7 @@ export function createPrism(
     scene
   )
   mesh.name = 'prism'
-  materialManager.configure(mesh, texture)
+  managers.material.configure(mesh, texture)
   applyInitialTransform(mesh, transform)
   mesh.setAbsolutePosition(new Vector3(x, y, z))
   mesh.isPickable = false
@@ -77,8 +71,8 @@ export function createPrism(
     }
   })
 
-  registerBehaviors(mesh, behaviorStates)
+  registerBehaviors(mesh, behaviorStates, managers)
 
-  controlManager.registerControlable(mesh)
+  managers.control.registerControlable(mesh)
   return mesh
 }

@@ -13,7 +13,6 @@ import {
   RotateBehavior,
   RotateBehaviorName
 } from '@src/3d/behaviors'
-import { controlManager } from '@src/3d/managers'
 import { beforeAll, beforeEach, describe, expect, it, vi } from 'vitest'
 
 import {
@@ -27,14 +26,17 @@ import {
 } from '../../test-utils'
 
 describe('RotateBehavior', () => {
-  configures3dTestEngine()
+  /** @type {import('@src/3d/managers').Managers} */
+  let managers
+
+  configures3dTestEngine(created => (managers = created.managers))
 
   const actionRecorded = vi.fn()
   /** @type {Mock} */
   let animationEndReceived
 
   beforeAll(() => {
-    controlManager.onActionObservable.add(data => actionRecorded(data))
+    managers.control.onActionObservable.add(data => actionRecorded(data))
   })
 
   beforeEach(() => {
@@ -47,9 +49,9 @@ describe('RotateBehavior', () => {
       angle: Math.PI * 1.5,
       duration: faker.number.int(999)
     }
-    const behavior = new RotateBehavior(state)
+    const behavior = new RotateBehavior(state, managers)
     const mesh = createBox('box', {})
-    controlManager.registerControlable(mesh)
+    managers.control.registerControlable(mesh)
 
     expect(behavior.name).toEqual(RotateBehaviorName)
     expect(behavior.state).toEqual(state)
@@ -61,13 +63,13 @@ describe('RotateBehavior', () => {
   })
 
   it('can not restore state without mesh', () => {
-    expect(() => new RotateBehavior().fromState({ angle: Math.PI })).toThrow(
-      'Can not restore state without mesh'
-    )
+    expect(() =>
+      new RotateBehavior({}, managers).fromState({ angle: Math.PI })
+    ).toThrow('Can not restore state without mesh')
   })
 
   it('can not rotate without mesh', async () => {
-    const behavior = new RotateBehavior()
+    const behavior = new RotateBehavior({}, managers)
     await behavior.rotate?.()
     expect(actionRecorded).not.toHaveBeenCalled()
   })
@@ -149,10 +151,10 @@ describe('RotateBehavior', () => {
       const x = faker.number.int(999)
       const z = faker.number.int(999)
       mesh.setAbsolutePosition(new Vector3(x, 10, z))
-      mesh.addBehavior(new FlipBehavior({ isFlipped: true }), true)
+      mesh.addBehavior(new FlipBehavior({ isFlipped: true }, managers), true)
 
       const [, child] = createAttachedRotable('child')
-      child.addBehavior(new FlipBehavior(), true)
+      child.addBehavior(new FlipBehavior({}, managers), true)
       child.setParent(mesh)
 
       expectFlipped(mesh, true)
@@ -377,13 +379,19 @@ describe('RotateBehavior', () => {
       const [, granChild] = createAttachedRotable('granChild')
       const [, child] = createAttachedRotable('child')
       child.addBehavior(
-        new AnchorBehavior({
-          anchors: [{ id: 'child-1', snappedId: 'granChild' }]
-        }),
+        new AnchorBehavior(
+          {
+            anchors: [{ id: 'child-1', snappedId: 'granChild' }]
+          },
+          managers
+        ),
         true
       )
       mesh.addBehavior(
-        new AnchorBehavior({ anchors: [{ id: 'mesh-1', snappedId: 'child' }] }),
+        new AnchorBehavior(
+          { anchors: [{ id: 'mesh-1', snappedId: 'child' }] },
+          managers
+        ),
         true
       )
 
@@ -410,16 +418,16 @@ describe('RotateBehavior', () => {
       expect(animationEndReceived).not.toHaveBeenCalled()
     })
   })
-})
 
-/** @returns {[RotateBehavior, Mesh]} */
-function createAttachedRotable(
-  /** @type {string} */ id,
-  /** @type {RotableState}*/ state
-) {
-  const behavior = new RotateBehavior(state)
-  const mesh = createBox(id, {})
-  mesh.addBehavior(behavior, true)
-  controlManager.registerControlable(mesh)
-  return [behavior, mesh]
-}
+  /** @returns {[RotateBehavior, Mesh]} */
+  function createAttachedRotable(
+    /** @type {string} */ id,
+    /** @type {RotableState}*/ state
+  ) {
+    const behavior = new RotateBehavior(state, managers)
+    const mesh = createBox(id, {})
+    mesh.addBehavior(behavior, true)
+    managers.control.registerControlable(mesh)
+    return [behavior, mesh]
+  }
+})

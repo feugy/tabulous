@@ -7,21 +7,24 @@
 
 import { Color3 } from '@babylonjs/core/Maths/math.color'
 import { faker } from '@faker-js/faker'
-import { controlManager, materialManager } from '@src/3d/managers'
 import { createPrism } from '@src/3d/meshes'
-import { beforeAll, beforeEach, describe, expect, it } from 'vitest'
+import { beforeEach, describe, expect, it } from 'vitest'
 
 import { configures3dTestEngine, expectPosition } from '../../test-utils'
 
 /** @type {Scene} */
 let scene
-configures3dTestEngine(created => (scene = created.scene))
+/** @type {import('@src/3d/managers').Managers} */
+let managers
 
-beforeAll(() => materialManager.init({ scene }))
+configures3dTestEngine(created => {
+  scene = created.scene
+  managers = created.managers
+})
 
 describe('createPrism()', () => {
   it('creates a prism with default values and no behavior', async () => {
-    const mesh = await createPrism({ id: '', texture: '' }, scene)
+    const mesh = await createPrism({ id: '', texture: '' }, managers, scene)
     const { boundingBox } = mesh.getBoundingInfo()
     expect(mesh.name).toEqual('prism')
     expect(boundingBox.extendSize.x * 2).toEqual(3)
@@ -37,7 +40,7 @@ describe('createPrism()', () => {
 
   it('creates a prism with a single color', async () => {
     const color = '#1E282F'
-    const mesh = await createPrism({ id: '', texture: color }, scene)
+    const mesh = await createPrism({ id: '', texture: color }, managers, scene)
     const { boundingBox } = mesh.getBoundingInfo()
     expect(mesh.name).toEqual('prism')
     expect(boundingBox.extendSize.x * 2).toEqual(3)
@@ -56,6 +59,7 @@ describe('createPrism()', () => {
         diameter: 2,
         transform: { roll: Math.PI * -0.5 }
       },
+      managers,
       scene
     )
     const { boundingBox } = mesh.getBoundingInfo()
@@ -104,6 +108,7 @@ describe('createPrism()', () => {
           faceUV,
           ...behaviors
         },
+        managers,
         scene
       )
     })
@@ -133,9 +138,9 @@ describe('createPrism()', () => {
     })
 
     it('unregisters prism from controllables on disposal', () => {
-      expect(controlManager.isManaging(mesh)).toBe(true)
+      expect(managers.control.isManaging(mesh)).toBe(true)
       mesh.dispose()
-      expect(controlManager.isManaging(mesh)).toBe(false)
+      expect(managers.control.isManaging(mesh)).toBe(false)
     })
 
     it('serialize with its state', () => {

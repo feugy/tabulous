@@ -59,13 +59,15 @@ import { getMeshScreenPosition, getScreenPosition } from '../utils/vector'
 
 const logger = makeLogger('indicator')
 
-class IndicatorManager {
+export class IndicatorManager {
   /**
    * Creates a manager for indications above meshes.
+   * @param {object} params - parameters, including:
+   * @param {Scene} params.scene - main scene
    */
-  constructor() {
+  constructor({ scene }) {
     /** @type {Scene} the main scene. */
-    this.scene
+    this.scene = scene
     /** @type {Observable<Indicator[]>} emits when the indicator list has changed. */
     this.onChangeObservable = new Observable()
     /** @internal @type {Map<string, ManagedIndicator|ManagedPointer>} a map of displayed indicator by their id. */
@@ -74,17 +76,7 @@ class IndicatorManager {
     this.pointerByPlayerId = new Map()
     /** @internal @type {?() => void} */
     this.unsubscribeOnRender = null
-  }
-
-  /**
-   * Gives a scene to the manager.
-   * @param {object} params - parameters, including:
-   * @param {Scene} params.scene - main scene
-   */
-  async init({ scene }) {
     logger.debug({}, 'init indicators manager')
-    this.unsubscribeOnRender?.()
-    this.scene = scene
     const engine = scene.getEngine()
     const onRenderObserver = engine.onEndFrameObservable.add(() =>
       handleFrame(this)
@@ -101,7 +93,7 @@ class IndicatorManager {
    * Registers an indicator for a given mesh.
    * Does nothing if this indicator is already managed.
    * @param {MeshPlayerIndicator|MeshSizeIndicator} indicator - new size or player indicator.
-   * @returns {ManagedIndicator} the registered indicator.
+   * @returns the registered indicator.
    */
   registerMeshIndicator(indicator) {
     const existing = this.getById(indicator?.id)
@@ -124,7 +116,7 @@ class IndicatorManager {
    * Registers an indicator for a given player.
    * @param {string} playerId - id of the corresponding player.
    * @param {number[]} position - Vector3 components describing the pointer position in 3D engine.
-   * @returns {ManagedPointer} the registered indicator.
+   * @returns the registered indicator.
    */
   registerPointerIndicator(playerId, position) {
     let indicator = this.pointerByPlayerId.get(playerId)
@@ -176,7 +168,7 @@ class IndicatorManager {
 
   /**
    * @param {Pick<ManagedIndicator, 'id'>} indicator - tested indicator
-   * @returns {boolean} whether this indicator is controlled or not
+   * @returns whether this indicator is controlled or not
    */
   isManaging(indicator) {
     return this.indicators.has(indicator?.id)
@@ -184,7 +176,7 @@ class IndicatorManager {
 
   /**
    * @param {string} [id] - requested indicator id.
-   * @returns {ManagedIndicator|ManagedPointer|undefined} the indicator found, if any.
+   * @returns the indicator found, if any.
    */
   getById(id) {
     return id ? this.indicators.get(id) : undefined
@@ -204,16 +196,7 @@ class IndicatorManager {
   }
 }
 
-/**
- * Indicator manager singleton.
- * @type {IndicatorManager}
- */
-export const indicatorManager = new IndicatorManager()
-
-/**
- * @param {IndicatorManager} manager - manager instance
- */
-function handleFrame(manager) {
+function handleFrame(/** @type {IndicatorManager} */ manager) {
   let hasChanged = false
   for (const [, indicator] of manager.indicators) {
     if ('mesh' in indicator) {
@@ -229,7 +212,7 @@ function handleFrame(manager) {
 
 /**
  * @param {ManagedIndicator} indicator - updated indicator.
- * @returns {boolean} if this indicator position has changed.
+ * @returns if this indicator position has changed.
  */
 function setMeshPosition(indicator) {
   const { depth } = getDimensions(indicator.mesh)
@@ -247,7 +230,7 @@ function setMeshPosition(indicator) {
 /**
  * @param {ManagedPointer|ManagedFeedback} indicator - updated indicator.
  * @param {IndicatorManager} manager - instance manager.
- * @returns {boolean} if this indicator position has changed.
+ * @returns if this indicator position has changed.
  */
 function setPointerPosition(indicator, { scene }) {
   const { x, y } = getScreenPosition(
@@ -286,7 +269,7 @@ function notifyChange(
 /**
  * @param {IndicatorManager} manager - manager instance.
  * @param {Indicator} indicator - checked indicator.
- * @returns {boolean} whether this indicator is in the current camera frustum.
+ * @returns whether this indicator is in the current camera frustum.
  */
 function isInFrustum({ scene }, indicator) {
   let point =

@@ -13,7 +13,6 @@ import {
   StackBehaviorName
 } from '@src/3d/behaviors'
 import { StackBehavior } from '@src/3d/behaviors/stackable'
-import { controlManager, indicatorManager } from '@src/3d/managers'
 import {
   afterAll,
   beforeAll,
@@ -27,27 +26,28 @@ import {
 import { configures3dTestEngine, createBox } from '../../test-utils'
 
 describe('DetailBehavior', () => {
-  /** @type {Scene} */
-  let scene
+  /** @type {import('@src/3d/managers').Managers} */
+  let managers
 
-  configures3dTestEngine(created => (scene = created.scene))
+  configures3dTestEngine(created => {
+    managers = created.managers
+  })
 
   const onDetailsReceived = vi.fn()
   /** @type {?Observer} */
   let onDetailsObserver
 
   beforeEach(() => {
-    vi.resetAllMocks()
+    vi.clearAllMocks()
   })
 
   beforeAll(() => {
     onDetailsObserver =
-      controlManager.onDetailedObservable.add(onDetailsReceived)
-    indicatorManager.init({ scene })
+      managers.control.onDetailedObservable.add(onDetailsReceived)
   })
 
   afterAll(() => {
-    controlManager.onDetailedObservable.remove(onDetailsObserver)
+    managers.control.onDetailedObservable.remove(onDetailsObserver)
   })
 
   it('has initial state', () => {
@@ -55,7 +55,7 @@ describe('DetailBehavior', () => {
       frontImage: faker.image.url(),
       backImage: faker.image.url()
     }
-    const behavior = new DetailBehavior(state)
+    const behavior = new DetailBehavior(state, managers)
     const mesh = createBox('box', {})
 
     expect(behavior.mesh).toBeNull()
@@ -67,19 +67,21 @@ describe('DetailBehavior', () => {
   })
 
   it('can not restore state without mesh', () => {
-    expect(() => new DetailBehavior().fromState({ frontImage: '' })).toThrow(
-      'Can not restore state without mesh'
-    )
+    expect(() =>
+      new DetailBehavior({ frontImage: '' }, managers).fromState({
+        frontImage: ''
+      })
+    ).toThrow('Can not restore state without mesh')
   })
 
   it('can not show details without mesh', () => {
-    const behavior = new DetailBehavior()
+    const behavior = new DetailBehavior({ frontImage: '' }, managers)
     behavior.detail?.()
     expect(onDetailsReceived).not.toHaveBeenCalled()
   })
 
   it('can hydrate with default state', () => {
-    const behavior = new DetailBehavior()
+    const behavior = new DetailBehavior({ frontImage: '' }, managers)
     const mesh = createBox('box', {})
     mesh.addBehavior(behavior, true)
 
@@ -108,8 +110,8 @@ describe('DetailBehavior', () => {
     let behavior
 
     beforeEach(() => {
-      // @ts-expect-error image types are different
-      behavior = new DetailBehavior({ frontImage, backImage })
+      // @ts-expect-error -- image types are different
+      behavior = new DetailBehavior({ frontImage, backImage }, managers)
       mesh = createBox('box', {})
       mesh.addBehavior(behavior, true)
     })
@@ -154,8 +156,8 @@ describe('DetailBehavior', () => {
       ;[, mesh] = images.map((frontImage, rank) => {
         const box = createBox(`box${rank + 1}`, {})
         box.setAbsolutePosition(new Vector3(rank, rank, rank))
-        box.addBehavior(new StackBehavior({ duration: 10 }), true)
-        box.addBehavior(new DetailBehavior({ frontImage }), true)
+        box.addBehavior(new StackBehavior({ duration: 10 }, managers), true)
+        box.addBehavior(new DetailBehavior({ frontImage }, managers), true)
         return box
       })
       mesh
@@ -177,7 +179,7 @@ describe('DetailBehavior', () => {
 
     it('omits meshes with no images', () => {
       const box = createBox(`box4`, {})
-      box.addBehavior(new StackBehavior({ duration: 10 }), true)
+      box.addBehavior(new StackBehavior({ duration: 10 }, managers), true)
       mesh.metadata.push?.(box.id, true)
       mesh.metadata.detail?.()
       expect(onDetailsReceived).toHaveBeenCalledTimes(1)

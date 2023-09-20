@@ -25,7 +25,7 @@ describe('Toaster store', () => {
   })
 
   beforeEach(() => {
-    vi.resetAllMocks()
+    vi.clearAllMocks()
   })
 
   afterAll(() => subscription.unsubscribe())

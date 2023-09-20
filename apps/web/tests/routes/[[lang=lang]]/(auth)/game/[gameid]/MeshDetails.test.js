@@ -16,7 +16,7 @@ describe('/game/[gameId] MeshDetails component', () => {
   }
 
   beforeEach(() => {
-    vi.resetAllMocks()
+    vi.clearAllMocks()
   })
 
   it('displays a mesh image', () => {

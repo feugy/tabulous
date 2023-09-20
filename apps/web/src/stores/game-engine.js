@@ -21,15 +21,6 @@
  */
 
 import { createEngine } from '@src/3d'
-import {
-  cameraManager,
-  controlManager,
-  handManager,
-  indicatorManager,
-  inputManager,
-  replayManager,
-  selectionManager
-} from '@src/3d/managers'
 import { attachInputs } from '@src/utils/game-interaction'
 import {
   auditTime,
@@ -149,7 +140,7 @@ export const currentCamera = currentCamera$.asObservable()
  */
 export const handVisible = engineLoading$.pipe(
   filter(loading => !loading),
-  map(() => handManager.enabled)
+  map(() => engine$.value?.managers.hand.enabled)
 )
 
 /**
@@ -211,58 +202,58 @@ export function initEngine({ pointerThrottle, longTapDelay, ...engineProps }) {
   engine.start()
 
   // initialize cameras
-  cameraSaves$.next(cameraManager.saves)
-  currentCamera$.next(cameraManager.saves[0])
+  cameraSaves$.next(engine.managers.camera.saves)
+  currentCamera$.next(engine.managers.camera.saves[0])
 
   /** @type {BabylonToRxMapping[]} */
   const mappings = [
     {
-      observable: controlManager.onActionObservable,
+      observable: engine.managers.control.onActionObservable,
       subject: localAction$,
       observer: null
     },
     {
-      observable: controlManager.onDetailedObservable,
+      observable: engine.managers.control.onDetailedObservable,
       subject: meshDetails$,
       observer: null
     },
     {
-      observable: indicatorManager.onChangeObservable,
+      observable: engine.managers.indicator.onChangeObservable,
       subject: indicators$,
       observer: null
     },
     {
-      observable: selectionManager.onSelectionObservable,
+      observable: engine.managers.selection.onSelectionObservable,
       subject: selectedMeshes$,
       observer: null
     },
     {
-      observable: cameraManager.onSaveObservable,
+      observable: engine.managers.camera.onSaveObservable,
       subject: cameraSaves$,
       observer: null
     },
     {
-      observable: cameraManager.onMoveObservable,
+      observable: engine.managers.camera.onMoveObservable,
       subject: currentCamera$,
       observer: null
     },
     {
-      observable: inputManager.onLongObservable,
+      observable: engine.managers.input.onLongObservable,
       subject: longInputs,
       observer: null
     },
     {
-      observable: inputManager.onPointerObservable,
+      observable: engine.managers.input.onPointerObservable,
       subject: pointer$,
       observer: null
     },
     {
-      observable: handManager.onHandChangeObservable,
+      observable: engine.managers.hand.onHandChangeObservable,
       subject: handSaves$,
       observer: null
     },
     {
-      observable: handManager.onDraggableToHandObservable,
+      observable: engine.managers.hand.onDraggableToHandObservable,
       subject: highlightHand$,
       observer: null
     },
@@ -272,12 +263,12 @@ export function initEngine({ pointerThrottle, longTapDelay, ...engineProps }) {
       observer: null
     },
     {
-      observable: replayManager.onHistoryObservable,
+      observable: engine.managers.replay.onHistoryObservable,
       subject: history$,
       observer: null
     },
     {
-      observable: replayManager.onReplayRankObservable,
+      observable: engine.managers.replay.onReplayRankObservable,
       subject: replayRank$,
       observer: null
     }
@@ -299,15 +290,18 @@ export function initEngine({ pointerThrottle, longTapDelay, ...engineProps }) {
   subscriptions.push(
     lastMessageReceived.subscribe(({ data, playerId }) => {
       if (data?.pointer) {
-        indicatorManager.registerPointerIndicator(playerId, data.pointer)
+        engine.managers.indicator.registerPointerIndicator(
+          playerId,
+          data.pointer
+        )
       } else if (Array.isArray(data?.selectedIds)) {
-        if (!replayManager.isReplaying) {
+        if (!engine.managers.replay.isReplaying) {
           applyRemoteSelection(data.selectedIds, playerId)
         }
       } else if (data?.meshId) {
-        replayManager.record(data, playerId)
-        if (!replayManager.isReplaying) {
-          controlManager.apply(data)
+        engine.managers.replay.record(data, playerId)
+        if (!engine.managers.replay.isReplaying) {
+          engine.managers.control.apply(data)
         }
         remoteAction$.next({ ...data, peerId: playerId })
       }
@@ -341,7 +335,7 @@ export function initEngine({ pointerThrottle, longTapDelay, ...engineProps }) {
     // prunes unused peer pointers if needed
     connected.subscribe(players => {
       if (players) {
-        indicatorManager.pruneUnusedPointers(
+        engine.managers.indicator.pruneUnusedPointers(
           players.map(({ playerId }) => playerId)
         )
       }
@@ -374,26 +368,26 @@ function applyRemoteSelection(
   /** @type {string[]} */ selectedIds,
   /** @type {string} */ playerId
 ) {
-  selectionManager.apply(selectedIds, playerId)
+  engine$.value?.managers.selection.apply(selectedIds, playerId)
   remoteSelection$.next({ selectedIds, playerId })
 }
 
-/** @type {typeof cameraManager['save']} */
+/** @type {import('@src/3d/managers').CameraManager['save']} */
 export function saveCamera(...args) {
-  cameraManager.save(...args)
+  engine$.value?.managers.camera.save(...args)
 }
 
-/** @type {typeof cameraManager['restore']} */
+/** @type {import('@src/3d/managers').CameraManager['restore']} */
 export async function restoreCamera(...args) {
-  await cameraManager.restore(...args)
+  await engine$.value?.managers.camera.restore(...args)
 }
 
-/** @type {typeof cameraManager['loadSaves']} */
+/** @type {import('@src/3d/managers').CameraManager['loadSaves']} */
 export async function loadCameraSaves(...args) {
-  await cameraManager.loadSaves(...args)
+  await engine$.value?.managers.camera.loadSaves(...args)
 }
 
-/** @type {typeof replayManager['replayHistory']} */
+/** @type {import('@src/3d/managers').ReplayManager['replayHistory']} */
 export async function replayHistory(...args) {
-  await replayManager.replayHistory(...args)
+  await engine$.value?.managers.replay.replayHistory(...args)
 }

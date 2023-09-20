@@ -1,15 +1,7 @@
 // @ts-check
-/**
- * @typedef {import('@babylonjs/core').Mesh} Mesh
- * @typedef {import('@babylonjs/core').Scene} Scene
- * @typedef {import('@src/3d/utils/behaviors').SerializedMesh} SerializedMesh
- */
-
 import { Vector3, Vector4 } from '@babylonjs/core/Maths/math.vector.js'
 import { CreateCylinder } from '@babylonjs/core/Meshes/Builders/cylinderBuilder.js'
 
-import { controlManager } from '../managers/control'
-import { materialManager } from '../managers/material'
 import { registerBehaviors, serializeBehaviors } from '../utils/behaviors'
 import { applyInitialTransform, setExtras } from '../utils/mesh'
 
@@ -18,9 +10,10 @@ import { applyInitialTransform, setExtras } from '../utils/mesh'
  * Tokens are cylinders, so their position is their center.
  * A token's texture must have 3 faces, back then edge then front, aligned horizontally.
  * By default tokens have a diameter of 2.
- * @param {Omit<SerializedMesh, 'shape'>} params - token parameters.
- * @param {Scene} scene - scene for the created mesh.
- * @returns {Mesh} the created token mesh.
+ * @param {Omit<import('@src/3d/utils/behaviors').SerializedMesh, 'shape'>} params - token parameters.
+ * @param {import('@babylonjs/core').Scene} scene - scene for the created mesh.
+ * @param {import('@src/3d/managers').Managers} managers - current managers.
+ * @returns the created token mesh.
  */
 export function createRoundToken(
   {
@@ -39,6 +32,7 @@ export function createRoundToken(
     transform = undefined,
     ...behaviorStates
   },
+  managers,
   scene
 ) {
   const mesh = CreateCylinder(
@@ -52,7 +46,7 @@ export function createRoundToken(
     scene
   )
   mesh.name = 'roundToken'
-  materialManager.configure(mesh, texture)
+  managers.material.configure(mesh, texture)
   applyInitialTransform(mesh, transform)
   mesh.setAbsolutePosition(new Vector3(x, y, z))
   mesh.isPickable = false
@@ -76,8 +70,8 @@ export function createRoundToken(
     }
   })
 
-  registerBehaviors(mesh, behaviorStates)
+  registerBehaviors(mesh, behaviorStates, managers)
 
-  controlManager.registerControlable(mesh)
+  managers.control.registerControlable(mesh)
   return mesh
 }

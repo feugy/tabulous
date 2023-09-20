@@ -7,16 +7,11 @@
  */
 
 import { NullEngine } from '@babylonjs/core/Engines/nullEngine'
+import { Color4 } from '@babylonjs/core/Maths/math.color'
 import { Logger } from '@babylonjs/core/Misc/logger'
 import { faker } from '@faker-js/faker'
 import { createEngine } from '@src/3d'
 import { DrawBehaviorName } from '@src/3d/behaviors'
-import {
-  handManager,
-  inputManager,
-  selectionManager,
-  targetManager
-} from '@src/3d/managers'
 import { createCard } from '@src/3d/meshes'
 import { sleep } from '@src/utils'
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
@@ -32,11 +27,6 @@ describe('createEngine()', () => {
   const canvas = document.createElement('canvas')
   const interaction = document.createElement('div')
   const hand = document.createElement('div')
-  const inputInit = vi.spyOn(inputManager, 'init')
-  const updateColors = vi.spyOn(selectionManager, 'updateColors')
-  const applySelection = vi.spyOn(selectionManager, 'apply')
-  const targetInit = vi.spyOn(targetManager, 'init')
-  const handInit = vi.spyOn(handManager, 'init')
   const translate = (/** @type {string} */ key) => key
 
   beforeEach(() => {
@@ -60,18 +50,9 @@ describe('createEngine()', () => {
     })
     expect(engine.enableOfflineSupport).toBe(false)
     expect(engine.inputElement).toBeUndefined()
-    expect(handManager.enabled).toBe(false)
-    expect(inputInit).toHaveBeenCalledWith(
-      expect.objectContaining({
-        longTapDelay,
-        interaction
-      })
-    )
-    expect(inputInit).toHaveBeenCalledTimes(1)
-    expect(targetInit).not.toHaveBeenCalled()
-    expect(handInit).not.toHaveBeenCalled()
-    expect(updateColors).not.toHaveBeenCalled()
-    expect(applySelection).not.toHaveBeenCalled()
+    expect(engine.managers.hand.enabled).toBe(false)
+    expect(engine.managers.input.longTapDelay).toBe(longTapDelay)
+    expect(engine.managers.input.interaction).toBe(interaction)
     expect(engine.actionNamesByButton).toEqual(new Map([]))
     expect(engine.actionNamesByKey).toEqual(new Map([]))
   })
@@ -103,7 +84,6 @@ describe('createEngine()', () => {
     })
 
     it('can load() game data, including colors and peers selections', async () => {
-      applySelection.mockResolvedValue()
       const selections = [
         { playerId: peerId2, selectedIds: ['4'] },
         { playerId, selectedIds: ['1', '2'] },
@@ -121,6 +101,7 @@ describe('createEngine()', () => {
         y: 0,
         z: -10
       }
+      const applySelection = vi.spyOn(engine.managers.selection, 'apply')
       await engine.load(
         { id: '', created: Date.now(), meshes: [mesh], hands: [], selections },
         { playerId, colorByPlayerId, preferences: { playerId } },
@@ -129,11 +110,12 @@ describe('createEngine()', () => {
       engine.scenes[1].onDataLoadedObservable.notifyObservers(engine.scenes[1])
       expect(engine.scenes[1].getMeshById(mesh.id)).toBeDefined()
       expect(engine.isLoading).toBe(false)
-      expect(updateColors).toHaveBeenCalledWith(playerId, colorByPlayerId)
-      expect(updateColors).toHaveBeenCalledTimes(1)
+      expect(engine.managers.selection.color).toEqual(
+        Color4.FromHexString(
+          /** @type {string} */ (colorByPlayerId.get(playerId))
+        )
+      )
       expect(receiveLoading).not.toHaveBeenCalled()
-      expect(targetInit).not.toHaveBeenCalled()
-      expect(handInit).not.toHaveBeenCalled()
       expect(applySelection).toHaveBeenNthCalledWith(
         1,
         selections[0].selectedIds,
@@ -150,6 +132,7 @@ describe('createEngine()', () => {
     it('can serialize() game data', () => {
       createCard(
         { id: 'card3', texture: 'https://elyse.biz' },
+        engine.managers,
         engine.scenes[1]
       )
       expect(engine.serialize()).toEqual({
@@ -194,6 +177,7 @@ describe('createEngine()', () => {
         z: -10
       }
       expect(engine.isLoading).toBe(false)
+      const applySelection = vi.spyOn(engine.managers.selection, 'apply')
       await engine.load(
         { id: '', created: Date.now(), meshes: [mesh], hands: [], selections },
         { playerId, colorByPlayerId, preferences: { playerId } },
@@ -207,16 +191,9 @@ describe('createEngine()', () => {
       await sleep(150)
       expect(engine.isLoading).toBe(false)
       expect(engine.scenes[1].getMeshById(mesh.id)).toBeDefined()
-      expect(handManager.enabled).toBe(false)
+      expect(engine.managers.hand.enabled).toBe(false)
       expect(receiveLoading).toHaveBeenCalledWith(false, expect.anything())
       expect(receiveLoading).toHaveBeenCalledTimes(1)
-      expect(targetInit).toHaveBeenCalledWith(
-        expect.objectContaining({
-          color: colorByPlayerId.get(playerId)
-        })
-      )
-      expect(targetInit).toHaveBeenCalledTimes(1)
-      expect(handInit).not.toHaveBeenCalled()
       expect(applySelection).toHaveBeenNthCalledWith(
         1,
         selections[0].selectedIds,
@@ -252,15 +229,9 @@ describe('createEngine()', () => {
       expect(engine.isLoading).toBe(true)
       engine.scenes[1].onDataLoadedObservable.notifyObservers(engine.scenes[1])
       expect(engine.isLoading).toBe(false)
-      expect(handManager.enabled).toBe(true)
-      expect(handInit).toHaveBeenCalledWith({
-        scene: engine.scenes[1],
-        handScene: engine.scenes[0],
-        overlay: expect.anything(),
-        playerId,
-        angleOnPlay
-      })
-      expect(handInit).toHaveBeenCalledTimes(1)
+      expect(engine.managers.hand.enabled).toBe(true)
+      expect(engine.managers.hand.angleOnPlay).toBe(angleOnPlay)
+      expect(engine.managers.hand.playerId).toBe(playerId)
     })
 
     it('invokes observer before disposing', () => {
@@ -342,7 +313,6 @@ describe('createEngine()', () => {
           true
         )
         engine.start()
-        updateColors.mockReset()
       })
 
       it('removes drawn mesh from main scene', async () => {
@@ -357,9 +327,11 @@ describe('createEngine()', () => {
       })
 
       it('updates color on subsequent loads', async () => {
+        const newColor = '#123456'
+        const newPlayerId = faker.string.uuid()
         const updatedColorByPlayerId = new Map([
           ...colorByPlayerId.entries(),
-          [faker.string.uuid(), '#123456']
+          [newPlayerId, newColor]
         ])
         await engine.load(
           { id: '', created: Date.now(), ...engine.serialize(), hands: [] },
@@ -369,11 +341,9 @@ describe('createEngine()', () => {
             preferences: { playerId }
           }
         )
-        expect(updateColors).toHaveBeenCalledWith(
-          playerId,
-          updatedColorByPlayerId
-        )
-        expect(updateColors).toHaveBeenCalledTimes(1)
+        expect(
+          engine.managers.selection.colorByPlayerId.get(newPlayerId)
+        ).toEqual(Color4.FromHexString(newColor))
       })
 
       it('has action names mapped by button and shortcut', () => {

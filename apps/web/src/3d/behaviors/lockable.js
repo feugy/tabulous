@@ -6,8 +6,6 @@
  */
 
 import { makeLogger } from '../../utils/logger'
-import { controlManager } from '../managers/control'
-import { indicatorManager } from '../managers/indicator'
 import { actionNames } from '../utils/actions'
 import { attachFunctions, attachProperty } from '../utils/behaviors'
 import { LockBehaviorName, MoveBehaviorName } from './names'
@@ -20,8 +18,11 @@ export class LockBehavior {
   /**
    * Creates behavior to lock some actions on a mesh, by acting on other behaviors.
    * @param {LockableState} state - behavior state.
+   * @param {import('@src/3d/managers').Managers} managers - current managers.
    */
-  constructor(state = {}) {
+  constructor(state, managers) {
+    /** @internal */
+    this.managers = managers
     /** @type {?Mesh} mesh - the related mesh. */
     this.mesh = null
     /**  @type {RequiredLockableState} state - the behavior's current state. */
@@ -97,17 +98,17 @@ export class LockBehavior {
 }
 
 function internalToggle(
-  /** @type {LockBehavior} */ { state, mesh },
+  /** @type {LockBehavior} */ { state, mesh, managers },
   isLocal = false
 ) {
   if (mesh) {
-    controlManager.record({
+    managers.control.record({
       mesh,
       fn: actionNames.toggleLock,
       args: [],
       isLocal
     })
-    indicatorManager.registerFeedback({
+    managers.indicator.registerFeedback({
       action: state.isLocked ? 'unlock' : 'lock',
       position: mesh.absolutePosition.asArray()
     })

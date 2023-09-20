@@ -1,7 +1,6 @@
 // @ts-check
 /**
  * @typedef {import('@babylonjs/core').Engine} Engine
- * @typedef {import('@src/3d/managers/camera').cameraManager} cameraManager
  * @typedef {import('@src/3d/managers/camera').CameraPosition} CameraPosition
  * @typedef {import('@src/3d/managers/control').Action} Action
  * @typedef {import('@src/3d/managers/control').Move} Move
@@ -158,7 +157,7 @@ const cameraSaves = /** @type {BehaviorSubject<CameraPosition[]>} */ (
   actualCameraSaves
 )
 const loadCameraSaves =
-  /** @type {Mock<Parameters<cameraManager['loadSaves']>, Promise<void>>} */ (
+  /** @type {Mock<Parameters<import('@src/3d/managers').CameraManager['loadSaves']>, Promise<void>>} */ (
     actualLoadCameraSaves
   )
 const remoteSelection = /** @type {Subject<PlayerSelection>} */ (

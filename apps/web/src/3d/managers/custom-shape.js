@@ -8,31 +8,28 @@ import { getDieModelFile } from '../meshes'
 
 const logger = makeLogger('custom-shape')
 
-class CustomShapeManager {
+export class CustomShapeManager {
   /**
    * Creates a manager to download and cache custom mesh shapes.
+   * @param {object} params - parameters, including:
+   * @param {string} [params.gameAssetsUrl] - base url hosting the game shape files.
    */
-  constructor() {
-    /** @type {string} base url hosting the game shape files. */
-    this.gameAssetsUrl = ''
+  constructor({ gameAssetsUrl }) {
+    /** base url hosting the game shape files. */
+    this.gameAssetsUrl = gameAssetsUrl ?? ''
     /** @internal @type {Map<string, string>} */
     this.dataByFile = new Map()
   }
 
   /**
-   * Initialize manager with scene and configuration values.
-   * @param {object} params - parameters, including:
-   * @param {string} [params.gameAssetsUrl] - base url hosting the game shape files.
-   * @param {Game['meshes']} params.meshes - list of meshes.
-   * @param {Game['hands']} params.hands - list of hand meshes
-   * @returns {Promise<void>}
+   * Download modesl and cache their results.
+   * @param {Game} game - game data.
    */
-  async init({ gameAssetsUrl, meshes, hands }) {
+  async init({ meshes, hands }) {
     logger.debug(
       { files: [...this.dataByFile.keys()] },
       'init custom shape manager'
     )
-    this.gameAssetsUrl = gameAssetsUrl ?? ''
     const files = new Set([
       ...extractFiles(meshes),
       ...(hands ?? []).flatMap(({ meshes }) => extractFiles(meshes))
@@ -51,12 +48,12 @@ class CustomShapeManager {
   /**
    * Returns data for a given dile
    * @param {string} file - desired custom shape file name.
-   * @returns {string} the corresponding data, as acceptable by Babylon's SceneLoader.ImportMesh().
+   * @returns the corresponding data, as acceptable by Babylon's SceneLoader.ImportMesh().
    * @throws {Error} if requested file was not loaded.
    */
   get(file) {
     const data = this.dataByFile.get(file)
-    if (!data) {
+    if (data === undefined) {
       logger.error(
         { file },
         `custom shape manager does not have data for ${file}`
@@ -78,17 +75,7 @@ class CustomShapeManager {
   }
 }
 
-/**
- * Custom shape manager singleton.
- * @type {CustomShapeManager}
- */
-export const customShapeManager = new CustomShapeManager()
-
-/**
- * @param {Game['meshes']} meshes
- * @returns {string[]}
- */
-function extractFiles(meshes) {
+function extractFiles(/** @type {Game['meshes']} */ meshes) {
   /** @type {string[]} */
   const files = []
   for (const { id, shape, file, faces } of meshes ?? []) {
@@ -107,7 +94,7 @@ function extractFiles(meshes) {
 /**
  * @param {CustomShapeManager} manager - manager instance.
  * @param {string} file - downloaded file.
- * @returns {Promise<void>} resolves when the file is downloaded.
+ * @returns resolves when the file is downloaded.
  */
 async function downloadAndStore(manager, file) {
   logger.debug({ file }, `starts downloading ${file}`)

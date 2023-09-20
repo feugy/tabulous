@@ -51,7 +51,7 @@ import { setExtras } from './mesh'
 
 const animationLogger = makeLogger('animatable')
 
-/** @type {?[BehaviorNames, { new (state: ?): Behavior }][]} */
+/** @type {?[BehaviorNames, { new (state: ?, managers: import('@src/3d/managers').Managers): Behavior }][]} */
 let constructors = null
 
 function getConstructors() {
@@ -80,11 +80,12 @@ function getConstructors() {
  * and attach it to the mesh.
  * @param {Mesh} mesh - the modified mesh.
  * @param {BehaviorState} params - parameters, which may contain behavior specific states.
+ * @param {import('@src/3d/managers').Managers} managers - current managers
  */
-export function registerBehaviors(mesh, params) {
+export function registerBehaviors(mesh, params, managers) {
   for (const [name, constructor] of getConstructors()) {
     if (params[name]) {
-      mesh.addBehavior(new constructor(params[name]), true)
+      mesh.addBehavior(new constructor(params[name], managers), true)
     }
   }
 }
@@ -284,7 +285,6 @@ export function attachFunctions(behavior, ...functionNames) {
  * @param {AnimateBehavior} behavior - animated behavior.
  * @param {?() => void} onEnd - function invoked when all animations have completed.
  * @param {AnimationSpec[]} animationSpecs - list of animation specs.
- * @returns {Promise<void>}
  */
 export function runAnimation({ mesh, frameRate }, onEnd, ...animationSpecs) {
   if (!mesh) {

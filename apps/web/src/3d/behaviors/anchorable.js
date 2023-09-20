@@ -19,10 +19,6 @@
 import { Vector3 } from '@babylonjs/core/Maths/math.vector.js'
 
 import { makeLogger } from '../../utils/logger'
-import { controlManager } from '../managers/control'
-import { indicatorManager } from '../managers/indicator'
-import { moveManager } from '../managers/move'
-import { selectionManager } from '../managers/selection'
 import { actionNames } from '../utils/actions'
 import {
   animateMove,
@@ -45,9 +41,10 @@ export class AnchorBehavior extends TargetBehavior {
    * Creates behavior to make a mesh anchorable: it has one or several anchors to snap other meshes.
    * Each anchor can take up to one mesh only.
    * @param {AnchorableState} state - behavior state.
+   * @param {import('@src/3d/managers').Managers} managers - current managers.
    */
-  constructor(state = {}) {
-    super()
+  constructor(state, managers) {
+    super({}, managers)
     /** @type {RequiredAnchorableState} state - the behavior's current state. */
     this.state = /** @type {RequiredAnchorableState} */ (state)
     /** @protected @type {?Observer<DropDetails>} */
@@ -56,7 +53,7 @@ export class AnchorBehavior extends TargetBehavior {
     this.moveObserver = null
     /** @protected @type {?Observer<Action|Move>}} */
     this.actionObserver = null
-    /** @internal @type {Map<?, ?>} */
+    /** @internal @type {Map<string, SingleDropZone>} */
     this.zoneBySnappedId = new Map()
   }
 
@@ -94,22 +91,22 @@ export class AnchorBehavior extends TargetBehavior {
       }
     )
 
-    this.moveObserver = moveManager.onMoveObservable.add(({ mesh }) => {
+    this.moveObserver = this.managers.move.onMoveObservable.add(({ mesh }) => {
       // unsnap the moved mesh, unless:
       // 1. it is not snapped!
       // 2. it is moved together with the current mesh
       if (
         this.zoneBySnappedId.has(mesh?.id) &&
         !(
-          selectionManager.meshes.has(mesh) &&
-          selectionManager.meshes.has(/** @type {Mesh} */ (this.mesh))
+          this.managers.selection.meshes.has(mesh) &&
+          this.managers.selection.meshes.has(/** @type {Mesh} */ (this.mesh))
         )
       ) {
         this.unsnap(mesh.id)
       }
     })
 
-    this.actionObserver = controlManager.onActionObservable.add(
+    this.actionObserver = this.managers.control.onActionObservable.add(
       async actionOrMove => {
         // 1. unsnap all when drawing main mesh
         // 2. unsnap drawn snapped mesh
@@ -149,8 +146,8 @@ export class AnchorBehavior extends TargetBehavior {
    * Detaches this behavior from its mesh.
    */
   detach() {
-    controlManager.onActionObservable.remove(this.actionObserver)
-    moveManager.onMoveObservable.remove(this.moveObserver)
+    this.managers.control.onActionObservable.remove(this.actionObserver)
+    this.managers.move.onMoveObservable.remove(this.moveObserver)
     this.onDropObservable?.remove(this.dropObserver)
     super.detach()
   }
@@ -176,7 +173,7 @@ export class AnchorBehavior extends TargetBehavior {
   }
 
   /**
-   * @returns {String[]} ids for the meshes snapped to this one
+   * @returns ids for the meshes snapped to this one
    */
   getSnappedIds() {
     return [...this.zoneBySnappedId.keys()]
@@ -230,7 +227,7 @@ export class AnchorBehavior extends TargetBehavior {
   /**
    * Returns the zone to which a given mesh is snapped
    * @param {string} meshId - id of the tested mesh
-   * @returns {?SingleDropZone} zone to which this mesh is snapped, if any
+   * @returns zone to which this mesh is snapped, if any
    */
   snappedZone(meshId) {
     return this.zoneBySnappedId.get(meshId) ?? null
@@ -331,14 +328,14 @@ async function internalSnap(
   }
   const position = snapped.position.asArray()
   const angle = snapped.metadata.angle
-  indicatorManager.registerFeedback({
+  behavior.managers.indicator.registerFeedback({
     action: actionNames.snap,
     position: zone.mesh.absolutePosition.asArray()
   })
-  moveManager.notifyMove(snapped)
+  behavior.managers.move.notifyMove(snapped)
   await snapToAnchor(behavior, snappedId, zone, immediate)
   // record after so flippable could flip on demand, after the mesh was snapped.
-  controlManager.record({
+  behavior.managers.control.record({
     mesh: behavior.mesh,
     fn: actionNames.snap,
     args: [snappedId, anchorId, immediate],
@@ -348,7 +345,7 @@ async function internalSnap(
   })
   const isFlipped = behavior.getZoneFlip(anchorId)
   if (isFlipped != undefined && snapped.metadata.isFlipped !== isFlipped) {
-    await controlManager.invokeLocal(snapped, actionNames.flip)
+    await behavior.managers.control.invokeLocal(snapped, actionNames.flip)
   }
 }
 
@@ -377,9 +374,9 @@ async function internalUnsnap(
         `release snapped ${snappedId} from ${behavior.mesh.id}, zone ${zone.mesh.id}`
       )
       if (isFlipped != undefined && released.metadata.isFlipped !== isFlipped) {
-        await controlManager.invokeLocal(released, actionNames.flip)
+        await behavior.managers.control.invokeLocal(released, actionNames.flip)
       }
-      controlManager.record({
+      behavior.managers.control.record({
         mesh: behavior.mesh,
         fn: actionNames.unsnap,
         args: [releasedId],
@@ -387,7 +384,7 @@ async function internalUnsnap(
         isLocal
       })
       unsetAnchor(behavior, zone, released)
-      indicatorManager.registerFeedback({
+      behavior.managers.indicator.registerFeedback({
         action: actionNames.unsnap,
         position: zone.mesh.absolutePosition.asArray()
       })
@@ -401,7 +398,6 @@ async function internalUnsnap(
  * @param {string} snappedId - snapped mesh id.
  * @param {SingleDropZone} zone - drop zone.
  * @param {boolean} [loading=false] - whether the scene is loading.
- * @returns {Promise<void>}
  */
 async function snapToAnchor(behavior, snappedId, zone, loading = false) {
   const {
@@ -483,7 +479,7 @@ function unsetAnchor(behavior, zone, snapped) {
 /**
  * @param {Scene|undefined} scene - scene containing meshes.
  * @param {string} meshId - searched mesh id.
- * @returns {?Mesh[]} list of stacked meshes, if any.
+ * @returns list of stacked meshes, if any.
  */
 function getMeshList(scene, meshId) {
   let mesh = scene?.getMeshById(meshId)

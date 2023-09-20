@@ -12,7 +12,7 @@ describe('Menu component', () => {
   const handleSelect = vi.fn()
 
   beforeEach(() => {
-    vi.resetAllMocks()
+    vi.clearAllMocks()
     value$.set(undefined)
   })
 

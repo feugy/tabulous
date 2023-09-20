@@ -22,13 +22,6 @@ import {
   RotateBehavior
 } from '@src/3d/behaviors'
 import { StackBehavior } from '@src/3d/behaviors/stackable'
-import {
-  controlManager,
-  handManager,
-  indicatorManager,
-  moveManager,
-  selectionManager
-} from '@src/3d/managers'
 import { createRoundToken } from '@src/3d/meshes'
 import { animateMove, getCenterAltitudeAbove } from '@src/3d/utils'
 import {
@@ -57,41 +50,45 @@ import {
 } from '../../test-utils'
 
 describe('AnchorBehavior', () => {
-  configures3dTestEngine(created => (scene = created.scene))
+  configures3dTestEngine(created => {
+    scene = created.scene
+    managers = created.managers
+  })
 
   const actionRecorded = vi.fn()
   const moveRecorded = vi.fn()
   /** @type {Scene} */
   let scene
-  /** @type {SpyInstance<Parameters<typeof indicatorManager['registerFeedback']>, void>} */
+  /** @type {import('@src/3d/managers').Managers} */
+  let managers
+  /** @type {SpyInstance<Parameters<import('@src/3d/managers').IndicatorManager['registerFeedback']>, void>} */
   let registerFeedbackSpy
   /** @type {?Observer} */
   let moveObserver
 
   beforeAll(() => {
-    moveObserver = moveManager.onMoveObservable.add(moveRecorded)
-    controlManager.onActionObservable.add(data => actionRecorded(data))
-    indicatorManager.init({ scene })
+    moveObserver = managers.move.onMoveObservable.add(moveRecorded)
+    managers.control.onActionObservable.add(data => actionRecorded(data))
   })
 
   beforeEach(() => {
     vi.clearAllMocks()
-    registerFeedbackSpy = vi.spyOn(indicatorManager, 'registerFeedback')
-    vi.spyOn(handManager, 'draw').mockImplementation(async mesh => {
-      controlManager.record({ mesh, fn: 'draw', args: [] })
+    registerFeedbackSpy = vi.spyOn(managers.indicator, 'registerFeedback')
+    vi.spyOn(managers.hand, 'draw').mockImplementation(async mesh => {
+      managers.control.record({ mesh, fn: 'draw', args: [] })
     })
-    selectionManager.clear()
+    managers.selection.clear()
   })
 
   afterAll(() => {
-    moveManager.onMoveObservable.remove(moveObserver)
+    managers.move.onMoveObservable.remove(moveObserver)
   })
 
   it('has initial state', () => {
     const state = {
       duration: faker.number.int(999)
     }
-    const behavior = new AnchorBehavior(state)
+    const behavior = new AnchorBehavior(state, managers)
 
     expect(behavior.name).toEqual(AnchorBehaviorName)
     expect(behavior.state).toEqual(state)
@@ -105,7 +102,7 @@ describe('AnchorBehavior', () => {
     const snapped = createBox('box', {})
     snapped.setAbsolutePosition(new Vector3(1, 1, 1))
     const anchor = createBox('anchor', {})
-    const behavior = new AnchorBehavior()
+    const behavior = new AnchorBehavior({}, managers)
     behavior.addZone(anchor, { extent: 1 })
 
     await behavior.snap?.(snapped.id, anchor.id)
@@ -118,7 +115,7 @@ describe('AnchorBehavior', () => {
   it('can not unsnap a mesh not previously snapped', () => {
     const snapped = createBox('box', {})
 
-    const behavior = new AnchorBehavior()
+    const behavior = new AnchorBehavior({}, managers)
     behavior.addZone(createBox('anchor', {}), { extent: 1 })
 
     behavior.unsnap?.(snapped.id)
@@ -128,9 +125,9 @@ describe('AnchorBehavior', () => {
 
   it('can not unsnap a stack of mesh not previously snapped', () => {
     const snapped = createBox('box', {})
-    const stacked = makeStack(snapped)
+    const stacked = makeStack(managers, snapped)
 
-    const behavior = new AnchorBehavior()
+    const behavior = new AnchorBehavior({}, managers)
     behavior.addZone(createBox('anchor', {}), { extent: 1 })
 
     behavior.unsnap?.(stacked.id)
@@ -139,7 +136,7 @@ describe('AnchorBehavior', () => {
   })
 
   it('can not restore state without mesh', () => {
-    expect(() => new AnchorBehavior().fromState()).toThrow(
+    expect(() => new AnchorBehavior({}, managers).fromState()).toThrow(
       'Can not restore state without mesh'
     )
   })
@@ -158,28 +155,31 @@ describe('AnchorBehavior', () => {
       meshes = Array.from({ length: 2 }, (_, rank) => {
         const box = createBox(`box${rank + 1}`, {})
         box.addBehavior(new AnimateBehavior(), true)
-        box.addBehavior(new DrawBehavior(), true)
+        box.addBehavior(new DrawBehavior({}, managers), true)
         box.setAbsolutePosition(new Vector3(rank + 10, rank + 10, rank + 10))
-        controlManager.registerControlable(box)
+        managers.control.registerControlable(box)
         return box
       })
 
-      behavior = new AnchorBehavior({
-        anchors: [
-          {
-            id: '1',
-            x: 0.25,
-            y: 0.75,
-            z: 0.5,
-            width: 1,
-            height: 1.5,
-            depth: 0.5
-          },
-          { id: '2', width: 1.5, height: 1, depth: 0.25 }
-        ]
-      })
+      behavior = new AnchorBehavior(
+        {
+          anchors: [
+            {
+              id: '1',
+              x: 0.25,
+              y: 0.75,
+              z: 0.5,
+              width: 1,
+              height: 1.5,
+              depth: 0.5
+            },
+            { id: '2', width: 1.5, height: 1, depth: 0.25 }
+          ]
+        },
+        managers
+      )
       mesh.addBehavior(behavior, true)
-      controlManager.registerControlable(mesh)
+      managers.control.registerControlable(mesh)
     })
 
     it('attaches metadata to its mesh', () => {
@@ -305,6 +305,7 @@ describe('AnchorBehavior', () => {
           y: 5,
           z: -4
         },
+        managers,
         scene
       )
       mesh.addBehavior(behavior, true)
@@ -398,10 +399,10 @@ describe('AnchorBehavior', () => {
 
     it('snaps flippable meshes when hydrating', () => {
       const snapped = meshes[0]
-      snapped.addBehavior(new FlipBehavior({ isFlipped: true }), true)
+      snapped.addBehavior(new FlipBehavior({ isFlipped: true }, managers), true)
       expectFlipped(snapped)
 
-      mesh.addBehavior(new FlipBehavior({ isFlipped: true }), true)
+      mesh.addBehavior(new FlipBehavior({ isFlipped: true }, managers), true)
       expectFlipped(mesh)
       behavior.fromState({
         anchors: [
@@ -432,10 +433,10 @@ describe('AnchorBehavior', () => {
     it('snaps rotable meshes when hydrating', () => {
       const snapped = meshes[0]
       const angle = Math.PI * 0.5
-      snapped.addBehavior(new RotateBehavior({ angle }), true)
+      snapped.addBehavior(new RotateBehavior({ angle }, managers), true)
       expectRotated(snapped, angle)
 
-      mesh.addBehavior(new RotateBehavior({ angle }), true)
+      mesh.addBehavior(new RotateBehavior({ angle }, managers), true)
       expectRotated(mesh, angle)
       behavior.fromState({
         anchors: [
@@ -465,7 +466,10 @@ describe('AnchorBehavior', () => {
 
     it('can rotate snapped mesh when hydrating', () => {
       const snapped = meshes[0]
-      snapped.addBehavior(new RotateBehavior({ angle: Math.PI * 0.5 }), true)
+      snapped.addBehavior(
+        new RotateBehavior({ angle: Math.PI * 0.5 }, managers),
+        true
+      )
       expectRotated(snapped, Math.PI * 0.5)
 
       const angle = Math.PI * -0.5
@@ -495,7 +499,10 @@ describe('AnchorBehavior', () => {
 
     it('can reset snapped mesh rotation when hydrating', () => {
       const snapped = meshes[0]
-      snapped.addBehavior(new RotateBehavior({ angle: Math.PI * 0.5 }), true)
+      snapped.addBehavior(
+        new RotateBehavior({ angle: Math.PI * 0.5 }, managers),
+        true
+      )
       expectRotated(snapped, Math.PI * 0.5)
 
       const angle = 0
@@ -549,7 +556,7 @@ describe('AnchorBehavior', () => {
 
     it('snaps a stack of mesh', async () => {
       const snapped = meshes[0]
-      const stacked = makeStack(snapped)
+      const stacked = makeStack(managers, snapped)
       expectPosition(snapped, [10, 10, 10])
       expectPosition(stacked, [
         10,
@@ -585,9 +592,12 @@ describe('AnchorBehavior', () => {
     it('snaps mesh with snapped meshes', async () => {
       const [snapped, snappedOfSnapped] = meshes
       snapped.addBehavior(
-        new AnchorBehavior({
-          anchors: [{ id: '10', z: -1, snappedId: snappedOfSnapped.id }]
-        })
+        new AnchorBehavior(
+          {
+            anchors: [{ id: '10', z: -1, snappedId: snappedOfSnapped.id }]
+          },
+          managers
+        )
       )
       expectSnapped(snapped, snappedOfSnapped, 0)
 
@@ -637,11 +647,11 @@ describe('AnchorBehavior', () => {
     it('keeps rotation when snaping rotated mesh', async () => {
       const angle = Math.PI * 0.5
       const snapped = meshes[0]
-      snapped.addBehavior(new RotateBehavior({ angle }), true)
+      snapped.addBehavior(new RotateBehavior({ angle }, managers), true)
       expectRotated(snapped, angle)
       expect(snapped.absolutePosition.asArray()).toEqual([10, 10, 10])
 
-      mesh.addBehavior(new RotateBehavior({ angle }), true)
+      mesh.addBehavior(new RotateBehavior({ angle }, managers), true)
       expectRotated(mesh, angle)
 
       /** @type {[string, string, boolean]} */
@@ -671,14 +681,17 @@ describe('AnchorBehavior', () => {
 
     it('can set rotation when snapping rotated mesh', async () => {
       const angle = Math.PI * 0.5
-      mesh.addBehavior(new RotateBehavior({ angle }), true)
+      mesh.addBehavior(new RotateBehavior({ angle }, managers), true)
       expectRotated(mesh, angle)
       const snapped = meshes[0]
       behavior.fromState({
         anchors: [{ id: '1', width: 1, height: 2, depth: 0.5, angle }]
       })
-      snapped.addBehavior(new RotateBehavior({ angle: Math.PI * -0.5 }), true)
-      snapped.addBehavior(new FlipBehavior({ isFlipped: true }), true)
+      snapped.addBehavior(
+        new RotateBehavior({ angle: Math.PI * -0.5 }, managers),
+        true
+      )
+      snapped.addBehavior(new FlipBehavior({ isFlipped: true }, managers), true)
       expectRotated(snapped, Math.PI * -0.5)
       expect(snapped.absolutePosition.asArray()).toEqual([10, 10, 10])
 
@@ -712,7 +725,7 @@ describe('AnchorBehavior', () => {
       behavior.fromState({
         anchors: [{ id: '1', width: 1, height: 2, depth: 0.5, flip: true }]
       })
-      const flippable = new FlipBehavior({})
+      const flippable = new FlipBehavior({}, managers)
       snapped.addBehavior(flippable, true)
       expectFlipped(snapped, false)
       expect(snapped.absolutePosition.asArray()).toEqual([10, 10, 10])
@@ -747,7 +760,7 @@ describe('AnchorBehavior', () => {
     it('can revert flipped, rotated snapped mesh', async () => {
       const angle = Math.PI * 0.5
       const position = [10, 10, 10]
-      mesh.addBehavior(new RotateBehavior({ angle }), true)
+      mesh.addBehavior(new RotateBehavior({ angle }, managers), true)
       expectRotated(mesh, angle)
       const snapped = meshes[0]
       behavior.fromState({
@@ -756,8 +769,11 @@ describe('AnchorBehavior', () => {
         ]
       })
       const snappedAngle = Math.PI * -0.5
-      const flippable = new FlipBehavior({ isFlipped: true })
-      snapped.addBehavior(new RotateBehavior({ angle: snappedAngle }), true)
+      const flippable = new FlipBehavior({ isFlipped: true }, managers)
+      snapped.addBehavior(
+        new RotateBehavior({ angle: snappedAngle }, managers),
+        true
+      )
       snapped.addBehavior(flippable, true)
       expectFlipped(snapped)
       expectRotated(snapped, snappedAngle)
@@ -800,34 +816,34 @@ describe('AnchorBehavior', () => {
 
     it('updates snapped when reordering a stack', async () => {
       const snapped = meshes[0]
-      const stacked = makeStack(snapped)
+      const stacked = makeStack(managers, snapped)
       behavior.fromState({
         anchors: [
           { id: '1', width: 1, height: 2, depth: 0.5, snappedId: snapped.id }
         ]
       })
       expectSnapped(mesh, snapped, 0)
-      expectStacked([snapped, stacked], true, mesh.id)
+      expectStacked(managers, [snapped, stacked], true, mesh.id)
 
       await stacked.metadata.reorder?.([stacked.id, snapped.id])
-      expectStacked([stacked, snapped], true, mesh.id)
+      expectStacked(managers, [stacked, snapped], true, mesh.id)
       expectSnapped(mesh, stacked, 0)
       expect(registerFeedbackSpy).not.toHaveBeenCalled()
     })
 
     it('updates snapped when flipping an entire stack', async () => {
       const snapped = meshes[0]
-      const stacked = makeStack(snapped)
+      const stacked = makeStack(managers, snapped)
       behavior.fromState({
         anchors: [
           { id: '1', width: 1, height: 2, depth: 0.5, snappedId: snapped.id }
         ]
       })
       expectSnapped(mesh, snapped, 0)
-      expectStacked([snapped, stacked], true, mesh.id)
+      expectStacked(managers, [snapped, stacked], true, mesh.id)
 
       await stacked.metadata.flipAll?.()
-      expectStacked([stacked, snapped], true, mesh.id)
+      expectStacked(managers, [stacked, snapped], true, mesh.id)
       expectSnapped(mesh, stacked, 0)
       expect(registerFeedbackSpy).not.toHaveBeenCalled()
     })
@@ -874,7 +890,7 @@ describe('AnchorBehavior', () => {
 
     it('unsnaps a stack of mesh', async () => {
       const snapped = meshes[0]
-      const stacked = makeStack(snapped)
+      const stacked = makeStack(managers, snapped)
       behavior.fromState({
         anchors: [
           { id: '1', width: 1, height: 2, depth: 0.5, snappedId: snapped.id }
@@ -906,7 +922,7 @@ describe('AnchorBehavior', () => {
       })
       expectSnapped(mesh, snapped, 0)
 
-      moveManager.notifyMove(snapped)
+      managers.move.notifyMove(snapped)
       expectUnsnapped(mesh, snapped, 0)
       expect(behavior.getSnappedIds()).toEqual([])
       expect(actionRecorded).toHaveBeenCalledTimes(1)
@@ -935,7 +951,7 @@ describe('AnchorBehavior', () => {
           }
         ]
       })
-      const flippable = new FlipBehavior({})
+      const flippable = new FlipBehavior({}, managers)
       snapped.addBehavior(flippable, true)
       expectFlipped(snapped, false)
       expectSnapped(mesh, snapped, 0)
@@ -1045,9 +1061,9 @@ describe('AnchorBehavior', () => {
     it('keeps rotation when unsnaping rotated mesh', async () => {
       const angle = Math.PI * 0.5
       const snapped = meshes[0]
-      snapped.addBehavior(new RotateBehavior({ angle }), true)
+      snapped.addBehavior(new RotateBehavior({ angle }, managers), true)
       expectRotated(snapped, angle)
-      mesh.addBehavior(new RotateBehavior({ angle }), true)
+      mesh.addBehavior(new RotateBehavior({ angle }, managers), true)
       expectRotated(mesh, angle)
       await mesh.metadata.snap?.(snapped.id, behavior.zones[0].mesh.id)
       expectSnapped(mesh, snapped)
@@ -1119,7 +1135,7 @@ describe('AnchorBehavior', () => {
       const y = 3
       const z = 4
 
-      moveManager.notifyMove(mesh)
+      managers.move.notifyMove(mesh)
       animateMove(mesh, new Vector3(x, y, z), null)
 
       expectPosition(mesh, [x, y, z])
@@ -1154,9 +1170,9 @@ describe('AnchorBehavior', () => {
       expectSnapped(mesh, meshes[0], 0)
       expectSnapped(mesh, meshes[1], 1)
 
-      selectionManager.select([mesh, meshes[0]])
+      managers.selection.select([mesh, meshes[0]])
 
-      moveManager.notifyMove(mesh)
+      managers.move.notifyMove(mesh)
 
       expectSnapped(mesh, meshes[0], 0)
       expectSnapped(mesh, meshes[1], 1)
@@ -1202,7 +1218,7 @@ describe('AnchorBehavior', () => {
       expectUnsnapped(mesh, snapped1, 0)
       expectUnsnapped(mesh, snapped2, 1)
 
-      selectionManager.select(meshes)
+      managers.selection.select(meshes)
 
       await Promise.all([
         mesh.metadata.snap?.(snapped1.id, behavior.zones[0].mesh.id),
@@ -1244,11 +1260,17 @@ describe('AnchorBehavior', () => {
   })
 })
 
-function makeStack(/** @type {Mesh} */ mesh) {
+function makeStack(
+  /** @type {import('@src/3d/managers').Managers} */ managers,
+  /** @type {Mesh} */ mesh
+) {
   const stacked = createBox('stacked-box1', {})
   stacked.addBehavior(new AnimateBehavior(), true)
-  stacked.addBehavior(new StackBehavior(), true)
-  mesh.addBehavior(new StackBehavior({ stackIds: [stacked.id] }), true)
-  controlManager.registerControlable(stacked)
+  stacked.addBehavior(new StackBehavior({}, managers), true)
+  mesh.addBehavior(
+    new StackBehavior({ stackIds: [stacked.id] }, managers),
+    true
+  )
+  managers.control.registerControlable(stacked)
   return stacked
 }

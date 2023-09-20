@@ -74,7 +74,7 @@ describe('FriendList component', () => {
   ]
 
   beforeEach(() => {
-    vi.resetAllMocks()
+    vi.clearAllMocks()
   })
 
   function renderComponent(props = {}) {

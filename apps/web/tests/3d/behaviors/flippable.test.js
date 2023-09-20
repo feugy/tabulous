@@ -12,7 +12,6 @@ import {
   FlipBehavior,
   FlipBehaviorName
 } from '@src/3d/behaviors'
-import { controlManager } from '@src/3d/managers'
 import { beforeAll, beforeEach, describe, expect, it, vi } from 'vitest'
 
 import {
@@ -26,11 +25,13 @@ import {
 const actionRecorded = vi.fn()
 /** @type {Mock} */
 let animationEndReceived
+/** @type {import('@src/3d/managers').Managers} */
+let managers
 
-configures3dTestEngine()
+configures3dTestEngine(created => (managers = created.managers))
 
 beforeAll(() => {
-  controlManager.onActionObservable.add(data => actionRecorded(data))
+  managers.control.onActionObservable.add(data => actionRecorded(data))
 })
 
 beforeEach(() => {
@@ -44,9 +45,9 @@ describe('FlipBehavior', () => {
       isFlipped: faker.datatype.boolean(),
       duration: faker.number.int(999)
     }
-    const behavior = new FlipBehavior(state)
+    const behavior = new FlipBehavior(state, managers)
     const mesh = createBox('box', {})
-    controlManager.registerControlable(mesh)
+    managers.control.registerControlable(mesh)
 
     expect(behavior.name).toEqual(FlipBehaviorName)
     expect(behavior.state).toEqual(state)
@@ -58,13 +59,13 @@ describe('FlipBehavior', () => {
   })
 
   it('can not restore state without mesh', () => {
-    expect(() => new FlipBehavior().fromState({ isFlipped: false })).toThrow(
-      'Can not restore state without mesh'
-    )
+    expect(() =>
+      new FlipBehavior({}, managers).fromState({ isFlipped: false })
+    ).toThrow('Can not restore state without mesh')
   })
 
   it('can not flip without mesh', async () => {
-    const behavior = new FlipBehavior()
+    const behavior = new FlipBehavior({}, managers)
     await behavior.flip?.()
     expect(actionRecorded).not.toHaveBeenCalled()
   })
@@ -307,13 +308,19 @@ describe('FlipBehavior', () => {
       const [, granChild] = createAttachedFlippable('granChild')
       const [, child] = createAttachedFlippable('child')
       child.addBehavior(
-        new AnchorBehavior({
-          anchors: [{ id: 'child-1', snappedId: 'granChild' }]
-        }),
+        new AnchorBehavior(
+          {
+            anchors: [{ id: 'child-1', snappedId: 'granChild' }]
+          },
+          managers
+        ),
         true
       )
       mesh.addBehavior(
-        new AnchorBehavior({ anchors: [{ id: 'mesh-1', snappedId: 'child' }] }),
+        new AnchorBehavior(
+          { anchors: [{ id: 'mesh-1', snappedId: 'child' }] },
+          managers
+        ),
         true
       )
 
@@ -347,9 +354,9 @@ function createAttachedFlippable(
   /** @type {string} */ id,
   /** @type {FlippableState} */ state
 ) {
-  const behavior = new FlipBehavior(state)
+  const behavior = new FlipBehavior(state, managers)
   const mesh = createBox(id, {})
   mesh.addBehavior(behavior, true)
-  controlManager.registerControlable(mesh)
+  managers.control.registerControlable(mesh)
   return [behavior, mesh]
 }

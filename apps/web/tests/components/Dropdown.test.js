@@ -14,7 +14,7 @@ describe('Dropdown component', () => {
   const handleClick = vi.fn()
 
   beforeEach(() => {
-    vi.resetAllMocks()
+    vi.clearAllMocks()
   })
 
   function renderComponent(props = {}) {

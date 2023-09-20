@@ -21,7 +21,7 @@ describe('Typeahead component', () => {
   const options$ = writable()
 
   beforeEach(() => {
-    vi.resetAllMocks()
+    vi.clearAllMocks()
   })
 
   function renderComponent(props = {}) {

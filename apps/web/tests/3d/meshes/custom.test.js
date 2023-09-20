@@ -7,14 +7,9 @@
 
 import { Color3 } from '@babylonjs/core/Maths/math.color'
 import { faker } from '@faker-js/faker'
-import {
-  controlManager,
-  customShapeManager,
-  materialManager
-} from '@src/3d/managers'
 import { createCustom } from '@src/3d/meshes'
 import { getDimensions } from '@src/3d/utils'
-import { beforeAll, beforeEach, describe, expect, it, vi } from 'vitest'
+import { beforeEach, describe, expect, it, vi } from 'vitest'
 
 import pawnData from '../../fixtures/pawn.obj?raw'
 import {
@@ -25,25 +20,37 @@ import {
 
 /** @type {Scene} */
 let scene
-configures3dTestEngine(created => (scene = created.scene))
-
-beforeAll(() => materialManager.init({ scene }))
-
-vi.mock('@src/3d/managers/custom-shape', () => ({
-  customShapeManager: new Map()
-}))
-
+/** @type {import('@src/3d/managers').Managers} */
+let managers
 const file = 'pawn.obj'
+const empty = 'empty.obj'
 const pawnDimensions = [1.11, 2.45, 0.84]
 
-beforeEach(() => {
-  // @ts-expect-error customShapeManager is not a map
-  customShapeManager.set(file, btoa(pawnData))
+configures3dTestEngine(async created => {
+  scene = created.scene
+  managers = created.managers
+  vi.spyOn(global, 'fetch').mockImplementation(file =>
+    Promise.resolve(
+      new Response(file.toString().endsWith(empty) ? '' : pawnData)
+    )
+  )
+  await managers.customShape.init({
+    id: 'game',
+    created: Date.now(),
+    meshes: [
+      { id: 'pawn', shape: 'custom', file, texture: '' },
+      { id: 'empty', shape: 'custom', file: empty, texture: '' }
+    ]
+  })
 })
 
 describe('createCustom()', () => {
   it('creates a custom mesh from OBJ data with default values, and no behavior', async () => {
-    const mesh = await createCustom({ id: 'pawn', texture: '', file }, scene)
+    const mesh = await createCustom(
+      { id: 'pawn', texture: '', file },
+      managers,
+      scene
+    )
     expect(mesh.id).toEqual('pawn')
     expect(mesh.name).toEqual('custom')
     expectDimension(mesh, pawnDimensions)
@@ -64,6 +71,7 @@ describe('createCustom()', () => {
         file,
         transform: { scaleX: 2, scaleY: 2, scaleZ: 2 }
       },
+      managers,
       scene
     )
     expect(mesh.name).toEqual('custom')
@@ -74,35 +82,18 @@ describe('createCustom()', () => {
   })
 
   it('throws on an empty data', async () => {
-    const file = '/empty.obj'
-    // @ts-expect-error
-    customShapeManager.set(file, btoa(JSON.stringify({})))
     await expect(
-      createCustom({ id: '', texture: '', file }, scene)
-    ).rejects.toThrow(`${file} does not contain any mesh`)
-  })
-
-  it('throws on an invalid data', async () => {
-    // @ts-expect-error
-    customShapeManager.set(file, 'invalid base64 data')
-    await expect(
-      createCustom({ id: '', texture: '', file }, scene)
-    ).rejects.toThrow(
-      `Unable to load from pawn.obj: InvalidCharacterError: The string to be decoded contains invalid characters.`
-    )
-  })
-
-  it('throws on mesh-less data', async () => {
-    // @ts-expect-error
-    customShapeManager.set(file, btoa('this is invalid'))
-    await expect(
-      createCustom({ id: '', texture: '', file }, scene)
-    ).rejects.toThrow(`${file} does not contain any mesh`)
+      createCustom({ id: '', texture: '', file: empty }, managers, scene)
+    ).rejects.toThrow(`${empty} does not contain any mesh`)
   })
 
   it('creates a custom mesh with a single color', async () => {
     const color = '#1E282F'
-    const mesh = await createCustom({ id: '', file, texture: color }, scene)
+    const mesh = await createCustom(
+      { id: '', file, texture: color },
+      managers,
+      scene
+    )
     expect(mesh.name).toEqual('custom')
     expectDimension(mesh, pawnDimensions)
     expect(/** @type {Material} */ (mesh.material).diffuseColor).toEqual(
@@ -128,6 +119,7 @@ describe('createCustom()', () => {
     beforeEach(async () => {
       mesh = await createCustom(
         { file, id, texture, x, y, z, ...behaviors },
+        managers,
         scene
       )
     })
@@ -152,9 +144,9 @@ describe('createCustom()', () => {
     })
 
     it('unregisters custom meshes from controllables on disposal', () => {
-      expect(controlManager.isManaging(mesh)).toBe(true)
+      expect(managers.control.isManaging(mesh)).toBe(true)
       mesh.dispose()
-      expect(controlManager.isManaging(mesh)).toBe(false)
+      expect(managers.control.isManaging(mesh)).toBe(false)
     })
 
     it('serialize with its state', () => {

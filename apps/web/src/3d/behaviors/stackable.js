@@ -21,11 +21,6 @@ import { Vector3 } from '@babylonjs/core/Maths/math.vector'
 
 import { makeLogger } from '../../utils/logger'
 import { sleep } from '../../utils/time'
-import { controlManager } from '../managers/control'
-import { indicatorManager } from '../managers/indicator'
-import { moveManager } from '../managers/move'
-import { selectionManager } from '../managers/selection'
-import { targetManager } from '../managers/target'
 import { actionNames } from '../utils/actions'
 import {
   animateMove,
@@ -64,13 +59,11 @@ export class StackBehavior extends TargetBehavior {
    * and targetable (it can receive other stackable meshs).
    * Once a mesh is stacked bellow others, it can not be moved independently, and its targets and anchors are disabled.
    * Only the highest mesh on stack can be moved (it is automatically poped out) and be targeted.
-   *
-   * @property {StackableState} state - the behavior's current state.
-   *
    * @param {StackableState} state - behavior state.
+   * @param {import('@src/3d/managers').Managers} managers - current managers.
    */
-  constructor(state = {}) {
-    super()
+  constructor(state = {}, managers) {
+    super({}, managers)
     /** @type {RequiredStackableState} */
     this._state = /** @type {RequiredStackableState} */ (state)
     /** @type {Mesh[]} array of meshes (initially contains this mesh). */
@@ -123,7 +116,7 @@ export class StackBehavior extends TargetBehavior {
       }
     )
 
-    this.moveObserver = moveManager.onMoveObservable.add(({ mesh }) => {
+    this.moveObserver = this.managers.move.onMoveObservable.add(({ mesh }) => {
       // pop the last item if it's dragged, unless:
       // 1. there's only one item
       // 2. the first item is also dragged (we're dragging the whole stack)
@@ -131,13 +124,13 @@ export class StackBehavior extends TargetBehavior {
       if (
         stack.length > 1 &&
         stack[stack.length - 1] === mesh &&
-        !selectionManager.meshes.has(stack[0])
+        !this.managers.selection.meshes.has(stack[0])
       ) {
         this.pop()
       }
     })
 
-    this.actionObserver = controlManager.onActionObservable.add(
+    this.actionObserver = this.managers.control.onActionObservable.add(
       async actionOrMove => {
         const { stack } = this
         if (
@@ -147,7 +140,7 @@ export class StackBehavior extends TargetBehavior {
           stack[stack.length - 1].id === actionOrMove.meshId
         ) {
           const poped = await internalPop(this, 1, false, true)
-          indicatorManager.registerFeedback({
+          this.managers.indicator.registerFeedback({
             action: actionNames.pop,
             position: poped[0].absolutePosition.asArray()
           })
@@ -160,8 +153,8 @@ export class StackBehavior extends TargetBehavior {
    * Detaches this behavior from its mesh, unsubscribing observables
    */
   detach() {
-    controlManager.onActionObservable.remove(this.actionObserver)
-    moveManager.onMoveObservable.remove(this.moveObserver)
+    this.managers.control.onActionObservable.remove(this.actionObserver)
+    this.managers.move.onMoveObservable.remove(this.moveObserver)
     this.onDropObservable?.remove(this.dropObserver)
     super.detach()
   }
@@ -175,7 +168,7 @@ export class StackBehavior extends TargetBehavior {
     const last = this.stack[this.stack.length - 1]
     return last === this.mesh
       ? Boolean(mesh) &&
-          targetManager.canAccept(
+          this.managers.target.canAccept(
             this.dropZone,
             mesh.getBehaviorByName(MoveBehaviorName)?.state.kind
           )
@@ -226,7 +219,7 @@ export class StackBehavior extends TargetBehavior {
           )
         )
       }
-      indicatorManager.registerFeedback({
+      this.managers.indicator.registerFeedback({
         action: actionNames.pop,
         position: poped[0].absolutePosition.asArray()
       })
@@ -296,7 +289,7 @@ export class StackBehavior extends TargetBehavior {
           this.state.duration,
           false
         )
-        indicatorManager.registerFeedback({
+        this.managers.indicator.registerFeedback({
           action: actionNames.pop,
           position: last.absolutePosition.asArray()
         })
@@ -395,7 +388,7 @@ async function internalPush(
   const { angle } = behavior._state
 
   if (!behavior.inhibitControl) {
-    controlManager.record({
+    behavior.managers.control.record({
       mesh: stack[0],
       fn: actionNames.push,
       args: [meshId, immediate],
@@ -404,7 +397,7 @@ async function internalPush(
       revert: [1, immediate, mesh.absolutePosition.asArray(), mesh.rotation.y],
       isLocal
     })
-    moveManager.notifyMove(mesh)
+    behavior.managers.move.notifyMove(mesh)
   }
   const { x, z } = base.mesh.absolutePosition
   // when hydrating, we must break existing stacks, because they are meant to be broken by serialization
@@ -442,7 +435,7 @@ async function internalPush(
   }
   attach()
   if (!behavior.inhibitControl) {
-    indicatorManager.registerFeedback({
+    behavior.managers.indicator.registerFeedback({
       action: actionNames.push,
       position: pushed.absolutePosition.asArray()
     })
@@ -468,7 +461,7 @@ function internalPop(
     const mesh = /** @type {Mesh} */ (stack.pop())
     poped.push(mesh)
     setBase(mesh, null)
-    updateIndicator(mesh, 0)
+    updateIndicator(behavior.managers, mesh, 0)
     // note: no need to enable the poped mesh target: since it was last, it's always enabled
     setStatus(stack, stack.length - 1, true, behavior)
     logger.info(
@@ -480,7 +473,7 @@ function internalPop(
     poped.push(stack[0])
   }
   // note: all mesh in stack are uncontrollable, so we pass the poped mesh id
-  controlManager.record({
+  behavior.managers.control.record({
     mesh: stack[0],
     fn: actionNames.pop,
     args: [count, withMove],
@@ -510,7 +503,7 @@ async function internalReorder(
   const stack = ids.map(id => old[posById.get(id) ?? -1]).filter(Boolean)
   const oldIds = old.map(({ id }) => id)
 
-  controlManager.record({
+  behavior.managers.control.record({
     mesh: old[0],
     fn: actionNames.reorder,
     args: [ids, animate],
@@ -671,7 +664,7 @@ async function internalFlip(
   isLocal = false
 ) {
   const base = behavior.base ?? behavior
-  controlManager.record({
+  behavior.managers.control.record({
     mesh: base.stack[0],
     fn: actionNames.flipAll,
     args: [],
@@ -682,7 +675,9 @@ async function internalFlip(
     invertStack(base)
   }
   await Promise.all(
-    base.stack.map(mesh => controlManager.invokeLocal(mesh, actionNames.flip))
+    base.stack.map(mesh =>
+      behavior.managers.control.invokeLocal(mesh, actionNames.flip)
+    )
   )
   if (!isFlipped) {
     invertStack(base)
@@ -719,7 +714,7 @@ function setStatus(stack, rank, enabled, behavior) {
     movable.enabled = enabled
     logger.info({ mesh }, `${operation} moves for ${mesh.id}`)
   }
-  updateIndicator(mesh, enabled ? stack.length : 0)
+  updateIndicator(behavior.managers, mesh, enabled ? stack.length : 0)
 }
 
 function setBase(
@@ -743,12 +738,16 @@ function setBase(
   return targetable
 }
 
-function updateIndicator(/** @type {Mesh} */ mesh, /** @type {number} */ size) {
+function updateIndicator(
+  /** @type {import('@src/3d/managers').Managers} */ { indicator },
+  /** @type {Mesh} */ mesh,
+  /** @type {number} */ size
+) {
   const id = `${mesh.id}.stack-size`
   if (size > 1) {
-    indicatorManager.registerMeshIndicator({ id, mesh, size })
+    indicator.registerMeshIndicator({ id, mesh, size })
   } else {
-    indicatorManager.unregisterIndicator({ id })
+    indicator.unregisterIndicator({ id })
   }
 }
 

@@ -31,7 +31,7 @@ export const altitudeGap = 0.01
  * Return the altitude of a mesh center if it was lying on the ground
  * @template {AbstractMesh} T
  * @param {T} mesh - dested mesh.
- * @returns {number} resulting y coordinage.
+ * @returns resulting y coordinage.
  */
 export function getGroundAltitude(mesh) {
   return -mesh.getBoundingInfo().minimum.y
@@ -41,7 +41,7 @@ export function getGroundAltitude(mesh) {
  * Returns the absolute altitude (Y axis) above a given mesh, including minimum spacing.
  * @template {AbstractMesh} T
  * @param {T} mesh - related mesh.
- * @returns {number} resulting Y coordinate.
+ * @returns resulting Y coordinate.
  */
 export function getAltitudeAbove(mesh) {
   return mesh.getBoundingInfo().boundingBox.maximumWorld.y + altitudeGap
@@ -53,7 +53,7 @@ export function getAltitudeAbove(mesh) {
  * @template {AbstractMesh} T
  * @param {T} meshBelow - foundation to put the mesh on.
  * @param {T} meshAbove - positionned over the other mesh.
- * @returns {number} resulting Y coordinate.
+ * @returns resulting Y coordinate.
  */
 export function getCenterAltitudeAbove(meshBelow, meshAbove) {
   meshBelow.computeWorldMatrix(true)
@@ -65,7 +65,7 @@ export function getCenterAltitudeAbove(meshBelow, meshAbove) {
  * It'll check all other meshes in the same scene to identify the ones below (partial overlap is supported).
  * Does not run any animation, and change its absolute position.
  * @param {Mesh} mesh - applied mesh.
- * @returns {Vector3} the mesh's new absolute position
+ * @returns the mesh's new absolute position
  */
 export function applyGravity(mesh) {
   logger.info(
@@ -98,7 +98,7 @@ export function applyGravity(mesh) {
  * @template {AbstractMesh} T
  * @param {T} mesh - checked mesh.
  * @param {T} target - other mesh.
- * @returns {boolean} true when mesh is hovering the target.
+ * @returns true when mesh is hovering the target.
  */
 export function isAbove(mesh, target) {
   return findBelow(mesh, [target]).length === 1
@@ -110,7 +110,7 @@ export function isAbove(mesh, target) {
  * @template {AbstractMesh} T
  * @param {Iterable<T>} [meshes] - array of meshes to order.
  * @param {boolean} [highestFirst = false] - false to return highest first.
- * @returns {T[]} sorted array.
+ * @returns sorted array.
  */
 export function sortByElevation(meshes, highestFirst = false) {
   return [...(meshes ?? [])].sort((a, b) =>
@@ -124,7 +124,7 @@ export function sortByElevation(meshes, highestFirst = false) {
  * @template {AbstractMesh} T
  * @param {T} mesh - reference mesh.
  * @param {T[]} candidates - list of candidate meshes to consider.
- * @returns {T[]} candidate meshes bellow the reference mesh.
+ * @returns candidate meshes bellow the reference mesh.
  */
 function findBelow(mesh, candidates) {
   const results = []
@@ -146,7 +146,7 @@ function findBelow(mesh, candidates) {
 /**
  * @param {Geometry} geometryA - first considered geometry.
  * @param {Geometry} geometryB - second considered geometry.
- * @returns {boolean} whether these geometry instersect.
+ * @returns whether these geometry instersect.
  */
 function intersectGeometries(geometryA, geometryB) {
   const circleA = 'center' in geometryA ? geometryA : null
@@ -169,7 +169,7 @@ function intersectGeometries(geometryA, geometryB) {
  * @template {AbstractMesh} T
  * @param {T} mesh - reference mesh.
  * @param {BoundingBox} boundingBox - bounding box to build geometry for.
- * @returns {Geometry} bounding box's geomertry object.
+ * @returns bounding box's geomertry object.
  */
 function buildGeometry(mesh, boundingBox) {
   const rectangle = buildGroundRectangle(boundingBox)
@@ -179,7 +179,7 @@ function buildGeometry(mesh, boundingBox) {
 /**
  * @param {BoundingBox} reference - reference bounding box.
  * @param {BoundingBox} tested - tested bounding box.
- * @returns {boolean} whether tested bounding box is below the reference.
+ * @returns whether tested bounding box is below the reference.
  */
 function isGloballyBelow(reference, tested) {
   return tested.maximumWorld.y <= reference.minimumWorld.y

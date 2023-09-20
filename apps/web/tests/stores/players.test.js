@@ -45,7 +45,7 @@ const turnCredentials = {
 const token = faker.string.uuid()
 
 beforeEach(() => {
-  vi.resetAllMocks()
+  vi.clearAllMocks()
 })
 
 describe('searchPlayers()', () => {
