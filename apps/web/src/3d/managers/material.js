@@ -48,26 +48,25 @@ export class MaterialManager {
    * @param {string} [params.gameAssetsUrl] - base url hosting the game textures.
    * @param {string} [params.locale] - locale used to download the game textures.
    * @param {boolean} [params.isWebGL1] - true if the rendering engine only supports WebGL1.
+   * @param {boolean} [params.disabled] - true to disable material support and always return scene's default material.
    */
-  constructor({ scene, handScene, gameAssetsUrl, locale, isWebGL1 }) {
-    /** @type {Scene} main scene. */
-    this.scene
-    /** @type {Scene|undefined} hand scene. */
-    this.handScene
-    /** @type {string} base url hosting the game textures. */
-    this.gameAssetsUrl = ''
-    /** @property {string} locale used to download the game textures. */
-    this.locale = ''
+  constructor({ scene, handScene, gameAssetsUrl, locale, isWebGL1, disabled }) {
+    /** main scene. */
+    this.scene = scene
+    /** optional hand scene. */
+    this.handScene = handScene
+    /** base url hosting the game textures. */
+    this.gameAssetsUrl = gameAssetsUrl ?? ''
+    /** used to download the game textures. */
+    this.locale = locale ?? 'fr'
     /** @internal @type {Map<string, PBRSpecularGlossinessMaterial>} map of material for the main scene. */
     this.mainMaterialByUrl = new Map()
     /** @internal @type {Map<string, PBRSpecularGlossinessMaterial>} map of material for the hand scene.*/
     this.handMaterialByUrl = new Map()
-    /** @internal @type {boolean} */
+    /** true to disable material support and always return scene's default material. */
+    this.disabled = disabled ?? false
+    /** @internal */
     this.isWebGL1 = isWebGL1 === true
-    this.scene = scene
-    this.handScene = handScene
-    this.gameAssetsUrl = gameAssetsUrl ?? ''
-    this.locale = locale ?? 'fr'
     logger.debug('material manager initialized')
     this.clear()
     scene.onDisposeObservable.addOnce(() => this.clear())
@@ -78,7 +77,9 @@ export class MaterialManager {
    * @param {Game} game - loaded game data.
    */
   init(game) {
-    preloadMaterials(this, game)
+    if (!this.disabled) {
+      preloadMaterials(this, game)
+    }
   }
 
   /**
@@ -89,8 +90,12 @@ export class MaterialManager {
    */
   configure(mesh, texture) {
     const scene = mesh.getScene()
-    mesh.material = buildMaterials(this, texture, scene)
-    mesh.receiveShadows = true
+    if (this.disabled) {
+      mesh.material = scene.defaultMaterial
+    } else {
+      mesh.material = buildMaterials(this, texture, scene)
+      mesh.receiveShadows = true
+    }
   }
 
   /**
@@ -101,7 +106,9 @@ export class MaterialManager {
    * @returns the build (or cached) material.
    */
   buildOnDemand(texture, scene) {
-    return buildMaterials(this, texture, scene)
+    return this.disabled
+      ? scene.defaultMaterial
+      : buildMaterials(this, texture, scene)
   }
 
   /**
@@ -123,9 +130,10 @@ export class MaterialManager {
    * @returns whether this material is managed or not
    */
   isManaging(texture) {
-    return (
-      this.mainMaterialByUrl.has(texture) || this.handMaterialByUrl.has(texture)
-    )
+    return this.disabled
+      ? true
+      : this.mainMaterialByUrl.has(texture) ||
+          this.handMaterialByUrl.has(texture)
   }
 }
 
