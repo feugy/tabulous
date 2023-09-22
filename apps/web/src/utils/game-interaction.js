@@ -3,8 +3,6 @@
  * @typedef {import('@babylonjs/core').Engine} Engine
  * @typedef {import('@babylonjs/core').Mesh} Mesh
  * @typedef {import('rxjs').Subscription} Subscription
- * @typedef {import('@src/3d/managers/control').Action} Action
- * @typedef {import('@src/3d/managers/control').Move} Move
  * @typedef {import('@src/3d/managers/control').MeshDetails} MeshDetails
  * @typedef {import('@src/3d/managers/input').TapData} TapData
  * @typedef {import('@src/3d/managers/input').DragData} DragData
@@ -135,7 +133,7 @@ export function attachInputs({ engine, hoverDelay, actionMenuProps$ }) {
   const hovers$ = new Subject()
   /** @type {Subject<MeshDetails>} */
   const details$ = new Subject()
-  /** @type {Subject<Action|Move>} */
+  /** @type {Subject<import('@src/3d/managers').ActionOrMove>} */
   const behaviorAction$ = new Subject()
   /** @type {Subject<number>} */
   const replayRank$ = new Subject()

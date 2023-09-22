@@ -22,6 +22,8 @@
   export let replayRank = 0
   /** @type {Map<string, Player>} a map of player details by their id. */
   export let playerById
+  /** @type {string} id of the current player */
+  export let currentPlayerId
 
   /** @type {import('svelte').EventDispatcher<{ sendMessage: { text: string }, replay: number }>} */
   const dispatch = createEventDispatcher()
@@ -74,14 +76,14 @@
     {#each items as item}
       {#if 'playerId' in item}
         {@const player = playerById.get(item.playerId)}
-        {#if 'rank' in item}<HistoryRecord
-            {player}
-            {item}
-            isActive={item.rank === replayRank}
-            on:click={() =>
-              dispatch('replay', /** @type {{rank: number}} */ (item).rank)}
-          />
-        {:else}<Message {player} {item} />{/if}
+        {#if 'rank' in item}{#if !item.fromHand || currentPlayerId === item.playerId}<HistoryRecord
+              {player}
+              {item}
+              isActive={item.rank === replayRank}
+              on:click={() =>
+                dispatch('replay', /** @type {{rank: number}} */ (item).rank)}
+            />
+          {/if}{:else}<Message {player} {item} />{/if}
       {:else}
         <Day time={item.time} />
       {/if}

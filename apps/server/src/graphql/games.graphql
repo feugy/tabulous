@@ -266,6 +266,7 @@ interface HistoryRecord {
   meshId: ID!
   playerId: ID!
   duration: Int
+  fromHand: Boolean
 }
 
 type PlayerAction implements HistoryRecord {
@@ -276,6 +277,7 @@ type PlayerAction implements HistoryRecord {
   argsStr: String
   revertStr: String
   duration: Int
+  fromHand: Boolean
 }
 
 type PlayerMove implements HistoryRecord {
@@ -285,6 +287,7 @@ type PlayerMove implements HistoryRecord {
   pos: [Float]!
   prev: [Float]!
   duration: Int
+  fromHand: Boolean
 }
 
 input GameInput {
@@ -475,6 +478,7 @@ input HistoryRecordInput {
   pos: [Float]
   prev: [Float]
   duration: Int
+  fromHand: Boolean
 }
 
 type GameParameters {

@@ -138,6 +138,7 @@
       {history}
       {replayRank}
       {playerById}
+      currentPlayerId={user.id}
       on:sendMessage
       on:replay
     />

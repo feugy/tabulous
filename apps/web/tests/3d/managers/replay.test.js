@@ -65,7 +65,6 @@ describe('managers.Control', () => {
   describe('given initialized with empty history', () => {
     it('is not replaying', () => {
       expect(managers.replay.isReplaying).toBe(false)
-      expect(managers.replay.save).toBeNull()
       expect(rank).toBe(0)
       expect(history).toEqual([])
     })
@@ -74,7 +73,6 @@ describe('managers.Control', () => {
       await managers.replay.replayHistory(0)
       await managers.replay.replayHistory(10)
       expect(managers.replay.isReplaying).toBe(false)
-      expect(managers.replay.save).toBeNull()
       expect(rank).toBe(0)
       expect(history).toEqual([])
     })
@@ -91,9 +89,10 @@ describe('managers.Control', () => {
         const move = {
           meshId: mesh.id,
           pos: [0, 0, 0],
-          prev: [1, 1, 1]
+          prev: [1, 1, 1],
+          fromHand: false
         }
-        managers.replay.record({ ...move, fromHand: false }, playerId)
+        managers.replay.record(move, playerId)
         expect(history[0]).toEqual({
           ...move,
           time: expect.any(Number),
@@ -104,13 +103,14 @@ describe('managers.Control', () => {
       })
 
       it('records action with no revert', () => {
-        /** @type {Omit<Action, 'fromHand'>} */
+        /** @type {Action} */
         const action = {
           meshId: mesh.id,
           fn: 'flip',
-          args: []
+          args: [],
+          fromHand: false
         }
-        managers.replay.record({ ...action, fromHand: false }, playerId)
+        managers.replay.record(action, playerId)
         expect(history[0]).toEqual({
           ...action,
           args: undefined,
@@ -123,14 +123,15 @@ describe('managers.Control', () => {
       })
 
       it('can record action with revert', () => {
-        /** @type {Omit<Action, 'fromHand'>} */
+        /** @type {Action} */
         const action = {
           meshId: mesh.id,
           fn: 'push',
           args: [mesh2.id, false],
-          revert: [1, false, [0, 1, 2], 0]
+          revert: [1, false, [0, 1, 2], 0],
+          fromHand: false
         }
-        managers.replay.record({ ...action, fromHand: false }, playerId)
+        managers.replay.record(action, playerId)
         expect(history[0]).toEqual({
           ...action,
           args: undefined,
@@ -152,22 +153,29 @@ describe('managers.Control', () => {
           argsStr: '[]',
           duration: 500,
           time: expect.any(Number),
-          playerId
+          playerId,
+          fromHand: false
         })
         expect(rank).toBe(currentRank + 1)
         expect(managers.replay.rank).toBe(currentRank + 1)
       })
 
       it('ignores local actions', async () => {
-        await managers.control.apply({ meshId: mesh.id, fn: 'flip', args: [] })
-        expect(history).toHaveLength(0)
-        expect(rank).toBe(currentRank)
-        expect(managers.replay.rank).toBe(currentRank)
-      })
-
-      it('ignores actions from hand', async () => {
-        const action = { meshId: mesh.id, pos: [0, 0, 0], prev: [0, 0, 0] }
-        managers.replay.record({ ...action, fromHand: true }, playerId)
+        await managers.control.apply({
+          meshId: mesh.id,
+          fn: 'flip',
+          args: []
+        })
+        managers.replay.record(
+          {
+            meshId: mesh.id,
+            fn: 'flip',
+            args: [],
+            fromHand: false,
+            isLocal: true
+          },
+          playerId
+        )
         expect(history).toHaveLength(0)
         expect(rank).toBe(currentRank)
         expect(managers.replay.rank).toBe(currentRank)
@@ -175,27 +183,45 @@ describe('managers.Control', () => {
 
       it('collapses moves together', () => {
         const playerId2 = 'player2'
-        const move1_1 = { meshId: mesh.id, pos: [1, 0.5, 1], prev: [0, 0, 0] }
-        const move1_2 = { meshId: mesh.id, pos: [2, 0.5, 2], prev: [1, 0.5, 1] }
-        const move1_3 = { meshId: mesh.id, pos: [3, 0.5, 3], prev: [2, 0.5, 2] }
+        const move1_1 = {
+          meshId: mesh.id,
+          pos: [1, 0.5, 1],
+          prev: [0, 0, 0],
+          fromHand: false
+        }
+        const move1_2 = {
+          meshId: mesh.id,
+          pos: [2, 0.5, 2],
+          prev: [1, 0.5, 1],
+          fromHand: false
+        }
+        const move1_3 = {
+          meshId: mesh.id,
+          pos: [3, 0.5, 3],
+          prev: [2, 0.5, 2],
+          fromHand: false
+        }
         const move2_1 = {
           meshId: mesh2.id,
           pos: [-1, 0.5, -1],
-          prev: [0, 0, 0]
+          prev: [0, 0, 0],
+          fromHand: false
         }
         const move2_2 = {
           meshId: mesh2.id,
           pos: [-2, 0.5, -2],
-          prev: [-1, 0.5, -1]
+          prev: [-1, 0.5, -1],
+          fromHand: false
         }
         const move2_3 = {
           meshId: mesh2.id,
           pos: [-3, 0.5, -3],
-          prev: [-2, 0.5, -2]
+          prev: [-2, 0.5, -2],
+          fromHand: false
         }
 
-        managers.replay.record({ ...move1_1, fromHand: false }, playerId)
-        managers.replay.record({ ...move2_1, fromHand: false }, playerId2)
+        managers.replay.record(move1_1, playerId)
+        managers.replay.record(move2_1, playerId2)
         expect(history).toEqual([
           {
             ...move1_1,
@@ -209,13 +235,13 @@ describe('managers.Control', () => {
           }
         ])
 
-        managers.replay.record({ ...move1_2, fromHand: false }, playerId) // collapse with 1_1
+        managers.replay.record(move1_2, playerId) // collapse with 1_1
         expect(history).toEqual([
           { ...move2_1, time: expect.any(Number), playerId: playerId2 },
           { ...move1_2, prev: move1_1.prev, time: expect.any(Number), playerId }
         ])
 
-        managers.replay.record({ ...move2_2, fromHand: false }, playerId)
+        managers.replay.record(move2_2, playerId)
         expect(history).toEqual([
           { ...move2_1, time: expect.any(Number), playerId: playerId2 },
           {
@@ -227,7 +253,7 @@ describe('managers.Control', () => {
           { ...move2_2, time: expect.any(Number), playerId }
         ])
 
-        managers.replay.record({ ...move1_3, fromHand: false }, playerId2)
+        managers.replay.record(move1_3, playerId2)
         expect(history).toEqual([
           { ...move2_1, time: expect.any(Number), playerId: playerId2 },
           {
@@ -240,7 +266,7 @@ describe('managers.Control', () => {
           { ...move1_3, time: expect.any(Number), playerId: playerId2 }
         ])
 
-        managers.replay.record({ ...move2_3, fromHand: false }, playerId) // collapse with 2_2
+        managers.replay.record(move2_3, playerId) // collapse with 2_2
         expect(history).toEqual([
           { ...move2_1, time: expect.any(Number), playerId: playerId2 },
           {
@@ -256,29 +282,46 @@ describe('managers.Control', () => {
 
       it('ignores moves following a draw', () => {
         const playerId2 = 'player2'
-        const move1_1 = { meshId: mesh.id, pos: [1, 0.5, 1], prev: [0, 0, 0] }
-        /** @type {Omit<Action, 'fromHand'>} */
-        const draw1 = { meshId: mesh.id, args: [], fn: 'draw' }
-        const move1_2 = { meshId: mesh.id, pos: [2, 0.5, 2], prev: [1, 0.5, 1] }
+        const move1_1 = {
+          meshId: mesh.id,
+          pos: [1, 0.5, 1],
+          prev: [0, 0, 0],
+          fromHand: false
+        }
+        /** @type {Action} */
+        const draw1 = { meshId: mesh.id, args: [], fn: 'draw', fromHand: false }
+        const move1_2 = {
+          meshId: mesh.id,
+          pos: [2, 0.5, 2],
+          prev: [1, 0.5, 1],
+          fromHand: false
+        }
         const move2_1 = {
           meshId: mesh2.id,
           pos: [-1, 0.5, -1],
-          prev: [0, 0, 0]
+          prev: [0, 0, 0],
+          fromHand: false
         }
-        /** @type {Omit<Action, 'fromHand'>} */
-        const draw2 = { meshId: mesh2.id, args: [], fn: 'draw' }
+        /** @type {Action} */
+        const draw2 = {
+          meshId: mesh2.id,
+          args: [],
+          fn: 'draw',
+          fromHand: false
+        }
         const move2_2 = {
           meshId: mesh2.id,
           pos: [-2, 0.5, -2],
-          prev: [-1, 0.5, -1]
+          prev: [-1, 0.5, -1],
+          fromHand: false
         }
 
-        managers.replay.record({ ...move1_1, fromHand: false }, playerId)
-        managers.replay.record({ ...move2_1, fromHand: false }, playerId2)
-        managers.replay.record({ ...draw2, fromHand: false }, playerId2)
-        managers.replay.record({ ...draw1, fromHand: false }, playerId)
-        managers.replay.record({ ...move1_2, fromHand: false }, playerId)
-        managers.replay.record({ ...move2_2, fromHand: false }, playerId2)
+        managers.replay.record(move1_1, playerId)
+        managers.replay.record(move2_1, playerId2)
+        managers.replay.record(draw2, playerId2)
+        managers.replay.record(draw1, playerId)
+        managers.replay.record(move1_2, playerId)
+        managers.replay.record(move2_2, playerId2)
         expect(history).toEqual([
           { ...move1_1, time: expect.any(Number), playerId },
           { ...move2_1, time: expect.any(Number), playerId: playerId2 },
@@ -299,54 +342,61 @@ describe('managers.Control', () => {
         ])
       })
 
-      it('ignores moves preceding a play', () => {
-        const playerId2 = 'player2'
-        const move1_1 = { meshId: mesh.id, pos: [1, 0.5, 1], prev: [0, 0, 0] }
-        /** @type {Omit<Action, 'fromHand'>} */
-        const play1 = { meshId: mesh.id, args: [], fn: 'play' }
-        const move1_2 = { meshId: mesh.id, pos: [2, 0.5, 2], prev: [1, 0.5, 1] }
-        const move2_1 = {
-          meshId: mesh2.id,
-          pos: [-1, 0.5, -1],
-          prev: [0, 0, 0]
+      it('does not collapse moves from different scenes', () => {
+        const move1 = {
+          meshId: mesh.id,
+          pos: [1, 0.5, 1],
+          prev: [0, 0, 0],
+          fromHand: false
         }
-        /** @type {Omit<Action, 'fromHand'>} */
-        const play2 = { meshId: mesh2.id, args: [], fn: 'play' }
-        const move2_2 = {
-          meshId: mesh2.id,
+        const move2 = {
+          meshId: mesh.id,
+          pos: [2, 0.5, 2],
+          prev: [1, 0.5, 1],
+          fromHand: false
+        }
+        /** @type {Action} */
+        const draw1 = { meshId: mesh.id, args: [], fn: 'draw', fromHand: false }
+        const move3 = {
+          meshId: mesh.id,
+          pos: [-1, 0.5, -1],
+          prev: [0, 0, 0],
+          fromHand: true
+        }
+        const move4 = {
+          meshId: mesh.id,
           pos: [-2, 0.5, -2],
-          prev: [-1, 0.5, -1]
+          prev: [-1, 0.5, -1],
+          fromHand: true
         }
 
-        managers.replay.record({ ...move1_1, fromHand: false }, playerId)
-        managers.replay.record({ ...move2_1, fromHand: false }, playerId2)
-        managers.replay.record({ ...play2, fromHand: false }, playerId2)
-        managers.replay.record({ ...play1, fromHand: false }, playerId)
-        managers.replay.record({ ...move1_2, fromHand: false }, playerId)
-        managers.replay.record({ ...move2_2, fromHand: false }, playerId2)
+        managers.replay.record(move1, playerId)
+        managers.replay.record(move2, playerId)
+        managers.replay.record(draw1, playerId)
+        managers.replay.record(move3, playerId)
+        managers.replay.record(move4, playerId)
         expect(history).toEqual([
           {
-            ...play2,
-            args: undefined,
-            argsStr: '[]',
+            ...move2,
+            prev: move1.prev,
             time: expect.any(Number),
-            playerId: playerId2
+            playerId
           },
           {
-            ...play1,
+            ...draw1,
             args: undefined,
             argsStr: '[]',
             time: expect.any(Number),
             playerId
           },
-          { ...move1_2, time: expect.any(Number), playerId },
-          { ...move2_2, time: expect.any(Number), playerId: playerId2 }
+          { ...move4, prev: move3.prev, time: expect.any(Number), playerId }
         ])
       })
     })
 
     describe('replayHistory()', () => {
       const states = new Map()
+      const playerId2 = 'player-id-2'
 
       function makeComparable(
         /** @type {SerializedMesh|undefined} */ state,
@@ -398,6 +448,11 @@ describe('managers.Control', () => {
         addState('rotated1')
         await mesh2.metadata.draw?.()
         addState('drawn2')
+        managers.replay.record(
+          { meshId: mesh2.id, fn: 'flip', args: [], fromHand: true },
+          playerId2
+        )
+        addState('flipped2')
       })
 
       it('can replay backwards', async () => {
@@ -433,7 +488,7 @@ describe('managers.Control', () => {
       it('can not replay more than history length', async () => {
         await managers.replay.replayHistory(10)
         expect(rank).toBe(history.length)
-        expect(getStates(true)).toEqual(states.get('drawn2'))
+        expect(getStates(true)).toEqual(states.get('flipped2'))
       })
 
       it('can not replay concurrently', async () => {

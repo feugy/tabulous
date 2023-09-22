@@ -548,6 +548,7 @@ export class InputManager {
     this.interaction.addEventListener('pointerdown', handlePointerDown)
     this.interaction.addEventListener('pointermove', handlePointerMove)
     this.interaction.addEventListener('pointerup', handlePointerUp)
+    this.interaction.addEventListener('pointerleave', handleBlur)
     this.interaction.addEventListener('wheel', handleWheel, { passive: true })
     this.interaction.addEventListener('keydown', handleKeyDown)
     const cameraObserver =
@@ -557,6 +558,7 @@ export class InputManager {
       this.interaction.removeEventListener('pointerdown', handlePointerDown)
       this.interaction.removeEventListener('pointermove', handlePointerMove)
       this.interaction.removeEventListener('pointerup', handlePointerUp)
+      this.interaction.removeEventListener('pointerleave', handleBlur)
       this.interaction.removeEventListener('wheel', handleWheel)
       this.interaction.removeEventListener('keydown', handleKeyDown)
       managers.camera.onMoveObservable.remove(cameraObserver)

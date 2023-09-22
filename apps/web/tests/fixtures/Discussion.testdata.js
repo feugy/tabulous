@@ -80,33 +80,52 @@ Oui, évidemment, n'importe comment une tournée d'inspection peut jamais nuire,
 
 /** @type {HistoryRecord[]} */
 export const history = [
-  { playerId: '369258', fn: 'flip', time, meshId: 'box1', argsStr: '[]' },
+  {
+    playerId: '369258',
+    fn: 'flip',
+    time,
+    meshId: 'box1',
+    argsStr: '[]',
+    fromHand: false
+  },
   {
     playerId: '369258',
     pos: [1, 1, 1],
     prev: [0, 0, 0],
     time: time + 2000,
-    meshId: 'box2'
+    meshId: 'box2',
+    fromHand: false
   },
   {
     playerId: '543498',
     pos: [0, 0, 0],
     prev: [1, 1, 1],
     time: time + 3000,
-    meshId: 'box1'
+    meshId: 'box1',
+    fromHand: false
   },
   {
     playerId: '543498',
     fn: 'rotate',
     time: time + 4000,
     meshId: 'box1',
-    argsStr: '[]'
+    argsStr: '[]',
+    fromHand: false
   },
   {
     playerId: '543498',
     fn: 'draw',
     time: time + 24 * 3600000 + 1000,
     meshId: 'box2',
-    argsStr: '[]'
+    argsStr: '[]',
+    fromHand: false
+  },
+  {
+    playerId: '543498',
+    fn: 'flip',
+    time: time + 24 * 3600000 + 2000,
+    meshId: 'box2',
+    argsStr: '[]',
+    fromHand: true
   }
 ]

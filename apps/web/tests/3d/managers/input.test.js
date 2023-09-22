@@ -1739,6 +1739,29 @@ describe('managers.Input', () => {
       )
     })
 
+    it('stops all operations on pointer leave', () => {
+      const pointer = { x: 975, y: 535 }
+      const pointerId = 50
+      const startEvent = triggerEvent(pointerMove, {
+        ...move(pointer, 50, -25),
+        pointerId
+      })
+      const event = triggerEvent('pointerleave')
+
+      expectEvents({ hovers: 2 })
+      const meshId = meshes[1].id
+      expectsDataWithMesh(
+        hovers[0],
+        { type: 'hoverStart', event: startEvent },
+        meshId
+      )
+      expectsDataWithMesh(
+        hovers[1],
+        { type: 'hoverStop', event: { ...event, pointerId } },
+        meshId
+      )
+    })
+
     it('updates hovered on camera move', () => {
       const event = triggerEvent(pointerMove, {
         x: 1000,

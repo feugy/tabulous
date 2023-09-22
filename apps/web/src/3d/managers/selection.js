@@ -46,6 +46,8 @@ export class SelectionManager {
     this.handScene = handScene
     /** @type {Color4} current player color, for selection */
     this.color
+    /** @internal @type {string} */
+    this.playerId
     /** @internal @type {?LinesMesh} */
     this.box = null
     /** @internal @type {boolean} */
@@ -67,6 +69,7 @@ export class SelectionManager {
    * @param {Map<string, string>} params.colorByPlayerId - map of hexadecimal color strings used for selection box, and selected mesh overlay, by player id.
    */
   init({ managers, playerId, colorByPlayerId }) {
+    this.playerId = playerId
     this.managers = managers
     this.colorByPlayerId = new Map(
       [...colorByPlayerId.entries()].map(([playerId, color]) => [
@@ -248,9 +251,12 @@ export class SelectionManager {
    * Applies selection from peer players: highlight selected meshes with the player's own color.
    * Ignores meshes that are part of current player's selection.
    * @param {string[]} meshIds - ids of selected meshes.
-   * @param {string} playerId - id of the peer selecting these meshes.s.
+   * @param {string} [playerId] - id of the peer selecting these meshes (default to current player).
    */
   apply(meshIds, playerId) {
+    if (!playerId) {
+      return
+    }
     const color = this.colorByPlayerId.get(playerId)
     if (!color) {
       return

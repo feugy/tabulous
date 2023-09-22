@@ -206,7 +206,6 @@ describe('managers.Selection', () => {
       })
 
       it('does nothing without player', () => {
-        // @ts-expect-error: we have not provided playerId
         managers.selection.apply([meshes[0].id, meshes[1].id])
         expectSelected(meshes[0], null, false)
         expectSelected(meshes[1], null, false)

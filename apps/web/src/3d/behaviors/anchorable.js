@@ -6,8 +6,6 @@
  * @typedef {import('@tabulous/server/src/graphql').ActionName} ActionName
  * @typedef {import('@src/3d/behaviors/stackable').StackBehavior} StackBehavior
  * @typedef {import('@src/3d/behaviors/targetable').DropDetails} DropDetails
- * @typedef {import('@src/3d/managers/control').Action} Action
- * @typedef {import('@src/3d/managers/control').Move} Move
  * @typedef {import('@src/3d/managers/move').MoveDetails} MoveDetails
  * @typedef {import('@src/3d/managers/target').SingleDropZone} SingleDropZone
  */
@@ -51,7 +49,7 @@ export class AnchorBehavior extends TargetBehavior {
     this.dropObserver = null
     /** @protected @type {?Observer<MoveDetails>} */
     this.moveObserver = null
-    /** @protected @type {?Observer<Action|Move>}} */
+    /** @protected @type {?Observer<import('@src/3d/managers').ActionOrMove>}} */
     this.actionObserver = null
     /** @internal @type {Map<string, SingleDropZone>} */
     this.zoneBySnappedId = new Map()

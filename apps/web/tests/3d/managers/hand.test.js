@@ -621,6 +621,14 @@ describe('HandManager', () => {
         expect(getPositions(handCards)).toEqual(positions)
       })
 
+      it('lays out hand when replaying history', async () => {
+        managers.replay.onReplayRankObservable.notifyObservers(1)
+        await waitForLayout(managers.hand)
+        expectPosition(handCards[1], [-unitWidth, 0.005, computeZ()])
+        expectPosition(handCards[0], [0, 0.005, computeZ()])
+        expectPosition(handCards[2], [unitWidth, 0.005, computeZ()])
+      })
+
       it('does not lay out hand when rotating mesh in main scene', async () => {
         const positions = getPositions(handCards)
         cards[2].metadata.rotate?.()

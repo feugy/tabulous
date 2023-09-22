@@ -1,7 +1,5 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
-exports[`Empty 1`] = `undefined`;
-
 exports[`Friends only 1`] = `
 <main
   class="flex w-full h-screen s-704Ys9uC0Q3P"
@@ -2603,32 +2601,4 @@ exports[`Single connected, no rules book, thread 1`] = `
   </aside>
   <!--&lt;Container&gt;-->
 </main>
-`;
-
-exports[`Single entry 1`] = `
-<div
-  class="s-x5nEMCoiqeIy"
->
-  <span
-    class="material-icons s-x5nEMCoiqeIy"
-  >
-    home_filled
-  </span>
-   
-  <ol
-    class="s-x5nEMCoiqeIy"
-  >
-    <li
-      class="s-x5nEMCoiqeIy"
-    >
-      <a
-        class="s-x5nEMCoiqeIy"
-      >
-        home
-      </a>
-    </li>
-     
-    
-  </ol>
-</div>
 `;

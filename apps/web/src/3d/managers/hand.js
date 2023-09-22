@@ -12,8 +12,6 @@
  * @typedef {import('@src/3d/behaviors/quantifiable').QuantityBehavior} QuantityBehavior
  * @typedef {import('@src/3d/behaviors/rotable').RotateBehavior} RotateBehavior
  * @typedef {import('@src/3d/behaviors/stackable').StackBehavior} StackBehavior
- * @typedef {import('@src/3d/managers/control').Action} Action
- * @typedef {import('@src/3d/managers/control').Move} Move
  * @typedef {import('@src/3d/managers/input').DragData} DragData
  * @typedef {import('@src/3d/managers/target').DropZone} DropZone
  * @typedef {import('@src/3d/utils').ScreenPosition} ScreenPosition
@@ -181,8 +179,9 @@ export class HandManager {
       },
       {
         observable: this.managers.control.onActionObservable,
-        handle: (/** @type {Action|Move} */ action) =>
-          handleAction(this, action)
+        handle: (
+          /** @type {import('@src/3d/managers').ActionOrMove} */ action
+        ) => handleAction(this, action)
       },
       {
         observable: this.managers.input.onDragObservable,
@@ -216,6 +215,15 @@ export class HandManager {
             this.changes$.next()
           }
         }
+      },
+      {
+        observable: this.managers.replay.onReplayRankObservable,
+        handle: () =>
+          // delay until replay move is over
+          setTimeout(
+            () => this.changes$.next(),
+            this.managers.replay.moveDuration
+          )
       }
     ])) {
       const observer = observable.add(handle)
@@ -388,7 +396,7 @@ export class HandManager {
 
 /**
  * @param {HandManager} manager - manager instance.
- * @param {Action|Move} action - applied action.
+ * @param {import('@src/3d/managers').ActionOrMove} action - applied action.
  */
 function handleAction(manager, action) {
   if (

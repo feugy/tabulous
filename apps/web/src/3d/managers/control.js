@@ -27,6 +27,8 @@ import { animateMove } from '../utils/behaviors'
  *
  * @typedef {Omit<RecordedMove, 'mesh'> & _Move} Move applied move to a given mesh.
  *
+ * @typedef {Action|Move} ActionOrMove
+ *
  * @typedef {object} RecordedAction applied action to a given mesh:
  * @property {Mesh} mesh - modified mesh.
  * @property {ActionName} fn - name of the applied action.
@@ -58,7 +60,7 @@ export class ControlManager {
    * @param {Scene} params.handScene - scene for meshes in hand.
    */
   constructor({ scene, handScene }) {
-    /** @type {Observable<Action|Move>} emits applied actions. */
+    /** @type {Observable<ActionOrMove>} emits applied actions. */
     this.onActionObservable = new Observable()
     /** @type {Observable<?MeshDetails>} emits when displaying details of a given mesh. */
     this.onDetailedObservable = new Observable()

@@ -6,8 +6,6 @@
  * @typedef {import('@tabulous/server/src/graphql').StackableState} StackableState
  * @typedef {import('@src/3d/behaviors/animatable').AnimateBehavior} AnimateBehavior
  * @typedef {import('@src/3d/behaviors/targetable').DropDetails} DropDetails
- * @typedef {import('@src/3d/managers/control').Action} Action
- * @typedef {import('@src/3d/managers/control').Move} Move
  * @typedef {import('@src/3d/managers/move').MoveDetails} MoveDetails
  * @typedef {import('@src/3d/managers/target').SingleDropZone} SingleDropZone
  * @typedef {import('@src/3d/utils').Vector3KeyFrame} Vector3KeyFrame
@@ -76,7 +74,7 @@ export class StackBehavior extends TargetBehavior {
     this.moveObserver = null
     /** @protected @type {?Observer<DropDetails>} */
     this.dropObserver = null
-    /** @protected @type {?Observer<Action|Move>} */
+    /** @protected @type {?Observer<import('@src/3d/managers').ActionOrMove>} */
     this.actionObserver = null
     /** @internal @type {boolean} */
     this.isReordering = false
