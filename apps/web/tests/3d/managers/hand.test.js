@@ -8,10 +8,6 @@
  * @typedef {import('@src/3d/behaviors').DrawBehavior} DrawBehavior
  * @typedef {import('@tabulous/server/src/graphql').Mesh} SerializableMesh
  */
-/**
- * @template {any[]} P, R
- * @typedef {import('vitest').SpyInstance<P, R>} SpyInstance
- */
 
 import { Vector3 } from '@babylonjs/core/Maths/math.vector'
 import { faker } from '@faker-js/faker'
@@ -57,7 +53,7 @@ describe('HandManager', () => {
   let actionObserver
   /** @type {Vector3} */
   let savedCameraPosition
-  /** @type {SpyInstance<Parameters<import('@src/3d/managers').IndicatorManager['registerFeedback']>, void>} */
+  /** @type {import('vitest').Spy<import('@src/3d/managers').IndicatorManager['registerFeedback']>} */
   let registerFeedbackSpy
   /** @type {import('@src/3d/managers').Managers} */
   let managers

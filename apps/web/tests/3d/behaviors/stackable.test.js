@@ -4,10 +4,6 @@
  * @typedef {import('@babylonjs/core').Observer<?>} Observer
  * @typedef {import('@babylonjs/core').Scene} Scene
  */
-/**
- * @template {any[]} P, R
- * @typedef {import('vitest').SpyInstance<P, R>} SpyInstance
- */
 
 import { Vector3 } from '@babylonjs/core/Maths/math.vector'
 import { faker } from '@faker-js/faker'
@@ -63,7 +59,7 @@ describe('StackBehavior', () => {
   const moveRecorded = vi.fn()
   /** @type {import('@src/3d/managers').Managers} */
   let managers
-  /** @type {SpyInstance<Parameters<import('@src/3d/managers').IndicatorManager['registerFeedback']>, void>} */
+  /** @type {import('vitest').Spy<import('@src/3d/managers').IndicatorManager['registerFeedback']>} */
   let registerFeedbackSpy
   /** @type {?Observer} */
   let moveObserver
@@ -1296,6 +1292,67 @@ describe('StackBehavior', () => {
         isLocal: true
       })
       expect(actionRecorded).toHaveBeenCalledTimes(5)
+      expectMoveRecorded(moveRecorded)
+      expect(registerFeedbackSpy).not.toHaveBeenCalled()
+    })
+
+    it('can revert a flipped stack', async () => {
+      behavior.fromState({ stackIds: ['box1', 'box2', 'box3'] })
+      await mesh.metadata.flipAll?.()
+      expectStacked(managers, [box3, box2, box1, mesh])
+      registerFeedbackSpy.mockClear()
+      actionRecorded.mockClear()
+
+      await behavior.revert('flipAll', [])
+      expectStacked(managers, [mesh, box1, box2, box3])
+      expect(actionRecorded).toHaveBeenCalledTimes(6)
+      expect(actionRecorded).toHaveBeenNthCalledWith(1, {
+        fn: 'flipAll',
+        meshId: box3.id,
+        args: [],
+        fromHand: false,
+        isLocal: true
+      })
+      expect(actionRecorded).toHaveBeenNthCalledWith(2, {
+        fn: 'reorder',
+        meshId: box3.id,
+        revert: [['box3', 'box2', 'box1', 'box0'], false],
+        args: [['box0', 'box1', 'box2', 'box3'], false],
+        fromHand: false,
+        isLocal: true
+      })
+      expect(actionRecorded).toHaveBeenNthCalledWith(3, {
+        fn: 'flip',
+        meshId: mesh.id,
+        args: [],
+        duration: 100,
+        fromHand: false,
+        isLocal: true
+      })
+      expect(actionRecorded).toHaveBeenNthCalledWith(4, {
+        fn: 'flip',
+        meshId: box1.id,
+        args: [],
+        duration: 100,
+        fromHand: false,
+        isLocal: true
+      })
+      expect(actionRecorded).toHaveBeenNthCalledWith(5, {
+        fn: 'flip',
+        meshId: box2.id,
+        args: [],
+        duration: 100,
+        fromHand: false,
+        isLocal: true
+      })
+      expect(actionRecorded).toHaveBeenNthCalledWith(6, {
+        fn: 'flip',
+        meshId: box3.id,
+        args: [],
+        duration: 100,
+        fromHand: false,
+        isLocal: true
+      })
       expectMoveRecorded(moveRecorded)
       expect(registerFeedbackSpy).not.toHaveBeenCalled()
     })

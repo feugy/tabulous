@@ -6,10 +6,6 @@
  * @typedef {import('@src/3d/managers').RecordedAction} RecordedAction
  * @typedef {import('@tabulous/server/src/graphql').Anchor} Anchor
  */
-/**
- * @template {any[]} P, R
- * @typedef {import('vitest').SpyInstance<P, R>} SpyInstance
- */
 
 import { Vector3 } from '@babylonjs/core/Maths/math.vector'
 import { faker } from '@faker-js/faker'
@@ -64,7 +60,7 @@ describe('AnchorBehavior', () => {
   let scene
   /** @type {import('@src/3d/managers').Managers} */
   let managers
-  /** @type {SpyInstance<Parameters<import('@src/3d/managers').IndicatorManager['registerFeedback']>, void>} */
+  /** @type {import('vitest').Spy<import('@src/3d/managers').IndicatorManager['registerFeedback']>} */
   let registerFeedbackSpy
   /** @type {?Observer} */
   let moveObserver

@@ -1,9 +1,4 @@
 // @ts-check
-/**
- * @template {any[]} P, R
- * @typedef {import('vitest').SpyInstance<P, R>} SpyInstance
- */
-
 import { readFile } from 'node:fs/promises'
 import { resolve } from 'node:path'
 
@@ -44,7 +39,7 @@ describe('CustomShapeManager', () => {
     Object.keys(fixtures).map(key => [key, btoa(JSON.stringify(fixtures[key]))])
   )
 
-  /** @type {SpyInstance<any[], void>} */
+  /** @type {import('vitest').Spy<logger['error']>} */
   let error
   const server = setupServer(
     rest.get(`${gameAssetsUrl}/:name`, ({ params }, res, ctx) => {

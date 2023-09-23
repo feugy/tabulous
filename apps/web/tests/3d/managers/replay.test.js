@@ -7,10 +7,6 @@
  * @typedef {import('@tabulous/server/src/graphql').HistoryRecord} HistoryRecord
  * @typedef {import('@tabulous/server/src/graphql').Mesh} SerializedMesh
  */
-/**
- * @template {any[]} P, R
- * @typedef {import('vitest').SpyInstance<P, R>} SpyInstance
- */
 
 import { Vector3 } from '@babylonjs/core/Maths/math.vector'
 import { createCard } from '@src/3d/meshes'

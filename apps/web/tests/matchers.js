@@ -1,10 +1,4 @@
 // @ts-check
-/**
- * @typedef {import('vitest').SpyInstance<?, ?>} SpyInstance
- * @typedef {import('@vitest/expect').MatcherState} MatcherState
- * @typedef {import('@vitest/expect').SyncExpectationResult} SyncExpectationResult
- */
-
 import { isA } from '@vitest/expect'
 
 export function numberCloseTo(
@@ -26,10 +20,10 @@ export function numberCloseTo(
 
 /**
  * @template {{ angle: number }} E
- * @this {MatcherState}
+ * @this {import('@vitest/expect').MatcherState}
  * @param {?} actual
  * @param {E} expected
- * @returns {SyncExpectationResult}
+ * @returns {import('@vitest/expect').SyncExpectationResult}
  */
 export function toEqualWithAngle(actual, expected) {
   const decimals = 10

@@ -14,7 +14,7 @@ import type {
   StackBehavior,
   TargetBehavior
 } from '@src/3d/behaviors'
-import type { Managers } from '@src/3d/managers'
+import type { ActionOrMove, Managers } from '@src/3d/managers'
 import type { Behavior } from '@src/3d/utils'
 import type { Game } from '@src/graphql'
 import type { GameWithSelections } from '@src/stores'
@@ -40,6 +40,8 @@ declare module '@babylonjs/core' {
   interface Engine {
     /** indicates whether the engine is still loading data and materials. */
     isLoading: boolean
+    /** simulator bound to this engine, when relevant. */
+    simulation: Engine | null
     /** a map of action ids by (localized) keystroke. */
     actionNamesByKey: Map<string, ActionName[]>
     /** a map of action ids by(mouse / finger) button. */
@@ -74,6 +76,22 @@ declare module '@babylonjs/core' {
       handMeshes: SerializedMesh[]
       history: HistoryRecord[]
     }
+    /**
+     * Applies a remote mesh selection from a peer player, unless replaying history.
+     * @param selectedIds - selected mesh ids.
+     * @param playerId - id of the selecting player.
+     */
+    applyRemoteSelection(selectedIds: string[], playerId: string): void
+
+    /**
+     * Applies a remote move or action from a peer player, unless replaying history.
+     * @param actionOrMove - action or move from a peer.
+     * @param playerId - id of the peer player.
+     */
+    applyRemoteAction(
+      actionOrMove: ActionOrMove,
+      playerId: string
+    ): Promise<void>
   }
 
   interface AbstractMesh {

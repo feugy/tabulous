@@ -27,10 +27,6 @@
  * @template T
  * @typedef {import('vitest').MockedObject<T>} MockedObject
  */
-/**
- * @template {any[]} P, R
- * @typedef {import('vitest').SpyInstance<P, R>} SpyInstance
- */
 
 import { Observable } from '@babylonjs/core/Misc/observable'
 import { faker } from '@faker-js/faker'
@@ -65,21 +61,19 @@ vi.mock('@src/stores/peer-channels', () => {
   }
 })
 
-/** @type {SpyInstance<Parameters<import('@src/3d/managers').CameraManager['save']>, void>} */
+/** @type {import('vitest').Spy<import('@src/3d/managers').CameraManager['save']>} */
 let saveCamera
-/** @type {SpyInstance<Parameters<import('@src/3d/managers').CameraManager['restore']>, Promise<void>>} */
+/** @type {import('vitest').Spy<import('@src/3d/managers').CameraManager['restore']>} */
 let restoreCamera
-/** @type {SpyInstance<Parameters<import('@src/3d/managers').CameraManager['loadSaves']>, Promise<void>>} */
+/** @type {import('vitest').Spy<import('@src/3d/managers').CameraManager['loadSaves']>} */
 let loadCameraSaves
-/** @type {SpyInstance<Parameters<import('@src/3d/managers').IndicatorManager['registerPointerIndicator']>, ReturnType<import('@src/3d/managers').IndicatorManager['registerPointerIndicator']>>} */
+/** @type {import('vitest').Spy<import('@src/3d/managers').IndicatorManager['registerPointerIndicator']>} */
 let registerPointerIndicator
-/** @type {SpyInstance<Parameters<import('@src/3d/managers').IndicatorManager['pruneUnusedPointers']>, void>} */
+/** @type {import('vitest').Spy<import('@src/3d/managers').IndicatorManager['pruneUnusedPointers']>} */
 let pruneUnusedPointers
-/** @type {SpyInstance<Parameters<import('@src/3d/managers').ControlManager['apply']>, Promise<void>>} */
+/** @type {import('vitest').Spy<import('@src/3d/managers').ControlManager['apply']>} */
 let applyAction
-/** @type {SpyInstance<Parameters<import('@src/3d/managers').ReplayManager['record']>, void>} */
-let recordHistory
-/** @type {SpyInstance<Parameters<import('@src/3d/managers').ReplayManager['replayHistory']>, Promise<void>>} */
+/** @type {import('vitest').Spy<import('@src/3d/managers').ReplayManager['replayHistory']>} */
 let replayHistory
 
 beforeEach(() => {
@@ -132,7 +126,6 @@ describe('initEngine()', () => {
     )
     pruneUnusedPointers = vi.spyOn(managers.indicator, 'pruneUnusedPointers')
     applyAction = vi.spyOn(managers.control, 'apply')
-    recordHistory = vi.spyOn(managers.replay, 'record')
     replayHistory = vi.spyOn(managers.replay, 'replayHistory')
     subscriptions = [
       gameEngine.action.subscribe({ next: receiveAction }),
@@ -229,7 +222,6 @@ describe('initEngine()', () => {
         expect(sendToPeer).toHaveBeenCalledWith(data)
         expect(sendToPeer).toHaveBeenCalledOnce()
         expect(applyAction).not.toHaveBeenCalled()
-        expect(recordHistory).not.toHaveBeenCalled()
       })
 
       it('does not send local actions to peers', () => {
@@ -246,7 +238,6 @@ describe('initEngine()', () => {
         expect(receiveAction).toHaveBeenCalledOnce()
         expect(sendToPeer).not.toHaveBeenCalled()
         expect(applyAction).not.toHaveBeenCalled()
-        expect(recordHistory).not.toHaveBeenCalled()
       })
 
       it('does not send hand actions to peers', () => {
@@ -262,7 +253,6 @@ describe('initEngine()', () => {
         expect(receiveAction).toHaveBeenCalledOnce()
         expect(sendToPeer).not.toHaveBeenCalled()
         expect(applyAction).not.toHaveBeenCalled()
-        expect(recordHistory).not.toHaveBeenCalled()
       })
 
       it('sends selection to peers', () => {
@@ -282,11 +272,9 @@ describe('initEngine()', () => {
         expect(sendToPeer).toHaveBeenCalledTimes(2)
         expect(receiveRemoteSelection).not.toHaveBeenCalled()
         expect(applyAction).not.toHaveBeenCalled()
-        expect(recordHistory).not.toHaveBeenCalled()
       })
 
       it('handles remote selection', () => {
-        vi.spyOn(managers.selection, 'apply').mockImplementationOnce(() => {})
         const playerId = faker.string.uuid()
         const selectedIds = ['mesh1', 'mesh2']
         lastMessageReceived.next({ data: { selectedIds }, playerId })
@@ -298,11 +286,9 @@ describe('initEngine()', () => {
         })
         expect(receiveRemoteSelection).toHaveBeenCalledOnce()
         expect(applyAction).not.toHaveBeenCalled()
-        expect(recordHistory).not.toHaveBeenCalled()
       })
 
       it('clears remote selection on peer disconnection', () => {
-        vi.spyOn(managers.selection, 'apply').mockImplementationOnce(() => {})
         const playerId = faker.string.uuid()
         lastDisconnectedId.next(playerId)
 
@@ -313,7 +299,6 @@ describe('initEngine()', () => {
         })
         expect(receiveRemoteSelection).toHaveBeenCalledOnce()
         expect(applyAction).not.toHaveBeenCalled()
-        expect(recordHistory).not.toHaveBeenCalled()
       })
 
       it('moves peer pointers on message', () => {
@@ -328,7 +313,6 @@ describe('initEngine()', () => {
         expect(registerPointerIndicator).toHaveBeenCalledWith(playerId, pointer)
         expect(registerPointerIndicator).toHaveBeenCalledOnce()
         expect(applyAction).not.toHaveBeenCalled()
-        expect(recordHistory).not.toHaveBeenCalled()
       })
 
       it('ignores other peer messages', () => {
@@ -337,7 +321,6 @@ describe('initEngine()', () => {
         expect(sendToPeer).not.toHaveBeenCalled()
         expect(registerPointerIndicator).not.toHaveBeenCalled()
         expect(applyAction).not.toHaveBeenCalled()
-        expect(recordHistory).not.toHaveBeenCalled()
       })
 
       it('receives peer actions', () => {
@@ -357,29 +340,6 @@ describe('initEngine()', () => {
         expect(sendToPeer).not.toHaveBeenCalled()
         expect(applyAction).toHaveBeenCalledWith(data)
         expect(applyAction).toHaveBeenCalledOnce()
-        expect(recordHistory).toHaveBeenCalledWith(data, playerId)
-        expect(recordHistory).toHaveBeenCalledOnce()
-      })
-
-      it('does not apply peer action when replaying', () => {
-        vi.spyOn(managers.replay, 'isReplaying', 'get').mockReturnValue(true)
-        const playerId = faker.person.firstName()
-        const data = {
-          meshId: faker.string.uuid(),
-          fn: 'flip',
-          args: [],
-          fromHand: false
-        }
-        lastMessageReceived.next({ data, playerId })
-        expect(receiveAction).toHaveBeenCalledWith({
-          ...data,
-          peerId: playerId
-        })
-        expect(receiveAction).toHaveBeenCalledOnce()
-        expect(sendToPeer).not.toHaveBeenCalled()
-        expect(applyAction).not.toHaveBeenCalled()
-        expect(recordHistory).toHaveBeenCalledWith(data, playerId)
-        expect(recordHistory).toHaveBeenCalledOnce()
       })
 
       it('regularly send pointer events to peers', async () => {
@@ -395,7 +355,6 @@ describe('initEngine()', () => {
         expect(sendToPeer).toHaveBeenCalledWith({ pointer: data2 })
         expect(sendToPeer).toHaveBeenCalledOnce()
         expect(applyAction).not.toHaveBeenCalled()
-        expect(recordHistory).not.toHaveBeenCalled()
       })
 
       it('proxies mesh detail events', () => {
@@ -532,13 +491,16 @@ describe('initEngine()', () => {
 
   function create3DEngineMock() {
     return /** @type {MockedObject<Engine>} */ ({
+      applyRemoteAction: (...args) => managers.control.apply(args[0]),
+      applyRemoteSelection: managers.selection.apply.bind(managers.selection),
+      getFps: vi.fn(),
+      load: vi.fn(),
+      managers,
       onEndFrameObservable: new Observable(),
       onDisposeObservable: new Observable(),
       onLoadingObservable: new Observable(),
-      getFps: vi.fn(),
-      start: vi.fn(),
-      managers,
-      serialize: vi.fn()
+      serialize: vi.fn(),
+      start: vi.fn()
     })
   }
 })

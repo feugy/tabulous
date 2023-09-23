@@ -5,10 +5,6 @@
  * @typedef {import('@src/3d/behaviors').MoveBehavior} MoveBehavior
  * @typedef {import('@src/3d/utils').BehaviorNames} BehaviorNames
  */
-/**
- * @template {any[]} P, R
- * @typedef {import('vitest').SpyInstance<P, R>} SpyInstance
- */
 
 import { faker } from '@faker-js/faker'
 import {
@@ -25,7 +21,7 @@ import { configures3dTestEngine, expectMeshFeedback } from '../../test-utils'
 describe('LockBehavior', () => {
   const actionRecorded = vi.fn()
 
-  /** @type {SpyInstance<Parameters<import('@src/3d/managers').IndicatorManager['registerFeedback']>, void>} */
+  /** @type {import('vitest').Spy<import('@src/3d/managers').IndicatorManager['registerFeedback']>} */
   let registerFeedbackSpy
   /** @type {Scene} */
   let scene

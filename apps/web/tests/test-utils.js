@@ -19,10 +19,6 @@
  * @typedef {import('fastify').FastifyInstance} FastifyInstance
  */
 /**
- * @template {any[]} Args, Return
- * @typedef {import('vitest').SpyInstance<Args, Return>} SpyInstance
- */
-/**
  * @template T
  * @typedef {import('rxjs').Observable<T>} Observable
  */
@@ -171,7 +167,7 @@ export function initialize3dEngine({
     handScene.render()
   })
   engine.inputElement = document.body
-  engine.isSimulation = isSimulation
+  engine.simulation = isSimulation ? null : engine
 
   const scene = main.scene
 
@@ -520,7 +516,7 @@ export function expectQuantityIndicator({ indicator }, mesh, quantity = 1) {
 }
 
 /**
- * @param {SpyInstance<Parameters<IndicatorManager['registerFeedback']>, void>} registerFeedbackSpy - spy for indicatorManager.registerFeedback().
+ * @param {import('vitest').Spy<IndicatorManager['registerFeedback']>} registerFeedbackSpy - spy for indicatorManager.registerFeedback().
  * @param {ActionName|'unlock'|'lock'} action - the expected action reported.
  * @param {...(number[]|Mesh)} meshesOrPositions - expected mesh or position (Vector3 components) for this feedback.
  */
@@ -610,7 +606,7 @@ export async function waitNextRender(scene) {
 }
 
 /**
- * @param {SpyInstance<[MoveDetails], void>} moveRecorded - spy attached to moveManager.onMoveObservable.
+ * @param {import('vitest').SpyInstance<[MoveDetails], void>} moveRecorded - spy attached to moveManager.onMoveObservable.
  * @param {...Mesh} meshes - expected list of moved meshes.
  */
 export function expectMoveRecorded(moveRecorded, ...meshes) {

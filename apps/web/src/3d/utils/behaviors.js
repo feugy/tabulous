@@ -139,7 +139,7 @@ export function animateMove(
     return movable.moveTo(
       absolutePosition,
       rotation,
-      mesh.getEngine().isSimulation ? 0 : duration,
+      mesh.getEngine().simulation === null ? 0 : duration,
       withGravity
     )
   } else {
@@ -321,7 +321,11 @@ export function runAnimation({ mesh, frameRate }, onEnd, ...animationSpecs) {
   const wasHittable = mesh.isHittable
   mesh.isHittable = false
   mesh.animationInProgress = true
-  animationLogger.debug({ mesh, animations }, `starts animations on ${mesh.id}`)
+  const speed = mesh.getEngine().simulation === null ? 100 : 1
+  animationLogger.debug(
+    { mesh, animations, speed },
+    `starts animations on ${mesh.id}`
+  )
   return new Promise(resolve =>
     mesh
       .getScene()
@@ -331,7 +335,7 @@ export function runAnimation({ mesh, frameRate }, onEnd, ...animationSpecs) {
         0,
         lastFrame,
         false,
-        mesh.getEngine().isSimulation ? 100 : 1,
+        speed,
         () => {
           animationLogger.debug(
             { mesh, animations, wasPickable, wasHittable },

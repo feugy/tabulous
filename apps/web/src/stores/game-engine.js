@@ -7,8 +7,6 @@
  * @typedef {import('@tabulous/server/src/graphql').HistoryRecord} HistoryRecord
  * @typedef {import('@tabulous/server/src/graphql').Player} Player
  * @typedef {import('@src/3d/managers/camera').CameraPosition} CameraPosition
- * @typedef {import('@src/3d/managers/control').Action} Action
- * @typedef {import('@src/3d/managers/control').Move} Move
  * @typedef {import('@src/3d/managers/control').MeshDetails} MeshDetails
  * @typedef {import('@src/3d/managers/hand').HandChange} HandChange
  * @typedef {import('@src/3d/managers/indicator').Indicator} Indicator
@@ -43,9 +41,9 @@ import {
 
 const engine$ = new BehaviorSubject(/** @type {?Engine} */ (null))
 const fps$ = new BehaviorSubject('0')
-/** @type {Subject<Action|Move>} */
+/** @type {Subject<import('@src/3d/managers').ActionOrMove>} */
 const localAction$ = new Subject()
-/** @type {Subject<(Action|Move) & { peerId: string }>} */
+/** @type {Subject<import('@src/3d/managers').ActionOrMove & { peerId: string }>} */
 const remoteAction$ = new Subject()
 /** @type {Subject<PlayerSelection>} */
 const remoteSelection$ = new Subject()
@@ -295,14 +293,9 @@ export function initEngine({ pointerThrottle, longTapDelay, ...engineProps }) {
           data.pointer
         )
       } else if (Array.isArray(data?.selectedIds)) {
-        if (!engine.managers.replay.isReplaying) {
-          applyRemoteSelection(data.selectedIds, playerId)
-        }
+        applyRemoteSelection(data.selectedIds, playerId)
       } else if (data?.meshId) {
-        engine.managers.replay.record(data, playerId)
-        if (!engine.managers.replay.isReplaying) {
-          engine.managers.control.apply(data)
-        }
+        engine.applyRemoteAction(data, playerId)
         remoteAction$.next({ ...data, peerId: playerId })
       }
     }),
@@ -368,7 +361,7 @@ function applyRemoteSelection(
   /** @type {string[]} */ selectedIds,
   /** @type {string} */ playerId
 ) {
-  engine$.value?.managers.selection.apply(selectedIds, playerId)
+  engine$.value?.applyRemoteSelection(selectedIds, playerId)
   remoteSelection$.next({ selectedIds, playerId })
 }
 

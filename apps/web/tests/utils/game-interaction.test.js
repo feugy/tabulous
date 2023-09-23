@@ -19,10 +19,6 @@
  * @template {Record<string, ?>} T
  * @typedef {{[K in keyof T]: T[K] extends () => any ? Mock<Parameters<T[K]>, ReturnType<T[K]>> : T[K]}} MockedObject
  */
-/**
- * @template {any[]} P, R
- * @typedef {import('vitest').SpyInstance<P, R>} SpyInstance
- */
 
 import { Vector3 } from '@babylonjs/core/Maths/math.vector'
 import { faker } from '@faker-js/faker'
@@ -1066,9 +1062,9 @@ describe('Game interaction model', () => {
   })
 
   describe('attachInputs()', () => {
-    /** @type {SpyInstance<Parameters<import('@src/3d/managers').SelectionManager['drawSelectionBox']>, ReturnType<import('@src/3d/managers').SelectionManager['drawSelectionBox']>>} */
+    /** @type {import('vitest').Spy<import('@src/3d/managers').SelectionManager['drawSelectionBox']>} */
     let drawSelectionBox
-    /** @type {SpyInstance<Parameters<import('@src/3d/managers').SelectionManager['selectWithinBox']>, ReturnType<import('@src/3d/managers').SelectionManager['selectWithinBox']>>} */
+    /** @type {import('vitest').Spy<import('@src/3d/managers').SelectionManager['selectWithinBox']>} */
     let selectWithinBox
 
     beforeAll(() => {

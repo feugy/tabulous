@@ -5,10 +5,6 @@
  * @typedef {import('@src/3d/managers/control').Action} Action
  * @typedef {import('@src/3d/managers/control').Move} Move
  */
-/**
- * @template {any[]} P, R
- * @typedef {import('vitest').SpyInstance<P, R>} SpyInstance
- */
 
 import { faker } from '@faker-js/faker'
 import { AnchorBehavior, FlipBehavior, MoveBehavior } from '@src/3d/behaviors'
@@ -29,11 +25,11 @@ describe('ControlManager', () => {
   let handMesh
   /** @type {Mesh} */
   let anchorable
-  /** @type {SpyInstance<Parameters<AnchorBehavior['snap']>, Promise<void>>} */
+  /** @type {import('vitest').Spy<AnchorBehavior['snap']>} */
   let snapSpy
-  /** @type {SpyInstance<Parameters<FlipBehavior['flip']>, Promise<void>>} */
+  /** @type {import('vitest').Spy<FlipBehavior['flip']>} */
   let flipSpy
-  /** @type {SpyInstance<Parameters<AnchorBehavior['revert']>, Promise<void>>} */
+  /** @type {import('vitest').Spy<AnchorBehavior['revert']>} */
   let revertSpy
   const controlledChangeReceived = vi.fn()
   /** @type {import('@src/3d/managers').Managers} */

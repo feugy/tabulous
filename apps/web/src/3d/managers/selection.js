@@ -1,10 +1,4 @@
 // @ts-check
-/**
- * @typedef {import('@babylonjs/core').LinesMesh} LinesMesh
- * @typedef {import('@babylonjs/core').Scene} Scene
- * @typedef {import('@src/3d/utils').ScreenPosition} ScreenPosition
- */
-
 import { Axis, Space } from '@babylonjs/core/Maths/math.axis.js'
 import { Color3, Color4 } from '@babylonjs/core/Maths/math.color.js'
 import { Quaternion, Vector3 } from '@babylonjs/core/Maths/math.vector.js'
@@ -29,8 +23,8 @@ export class SelectionManager {
    * - clear previous selection
    * Invokes init() before any other function.
    * @param {object} params - parameters, including:
-   * @param {Scene} params.scene - scene attached to.
-   * @param {Scene} params.handScene - scene for meshes in hand.
+   * @param {import('@babylonjs/core').Scene} params.scene - scene attached to.
+   * @param {import('@babylonjs/core').Scene} params.handScene - scene for meshes in hand.
    */
   constructor({ scene, handScene }) {
     // we need to keep this set immutable, because it is referenced when adding to it
@@ -48,7 +42,7 @@ export class SelectionManager {
     this.color
     /** @internal @type {string} */
     this.playerId
-    /** @internal @type {?LinesMesh} */
+    /** @internal @type {?import('@babylonjs/core').LinesMesh} */
     this.box = null
     /** @internal @type {boolean} */
     this.skipNotify = false
@@ -82,8 +76,8 @@ export class SelectionManager {
 
   /**
    * Draws selection box between two points (in screen coordinates)
-   * @param {ScreenPosition} start - selection box's start screen position.
-   * @param {ScreenPosition} end - selection box's end screen position.
+   * @param {import('@src/3d/utils').ScreenPosition} start - selection box's start screen position.
+   * @param {import('@src/3d/utils').ScreenPosition} end - selection box's end screen position.
    */
   drawSelectionBox(start, end) {
     logger.debug({ start, end }, `draw selection box`)
