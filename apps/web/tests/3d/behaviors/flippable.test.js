@@ -28,7 +28,9 @@ let animationEndReceived
 /** @type {import('@src/3d/managers').Managers} */
 let managers
 
-configures3dTestEngine(created => (managers = created.managers))
+configures3dTestEngine(created => (managers = created.managers), {
+  isSimulation: globalThis.use3dSimulation
+})
 
 beforeAll(() => {
   managers.control.onActionObservable.add(data => actionRecorded(data))

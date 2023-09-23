@@ -13,7 +13,9 @@ describe('MoveBehavior', () => {
   /** @type {import('@src/3d/managers').Managers} */
   let managers
 
-  configures3dTestEngine(created => (managers = created.managers))
+  configures3dTestEngine(created => (managers = created.managers), {
+    isSimulation: globalThis.use3dSimulation
+  })
 
   it('has initial state', () => {
     const state = {

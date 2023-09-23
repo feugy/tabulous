@@ -32,10 +32,13 @@ describe('LockBehavior', () => {
   /** @type {import('@src/3d/managers').Managers} */
   let managers
 
-  configures3dTestEngine(created => {
-    scene = created.scene
-    managers = created.managers
-  })
+  configures3dTestEngine(
+    created => {
+      scene = created.scene
+      managers = created.managers
+    },
+    { isSimulation: globalThis.use3dSimulation }
+  )
 
   beforeAll(() => {
     managers.control.onActionObservable.add(actionRecorded)

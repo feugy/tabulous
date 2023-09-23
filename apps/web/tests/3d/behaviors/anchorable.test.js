@@ -50,10 +50,13 @@ import {
 } from '../../test-utils'
 
 describe('AnchorBehavior', () => {
-  configures3dTestEngine(created => {
-    scene = created.scene
-    managers = created.managers
-  })
+  configures3dTestEngine(
+    created => {
+      scene = created.scene
+      managers = created.managers
+    },
+    { isSimulation: globalThis.use3dSimulation }
+  )
 
   const actionRecorded = vi.fn()
   const moveRecorded = vi.fn()

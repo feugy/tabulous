@@ -12,8 +12,9 @@ export class ReplayManager {
    * Invokes init() before any other function.
    * @param {object} params - parameters, including:
    * @param {import('@babylonjs/core').Engine} params.engine - 3d engine.
+   * @param {number} [params.moveDuration] - duration applied to moved meshes, in ms.
    */
-  constructor({ engine }) {
+  constructor({ engine, moveDuration = 200 }) {
     /** game engin. */
     this.engine = engine
     /** @type {import('@tabulous/server/src/graphql').HistoryRecord[]} list of available history records. */
@@ -29,7 +30,7 @@ export class ReplayManager {
     /** @internal avoid concurrent replays */
     this.inhibitReplay = false
     /** @internal */
-    this.moveDuration = 200
+    this.moveDuration = moveDuration
     /** @internal @type {import('@src/3d/managers').Managers} */
     this.managers
     /** @internal @type {string} */

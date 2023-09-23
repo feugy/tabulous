@@ -15,6 +15,8 @@ import * as customMatchers from './matchers'
 expect.extend(matchers)
 expect.extend(customMatchers)
 
+globalThis.use3dSimulation = true
+
 vi.mock('$app/environment', () => ({ browser: true }))
 
 vi.mock('$app/navigation', () => {

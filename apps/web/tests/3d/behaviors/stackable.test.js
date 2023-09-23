@@ -55,7 +55,9 @@ import {
 } from '../../test-utils'
 
 describe('StackBehavior', () => {
-  configures3dTestEngine(created => (managers = created.managers))
+  configures3dTestEngine(created => (managers = created.managers), {
+    isSimulation: globalThis.use3dSimulation
+  })
 
   const actionRecorded = vi.fn()
   const moveRecorded = vi.fn()

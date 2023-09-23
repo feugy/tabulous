@@ -29,13 +29,16 @@ describe('TargetManager', () => {
   /** @type {string} */
   let color
 
-  configures3dTestEngine(created => {
-    scene = created.scene
-    handScene = created.handScene
-    managers = created.managers
-    playerId = created.playerId
-    color = managers.target.color.toHexString()
-  })
+  configures3dTestEngine(
+    created => {
+      scene = created.scene
+      handScene = created.handScene
+      managers = created.managers
+      playerId = created.playerId
+      color = managers.target.color.toHexString()
+    },
+    { isSimulation: globalThis.use3dSimulation }
+  )
 
   beforeEach(() => {
     vi.clearAllMocks()

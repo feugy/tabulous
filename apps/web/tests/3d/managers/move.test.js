@@ -76,13 +76,16 @@ describe('managers.Move', () => {
   /** @type {string} */
   let playerId
 
-  configures3dTestEngine(created => {
-    ;({ scene, handScene, camera, managers, playerId } = created)
-    managers.hand.enabled = true
-    actionObserver = managers.control.onActionObservable.add(actionRecorded)
-    moveObserver = managers.move.onMoveObservable.add(moveRecorded)
-    preMoveObserver = managers.move.onPreMoveObservable.add(preMoveRecorded)
-  })
+  configures3dTestEngine(
+    created => {
+      ;({ scene, handScene, camera, managers, playerId } = created)
+      managers.hand.enabled = true
+      actionObserver = managers.control.onActionObservable.add(actionRecorded)
+      moveObserver = managers.move.onMoveObservable.add(moveRecorded)
+      preMoveObserver = managers.move.onPreMoveObservable.add(preMoveRecorded)
+    },
+    { isSimulation: globalThis.use3dSimulation }
+  )
 
   beforeEach(() => {
     vi.clearAllMocks()

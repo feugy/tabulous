@@ -145,16 +145,20 @@ export function extractAttribute(nodes, attributeName) {
 /**
  * Creates headless 3D engine for testing.
  * @param {object} [engineProps]
- * @param {number} engineProps.renderWidth - rendered surface width.
- * @param {number} engineProps.renderHeight - rendered surface width.
+ * @param {number} [engineProps.renderWidth] - rendered surface width.
+ * @param {number} [engineProps.renderHeight] - rendered surface width.
+ * @param {boolean} [engineProps.isSimulation] - whether this engine is a aimulation.
  * @returns {Initialized3DEngine} created objects.
  */
-export function initialize3dEngine(
-  engineProps = { renderWidth: 2048, renderHeight: 1024 }
-) {
+export function initialize3dEngine({
+  isSimulation = false,
+  renderWidth = 2048,
+  renderHeight = 1024
+} = {}) {
   Logger.LogLevels = Logger.NoneLogLevel
   const engine = new NullEngine({
-    ...engineProps,
+    renderWidth,
+    renderHeight,
     textureSize: 512,
     deterministicLockstep: false,
     lockstepMaxSteps: 4
@@ -167,6 +171,7 @@ export function initialize3dEngine(
     handScene.render()
   })
   engine.inputElement = document.body
+  engine.isSimulation = isSimulation
 
   const scene = main.scene
 
@@ -177,7 +182,7 @@ export function initialize3dEngine(
   const getComputedStyle = vi.fn(
     () =>
       /** @type {CSSStyleDeclaration}  */ ({
-        height: `${engineProps.renderHeight / 4}px`
+        height: `${renderHeight / 4}px`
       })
   )
 
@@ -198,8 +203,16 @@ export function initialize3dEngine(
     customShape: new CustomShapeManager({ gameAssetsUrl }),
     target: new TargetManager({ scene }),
     material: new MaterialManager({ gameAssetsUrl, scene, handScene }),
-    hand: new HandManager({ scene, handScene, overlay }),
-    replay: new ReplayManager({ engine })
+    hand: new HandManager({
+      scene,
+      handScene,
+      overlay,
+      duration: globalThis.use3dSimulation ? 0 : 100
+    }),
+    replay: new ReplayManager({
+      engine,
+      moveDuration: globalThis.use3dSimulation ? 0 : 200
+    })
   }
   const playerId = faker.person.fullName()
   const color = '#ff0000'
@@ -258,7 +271,7 @@ export function disposeAllMeshes(scene) {
  * Automaticall creates and headless 3D engine, scenes, cameras and managers when the test suite starts.
  * Disposes all meshes after each tests, and disposes the engine at the end.
  * Also created managers are initialized (except input, customShape, material and replay).
- * @param {(args: Initialized3DEngine) => void} [callback] - invoked with the created objects.
+ * @param {?(args: Initialized3DEngine) => void} [callback] - invoked with the created objects.
  * @param {Parameters<initialize3dEngine>} engineProps - engine properties
  */
 export function configures3dTestEngine(callback, ...engineProps) {
@@ -732,7 +745,10 @@ export function waitForObservable(observable, timeout = 100) {
  * @param {HandManager} manager - hand manager
  * @param {number} [timeout] - time to wait for layout, in ms.
  */
-export function waitForLayout(manager, timeout = 1000) {
+export function waitForLayout(
+  manager,
+  timeout = globalThis.use3dSimulation ? 150 : 1000 // must be longer than handManager.duration (usually 100ms)
+) {
   return new Promise((resolve, reject) => {
     const timer = setTimeout(
       () => reject(new Error(`no hand layout after ${timeout}ms`)),

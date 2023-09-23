@@ -43,16 +43,19 @@ describe('ControlManager', () => {
   /** @type {string} */
   let playerId
 
-  configures3dTestEngine(created => {
-    scene = created.scene
-    handScene = created.handScene
-    managers = created.managers
-    playerId = created.playerId
-    manager = managers.control
-    managers.hand.enabled = true
-    manager.onActionObservable.add(action => actions.push(action))
-    manager.onControlledObservable.add(controlledChangeReceived)
-  })
+  configures3dTestEngine(
+    created => {
+      scene = created.scene
+      handScene = created.handScene
+      managers = created.managers
+      playerId = created.playerId
+      manager = managers.control
+      managers.hand.enabled = true
+      manager.onActionObservable.add(action => actions.push(action))
+      manager.onControlledObservable.add(controlledChangeReceived)
+    },
+    { isSimulation: globalThis.use3dSimulation }
+  )
 
   beforeEach(() => {
     vi.clearAllMocks()

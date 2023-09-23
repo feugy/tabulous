@@ -33,13 +33,16 @@ describe('managers.Selection', () => {
     color: faker.color.rgb().toUpperCase()
   }
 
-  configures3dTestEngine(created => {
-    scene = created.scene
-    handScene = created.handScene
-    managers = created.managers
-    managers.selection.onSelectionObservable.add(selectionChanged)
-    managers.hand.enabled = true
-  })
+  configures3dTestEngine(
+    created => {
+      scene = created.scene
+      handScene = created.handScene
+      managers = created.managers
+      managers.selection.onSelectionObservable.add(selectionChanged)
+      managers.hand.enabled = true
+    },
+    { isSimulation: globalThis.use3dSimulation }
+  )
 
   beforeEach(() => {
     managers.selection.clear()

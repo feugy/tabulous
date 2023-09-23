@@ -32,14 +32,17 @@ let playerId
 const actionRecorded = vi.fn()
 const animationEndReceived = vi.fn()
 
-configures3dTestEngine(created => {
-  scene = created.scene
-  handScene = created.handScene
-  managers = created.managers
-  playerId = created.playerId
-  managers.control.onActionObservable.add(actionRecorded)
-  managers.hand.enabled = true
-})
+configures3dTestEngine(
+  created => {
+    scene = created.scene
+    handScene = created.handScene
+    managers = created.managers
+    playerId = created.playerId
+    managers.control.onActionObservable.add(actionRecorded)
+    managers.hand.enabled = true
+  },
+  { isSimulation: globalThis.use3dSimulation }
+)
 
 beforeEach(() => {
   vi.clearAllMocks()

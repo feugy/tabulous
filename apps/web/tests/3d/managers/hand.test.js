@@ -41,7 +41,6 @@ import {
   expectRotated,
   expectSnapped,
   expectStacked,
-  sleep,
   waitForLayout
 } from '../../test-utils'
 
@@ -87,7 +86,7 @@ describe('HandManager', () => {
       savedCameraPosition = camera.position.clone()
       actionObserver = managers.control.onActionObservable.add(actionRecorded)
     },
-    { renderWidth, renderHeight }
+    { renderWidth, renderHeight, isSimulation: globalThis.use3dSimulation }
   )
 
   beforeEach(() => {
@@ -318,9 +317,11 @@ describe('HandManager', () => {
 
     it('moves drawn mesh to hand', async () => {
       const [, card] = cards
-      card.metadata.draw?.()
-      await waitForLayout(managers.hand)
-      await expectAnimationEnd(card.getBehaviorByName(DrawBehaviorName))
+      await Promise.all([
+        card.metadata.draw?.(),
+        waitForLayout(managers.hand),
+        expectAnimationEnd(card.getBehaviorByName(DrawBehaviorName))
+      ])
       expect(scene.getMeshById(card.id)?.id).toBeUndefined()
       const newMesh = getMeshById(handScene, card.id)
       expect(newMesh?.id).toBeDefined()
@@ -358,9 +359,11 @@ describe('HandManager', () => {
         },
         scene
       )
-      card1.metadata.draw?.()
-      await waitForLayout(managers.hand)
-      await expectAnimationEnd(card1.getBehaviorByName(DrawBehaviorName))
+      await Promise.all([
+        card1.metadata.draw?.(),
+        waitForLayout(managers.hand),
+        expectAnimationEnd(card1.getBehaviorByName(DrawBehaviorName))
+      ])
       expect(scene.getMeshById(card1.id)?.id).toBeUndefined()
       expect(scene.getMeshById(card2.id)?.id).toBeDefined()
       expect(scene.getMeshById(card3.id)?.id).toBeDefined()
@@ -400,9 +403,8 @@ describe('HandManager', () => {
       await card.metadata.flip?.()
       actionRecorded.mockReset()
       expectFlipped(card, true)
-      card.metadata.draw?.()
+      await Promise.all([card.metadata.draw?.(), waitForLayout(managers.hand)])
       const newMesh = getMeshById(handScene, card.id)
-      await waitForLayout(managers.hand)
       expectFlipped(newMesh, false)
       expect(actionRecorded).toHaveBeenCalledOnce()
       expect(actionRecorded).toHaveBeenCalledWith(
@@ -426,9 +428,8 @@ describe('HandManager', () => {
       expectRotated(card, Math.PI * -0.5)
       actionRecorded.mockReset()
 
-      card.metadata.draw?.()
+      await Promise.all([card.metadata.draw?.(), waitForLayout(managers.hand)])
       const newMesh = getMeshById(handScene, card.id)
-      await waitForLayout(managers.hand)
       expectRotated(newMesh, angle)
       expect(actionRecorded).toHaveBeenCalledOnce()
       expect(actionRecorded).toHaveBeenCalledWith(
@@ -453,9 +454,11 @@ describe('HandManager', () => {
       await card.metadata.flip?.()
       actionRecorded.mockReset()
       expectFlipped(card, true)
-      card.metadata.draw?.()
-      await waitForLayout(managers.hand)
-      await expectAnimationEnd(getDrawBehavior(card))
+      await Promise.all([
+        card.metadata.draw?.(),
+        waitForLayout(managers.hand),
+        expectAnimationEnd(getDrawBehavior(card))
+      ])
       const newMesh = getMeshById(handScene, card.id)
       expectFlipped(newMesh, true)
       expect(actionRecorded).toHaveBeenCalledOnce()
@@ -518,10 +521,10 @@ describe('HandManager', () => {
         ].map(state => createMesh(state, scene))
       )
 
-      for (const card of cards) {
-        card.metadata.draw?.()
-      }
-      await waitForLayout(managers.hand)
+      await Promise.all([
+        ...cards.map(card => card.metadata.draw?.()),
+        waitForLayout(managers.hand)
+      ])
       const z = computeZ()
       let x = -viewPortDimensions.width / 2 + cardWidth / 2 + horizontalPadding
       let y = 0.005
@@ -1248,11 +1251,13 @@ describe('HandManager', () => {
       it('plays mesh to main scene', async () => {
         const [, card] = handCards
         card.metadata.play?.()
-        await waitForLayout(managers.hand)
-        expect(handScene.getMeshById(card.id)?.id).toBeUndefined()
         const newMesh = getMeshById(scene, card.id)
+        await Promise.all([
+          waitForLayout(managers.hand),
+          expectAnimationEnd(newMesh.getBehaviorByName(DrawBehaviorName))
+        ])
+        expect(handScene.getMeshById(card.id)?.id).toBeUndefined()
         expect(newMesh?.id).toBeDefined()
-        await expectAnimationEnd(newMesh.getBehaviorByName(DrawBehaviorName))
         expect(actionRecorded).toHaveBeenCalledWith(
           {
             meshId: newMesh.id,
@@ -1277,11 +1282,13 @@ describe('HandManager', () => {
         const [base] = cards
         base.setAbsolutePosition(new Vector3(-3.89, 0, 0))
         card.metadata.play?.()
-        await waitForLayout(managers.hand)
-        expect(handScene.getMeshById(card.id)?.id).toBeUndefined()
         const newMesh = getMeshById(scene, card.id)
+        await Promise.all([
+          waitForLayout(managers.hand),
+          expectAnimationEnd(newMesh.getBehaviorByName(DrawBehaviorName))
+        ])
+        expect(handScene.getMeshById(card.id)?.id).toBeUndefined()
         expect(newMesh?.id).toBeDefined()
-        await expectAnimationEnd(newMesh.getBehaviorByName(DrawBehaviorName))
         expect(actionRecorded).toHaveBeenCalledTimes(2)
         expect(actionRecorded).toHaveBeenNthCalledWith(
           1,
@@ -1335,11 +1342,13 @@ describe('HandManager', () => {
         getDrawBehavior(card).state.flipOnPlay = true
         expectFlipped(card, false)
         card.metadata.play?.()
-        await waitForLayout(managers.hand)
-        expect(handScene.getMeshById(card.id)?.id).toBeUndefined()
         const newMesh = getMeshById(scene, card.id)
+        await Promise.all([
+          waitForLayout(managers.hand),
+          expectAnimationEnd(newMesh.getBehaviorByName(DrawBehaviorName))
+        ])
+        expect(handScene.getMeshById(card.id)?.id).toBeUndefined()
         expect(newMesh?.id).toBeDefined()
-        await expectAnimationEnd(newMesh.getBehaviorByName(DrawBehaviorName))
         expectFlipped(newMesh, true)
         expect(actionRecorded).toHaveBeenCalledOnce()
         expect(actionRecorded).toHaveBeenCalledWith(
@@ -1478,11 +1487,13 @@ describe('HandManager', () => {
         camera.lockedTarget = new Vector3(-17, 0, -6)
         const [, card] = handCards
         card.metadata.play?.()
-        await waitForLayout(managers.hand)
-        expect(handScene.getMeshById(card.id)?.id).toBeUndefined()
         const newMesh = getMeshById(scene, card.id)
+        await Promise.all([
+          waitForLayout(managers.hand),
+          expectAnimationEnd(newMesh.getBehaviorByName(DrawBehaviorName))
+        ])
+        expect(handScene.getMeshById(card.id)?.id).toBeUndefined()
         expect(newMesh?.id).toBeDefined()
-        await expectAnimationEnd(newMesh.getBehaviorByName(DrawBehaviorName))
         expectPosition(newMesh, [-20.89, 0, -6])
         expectCloseVector(
           extractDrawnState(),
@@ -1529,11 +1540,13 @@ describe('HandManager', () => {
         it(`plays hand mesh to player's drop zone`, async () => {
           const [, card] = handCards
           card.metadata.play?.()
-          await waitForLayout(managers.hand)
-          expect(handScene.getMeshById(card.id)?.id).toBeUndefined()
           const newMesh = getMeshById(scene, card.id)
+          await Promise.all([
+            waitForLayout(managers.hand),
+            expectAnimationEnd(newMesh.getBehaviorByName(DrawBehaviorName))
+          ])
+          expect(handScene.getMeshById(card.id)?.id).toBeUndefined()
           expect(newMesh?.id).toBeDefined()
-          await expectAnimationEnd(newMesh.getBehaviorByName(DrawBehaviorName))
           expect(actionRecorded).toHaveBeenCalledTimes(2)
           expect(actionRecorded).toHaveBeenNthCalledWith(
             1,
@@ -1582,12 +1595,15 @@ describe('HandManager', () => {
           const [mesh1, mesh2] = handCards
           managers.selection.select([mesh1, mesh2])
           mesh2.metadata.play?.()
-          await waitForLayout(managers.hand)
+          const newMesh1 = getMeshById(scene, mesh1.id)
+          await Promise.all([
+            waitForLayout(managers.hand),
+            expectAnimationEnd(newMesh1.getBehaviorByName(DrawBehaviorName))
+          ])
+          const newMesh2 = getMeshById(scene, mesh2.id)
           expect(handScene.getMeshById(mesh1.id)?.id).toBeUndefined()
           expect(handScene.getMeshById(mesh2.id)?.id).toBeUndefined()
-          const newMesh1 = getMeshById(scene, mesh1.id)
           expect(newMesh1?.id).toBeDefined()
-          const newMesh2 = getMeshById(scene, mesh2.id)
           expect(newMesh2?.id).toBeDefined()
           expect(actionRecorded).toHaveBeenCalledTimes(4)
           expect(actionRecorded).toHaveBeenNthCalledWith(
@@ -1651,7 +1667,6 @@ describe('HandManager', () => {
           expect(managers.move.isManaging(newMesh1)).toBe(true)
           expect(managers.control.isManaging(newMesh2)).toBe(true)
           expect(managers.move.isManaging(newMesh2)).toBe(true)
-          await expectAnimationEnd(newMesh1.getBehaviorByName(DrawBehaviorName))
           expectSnapped(dropZone, newMesh1)
           expectStacked(managers, [newMesh1, newMesh2], true, dropZone.id)
         })
@@ -1753,14 +1768,11 @@ describe('HandManager', () => {
             pointers: 1,
             event: /** @type {PointerEvent} */ ({ x: 289.7, y: 175 })
           })
-          await sleep()
+          await waitForLayout(managers.hand)
           const newMesh1 = getMeshById(scene, mesh1.id)
           expect(newMesh1?.id).toBeDefined()
           const newMesh2 = getMeshById(scene, mesh2.id)
           expect(newMesh2?.id).toBeDefined()
-          expectPosition(newMesh1, [6, 0.005, 0])
-          expectPosition(newMesh2, [6, 0.016, 0])
-          await waitForLayout(managers.hand)
           expect(handScene.getMeshById(mesh1.id)?.id).toBeUndefined()
           expect(handScene.getMeshById(mesh2.id)?.id).toBeUndefined()
           expect(actionRecorded).toHaveBeenCalledTimes(4)

@@ -36,16 +36,19 @@ describe('managers.Control', () => {
   /** @type {string} */
   let playerId
 
-  configures3dTestEngine(created => {
-    ;({ engine, scene, managers, playerId } = created)
-    engine.serialize = vi.fn()
-    managers.replay.onHistoryObservable.add(data => (history = data))
-    managers.replay.onReplayRankObservable.add(value => (rank = value))
-    managers.replay.init({ managers, history: [], playerId })
-    managers.hand.enabled = true
-    expect(rank).toBe(0)
-    expect(history).toEqual([])
-  })
+  configures3dTestEngine(
+    created => {
+      ;({ engine, scene, managers, playerId } = created)
+      engine.serialize = vi.fn()
+      managers.replay.onHistoryObservable.add(data => (history = data))
+      managers.replay.onReplayRankObservable.add(value => (rank = value))
+      managers.replay.init({ managers, history: [], playerId })
+      managers.hand.enabled = true
+      expect(rank).toBe(0)
+      expect(history).toEqual([])
+    },
+    { isSimulation: globalThis.use3dSimulation }
+  )
 
   beforeEach(() => {
     vi.clearAllMocks()
@@ -421,7 +424,7 @@ describe('managers.Control', () => {
       }
 
       function addState(name = 'initial') {
-        states.set(name, getStates())
+        states.set(name, getStates(true))
       }
 
       beforeEach(async () => {
@@ -458,37 +461,37 @@ describe('managers.Control', () => {
       it('can replay backwards', async () => {
         await managers.replay.replayHistory(2)
         expect(rank).toBe(2)
-        expect(getStates(true)).toEqual(states.get('flipped1'))
+        expect(getStates()).toEqual(states.get('flipped1'))
         await managers.replay.replayHistory(0)
         expect(rank).toBe(0)
-        expect(getStates(true)).toEqual(states.get('initial'))
+        expect(getStates()).toEqual(states.get('initial'))
       })
 
       it('can not replay less than 0', async () => {
         await managers.replay.replayHistory(1)
         expect(rank).toBe(1)
-        expect(getStates(true)).toEqual(states.get('moved1'))
+        expect(getStates()).toEqual(states.get('moved1'))
         await managers.replay.replayHistory(-1)
         expect(rank).toBe(1)
-        expect(getStates(true)).toEqual(states.get('moved1'))
+        expect(getStates()).toEqual(states.get('moved1'))
       })
 
       it('can replay forwards', async () => {
         await managers.replay.replayHistory(1)
         expect(rank).toBe(1)
-        expect(getStates(true)).toEqual(states.get('moved1'))
+        expect(getStates()).toEqual(states.get('moved1'))
         await managers.replay.replayHistory(2)
         expect(rank).toBe(3)
-        expect(getStates(true)).toEqual(states.get('moved2'))
+        expect(getStates()).toEqual(states.get('moved2'))
         await managers.replay.replayHistory(3)
         expect(rank).toBe(4)
-        expect(getStates(true)).toEqual(states.get('rotated1'))
+        expect(getStates()).toEqual(states.get('rotated1'))
       })
 
       it('can not replay more than history length', async () => {
         await managers.replay.replayHistory(10)
         expect(rank).toBe(history.length)
-        expect(getStates(true)).toEqual(states.get('flipped2'))
+        expect(getStates()).toEqual(states.get('flipped2'))
       })
 
       it('can not replay concurrently', async () => {
@@ -497,14 +500,14 @@ describe('managers.Control', () => {
           managers.replay.replayHistory(2)
         ])
         expect(rank).toBe(1)
-        expect(getStates(true)).toEqual(states.get('moved1'))
+        expect(getStates()).toEqual(states.get('moved1'))
       })
 
       it('does not update rank when recording action', async () => {
         const length = history.length
         await managers.replay.replayHistory(1)
         expect(rank).toBe(1)
-        expect(getStates(true)).toEqual(states.get('moved1'))
+        expect(getStates()).toEqual(states.get('moved1'))
         await mesh.metadata.rotate?.()
         expect(rank).toBe(1)
         expect(history[length]).toEqual(

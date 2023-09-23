@@ -25,30 +25,33 @@ describe('RandomBehavior', () => {
   /** @type {import('@src/3d/managers').Managers} */
   let managers
 
-  configures3dTestEngine(async created => {
-    scene = created.scene
-    managers = created.managers
-    vi.spyOn(global, 'fetch').mockImplementation(file =>
-      Promise.resolve(
-        new Response(
-          file.toString().endsWith(getDieModelFile(8))
-            ? die8Data
-            : file.toString().endsWith(getDieModelFile(6))
-            ? die6Data
-            : die4Data
+  configures3dTestEngine(
+    async created => {
+      scene = created.scene
+      managers = created.managers
+      vi.spyOn(global, 'fetch').mockImplementation(file =>
+        Promise.resolve(
+          new Response(
+            file.toString().endsWith(getDieModelFile(8))
+              ? die8Data
+              : file.toString().endsWith(getDieModelFile(6))
+              ? die6Data
+              : die4Data
+          )
         )
       )
-    )
-    await managers.customShape.init({
-      id: 'game',
-      created: Date.now(),
-      meshes: [
-        { id: 'die4', shape: 'die', faces: 4, texture: '' },
-        { id: 'die6', shape: 'die', faces: 6, texture: '' },
-        { id: 'die8', shape: 'die', faces: 8, texture: '' }
-      ]
-    })
-  })
+      await managers.customShape.init({
+        id: 'game',
+        created: Date.now(),
+        meshes: [
+          { id: 'die4', shape: 'die', faces: 4, texture: '' },
+          { id: 'die6', shape: 'die', faces: 6, texture: '' },
+          { id: 'die8', shape: 'die', faces: 8, texture: '' }
+        ]
+      })
+    },
+    { isSimulation: globalThis.use3dSimulation }
+  )
 
   beforeAll(() => {
     managers.control.onActionObservable.add(actionRecorded)

@@ -136,10 +136,15 @@ export function animateMove(
 ) {
   const movable = getAnimatableBehavior(mesh)
   if (!mesh.getEngine().isLoading && movable && duration) {
-    return movable.moveTo(absolutePosition, rotation, duration, withGravity)
+    return movable.moveTo(
+      absolutePosition,
+      rotation,
+      mesh.getEngine().isSimulation ? 0 : duration,
+      withGravity
+    )
   } else {
     mesh.setAbsolutePosition(absolutePosition)
-    if (rotation) {
+    if (rotation != undefined) {
       mesh.rotation = rotation
     }
     if (withGravity) {
@@ -320,27 +325,35 @@ export function runAnimation({ mesh, frameRate }, onEnd, ...animationSpecs) {
   return new Promise(resolve =>
     mesh
       .getScene()
-      .beginDirectAnimation(mesh, animations, 0, lastFrame, false, 1, () => {
-        animationLogger.debug(
-          { mesh, animations, wasPickable, wasHittable },
-          `end animations on ${mesh.id}`
-        )
-        mesh.isPickable = wasPickable
-        mesh.isHittable = wasHittable
-        mesh.animationInProgress = false
-        // framed animation may not exactly end where we want, so force the final position
-        for (const { animation } of animationSpecs) {
-          // @ts-expect-error can not use animation.targetProperty to index Mesh
-          mesh[animation.targetProperty] =
-            animation.getKeys()[animation.getKeys().length - 1].value
+      .beginDirectAnimation(
+        mesh,
+        animations,
+        0,
+        lastFrame,
+        false,
+        mesh.getEngine().isSimulation ? 100 : 1,
+        () => {
+          animationLogger.debug(
+            { mesh, animations, wasPickable, wasHittable },
+            `end animations on ${mesh.id}`
+          )
+          mesh.isPickable = wasPickable
+          mesh.isHittable = wasHittable
+          mesh.animationInProgress = false
+          // framed animation may not exactly end where we want, so force the final position
+          for (const { animation } of animationSpecs) {
+            // @ts-expect-error can not use animation.targetProperty to index Mesh
+            mesh[animation.targetProperty] =
+              animation.getKeys()[animation.getKeys().length - 1].value
+          }
+          mesh.computeWorldMatrix(true)
+          if (onEnd) {
+            onEnd()
+          }
+          resolve(void 0)
+          mesh.onAnimationEnd.notifyObservers()
         }
-        mesh.computeWorldMatrix(true)
-        if (onEnd) {
-          onEnd()
-        }
-        resolve(void 0)
-        mesh.onAnimationEnd.notifyObservers()
-      })
+      )
   )
 }
 

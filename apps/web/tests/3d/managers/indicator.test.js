@@ -29,11 +29,14 @@ describe('IndicatorManager', () => {
   /** @type {Mesh} */
   let mesh
 
-  configures3dTestEngine(created => {
-    scene = created.scene
-    managers = created.managers
-    managers.indicator.onChangeObservable.add(changeReceived)
-  })
+  configures3dTestEngine(
+    created => {
+      scene = created.scene
+      managers = created.managers
+      managers.indicator.onChangeObservable.add(changeReceived)
+    },
+    { isSimulation: globalThis.use3dSimulation }
+  )
 
   beforeEach(() => {
     vi.clearAllMocks()
