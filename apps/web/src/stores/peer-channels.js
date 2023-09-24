@@ -49,8 +49,11 @@ let subscriptions = []
 /** @type {?{ player: Player }} */
 let current = null
 /** @type {Stream} */
-let local
-resetLocalState()
+let local = {
+  stream: null,
+  muted: false,
+  stopped: false
+}
 
 /**
  * Emits last data sent to another player
@@ -89,7 +92,6 @@ export async function openChannels(player, turnCredentials, gameId) {
   current = { player }
   logger.info({ player }, 'initializing peer communication')
 
-  resetLocalState()
   subscriptions = [
     localStreamChange$.pipe(auditTime(10)).subscribe(state => {
       Object.assign(local, state)
@@ -286,7 +288,7 @@ function unwire(/** @type {string} */ id) {
   refreshConnected()
   if (connections.size === 0) {
     releaseMediaStream()
-    resetLocalState()
+    local.stream = null
   }
   lastDisconnectedId$.next(id)
 }
@@ -302,13 +304,5 @@ function buildStreamHandler(/** @type {string} */ playerId) {
     logger.debug({ from: playerId }, `receiving stream from ${playerId}`)
     connections.get(playerId)?.setRemote({ stream })
     refreshConnected()
-  }
-}
-
-function resetLocalState() {
-  local = {
-    stream: null,
-    muted: false,
-    stopped: false
   }
 }

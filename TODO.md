@@ -14,10 +14,10 @@
 
 ## UI
 
-- bug: when player reconnects to a multiplayer game, its peers muted/stopped states are reset
+- bug: die do not display the same face in multiplayer (states are correct)
 - when hovering target, highlight should have the dragged mesh's shape, not the target shape (what about parts?)
 - hand count on peer pointers/player tab?
-- score card (Mah-jong, Belote)
+- score (Mah-jong, Belote)
 - command to reset some mesh state and restart a game (Mah-jong, Belote)
 - "box" space for unusued/undesired meshes
 - hide/distinguish non-connected participants?

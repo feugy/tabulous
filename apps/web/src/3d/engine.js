@@ -330,6 +330,8 @@ function transferActionsAndSelections(
   rebindMethod(engine, simulation, 'applyRemoteSelection')
   rebindMethod(engine, simulation, 'applyRemoteAction')
   engine.serialize = simulation.serialize.bind(simulation)
+  simulation.getRenderWidth = engine.getRenderWidth.bind(engine)
+  simulation.getRenderHeight = engine.getRenderHeight.bind(engine)
   engine.managers.control.onActionObservable.add(action => {
     if (!engine.managers.replay.isReplaying) {
       simulation.managers.control.apply(action)

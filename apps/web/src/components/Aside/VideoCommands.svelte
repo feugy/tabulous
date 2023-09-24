@@ -21,9 +21,6 @@
   function toggleMic() {
     if ($stream$) {
       muted = !muted
-      for (const track of $stream$.getAudioTracks()) {
-        track.enabled = !muted
-      }
       recordStreamChange({ muted, stopped })
     }
   }
@@ -31,9 +28,6 @@
   function toggleVideo() {
     if ($stream$) {
       stopped = !stopped
-      for (const track of $stream$.getVideoTracks()) {
-        track.enabled = !stopped
-      }
       recordStreamChange({ muted, stopped })
     }
   }

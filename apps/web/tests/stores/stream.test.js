@@ -93,11 +93,11 @@ describe('Media Stream store', () => {
         expect.stringMatching(noMediaMessage)
       )
       expect(logger.warn).not.toHaveBeenCalled()
-      expect(streamReceived).toHaveBeenCalledTimes(1)
-      expect(camerasReceived).toHaveBeenCalledTimes(1)
-      expect(currentCameraReceived).toHaveBeenCalledTimes(1)
-      expect(micsReceived).toHaveBeenCalledTimes(1)
-      expect(currentMicReceived).toHaveBeenCalledTimes(1)
+      expect(streamReceived).toHaveBeenCalledOnce()
+      expect(camerasReceived).toHaveBeenCalledOnce()
+      expect(currentCameraReceived).toHaveBeenCalledOnce()
+      expect(micsReceived).toHaveBeenCalledOnce()
+      expect(currentMicReceived).toHaveBeenCalledOnce()
       expect(localStreamChangeReceived).not.toHaveBeenCalled()
     })
 
@@ -122,7 +122,7 @@ describe('Media Stream store', () => {
 
   describe('given acquireMediaStream() got unauthorized media', () => {
     beforeEach(async () => {
-      // @ts-expect-error navigator.mediaDevices is readonly
+      // @ts-expect-error -- navigator.mediaDevices is readonly
       mediaDevicesMock = navigator.mediaDevices = {
         addEventListener: vi.fn(),
         enumerateDevices: vi.fn().mockRejectedValue(new Error('unauthorized')),
@@ -174,7 +174,9 @@ describe('Media Stream store', () => {
   describe('given acquireMediaStream() got authorized media', () => {
     const stream = {
       id: faker.string.uuid(),
-      getTracks: vi.fn()
+      getTracks: vi.fn(),
+      getAudioTracks: vi.fn().mockReturnValue([]),
+      getVideoTracks: vi.fn().mockReturnValue([])
     }
 
     const devices = /** @type {MediaDeviceInfo[]} */ ([
@@ -211,10 +213,10 @@ describe('Media Stream store', () => {
       expectCurrentCamera(devices[0])
       expect(get(cameras$)).toEqual(cameras)
       expect(logger.warn).not.toHaveBeenCalled()
-      expect(streamReceived).toHaveBeenCalledTimes(1)
-      expect(camerasReceived).toHaveBeenCalledTimes(1)
-      expect(micsReceived).toHaveBeenCalledTimes(1)
-      expect(localStreamChangeReceived).not.toHaveBeenCalled()
+      expect(streamReceived).toHaveBeenCalledOnce()
+      expect(camerasReceived).toHaveBeenCalledOnce()
+      expect(micsReceived).toHaveBeenCalledOnce()
+      expect(localStreamChangeReceived).toHaveBeenCalledOnce()
     })
 
     it('returns the same stream to all "parallel" acquisition requests', async () => {
@@ -225,7 +227,7 @@ describe('Media Stream store', () => {
       expect(streams[0]).toBe(streams[1])
       expect(streams[0]).toBe(streams[2])
       expect(get(stream$)).toEqual(streams[0])
-      expect(mediaDevicesMock.getUserMedia).toHaveBeenCalledTimes(1)
+      expect(mediaDevicesMock.getUserMedia).toHaveBeenCalledOnce()
     })
 
     it('uses desired camera', async () => {
@@ -237,8 +239,8 @@ describe('Media Stream store', () => {
       expectCurrentCamera(devices[1])
       expect(get(cameras$)).toEqual(cameras)
       expect(logger.warn).not.toHaveBeenCalled()
-      expect(streamReceived).toHaveBeenCalledTimes(1)
-      expect(localStreamChangeReceived).not.toHaveBeenCalled()
+      expect(streamReceived).toHaveBeenCalledOnce()
+      expect(localStreamChangeReceived).toHaveBeenCalledOnce()
     })
 
     it('uses desired microphone', async () => {
@@ -250,8 +252,8 @@ describe('Media Stream store', () => {
       expectCurrentCamera(devices[0])
       expect(get(cameras$)).toEqual(cameras)
       expect(logger.warn).not.toHaveBeenCalled()
-      expect(streamReceived).toHaveBeenCalledTimes(1)
-      expect(localStreamChangeReceived).not.toHaveBeenCalled()
+      expect(streamReceived).toHaveBeenCalledOnce()
+      expect(localStreamChangeReceived).toHaveBeenCalledOnce()
     })
 
     it('reuses last microphone and camera', async () => {
@@ -265,8 +267,8 @@ describe('Media Stream store', () => {
       expectCurrentCamera(devices[1])
       expect(get(cameras$)).toEqual(cameras)
       expect(logger.warn).not.toHaveBeenCalled()
-      expect(streamReceived).toHaveBeenCalledTimes(1)
-      expect(localStreamChangeReceived).not.toHaveBeenCalled()
+      expect(streamReceived).toHaveBeenCalledOnce()
+      expect(localStreamChangeReceived).toHaveBeenCalledOnce()
     })
 
     it(`defaults to first device when last can't be found`, async () => {
@@ -280,13 +282,13 @@ describe('Media Stream store', () => {
       expectCurrentCamera(devices[0])
       expect(get(cameras$)).toEqual(cameras)
       expect(logger.warn).not.toHaveBeenCalled()
-      expect(streamReceived).toHaveBeenCalledTimes(1)
-      expect(localStreamChangeReceived).not.toHaveBeenCalled()
+      expect(streamReceived).toHaveBeenCalledOnce()
+      expect(localStreamChangeReceived).toHaveBeenCalledOnce()
     })
 
     it('does not enumerate devices twice', async () => {
       await acquireMediaStream()
-      expect(mediaDevicesMock.enumerateDevices).toHaveBeenCalledTimes(1)
+      expect(mediaDevicesMock.enumerateDevices).toHaveBeenCalledOnce()
     })
 
     it('handles no camera at all', async () => {
@@ -301,10 +303,10 @@ describe('Media Stream store', () => {
       expect(get(currentCamera$)).toBeNull()
       expect(get(cameras$)).toEqual([])
       expect(logger.warn).not.toHaveBeenCalled()
-      expect(streamReceived).toHaveBeenCalledTimes(1)
-      expect(camerasReceived).toHaveBeenCalledTimes(1)
-      expect(micsReceived).toHaveBeenCalledTimes(1)
-      expect(localStreamChangeReceived).not.toHaveBeenCalled()
+      expect(streamReceived).toHaveBeenCalledOnce()
+      expect(camerasReceived).toHaveBeenCalledOnce()
+      expect(micsReceived).toHaveBeenCalledOnce()
+      expect(localStreamChangeReceived).toHaveBeenCalledOnce()
     })
 
     it('handles no audio at all', async () => {
@@ -319,10 +321,10 @@ describe('Media Stream store', () => {
       expectCurrentCamera(cameras[0])
       expect(get(cameras$)).toEqual(cameras)
       expect(logger.warn).not.toHaveBeenCalled()
-      expect(streamReceived).toHaveBeenCalledTimes(1)
-      expect(camerasReceived).toHaveBeenCalledTimes(1)
-      expect(micsReceived).toHaveBeenCalledTimes(1)
-      expect(localStreamChangeReceived).not.toHaveBeenCalled()
+      expect(streamReceived).toHaveBeenCalledOnce()
+      expect(camerasReceived).toHaveBeenCalledOnce()
+      expect(micsReceived).toHaveBeenCalledOnce()
+      expect(localStreamChangeReceived).toHaveBeenCalledOnce()
     })
 
     describe('releaseMediaStream()', () => {
@@ -330,8 +332,8 @@ describe('Media Stream store', () => {
         const tracks = [{ stop: vi.fn() }, { stop: vi.fn() }]
         stream.getTracks.mockReturnValue(tracks)
         releaseMediaStream()
-        expect(tracks[0].stop).toHaveBeenCalledTimes(1)
-        expect(tracks[1].stop).toHaveBeenCalledTimes(1)
+        expect(tracks[0].stop).toHaveBeenCalledOnce()
+        expect(tracks[1].stop).toHaveBeenCalledOnce()
         expect(get(stream$)).toBeNull()
         expect(get(currentMic$)).toBeNull()
         expect(get(currentCamera$)).toBeNull()
@@ -341,14 +343,42 @@ describe('Media Stream store', () => {
     })
 
     describe('recordStreamChange()', () => {
-      it('emits a state change', () => {
-        const state = {
-          muted: faker.datatype.boolean(),
-          stopped: faker.datatype.boolean()
-        }
+      it('can mute stream', () => {
+        const audioTracks = [{ enabled: true }, { enabled: true }]
+        stream.getAudioTracks.mockReturnValue(audioTracks)
+        localStreamChangeReceived.mockClear()
+        const state = { muted: true, stopped: false }
+        recordStreamChange(state)
+        expect(audioTracks[0].enabled).toBeFalse()
+        expect(audioTracks[1].enabled).toBeFalse()
+        expect(localStreamChangeReceived).toHaveBeenCalledWith(state)
+        expect(localStreamChangeReceived).toHaveBeenCalledOnce()
+      })
+
+      it('can stop stream', () => {
+        const videoTracks = [{ enabled: true }, { enabled: true }]
+        stream.getVideoTracks.mockReturnValue(videoTracks)
+        localStreamChangeReceived.mockClear()
+        const state = { muted: false, stopped: true }
         recordStreamChange(state)
         expect(localStreamChangeReceived).toHaveBeenCalledWith(state)
-        expect(localStreamChangeReceived).toHaveBeenCalledTimes(1)
+        expect(localStreamChangeReceived).toHaveBeenCalledOnce()
+      })
+
+      it('can unmute and resume streams', () => {
+        const audioTracks = [{ enabled: false }, { enabled: false }]
+        const videoTracks = [{ enabled: false }, { enabled: false }]
+        stream.getAudioTracks.mockReturnValue(audioTracks)
+        stream.getVideoTracks.mockReturnValue(videoTracks)
+        localStreamChangeReceived.mockClear()
+        const state = { muted: false, stopped: false }
+        recordStreamChange(state)
+        expect(audioTracks[0].enabled).toBeTrue()
+        expect(audioTracks[1].enabled).toBeTrue()
+        expect(videoTracks[0].enabled).toBeTrue()
+        expect(videoTracks[1].enabled).toBeTrue()
+        expect(localStreamChangeReceived).toHaveBeenCalledWith(state)
+        expect(localStreamChangeReceived).toHaveBeenCalledOnce()
       })
     })
   })
@@ -356,7 +386,7 @@ describe('Media Stream store', () => {
   function expectCurrentMic(/** @type {MediaDeviceInfo} */ device) {
     expect(get(currentMic$)).toEqual(device)
     expect(localStorage.lastMicId).toEqual(device.deviceId)
-    expect(currentMicReceived).toHaveBeenCalledTimes(1)
+    expect(currentMicReceived).toHaveBeenCalledOnce()
     expect(currentMicReceived).toHaveBeenCalledWith(device)
     currentMicReceived.mockClear()
   }
@@ -364,7 +394,7 @@ describe('Media Stream store', () => {
   function expectCurrentCamera(/** @type {MediaDeviceInfo} */ device) {
     expect(get(currentCamera$)).toEqual(device)
     expect(localStorage.lastCameraId).toEqual(device.deviceId)
-    expect(currentCameraReceived).toHaveBeenCalledTimes(1)
+    expect(currentCameraReceived).toHaveBeenCalledOnce()
     expect(currentCameraReceived).toHaveBeenCalledWith(device)
     currentCameraReceived.mockClear()
   }
