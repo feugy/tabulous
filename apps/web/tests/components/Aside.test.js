@@ -10,7 +10,7 @@ import { fireEvent, render, screen, waitFor } from '@testing-library/svelte'
 import userEvent from '@testing-library/user-event'
 import { players, thread } from '@tests/fixtures/Discussion.testdata'
 import { extractAttribute, extractText, translate } from '@tests/test-utils'
-import html from 'svelte-htm'
+import { tick } from 'svelte'
 import { beforeEach, describe, expect, it, vi } from 'vitest'
 
 vi.mock('@src/stores/stream', () => {
@@ -31,7 +31,7 @@ const stream$ = /** @type {BehaviorSubject} */ (actualStream$)
 const helpButtonText = 'help F1'
 const friendsButtonText = 'people_alt F2'
 const rulesButtonText = 'auto_stories F3'
-const playersButonText = 'contacts F4'
+const playersButtonText = 'contacts F4'
 
 describe('Aside component', () => {
   const handleSend = vi.fn()
@@ -56,14 +56,17 @@ describe('Aside component', () => {
   })
 
   function renderComponent(props = {}) {
-    return render(
-      html`<${Aside}
-        connected=${[]}
-        thread=${[]}
-        ...${props}
-        on:sendMessage=${handleSend}
-      />`
-    )
+    const result = render(Aside, {
+      props: {
+        connected: [],
+        thread: [],
+        playerById: new Map(),
+        user: null,
+        ...props
+      }
+    })
+    result.component.$on('sendMessage', handleSend)
+    return result
   }
 
   it('can have friends tab only', () => {
@@ -134,7 +137,7 @@ describe('Aside component', () => {
       thread
     })
     expect(extractText(screen.getAllByRole('tab'))).toEqual([
-      playersButonText,
+      playersButtonText,
       friendsButtonText,
       helpButtonText
     ])
@@ -157,7 +160,7 @@ describe('Aside component', () => {
       thread
     })
     expect(extractText(screen.getAllByRole('tab'))).toEqual([
-      playersButonText,
+      playersButtonText,
       friendsButtonText,
       helpButtonText
     ])
@@ -180,7 +183,7 @@ describe('Aside component', () => {
       thread
     })
     expect(extractText(screen.getAllByRole('tab'))).toEqual([
-      playersButonText,
+      playersButtonText,
       rulesButtonText,
       friendsButtonText,
       helpButtonText
@@ -204,7 +207,7 @@ describe('Aside component', () => {
       thread
     })
     expect(extractText(screen.getAllByRole('tab'))).toEqual([
-      playersButonText,
+      playersButtonText,
       friendsButtonText
     ])
     expect(
@@ -221,7 +224,7 @@ describe('Aside component', () => {
       thread
     })
     expect(extractText(screen.getAllByRole('tab'))).toEqual([
-      playersButonText,
+      playersButtonText,
       friendsButtonText,
       helpButtonText
     ])
@@ -257,14 +260,17 @@ describe('Aside component', () => {
   })
 
   describe('given all tabs visible', () => {
+    /** @type {Aside} */
+    let component
+
     beforeEach(() => {
-      renderComponent({
+      ;({ component } = renderComponent({
         user,
         game: { kind: 'splendor', rulesBookPageCount: 4 },
         playerById: toMap(playingPlayers),
         connected,
         thread
-      })
+      }))
     })
 
     it('displays rules book when clicking on tab', async () => {
@@ -303,10 +309,36 @@ describe('Aside component', () => {
       await fireEvent.click(
         screen.getByRole('tab', { name: friendsButtonText })
       )
-      await fireEvent.click(screen.getByRole('tab', { name: playersButonText }))
+      await fireEvent.click(
+        screen.getByRole('tab', { name: playersButtonText })
+      )
       const avatars = screen.getAllByTestId('player-avatar')
       expect(avatars).toHaveLength(playingPlayers.length)
       expect(avatars[0].closest('.peers')).not.toHaveClass('hidden')
+    })
+
+    it('switch to player tab when a peer is joining', async () => {
+      const friendsTab = screen.getByRole('tab', { name: friendsButtonText })
+      await fireEvent.click(friendsTab)
+      expect(screen.getByRole('tab', { selected: true })).toEqual(friendsTab)
+      component.$set({
+        connected: [...connected, { playerId: players[1].id, stream }]
+      })
+      await tick()
+      expect(screen.getByRole('tab', { selected: true })).toEqual(
+        screen.getByRole('tab', { name: playersButtonText })
+      )
+    })
+
+    it('does not switch tab when receiving game update', async () => {
+      const ruleTab = screen.getByRole('tab', { name: rulesButtonText })
+      await fireEvent.click(ruleTab)
+      expect(screen.getByRole('tab', { selected: true })).toEqual(ruleTab)
+      component.$set({
+        game: { kind: 'splendor', rulesBookPageCount: 4, meshs: [] }
+      })
+      await tick()
+      expect(screen.getByRole('tab', { selected: true })).toEqual(ruleTab)
     })
   })
 })

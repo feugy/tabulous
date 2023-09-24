@@ -1,7 +1,5 @@
 # TODO
 
-during replay: host save
-
 ## Refactor
 
 - hand: reuse playMeshes() and pickMesh() in handDrag()
@@ -16,6 +14,7 @@ during replay: host save
 
 ## UI
 
+- bug: when player reconnects to a multiplayer game, its peers muted/stopped states are reset
 - when hovering target, highlight should have the dragged mesh's shape, not the target shape (what about parts?)
 - hand count on peer pointers/player tab?
 - score card (Mah-jong, Belote)
