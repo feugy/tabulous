@@ -512,5 +512,5 @@ extend type Mutation {
 
 extend type Subscription {
   receiveGameListUpdates: [Game!]!
-  receiveGameUpdates(gameId: ID!): Game!
+  receiveGameUpdates(gameId: ID!): Game
 }

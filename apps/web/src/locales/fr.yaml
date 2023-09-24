@@ -112,6 +112,7 @@ labels:
   host: hôte
   last-updated: 'Dernière mise à jour : { published, date, date-only }'
   lobby-deleted: 'Salon supprimé !'
+  lobby-deleted-by-owner: Le·a propriétaire a supprimé ce salon
   lobby-description: Invitez vos ami·e·s puis décidez à quel jeu jouer.
   lobby-instructions: Pour transformer ce salon en jeu, choisissez un de vos jeux disponibles.
   log-in: Connexion

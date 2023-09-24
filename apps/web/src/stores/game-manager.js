@@ -716,6 +716,7 @@ function handlePeerDisconnection(/** @type {JoinGameContext} */ params) {
     const playingIds = playingIds$.value.filter(id => id !== playerId)
     playingIds$.next(playingIds)
     if (isCurrentHost(playerId) && isNextHost(currentPlayerId, playingIds)) {
+      // TODO do not unsubscribe subscribePeerStatusesAndGameUpdates, and only others before taking host role.
       unsubscribeCurrentGame()
       currentGameSubscriptions.push(
         ...subscribePeerStatusesAndGameUpdates(params),

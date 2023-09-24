@@ -47,7 +47,7 @@ labels:
   friendship-proposed: 'Request sent to {username}'
   friendship-requested: '{username} wish to join your friend list'
   game-authors: 'Designer(s): '
-  game-deleted-by-owner: This owner deleted this game
+  game-deleted-by-owner: The owner deleted this game
   game-deleted: Deleted game!
   game-designers: 'Artist(s): '
   game-min-age: '{minAge}+'
@@ -94,6 +94,7 @@ labels:
   host: host
   last-updated: 'Last update: { published, date, date-only }'
   lobby-deleted: 'Deleted lobby!'
+  lobby-deleted-by-owner: The owner deleted this lobby
   lobby-description: Invites your friends and decide which game to play.
   lobby-instructions: To promote this lobby to a game, pick any game from the catalog.
   log-in: Connection
