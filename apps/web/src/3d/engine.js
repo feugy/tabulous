@@ -317,8 +317,16 @@ function transferActionsAndSelections(
   /** @type {Engine} */ engine,
   /** @type {Engine} */ simulation
 ) {
+  const original = engine.load
+  engine.load = async (...args) => {
+    const promise = simulation.load(...args)
+    if (!engine.managers.replay.isReplaying) {
+      await original(...args)
+    }
+    await promise
+  }
   rebindMethod(engine, simulation, 'start')
-  rebindMethod(engine, simulation, 'load')
+  rebindMethod(engine, simulation, 'dispose')
   rebindMethod(engine, simulation, 'applyRemoteSelection')
   rebindMethod(engine, simulation, 'applyRemoteAction')
   engine.serialize = simulation.serialize.bind(simulation)

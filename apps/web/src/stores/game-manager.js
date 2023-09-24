@@ -1,24 +1,4 @@
 // @ts-check
-/**
- * @typedef {import('@babylonjs/core').Engine} Engine
- * @typedef {import('@src/3d/engine').PlayerSelection} PlayerSelection
- * @typedef {import('@src/3d/managers/camera').CameraPosition} CameraPosition
- * @typedef {import('@src/graphql').LightGame} LightGame
- * @typedef {import('@src/graphql').LightPlayer} LightPlayer
- * @typedef {import('@src/graphql').Game} Game
- * @typedef {import('@src/graphql').GameOrGameParameters} GameOrGameParameters
- * @typedef {import('@src/types').JSONValue} JSONValue
- * @typedef {import('@tabulous/server/src/graphql').CameraPosition} SharedCameraPosition
- * @typedef {import('@tabulous/server/src/graphql').Hand} Hand
- * @typedef {import('@tabulous/server/src/graphql').Mesh} Mesh
- * @typedef {import('@tabulous/server/src/graphql').TurnCredentials} TurnCredentials
- * @typedef {import('rxjs').Subscription} Subscription
- */
-/**
- * @template T
- * @typedef {import('rxjs').Observable<T>} Observable
- */
-
 import * as graphQL from '@src/graphql'
 import {
   clearThread,
@@ -67,19 +47,19 @@ import { get } from 'svelte/store'
  * @property {boolean} playing - whether this player is currently playing.
  * @property {boolean} isHost - whether this player is hosting the current game.
  *
- * @typedef {LightPlayer & ReturnType<typeof findPlayerPreferences> & _Player} Player
+ * @typedef {import('@src/graphql').LightPlayer & ReturnType<typeof findPlayerPreferences> & _Player} Player
  */
 
-/** @typedef {Game & { selections?: PlayerSelection[] }} GameWithSelections */
+/** @typedef {import('@src/graphql').Game & { selections?: import('@src/3d/engine').PlayerSelection[] }} GameWithSelections */
 
 /**
  * @typedef {object} JoinGameArgs
  * @property {string} gameId - the loaded game id.
- * @property {LightPlayer} player - the current authenticated user.
- * @property {TurnCredentials} turnCredentials - credentials used to log onto the TURN server.
- * @property {JSONValue} [parameters] - user chosen parameters, if any.
- * @property {(game: ?Game) => void} [onDeletion] - optional callback invoked when current game is deleted on server side.
- * @property {(game: Game) => void} [onPromotion] - optional callback invoked when current lobby is promoted to full game.
+ * @property {import('@src/graphql').LightPlayer} player - the current authenticated user.
+ * @property {import('@tabulous/server/src/graphql').TurnCredentials} turnCredentials - credentials used to log onto the TURN server.
+ * @property {import('@src/types').JSONValue} [parameters] - user chosen parameters, if any.
+ * @property {(game: ?import('@src/graphql').Game) => void} [onDeletion] - optional callback invoked when current game is deleted on server side.
+ * @property {(game: import('@src/graphql').Game) => void} [onPromotion] - optional callback invoked when current lobby is promoted to full game.
  */
 
 /**
@@ -93,25 +73,25 @@ import { get } from 'svelte/store'
 
 const logger = makeLogger('game-manager')
 const currentGame$ = new BehaviorSubject(
-  /** @type {?GameOrGameParameters} */ (null)
+  /** @type {?import('@src/graphql').GameOrGameParameters} */ (null)
 )
 const hostId$ = new BehaviorSubject(/** @type {?string} */ (null))
 const playingIds$ = new BehaviorSubject(/** @type {string[]} */ ([]))
-/** @type {Subscription[]} */
+/** @type {import('rxjs').Subscription[]} */
 const currentGameSubscriptions = []
-/** @type {?Subscription} */
+/** @type {?import('rxjs').Subscription} */
 let listGamesSubscription = null
 let delayOnLoad = () => {}
 /** @type {Map<string, Player>} */
 let playerById = new Map()
 // cameras for all players
-/** @type {SharedCameraPosition[]} */
+/** @type {import('@tabulous/server/src/graphql').CameraPosition[]} */
 let cameras = []
 // hands for all players
-/** @type {Hand[]} */
+/** @type {import('@tabulous/server/src/graphql').Hand[]} */
 let hands = []
 // active selections for all players
-/** @type {PlayerSelection[]} */
+/** @type {import('@src/3d/engine').PlayerSelection[]} */
 let selections = []
 
 /**
@@ -165,7 +145,7 @@ export async function listGames() {
 
 /**
  * Subscribes to current game list updates, to keep the list fresh.
- * @param {LightGame[]} [currentGames] - current game list.
+ * @param {import('@src/graphql').LightGame[]} [currentGames] - current game list.
  * @returns an observable containing up-to-date current games.
  */
 export function receiveGameListUpdates(currentGames) {
@@ -324,7 +304,9 @@ export async function joinGame({
   }
 
   const gameEngine = await import('./game-engine')
-  const engine = /** @type {Engine} */ (get(gameEngine.engine))
+  const engine = /** @type {import('@babylonjs/core').Engine} */ (
+    get(gameEngine.engine)
+  )
 
   currentGame$.next(game)
   currentGameSubscriptions.push(
@@ -356,7 +338,7 @@ export async function joinGame({
     }
     return game
   }
-  const loadComplete = await load(engine, game, currentPlayerId, true)
+  await load(engine, game, currentPlayerId, true)
   if (isHost) {
     currentGameSubscriptions.push(
       ...takeHostRole(gameEngine, gameId, currentPlayerId)
@@ -367,15 +349,15 @@ export async function joinGame({
       gameEngine.handMeshes.subscribe(shareHand(currentPlayerId)),
       lastMessageReceived
         .pipe(filter(({ data }) => data?.type === 'game-sync'))
-        .subscribe(({ playerId }) => {
+        .subscribe(({ data, playerId }) => {
           if (!isCurrentHost(playerId)) {
             hostId$.next(playerId)
             logger.info({ playerId }, `updating host to ${playerId}`)
           }
+          load(engine, data, currentPlayerId)
         })
     )
   }
-  await loadComplete
   return game
 }
 
@@ -390,7 +372,7 @@ export async function leaveGame({ id: currentPlayerId }) {
   if (!game) {
     return
   }
-  const engine = /** @type {Engine} */ (
+  const engine = /** @type {import('@babylonjs/core').Engine} */ (
     get((await import('./game-engine')).engine)
   )
   const { id: gameId } = game
@@ -412,10 +394,10 @@ export async function leaveGame({ id: currentPlayerId }) {
 }
 
 async function load(
-  /** @type {Engine} */ engine,
-  /** @type {GameOrGameParameters} */ game,
+  /** @type {import('@babylonjs/core').Engine} */ engine,
+  /** @type {import('@src/graphql').GameOrGameParameters} */ game,
   /** @type {string} */ playerId,
-  /** @type {boolean} */ firstLoad
+  firstLoad = false
 ) {
   const { loadCameraSaves } = await import('./game-engine')
   currentGame$.next(game)
@@ -441,7 +423,7 @@ async function load(
     (game.players ?? []).find(({ id }) => id === playerId)?.isGuest === false
   ) {
     await engine.load(
-      /** @type {Game} */ (game),
+      /** @type {import('@src/graphql').Game} */ (game),
       {
         playerId,
         preferences: findPlayerPreferences(game, playerId),
@@ -453,7 +435,7 @@ async function load(
 }
 
 function mergeCameras(
-  /** @type {{ playerId: string, cameras: CameraPosition[] }} */ {
+  /** @type {{ playerId: string, cameras: import('@src/3d/managers/camera').CameraPosition[] }} */ {
     playerId,
     cameras: playerCameras
   }
@@ -476,7 +458,10 @@ function saveCameras(/** @type {string} */ gameId) {
 }
 
 function mergeHands(
-  /** @type {{ playerId: String, meshes?: Mesh[] }} */ { playerId, meshes = [] }
+  /** @type {{ playerId: String, meshes?: import('@tabulous/server/src/graphql').Mesh[] }} */ {
+    playerId,
+    meshes = []
+  }
 ) {
   hands = [
     ...hands.filter(hand => hand.playerId !== playerId),
@@ -491,7 +476,10 @@ function saveHands(/** @type {string} */ gameId) {
 }
 
 function mergeSelections(
-  /** @type {PlayerSelection} */ { playerId, selectedIds }
+  /** @type {import('@src/3d/engine').PlayerSelection} */ {
+    playerId,
+    selectedIds
+  }
 ) {
   selections = [
     ...selections.filter(selection => selection.playerId !== playerId),
@@ -515,7 +503,7 @@ function takeHostRole(
   shouldShareGame = true
 ) {
   const game = currentGame$.value
-  const engine = /** @type {Engine} */ (get(engine$))
+  const engine = /** @type {import('@babylonjs/core').Engine} */ (get(engine$))
   logger.info({ gameId, game }, `taking game host role`)
   hostId$.next(currentPlayerId)
   if (shouldShareGame && !isLobby(game)) {
@@ -555,7 +543,9 @@ function takeHostRole(
       )
     ).subscribe(
       (
-        /** @type {{ data: { playerId: string, meshes?: Mesh[]} }} */ { data }
+        /** @type {{ data: { playerId: string, meshes?: import('@tabulous/server/src/graphql').Mesh[]} }} */ {
+          data
+        }
       ) => {
         mergeHands(data)
         saveHands(gameId)
@@ -607,8 +597,12 @@ function handleServerUpdate(
     onPromotion
   }
 ) {
-  return async function (/** @type {GameOrGameParameters} */ game) {
-    const currentGame = /** @type {?Game} */ (currentGame$.value)
+  return async function (
+    /** @type {import('@src/graphql').GameOrGameParameters} */ game
+  ) {
+    const currentGame = /** @type {?import('@src/graphql').Game} */ (
+      currentGame$.value
+    )
     const wasLobby = isLobby(currentGame)
     if (!game) {
       await leaveGame({ id: currentPlayerId })
@@ -619,26 +613,30 @@ function handleServerUpdate(
         'loading game update from server'
       )
       await load(
-        /** @type {Engine} */ (get(gameEngine.engine)),
+        /** @type {import('@babylonjs/core').Engine} */ (
+          get(gameEngine.engine)
+        ),
         game,
         currentPlayerId,
         false
       )
       if (wasLobby && !isLobby(game)) {
-        onPromotion?.(/** @type {Game} */ (game))
+        onPromotion?.(/** @type {import('@src/graphql').Game} */ (game))
       }
     }
   }
 }
 
 function serializeGame(
-  /** @type {Engine} */ engine,
+  /** @type {import('@babylonjs/core').Engine} */ engine,
   /** @type {string} */ currentPlayerId
 ) {
   const { meshes, handMeshes, history } =
     (isLobby(currentGame$.value) ? null : engine?.serialize()) ?? {}
   return {
-    id: /** @type {GameOrGameParameters} */ (currentGame$.value).id,
+    id: /** @type {import('@src/graphql').GameOrGameParameters} */ (
+      currentGame$.value
+    ).id,
     meshes,
     hands: mergeHands({ playerId: currentPlayerId, meshes: handMeshes }),
     messages: serializeThread(),
@@ -648,13 +646,12 @@ function serializeGame(
 }
 
 function shareGame(
-  /** @type {Engine} */ engine,
+  /** @type {import('@babylonjs/core').Engine} */ engine,
   /** @type {string} */ currentPlayerId,
   /** @type {string} */ peerId
 ) {
-  const { id: gameId, ...otherGameData } = /** @type {Game} */ (
-    currentGame$.value
-  )
+  const { id: gameId, ...otherGameData } =
+    /** @type {import('@src/graphql').Game} */ (currentGame$.value)
   logger.info(
     { gameId },
     `sending game data ${gameId} to peer${peerId ? ` ${peerId}` : 's'}`
@@ -677,14 +674,18 @@ function handlePeerConnection(
 ) {
   return async function (/** @type {string} */ playerId) {
     playingIds$.next([...playingIds$.value, playerId])
-    const game = /** @type {GameOrGameParameters} */ (currentGame$.value)
+    const game = /** @type {import('@src/graphql').GameOrGameParameters} */ (
+      currentGame$.value
+    )
     if (!(game.players ?? []).some(({ id }) => id === playerId)) {
       const { players } = await runMutation(graphQL.getGamePlayers, game)
       currentGame$.next({ ...game, players })
     }
     if (isCurrentHost(currentPlayerId)) {
       shareGame(
-        /** @type {Engine} */ (get(gameEngine.engine)),
+        /** @type {import('@babylonjs/core').Engine} */ (
+          get(gameEngine.engine)
+        ),
         currentPlayerId,
         playerId
       )
@@ -702,7 +703,9 @@ function handlePeerConnection(
 function handlePeerDisconnection(/** @type {JoinGameContext} */ params) {
   const { currentPlayerId, gameEngine } = params
   return function (/** @type {string} */ playerId) {
-    const game = /** @type {GameOrGameParameters} */ (currentGame$.value)
+    const game = /** @type {import('@src/graphql').GameOrGameParameters} */ (
+      currentGame$.value
+    )
     toastInfo({
       icon: 'person_remove',
       contentKey: isLobby(game)
@@ -723,14 +726,18 @@ function handlePeerDisconnection(/** @type {JoinGameContext} */ params) {
 }
 
 function shareCameras(/** @type {string} */ currentPlayerId) {
-  return function (/** @type {CameraPosition[]} */ cameras) {
+  return function (
+    /** @type {import('@src/3d/managers/camera').CameraPosition[]} */ cameras
+  ) {
     logger.info({ cameras }, `sharing camera saves with peers`)
     send({ type: 'saveCameras', cameras, playerId: currentPlayerId })
   }
 }
 
 function shareHand(/** @type {string} */ currentPlayerId) {
-  return function (/** @type {Mesh[]|undefined} */ meshes) {
+  return function (
+    /** @type {import('@tabulous/server/src/graphql').Mesh[]|undefined} */ meshes
+  ) {
     logger.info({ meshes }, `sharing hand with peers`)
     send({ type: 'saveHand', meshes, playerId: currentPlayerId })
   }
@@ -740,9 +747,10 @@ function isNextHost(
   /** @type {string} */ playerId,
   /** @type {string[]} */ connectedIds
 ) {
-  const { id, players } = /** @type {Required<Pick<Game, 'id'|'players'>>} */ (
-    currentGame$.value
-  )
+  const { id, players } =
+    /** @type {Required<Pick<import('@src/graphql').Game, 'id'|'players'>>} */ (
+      currentGame$.value
+    )
   const connectedPlayers = players
     .filter(({ isGuest }) => !isGuest)
     .map(player => ({
@@ -763,6 +771,8 @@ function isCurrentHost(/** @type {string} */ playerId) {
   return playerId === hostId$.value
 }
 
-function isGameParameter(/** @type {GameOrGameParameters} */ game) {
+function isGameParameter(
+  /** @type {import('@src/graphql').GameOrGameParameters} */ game
+) {
   return 'schemaString' in game && Boolean(game.schemaString)
 }

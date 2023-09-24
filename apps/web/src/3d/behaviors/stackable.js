@@ -248,11 +248,11 @@ export class StackBehavior extends TargetBehavior {
    * When the base mesh is flipped, re-ordering happens first so the highest mesh doesn't change after flipping.
    */
   async flipAll() {
-    await internalFlip(this)
+    await internalFlipAll(this)
   }
 
   /**
-   * Revert push, pop and reorder actions. Ignores other actions
+   * Revert push, pop, flipAll and reorder actions. Ignores other actions
    * @param {ActionName} action - reverted action.
    * @param {any[]} [args] - reverted arguments.
    */
@@ -301,7 +301,7 @@ export class StackBehavior extends TargetBehavior {
       const [ids, animate] = args
       await internalReorder(this, ids, animate, true)
     } else if (action === actionNames.flipAll) {
-      await internalFlip(this, true)
+      await internalFlipAll(this, true)
     }
   }
 
@@ -657,7 +657,7 @@ async function internalReorder(
   }
 }
 
-async function internalFlip(
+async function internalFlipAll(
   /** @type {StackBehavior} */ behavior,
   isLocal = false
 ) {
