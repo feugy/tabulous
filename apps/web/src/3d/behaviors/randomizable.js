@@ -10,8 +10,7 @@
  */
 
 import { Animation } from '@babylonjs/core/Animations/animation'
-import { VertexBuffer } from '@babylonjs/core/Buffers/buffer'
-import { Quaternion, Vector3 } from '@babylonjs/core/Maths/math.vector'
+import { Quaternion } from '@babylonjs/core/Maths/math.vector'
 
 import { makeLogger } from '../../utils/logger'
 import { actionNames } from '../utils/actions'
@@ -61,8 +60,6 @@ export class RandomBehavior extends AnimateBehavior {
         `RandomBehavior's max should be higher than ${this.state.face ?? 1}`
       )
     }
-    /** @internal @type {{ positions: number[], normals: number[] }} */
-    this.save = { positions: [], normals: [] }
     /** @internal @type {Animation} */
     this.rollAnimation = new Animation(
       'roll',
@@ -169,21 +166,6 @@ export class RandomBehavior extends AnimateBehavior {
       )
     }
     const attach = detachFromParent(this.mesh)
-    this.mesh.computeWorldMatrix(true)
-
-    const restore = saveTranslation(this.mesh)
-    this.save = {
-      positions: /** @type {number[]} */ (
-        this.mesh.getVerticesData(VertexBuffer.PositionKind)
-      ),
-      normals: /** @type {number[]} */ (
-        this.mesh.getVerticesData(VertexBuffer.NormalKind)
-      )
-    }
-    this.mesh.markVerticesDataAsUpdatable(VertexBuffer.PositionKind, true)
-    this.mesh.markVerticesDataAsUpdatable(VertexBuffer.NormalKind, true)
-    restore()
-
     applyRotation(this)
     attach()
     attachFunctions(this, 'random')
@@ -203,7 +185,7 @@ function internalRandom(
   isLocal = false
 ) {
   const {
-    state: { face: oldFace, duration },
+    state: { duration },
     quaternionPerFace,
     mesh,
     rollAnimation,
@@ -224,13 +206,7 @@ function internalRandom(
       keys: /** @type {QuaternionKeyFrame[]} */ ([
         {
           frame: 0,
-          values: /** @type {Quaternion} */ (
-            quaternionPerFace.get(oldFace ?? 0)
-          )
-            .multiply(
-              /** @type {Quaternion} */ (quaternionPerFace.get(face)).invert()
-            )
-            .asArray()
+          values: mesh.rotationQuaternion?.asArray()
         },
         {
           frame: 25,
@@ -252,7 +228,7 @@ function internalRandom(
         },
         {
           frame: 100,
-          values: makeRandomRotation('y', 0.5 * PI).asArray()
+          values: quaternionPerFace.get(face)?.asArray()
         }
       ])
     },
@@ -281,7 +257,7 @@ function internalSetFace(
   isLocal = false
 ) {
   const {
-    state: { face: oldFace, duration },
+    state: { duration },
     quaternionPerFace,
     mesh,
     rollAnimation
@@ -295,49 +271,19 @@ function internalSetFace(
     keys: /** @type {QuaternionKeyFrame[]} */ ([
       {
         frame: 0,
-        values: /** @type {Quaternion} */ (quaternionPerFace.get(oldFace))
-          .multiply(
-            /** @type {Quaternion} */ (quaternionPerFace.get(face)).invert()
-          )
-          .asArray()
+        values: mesh.rotationQuaternion?.asArray()
       },
-      { frame: 100, values: [0, 0, 0, 1] }
+      { frame: 100, values: quaternionPerFace.get(face)?.asArray() }
     ])
   })
 }
 
 function applyRotation(
-  /** @type {RandomBehavior} */ {
-    mesh,
-    quaternionPerFace,
-    state: { face },
-    save
-  }
+  /** @type {RandomBehavior} */ { mesh, quaternionPerFace, state: { face } }
 ) {
   if (!mesh) return
-  const restore = saveTranslation(mesh)
-  mesh.updateVerticesData(VertexBuffer.PositionKind, [...save.positions])
-  mesh.updateVerticesData(VertexBuffer.NormalKind, [...save.normals])
-  mesh.rotationQuaternion = /** @type {Quaternion} */ (
-    quaternionPerFace.get(face ?? 1)
-  ).clone()
-  mesh.bakeCurrentTransformIntoVertices()
-  mesh.refreshBoundingInfo()
-  restore()
-}
-
-/**
- * Temporary set a mesh's absolute position to the origin.
- * @param {Mesh} mesh - concerned mesh.
- * @returns function used to restore absolute position.
- */
-function saveTranslation(mesh) {
-  const translation = mesh.absolutePosition.clone()
-  mesh.setAbsolutePosition(Vector3.Zero())
-  return () => {
-    mesh.setAbsolutePosition(translation)
-    translation
-  }
+  mesh.rotationQuaternion =
+    quaternionPerFace.get(face ?? 1)?.clone() ?? Quaternion.Identity()
 }
 
 /**

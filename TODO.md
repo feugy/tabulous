@@ -14,7 +14,6 @@
 
 ## UI
 
-- bug: die do not display the same face in multiplayer (states are correct)
 - when hovering target, highlight should have the dragged mesh's shape, not the target shape (what about parts?)
 - hand count on peer pointers/player tab?
 - score (Mah-jong, Belote)

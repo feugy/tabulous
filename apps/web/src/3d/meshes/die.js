@@ -139,7 +139,7 @@ export function getQuaternions(faces) {
     ])
   }
   if (faces === 8) {
-    // axis along which rotation bringe 1 to 3, 5 and 7, or 2 to 4, 6 and 8
+    // axis along which rotation brings 1 to 3, 5 and 7, or 2 to 4, 6 and 8
     const x = 0
     const y = -cos(toRad(-55))
     const z = sin(toRad(-55))

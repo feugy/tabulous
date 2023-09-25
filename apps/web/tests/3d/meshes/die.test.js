@@ -160,7 +160,7 @@ describe('createDie()', () => {
       scene
     )
     expect(mesh.name).toEqual('die')
-    expectDimension(mesh, [2, 4, 2])
+    expectDimension(mesh, [4, 2, 2])
   })
 
   describe('given a die with initial position, dimension and behaviors', () => {
