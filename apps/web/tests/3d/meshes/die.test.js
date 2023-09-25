@@ -7,13 +7,8 @@
 
 import { Color3 } from '@babylonjs/core/Maths/math.color'
 import { faker } from '@faker-js/faker'
-import {
-  controlManager,
-  customShapeManager,
-  materialManager
-} from '@src/3d/managers'
-import { createDie, getQuaternions } from '@src/3d/meshes'
-import { beforeAll, beforeEach, describe, expect, it, vi } from 'vitest'
+import { createDie, getDieModelFile, getQuaternions } from '@src/3d/meshes'
+import { beforeEach, describe, expect, it, vi } from 'vitest'
 
 import die4Data from '../../../../games/assets/models/die4.obj?raw'
 import die6Data from '../../../../games/assets/models/die6.obj?raw'
@@ -26,21 +21,32 @@ import {
 
 /** @type {Scene} */
 let scene
-configures3dTestEngine(created => (scene = created.scene))
+/** @type {import('@src/3d/managers').Managers} */
+let managers
 
-beforeAll(() => materialManager.init({ scene }))
-
-vi.mock('@src/3d/managers/custom-shape', () => ({
-  customShapeManager: new Map()
-}))
-
-beforeAll(() => {
-  // @ts-expect-error customShapeManager is not a map
-  customShapeManager.set(`/assets/models/die4.obj`, btoa(die4Data))
-  // @ts-expect-error
-  customShapeManager.set(`/assets/models/die6.obj`, btoa(die6Data))
-  // @ts-expect-error
-  customShapeManager.set(`/assets/models/die8.obj`, btoa(die8Data))
+configures3dTestEngine(async created => {
+  scene = created.scene
+  managers = created.managers
+  vi.spyOn(global, 'fetch').mockImplementation(file =>
+    Promise.resolve(
+      new Response(
+        file.toString().endsWith(getDieModelFile(8))
+          ? die8Data
+          : file.toString().endsWith(getDieModelFile(6))
+          ? die6Data
+          : die4Data
+      )
+    )
+  )
+  await managers.customShape.init({
+    id: 'game',
+    created: Date.now(),
+    meshes: [
+      { id: 'die4', shape: 'die', faces: 4, texture: '' },
+      { id: 'die6', shape: 'die', faces: 6, texture: '' },
+      { id: 'die8', shape: 'die', faces: 8, texture: '' }
+    ]
+  })
 })
 
 describe('getQuaternions()', () => {
@@ -63,7 +69,7 @@ describe('getQuaternions()', () => {
 describe('createDie()', () => {
   it('creates a 6-faces randomizable die by default', async () => {
     const id = 'd6'
-    const mesh = await createDie({ id, texture: '' }, scene)
+    const mesh = await createDie({ id, texture: '' }, managers, scene)
     expect(mesh.id).toEqual(id)
     expect(mesh.name).toEqual('die')
     expectDimension(mesh, [2, 2, 2])
@@ -85,6 +91,7 @@ describe('createDie()', () => {
     const id = 'd8'
     const mesh = await createDie(
       { id, texture: '', faces: 8, diameter: 3, x, y, z },
+      managers,
       scene
     )
     expect(mesh.id).toEqual(id)
@@ -116,6 +123,7 @@ describe('createDie()', () => {
         texture: color,
         randomizable: { face, canBeSet, duration }
       },
+      managers,
       scene
     )
     expect(mesh.id).toEqual(id)
@@ -141,13 +149,14 @@ describe('createDie()', () => {
   it('throws on an unsupported number of faces', async () => {
     const faces = 3
     await expect(
-      createDie({ id: '', texture: '', faces }, scene)
+      createDie({ id: '', texture: '', faces }, managers, scene)
     ).rejects.toThrow(`${faces} faces dice are not supported`)
   })
 
   it('creates a die with initial transformation', async () => {
     const mesh = await createDie(
       { id: '', texture: '', transform: { scaleX: 2 } },
+      managers,
       scene
     )
     expect(mesh.name).toEqual('die')
@@ -174,6 +183,7 @@ describe('createDie()', () => {
     beforeEach(async () => {
       mesh = await createDie(
         { id, x, y, z, texture, diameter, ...behaviors },
+        managers,
         scene
       )
     })
@@ -198,9 +208,9 @@ describe('createDie()', () => {
     })
 
     it('unregisters custom meshes from controllables on disposal', () => {
-      expect(controlManager.isManaging(mesh)).toBe(true)
+      expect(managers.control.isManaging(mesh)).toBe(true)
       mesh.dispose()
-      expect(controlManager.isManaging(mesh)).toBe(false)
+      expect(managers.control.isManaging(mesh)).toBe(false)
     })
 
     it('serialize with its state', () => {

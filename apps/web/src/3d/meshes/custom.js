@@ -1,17 +1,8 @@
 // @ts-check
-/**
- * @typedef {import('@babylonjs/core').Mesh} Mesh
- * @typedef {import('@babylonjs/core').Scene} Scene
- * @typedef {import('@src/3d/utils/behaviors').SerializedMesh} SerializedMesh
- */
-
 import { SceneLoader } from '@babylonjs/core/Loading/sceneLoader.js'
 import { Vector2, Vector3 } from '@babylonjs/core/Maths/math.vector.js'
 import { OBJFileLoader } from '@babylonjs/loaders/OBJ'
 
-import { controlManager } from '../managers/control'
-import { customShapeManager } from '../managers/custom-shape'
-import { materialManager } from '../managers/material'
 import { registerBehaviors, serializeBehaviors } from '../utils/behaviors'
 import { getGroundAltitude } from '../utils/gravity'
 import { applyInitialTransform, setExtras } from '../utils/mesh'
@@ -21,9 +12,10 @@ OBJFileLoader.UV_SCALING = new Vector2(-1, 1)
 /**
  * Creates a custom mesh by importing .obj file.
  * It must contain the file parameter.
- * @param {Omit<SerializedMesh, 'shape'> & Required<Pick<SerializedMesh, 'file'>>} params - custom mesh parameters.
- * @param {Scene} scene - scene for the created mesh.
- * @returns {Promise<Mesh>} the created custom mesh.
+ * @param {Omit<import('@src/3d/utils/behaviors').SerializedMesh, 'shape'> & Required<Pick<import('@src/3d/utils/behaviors').SerializedMesh, 'file'>>} params - custom mesh parameters.
+ * @param {import('@src/3d/managers').Managers} managers - current managers.
+ * @param {import('@babylonjs/core').Scene} scene - scene for the created mesh.
+ * @returns the created custom mesh.
  */
 export async function createCustom(
   {
@@ -36,10 +28,11 @@ export async function createCustom(
     transform = undefined,
     ...behaviorStates
   },
+  managers,
   scene
 ) {
-  const encodedData = `data:;base64,${customShapeManager.get(file)}`
-  /** @type {?Mesh} */
+  const encodedData = `data:;base64,${managers.customShape.get(file)}`
+  /** @type {?import('@babylonjs/core').Mesh} */
   const mesh = await new Promise((resolve, reject) =>
     SceneLoader.ImportMesh(
       null,
@@ -50,7 +43,7 @@ export async function createCustom(
         const mesh = meshes?.[0]
         resolve(
           mesh?.getTotalVertices() > 0 || mesh?.getChildMeshes()?.length
-            ? /** @type {Mesh} */ (mesh)
+            ? /** @type {import('@babylonjs/core').Mesh} */ (mesh)
             : null
         )
       },
@@ -70,7 +63,7 @@ export async function createCustom(
   scene.addMesh(mesh, true)
   mesh.rotationQuaternion = null
 
-  materialManager.configure(mesh, texture)
+  managers.material.configure(mesh, texture)
   applyInitialTransform(mesh, transform)
 
   mesh.setAbsolutePosition(new Vector3(x, y ?? getGroundAltitude(mesh), z))
@@ -92,8 +85,8 @@ export async function createCustom(
     }
   })
 
-  registerBehaviors(mesh, behaviorStates)
+  registerBehaviors(mesh, behaviorStates, managers)
 
-  controlManager.registerControlable(mesh)
+  managers.control.registerControlable(mesh)
   return mesh
 }

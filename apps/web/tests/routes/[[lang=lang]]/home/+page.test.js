@@ -418,6 +418,7 @@ describe.each(
         expect(joinGame).toHaveBeenCalledWith({
           gameId: gamesWithLobbies[0].id,
           player,
+          onDeletion: expect.any(Function),
           onPromotion: expect.any(Function)
         })
         expect(joinGame).toHaveBeenCalledOnce()
@@ -428,6 +429,7 @@ describe.each(
         expect(joinGame).toHaveBeenCalledWith({
           gameId: gamesWithLobbies[0].id,
           player,
+          onDeletion: expect.any(Function),
           onPromotion: expect.any(Function)
         })
         expect(joinGame).toHaveBeenCalledOnce()
@@ -436,6 +438,7 @@ describe.each(
         expect(joinGame).toHaveBeenNthCalledWith(2, {
           gameId: gamesWithLobbies[1].id,
           player,
+          onDeletion: expect.any(Function),
           onPromotion: expect.any(Function)
         })
         expect(joinGame).toHaveBeenCalledTimes(2)
@@ -446,6 +449,7 @@ describe.each(
         expect(joinGame).toHaveBeenCalledWith({
           gameId: gamesWithLobbies[0].id,
           player,
+          onDeletion: expect.any(Function),
           onPromotion: expect.any(Function)
         })
         expect(joinGame).toHaveBeenCalledOnce()
@@ -483,6 +487,24 @@ describe.each(
             translate('labels.too-many-players', { title, maxSeats: 2 })
           )
         ).toBeInTheDocument()
+        expect(promoteGame).not.toHaveBeenCalled()
+      })
+
+      it('closes lobby when deleted by its owner', async () => {
+        await fireEvent.click(lobbyLinks[0])
+        expect(joinGame).toHaveBeenCalledWith({
+          gameId: gamesWithLobbies[0].id,
+          player,
+          onDeletion: expect.any(Function),
+          onPromotion: expect.any(Function)
+        })
+        joinGame.mock.calls[0][0]?.onDeletion?.(gamesWithLobbies[0])
+
+        expect(toastInfo).toHaveBeenCalledWith({
+          contentKey: 'labels.lobby-deleted-by-owner'
+        })
+        expect(toastInfo).toHaveBeenCalledTimes(1)
+        expect(joinGame).toHaveBeenCalledOnce()
         expect(promoteGame).not.toHaveBeenCalled()
       })
     })

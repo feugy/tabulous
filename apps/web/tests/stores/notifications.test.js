@@ -20,7 +20,7 @@ describe('Notification store notify()', () => {
   })
 
   beforeEach(() => {
-    vi.resetAllMocks()
+    vi.clearAllMocks()
   })
 
   describe('given visible window', () => {

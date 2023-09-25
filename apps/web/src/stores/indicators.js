@@ -20,7 +20,6 @@
 
 import { BehaviorSubject, map, merge, of, withLatestFrom } from 'rxjs'
 
-import { inputManager, selectionManager } from '../3d/managers'
 import { getPixelDimension, observeDimension } from '../utils/dom'
 import {
   actionMenuProps,
@@ -39,6 +38,7 @@ const hoveredMesh$ = new BehaviorSubject(/** @type {?Mesh} */ (null))
 /** @type {Map<string, Player>} */
 let playerById = new Map()
 gamePlayerById$.subscribe(value => (playerById = value))
+/** @type {import('@babylonjs/core').Engine} */
 let engine
 let feedbackById = new Map()
 
@@ -58,13 +58,15 @@ export function initIndicators(params) {
     const { height: totalHeight } = getPixelDimension(canvas)
     handPosition$.next(totalHeight - height)
   })
-  const hoverObserver = inputManager.onHoverObservable.add(({ type, mesh }) => {
-    hoveredMesh$.next(type === 'hoverStop' ? null : mesh)
-  })
+  const hoverObserver = engine.managers.input.onHoverObservable.add(
+    ({ type, mesh }) => {
+      hoveredMesh$.next(type === 'hoverStop' ? null : mesh)
+    }
+  )
   engine.onDisposeObservable.addOnce(() => {
     disconnect()
     dimensionSubscription.unsubscribe()
-    inputManager.onHoverObservable.remove(hoverObserver)
+    engine.managers.input.onHoverObservable.remove(hoverObserver)
   })
 }
 
@@ -236,10 +238,11 @@ function enrichWithInteraction(indicators) {
     if ('mesh' in indicator && indicator.mesh) {
       indicator.onClick = () => {
         const selected = indicator.mesh.metadata.stack ?? indicator.mesh
-        if (selectionManager.meshes.has(indicator.mesh)) {
-          selectionManager.unselect(selected)
+        const { selection } = engine.managers
+        if (selection.meshes.has(indicator.mesh)) {
+          selection.unselect(selected)
         } else {
-          selectionManager.select(selected)
+          selection.select(selected)
         }
       }
     }

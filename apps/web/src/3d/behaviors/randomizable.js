@@ -14,7 +14,6 @@ import { VertexBuffer } from '@babylonjs/core/Buffers/buffer'
 import { Quaternion, Vector3 } from '@babylonjs/core/Maths/math.vector'
 
 import { makeLogger } from '../../utils/logger'
-import { controlManager } from '../managers/control'
 import { actionNames } from '../utils/actions'
 import {
   attachFunctions,
@@ -42,9 +41,12 @@ export class RandomBehavior extends AnimateBehavior {
   /**
    * Creates behavior to make a mesh randomizable: it has a face vaule and this face can be set, or randomly set.
    * @param {RandomizableState & Extras} stateWithExtra - behavior persistent state, with internal parameters provided by the mesh.
+   * @param {import('@src/3d/managers').Managers} managers - current managers.
    */
-  constructor(stateWithExtra) {
+  constructor(stateWithExtra, managers) {
     super()
+    /** @internal */
+    this.managers = managers
     /** @type {RequiredRandomizableState} state - the behavior's current state (+ extras) */
     this.state = /** @type {RequiredRandomizableState} */ (stateWithExtra)
     if (!(stateWithExtra.quaternionPerFace instanceof Map)) {
@@ -100,7 +102,6 @@ export class RandomBehavior extends AnimateBehavior {
    * - returns
    * Does nothing if the mesh is already being animated, or can not be set.
    * @param {number} face - desired face value.
-   * @returns {Promise<void>}
    * @throws {Error} if desired face is not withing 1..max.
    */
   async setFace(face) {
@@ -129,7 +130,6 @@ export class RandomBehavior extends AnimateBehavior {
    * - returns
    * Does nothing if the mesh is already being animated.
    * @param {number} [face] - final face value, used when applying random operation from peers
-   * @returns {Promise<void>}
    */
   async random(face) {
     if (!face) {
@@ -319,7 +319,7 @@ function applyRotation(
   mesh.updateVerticesData(VertexBuffer.PositionKind, [...save.positions])
   mesh.updateVerticesData(VertexBuffer.NormalKind, [...save.normals])
   mesh.rotationQuaternion = /** @type {Quaternion} */ (
-    quaternionPerFace.get(face ?? 0)
+    quaternionPerFace.get(face ?? 1)
   ).clone()
   mesh.bakeCurrentTransformIntoVertices()
   mesh.refreshBoundingInfo()
@@ -360,7 +360,7 @@ async function animate(behavior, isLocal, fn, face, duration, ...animations) {
     { mesh, face, oldFace },
     `starts ${fn} on ${mesh.id} (${oldFace} > ${face})`
   )
-  controlManager.record({
+  behavior.managers.control.record({
     mesh,
     fn,
     args: [face],

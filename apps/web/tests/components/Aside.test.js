@@ -10,7 +10,7 @@ import { fireEvent, render, screen, waitFor } from '@testing-library/svelte'
 import userEvent from '@testing-library/user-event'
 import { players, thread } from '@tests/fixtures/Discussion.testdata'
 import { extractAttribute, extractText, translate } from '@tests/test-utils'
-import html from 'svelte-htm'
+import { tick } from 'svelte'
 import { beforeEach, describe, expect, it, vi } from 'vitest'
 
 vi.mock('@src/stores/stream', () => {
@@ -31,7 +31,7 @@ const stream$ = /** @type {BehaviorSubject} */ (actualStream$)
 const helpButtonText = 'help F1'
 const friendsButtonText = 'people_alt F2'
 const rulesButtonText = 'auto_stories F3'
-const playersButonText = 'contacts F4'
+const playersButtonText = 'contacts F4'
 
 describe('Aside component', () => {
   const handleSend = vi.fn()
@@ -48,7 +48,7 @@ describe('Aside component', () => {
   const [user] = players
 
   beforeEach(() => {
-    vi.resetAllMocks()
+    vi.clearAllMocks()
     stream$.next({
       getAudioTracks: vi.fn().mockReturnValue([]),
       getVideoTracks: vi.fn().mockReturnValue([])
@@ -56,19 +56,21 @@ describe('Aside component', () => {
   })
 
   function renderComponent(props = {}) {
-    return render(
-      html`<${Aside}
-        connected=${[]}
-        thread=${[]}
-        ...${props}
-        on:sendMessage=${handleSend}
-      />`
-    )
+    const result = render(Aside, {
+      props: {
+        connected: [],
+        thread: [],
+        playerById: new Map(),
+        user,
+        ...props
+      }
+    })
+    result.component.$on('sendMessage', handleSend)
+    return result
   }
 
   it('can have friends tab only', () => {
     renderComponent({
-      user,
       friends: [{ player: players[1] }, { player: players[2] }],
       playerById: new Map(
         players.slice(0, 1).map(player => [player.id, player])
@@ -82,7 +84,6 @@ describe('Aside component', () => {
 
   it('opens friends tab when it contains requests', () => {
     renderComponent({
-      user,
       friends: [
         { player: players[1], isRequest: true },
         { player: players[2] }
@@ -100,7 +101,6 @@ describe('Aside component', () => {
   it('only has help on single player game without rules book', () => {
     renderComponent({
       game: { kind: 'belote' },
-      user,
       playerById: new Map(
         players.slice(0, 1).map(player => [player.id, player])
       )
@@ -113,7 +113,6 @@ describe('Aside component', () => {
 
   it('has help and rules book on single player game', () => {
     renderComponent({
-      user,
       game: { kind: 'splendor', rulesBookPageCount: 4 },
       playerById: toMap(players.slice(0, 1))
     })
@@ -128,13 +127,12 @@ describe('Aside component', () => {
 
   it('has help, friends and peer tabs on game without rules book', () => {
     renderComponent({
-      user,
       game: { kind: 'splendor' },
       playerById: toMap(players),
       thread
     })
     expect(extractText(screen.getAllByRole('tab'))).toEqual([
-      playersButonText,
+      playersButtonText,
       friendsButtonText,
       helpButtonText
     ])
@@ -151,13 +149,12 @@ describe('Aside component', () => {
 
   it('has help, friends and peer tabs on game without rules book and no available seats', () => {
     renderComponent({
-      user,
       game: { kind: 'splendor', availableSeats: 0 },
       playerById: toMap(players),
       thread
     })
     expect(extractText(screen.getAllByRole('tab'))).toEqual([
-      playersButonText,
+      playersButtonText,
       friendsButtonText,
       helpButtonText
     ])
@@ -174,13 +171,12 @@ describe('Aside component', () => {
 
   it('has help, friends, rules book and peer tabs on game', () => {
     renderComponent({
-      user,
       game: { kind: 'splendor', rulesBookPageCount: 4 },
       playerById: toMap(players),
       thread
     })
     expect(extractText(screen.getAllByRole('tab'))).toEqual([
-      playersButonText,
+      playersButtonText,
       rulesButtonText,
       friendsButtonText,
       helpButtonText
@@ -198,13 +194,12 @@ describe('Aside component', () => {
 
   it('has only friends and peer tabs on lobby', () => {
     renderComponent({
-      user,
       game: { rulesBookPageCount: 4 },
       playerById: toMap(players),
       thread
     })
     expect(extractText(screen.getAllByRole('tab'))).toEqual([
-      playersButonText,
+      playersButtonText,
       friendsButtonText
     ])
     expect(
@@ -214,14 +209,13 @@ describe('Aside component', () => {
 
   it('has streams for connected peers', async () => {
     renderComponent({
-      user,
       game: { kind: 'belote' },
       playerById: toMap(playingPlayers),
       connected,
       thread
     })
     expect(extractText(screen.getAllByRole('tab'))).toEqual([
-      playersButonText,
+      playersButtonText,
       friendsButtonText,
       helpButtonText
     ])
@@ -238,7 +232,7 @@ describe('Aside component', () => {
   })
 
   it('can send messages', async () => {
-    renderComponent({ user, game: {}, playerById: toMap(players), thread })
+    renderComponent({ game: {}, playerById: toMap(players), thread })
 
     await fireEvent.click(screen.getAllByRole('tab')[1])
     expect(
@@ -257,14 +251,16 @@ describe('Aside component', () => {
   })
 
   describe('given all tabs visible', () => {
+    /** @type {Aside} */
+    let component
+
     beforeEach(() => {
-      renderComponent({
-        user,
+      ;({ component } = renderComponent({
         game: { kind: 'splendor', rulesBookPageCount: 4 },
         playerById: toMap(playingPlayers),
         connected,
         thread
-      })
+      }))
     })
 
     it('displays rules book when clicking on tab', async () => {
@@ -303,10 +299,42 @@ describe('Aside component', () => {
       await fireEvent.click(
         screen.getByRole('tab', { name: friendsButtonText })
       )
-      await fireEvent.click(screen.getByRole('tab', { name: playersButonText }))
+      await fireEvent.click(
+        screen.getByRole('tab', { name: playersButtonText })
+      )
       const avatars = screen.getAllByTestId('player-avatar')
       expect(avatars).toHaveLength(playingPlayers.length)
       expect(avatars[0].closest('.peers')).not.toHaveClass('hidden')
+    })
+
+    it('switch to player tab when a peer is joining', async () => {
+      const friendsTab = screen.getByRole('tab', { name: friendsButtonText })
+      await fireEvent.click(friendsTab)
+      expect(screen.getByRole('tab', { selected: true })).toEqual(friendsTab)
+      component.$set({
+        connected: [...connected, { playerId: players[1].id, stream }]
+      })
+      await tick()
+      expect(screen.getByRole('tab', { selected: true })).toEqual(
+        screen.getByRole('tab', { name: playersButtonText })
+      )
+    })
+
+    it('does not switch tab when receiving game update', async () => {
+      const ruleTab = screen.getByRole('tab', { name: rulesButtonText })
+      await fireEvent.click(ruleTab)
+      expect(screen.getByRole('tab', { selected: true })).toEqual(ruleTab)
+      component.$set({
+        game: {
+          id: 'blha',
+          created: Date.now(),
+          kind: 'splendor',
+          rulesBookPageCount: 4,
+          meshes: []
+        }
+      })
+      await tick()
+      expect(screen.getByRole('tab', { selected: true })).toEqual(ruleTab)
     })
   })
 })

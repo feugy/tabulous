@@ -45,7 +45,7 @@ const toggleIndicators = /** @type {Mock<?, ?>} */ (indicators.toggleIndicators)
 
 describe('GameMenu connected component', () => {
   beforeEach(() => {
-    vi.resetAllMocks()
+    vi.clearAllMocks()
     isFullscreen.next(false)
     areIndicatorsVisible.next(true)
   })
@@ -101,7 +101,7 @@ describe('GameMenu connected component', () => {
   })
 
   it('can hide indicators', async () => {
-    vi.resetAllMocks()
+    vi.clearAllMocks()
     await renderAndOpenComponent()
     fireEvent.click(selectHideIndicatorsOption())
     expect(toggleFullscreen).not.toHaveBeenCalled()

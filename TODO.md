@@ -1,7 +1,5 @@
 # TODO
 
-during replay: host save
-
 ## Refactor
 
 - hand: reuse playMeshes() and pickMesh() in handDrag()
@@ -16,9 +14,10 @@ during replay: host save
 
 ## UI
 
+- bug: die do not display the same face in multiplayer (states are correct)
 - when hovering target, highlight should have the dragged mesh's shape, not the target shape (what about parts?)
 - hand count on peer pointers/player tab?
-- score card (Mah-jong, Belote)
+- score (Mah-jong, Belote)
 - command to reset some mesh state and restart a game (Mah-jong, Belote)
 - "box" space for unusued/undesired meshes
 - hide/distinguish non-connected participants?

@@ -331,6 +331,35 @@ describe('Peer channels store', () => {
         expect(runMutation).not.toHaveBeenCalled()
         expect(acquireMediaStream).toHaveBeenCalledTimes(1)
       })
+
+      it('sends current stream state', async () => {
+        const local = { muted: true, stopped: false }
+        localStreamChange$.next(local)
+        await sleep(15) // because of auditTime on localStreamChange$
+
+        const emitter = new EventEmitter()
+        PeerConnection.prototype.connect.mockImplementationOnce(
+          async function (playerId) {
+            this.playerId = playerId
+            this.sendSignal(playerId, {
+              type: 'offer',
+              data: faker.lorem.words()
+            })
+            await once(emitter, 'ready')
+            this.established = true
+          }
+        )
+
+        const connectWith = communication.connectWith(
+          playerId3,
+          turnCredentials
+        )
+        await sleep()
+        expectPeerOptions({ stream, ...local })
+        emitter.emit('ready')
+        await expect(connectWith).resolves.toEqual(peers[0])
+        expect(lastConnectedId).toEqual(playerId3)
+      })
     })
   })
 

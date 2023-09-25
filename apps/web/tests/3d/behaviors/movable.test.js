@@ -5,13 +5,17 @@
 
 import { faker } from '@faker-js/faker'
 import { MoveBehavior, MoveBehaviorName } from '@src/3d/behaviors'
-import { moveManager } from '@src/3d/managers'
 import { beforeEach, describe, expect, it } from 'vitest'
 
 import { configures3dTestEngine, createBox } from '../../test-utils'
 
 describe('MoveBehavior', () => {
-  configures3dTestEngine()
+  /** @type {import('@src/3d/managers').Managers} */
+  let managers
+
+  configures3dTestEngine(created => (managers = created.managers), {
+    isSimulation: globalThis.use3dSimulation
+  })
 
   it('has initial state', () => {
     const state = {
@@ -20,7 +24,7 @@ describe('MoveBehavior', () => {
       duration: faker.number.int(999),
       partCenters: [{ x: faker.number.int(999), z: faker.number.int(999) }]
     }
-    const behavior = new MoveBehavior(state)
+    const behavior = new MoveBehavior(state, managers)
     const mesh = createBox('box', {})
     mesh.isPickable = false
 
@@ -36,20 +40,20 @@ describe('MoveBehavior', () => {
 
   it('registers mesh into MoveManager', () => {
     const mesh = createBox('box', {})
-    expect(moveManager.isManaging(mesh)).toBe(false)
+    expect(managers.move.isManaging(mesh)).toBe(false)
 
-    mesh.addBehavior(new MoveBehavior(), true)
-    expect(moveManager.isManaging(mesh)).toBe(true)
+    mesh.addBehavior(new MoveBehavior({}, managers), true)
+    expect(managers.move.isManaging(mesh)).toBe(true)
   })
 
   it('can not restore state without mesh', () => {
-    expect(() => new MoveBehavior().fromState()).toThrow(
+    expect(() => new MoveBehavior({}, managers).fromState()).toThrow(
       'Can not restore state without mesh'
     )
   })
 
   it('handles detaching without mesh', () => {
-    expect(() => new MoveBehavior().detach()).not.toThrowError()
+    expect(() => new MoveBehavior({}, managers).detach()).not.toThrowError()
   })
 
   describe('given attached to a mesh', () => {
@@ -59,7 +63,7 @@ describe('MoveBehavior', () => {
     let behavior
 
     beforeEach(() => {
-      behavior = new MoveBehavior()
+      behavior = new MoveBehavior({}, managers)
       mesh = createBox('box', {})
       mesh.addBehavior(behavior, true)
     })
@@ -71,9 +75,9 @@ describe('MoveBehavior', () => {
     })
 
     it('unregisters mesh from MoveManager upon disposal', () => {
-      expect(moveManager.isManaging(mesh)).toBe(true)
+      expect(managers.move.isManaging(mesh)).toBe(true)
       mesh.dispose()
-      expect(moveManager.isManaging(mesh)).toBe(false)
+      expect(managers.move.isManaging(mesh)).toBe(false)
     })
 
     it('can hydrate from state', () => {

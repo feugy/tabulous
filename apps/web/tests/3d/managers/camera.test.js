@@ -6,19 +6,26 @@
  */
 
 import { faker } from '@faker-js/faker'
-import { cameraManager as manager } from '@src/3d/managers'
+import { CameraManager } from '@src/3d/managers'
 import { createTable } from '@src/3d/utils'
-import { beforeAll, beforeEach, describe, expect, it, vi } from 'vitest'
+import { beforeEach, describe, expect, it, vi } from 'vitest'
 
 import { configures3dTestEngine } from '../../test-utils'
 
 describe('CameraManager', () => {
   /** @type {Scene} */
   let scene
+  /** @type {Scene} */
+  let handScene
   /** @type {CameraPosition[]} */
   let states
   /** @type {CameraPosition[][]} */
   let saveUpdates
+  /** @type {import('@src/3d/managers').Managers} */
+  let managers
+  /** @type {CameraManager} */
+  let manager
+
   const defaults = {
     alpha: (3 * Math.PI) / 2,
     beta: Math.PI / 8,
@@ -28,54 +35,25 @@ describe('CameraManager', () => {
     target: [0, 0, 0]
   }
 
-  configures3dTestEngine(created => (scene = created.scene))
-
-  beforeEach(() => {
-    vi.resetAllMocks()
-    createTable(undefined, scene)
-    states = []
-    saveUpdates = []
+  configures3dTestEngine(created => {
+    scene = created.scene
+    handScene = created.handScene
+    managers = created.managers
   })
 
-  beforeAll(() => {
+  beforeEach(() => {
+    vi.clearAllMocks()
+    createTable(undefined, managers, scene)
+    states = []
+    saveUpdates = []
+    manager = new CameraManager({ scene, handScene })
     manager.onMoveObservable.add(state => states.push(state))
     manager.onSaveObservable.add(saves => saveUpdates.push(saves))
   })
 
-  it('has initial state', () => {
-    expect(manager.camera).toBeNull()
-    expect(manager.saves).toEqual([])
-  })
-
-  it('can not pan without camera', async () => {
-    await manager.pan({ x: 100, y: 0 }, { x: 200, y: 0 })
-    expect(states).toHaveLength(0)
-  })
-
-  it('can not rotate without camera', async () => {
-    await manager.rotate(Math.PI)
-    expect(states).toHaveLength(0)
-  })
-
-  it('can not zoom without camera', async () => {
-    await manager.zoom(6)
-    expect(states).toHaveLength(0)
-  })
-
-  it('can not save without camera', () => {
-    manager.save()
-    expect(manager.saves).toHaveLength(0)
-  })
-
-  it('can not adjust zoom levels', () => {
-    expect(() => manager.adjustZoomLevels({})).toThrow(
-      'please init the camera manager prior to adjusting zoom levels'
-    )
-  })
-
-  describe('init()', () => {
+  describe('constructor', () => {
     it('creates a camera with defaults', () => {
-      manager.init()
+      const manager = new CameraManager({ scene, handScene })
       expect(manager.camera?.upperBetaLimit).toEqual(Math.PI / 3)
       expect(manager.camera?.lowerRadiusLimit).toEqual(defaults.minY)
       expect(manager.camera?.upperRadiusLimit).toEqual(defaults.maxY)
@@ -94,7 +72,15 @@ describe('CameraManager', () => {
       const minY = 7.5
       const maxY = 50
       const minAngle = Math.PI / 8
-      manager.init({ beta, y: elevation, minY, maxY, minAngle })
+      const manager = new CameraManager({
+        scene,
+        handScene,
+        beta,
+        y: elevation,
+        minY,
+        maxY,
+        minAngle
+      })
       expect(manager.camera?.upperBetaLimit).toEqual(minAngle)
       expect(manager.camera?.lowerRadiusLimit).toEqual(minY)
       expect(manager.camera?.upperRadiusLimit).toEqual(maxY)
@@ -107,8 +93,6 @@ describe('CameraManager', () => {
   })
 
   describe('pan()', () => {
-    beforeEach(() => manager.init())
-
     it('moves camera horizontally', async () => {
       await manager.pan({ x: 200, y: 0 }, { x: 300, y: 0 })
       expectState(states[states.length - 1], { target: [-5.00541008199442] })
@@ -138,8 +122,6 @@ describe('CameraManager', () => {
   })
 
   describe('rotate()', () => {
-    beforeEach(() => manager.init())
-
     it('rotates on alpha', async () => {
       await manager.rotate(Math.PI / 4)
       expectState(states[states.length - 1], { alpha: (7 * Math.PI) / 4 })
@@ -173,8 +155,6 @@ describe('CameraManager', () => {
   })
 
   describe('zoom()', () => {
-    beforeEach(() => manager.init())
-
     it('zooms in', async () => {
       await manager.zoom(-3)
       expectState(states[states.length - 1], { elevation: 32 })
@@ -199,8 +179,6 @@ describe('CameraManager', () => {
   })
 
   describe('save()', () => {
-    beforeEach(() => manager.init())
-
     it('can not save given an invalid an rank', () => {
       manager.save(-1)
       manager.save(2)
@@ -235,8 +213,6 @@ describe('CameraManager', () => {
   })
 
   describe('restore()', () => {
-    beforeEach(() => manager.init())
-
     it('moves camera back to a given position', async () => {
       await manager.rotate(Math.PI / 4)
       manager.save(1)
@@ -263,8 +239,6 @@ describe('CameraManager', () => {
   })
 
   describe('loadStates()', () => {
-    beforeEach(() => manager.init())
-
     it('resets all states and loads first position', async () => {
       await manager.rotate(Math.PI / 4)
       manager.save(1)
@@ -307,8 +281,6 @@ describe('CameraManager', () => {
   })
 
   describe('adjustZoomLevels()', () => {
-    beforeEach(() => manager.init())
-
     it('adjusts minimum main scene zoom', () => {
       const min = faker.number.int(999)
       manager.adjustZoomLevels({ min })

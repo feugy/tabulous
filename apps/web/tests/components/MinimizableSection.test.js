@@ -11,7 +11,7 @@ describe('MinimizableSection component', () => {
   const handleResize = vi.fn()
 
   beforeEach(() => {
-    vi.resetAllMocks()
+    vi.clearAllMocks()
   })
 
   describe.each([

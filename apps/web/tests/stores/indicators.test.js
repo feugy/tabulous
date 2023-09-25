@@ -22,11 +22,12 @@ import {
   QuantityBehaviorName,
   StackBehaviorName
 } from '@src/3d/behaviors'
-import { inputManager } from '@src/3d/managers'
-import { indicatorManager } from '@src/3d/managers/indicator'
-import { selectionManager } from '@src/3d/managers/selection'
 import { createCard } from '@src/3d/meshes'
-import { actionMenuProps as actualActionMenuProps } from '@src/stores/game-engine'
+import {
+  actionMenuProps as actualActionMenuProps,
+  indicators,
+  selectedMeshes
+} from '@src/stores/game-engine'
 import { gamePlayerById as actualGamePlayerById } from '@src/stores/game-manager'
 import {
   areIndicatorsVisible as areIndicatorsVisible$,
@@ -46,14 +47,8 @@ import { beforeAll, beforeEach, describe, expect, it, vi } from 'vitest'
 
 vi.mock('@src/stores/game-engine', async () => {
   const { BehaviorSubject } = await import('rxjs')
-  const { indicatorManager } = await import('@src/3d/managers/indicator')
-  const { selectionManager } = await import('@src/3d/managers/selection')
   const indicators = new BehaviorSubject(/** @type {Indicator[]} */ ([]))
   const selectedMeshes = new BehaviorSubject(new Set())
-  indicatorManager.onChangeObservable.add(indicators.next.bind(indicators))
-  selectionManager.onSelectionObservable.add(
-    selectedMeshes.next.bind(selectedMeshes)
-  )
   return {
     indicators,
     selectedMeshes,
@@ -75,6 +70,10 @@ describe('Indicators store', () => {
   let cards
   /** @type {Player[]} */
   let players
+  /** @type {import('@src/3d/managers').Managers} */
+  let managers
+  /** @type {import('vitest').Mock<[HTMLElement], CSSStyleDeclaration>} */
+  let getComputedStyle
   const renderWidth = 2048
   const renderHeight = 1024
   const canvas = document.createElement('canvas')
@@ -88,44 +87,51 @@ describe('Indicators store', () => {
 
   configures3dTestEngine(
     created => {
-      scene = created.scene
-      engine = created.engine
+      ;({ engine, scene, managers, getComputedStyle } = created)
+      engine.managers = managers
+      players = [
+        {
+          id: faker.string.uuid(),
+          username: faker.person.fullName(),
+          isGuest: false,
+          isOwner: false,
+          isHost: false,
+          playing: false,
+          currentGameId: null
+        },
+        {
+          id: faker.string.uuid(),
+          username: faker.person.fullName(),
+          isGuest: true,
+          isOwner: false,
+          isHost: false,
+          playing: false,
+          currentGameId: null
+        },
+        {
+          id: faker.string.uuid(),
+          username: faker.person.fullName(),
+          isGuest: false,
+          isOwner: true,
+          isHost: false,
+          playing: false,
+          currentGameId: null
+        }
+      ]
+
+      managers.indicator.onChangeObservable.add(
+        /** @type {BehaviorSubject<Indicator[]>} */ (indicators).next.bind(
+          indicators
+        )
+      )
+      managers.selection.onSelectionObservable.add(
+        /** @type {BehaviorSubject<Set<Mesh>>} */ (selectedMeshes).next.bind(
+          selectedMeshes
+        )
+      )
     },
     { renderWidth, renderHeight }
   )
-
-  beforeAll(() => {
-    indicatorManager.init({ scene })
-    players = [
-      {
-        id: faker.string.uuid(),
-        username: faker.person.fullName(),
-        isGuest: false,
-        isOwner: false,
-        isHost: false,
-        playing: false,
-        currentGameId: null
-      },
-      {
-        id: faker.string.uuid(),
-        username: faker.person.fullName(),
-        isGuest: true,
-        isOwner: false,
-        isHost: false,
-        playing: false,
-        currentGameId: null
-      },
-      {
-        id: faker.string.uuid(),
-        username: faker.person.fullName(),
-        isGuest: false,
-        isOwner: true,
-        isHost: false,
-        playing: false,
-        currentGameId: null
-      }
-    ]
-  })
 
   beforeEach(async () => {
     initIndicators({ engine, canvas, hand })
@@ -145,11 +151,12 @@ describe('Indicators store', () => {
           anchorable: {},
           quantifiable: {}
         },
+        managers,
         scene
       )
     )
     actionMenuProps.next(null)
-    selectionManager.clear()
+    managers.selection.clear()
   })
 
   it('shows indicators by default', async () => {
@@ -221,14 +228,14 @@ describe('Indicators store', () => {
       await waitNextRender(scene)
 
       get(visibleIndicators$)[0].onClick?.()
-      expect(selectionManager.meshes.has(cards[0])).toBe(true)
-      expect(selectionManager.meshes.has(cards[1])).toBe(true)
-      expect(selectionManager.meshes.has(cards[2])).toBe(false)
-      expect(selectionManager.meshes.has(cards[3])).toBe(true)
-      expect(selectionManager.meshes.has(cards[4])).toBe(false)
+      expect(managers.selection.meshes.has(cards[0])).toBe(true)
+      expect(managers.selection.meshes.has(cards[1])).toBe(true)
+      expect(managers.selection.meshes.has(cards[2])).toBe(false)
+      expect(managers.selection.meshes.has(cards[3])).toBe(true)
+      expect(managers.selection.meshes.has(cards[4])).toBe(false)
 
       get(visibleIndicators$)[0].onClick?.()
-      expect(selectionManager.meshes.size).toBe(0)
+      expect(managers.selection.meshes.size).toBe(0)
     })
 
     it('selects and unselects quantifiable meshes when with their indicators', async () => {
@@ -238,16 +245,16 @@ describe('Indicators store', () => {
       await waitNextRender(scene)
 
       get(visibleIndicators$)[0].onClick?.()
-      expect(selectionManager.meshes.has(cards[0])).toBe(true)
+      expect(managers.selection.meshes.has(cards[0])).toBe(true)
 
       get(visibleIndicators$)[0].onClick?.()
-      expect(selectionManager.meshes.size).toBe(0)
+      expect(managers.selection.meshes.size).toBe(0)
     })
 
     it('has feedback', async () => {
       /** @type {FeedbackIndicator} */
       const indicator = { position: [1, 0, -1], action: 'flip' }
-      indicatorManager.registerFeedback(indicator)
+      managers.indicator.registerFeedback(indicator)
       await waitNextRender(scene)
       expectFeedbacks([indicator])
     })
@@ -262,7 +269,7 @@ describe('Indicators store', () => {
         { id: `${card4.id}.stack-size`, size: 3, hovered: false }
       ])
 
-      inputManager.onHoverObservable.notifyObservers({
+      managers.input.onHoverObservable.notifyObservers({
         type: 'hoverStart',
         mesh: card4,
         event: /** @type {PointerEvent} */ (new MouseEvent('mousemove')),
@@ -273,7 +280,7 @@ describe('Indicators store', () => {
         { id: `${card4.id}.stack-size`, size: 3, hovered: true }
       ])
 
-      inputManager.onHoverObservable.notifyObservers({
+      managers.input.onHoverObservable.notifyObservers({
         type: 'hoverStop',
         mesh: card4,
         event: /** @type {PointerEvent} */ (new MouseEvent('mousemove')),
@@ -299,7 +306,7 @@ describe('Indicators store', () => {
       it('has no feedback', async () => {
         /** @type {FeedbackIndicator} */
         const indicator = { position: [1, 0, -1], action: 'pop' }
-        indicatorManager.registerFeedback(indicator)
+        managers.indicator.registerFeedback(indicator)
         await waitNextRender(scene)
         expectFeedbacks([])
       })
@@ -313,7 +320,7 @@ describe('Indicators store', () => {
           .getBehaviorByName(StackBehaviorName)
           ?.fromState({ stackIds: ['card5'] })
         expectIndicators()
-        selectionManager.select([card5, card3])
+        managers.selection.select([card5, card3])
         expectIndicators([
           {
             id: `${card5.id}.stack-size`,
@@ -365,7 +372,7 @@ describe('Indicators store', () => {
           .getBehaviorByName(StackBehaviorName)
           ?.fromState({ stackIds: ['card5'] })
         expectIndicators()
-        selectionManager.select([card5, card3, card2, card1, card4])
+        managers.selection.select([card5, card3, card2, card1, card4])
         expectIndicators([
           {
             id: `${card4.id}.stack-size`,
@@ -422,7 +429,7 @@ describe('Indicators store', () => {
       it('has feedback', async () => {
         /** @type {FeedbackIndicator} */
         const indicator = { position: [1, 0, -1], action: 'draw' }
-        indicatorManager.registerFeedback(indicator)
+        managers.indicator.registerFeedback(indicator)
         await waitNextRender(scene)
         expectFeedbacks([indicator])
       })
@@ -430,10 +437,10 @@ describe('Indicators store', () => {
       it('retains feedback for 3 seconds', async () => {
         /** @type {FeedbackIndicator} */
         const indicator = { position: [1, 0, -1], action: 'rotate' }
-        indicatorManager.registerFeedback(indicator)
+        managers.indicator.registerFeedback(indicator)
         await waitNextRender(scene)
         expectFeedbacks([indicator])
-        indicatorManager.onChangeObservable.notifyObservers([])
+        managers.indicator.onChangeObservable.notifyObservers([])
         await sleep(1100)
         await waitNextRender(scene)
         expectFeedbacks([indicator])
@@ -638,14 +645,14 @@ describe('Indicators store', () => {
   }
 
   async function notifyHandResize(/** @type {number} */ height) {
-    vi.spyOn(window, 'getComputedStyle').mockImplementation(
+    getComputedStyle.mockImplementation(
       node =>
         /** @type {CSSStyleDeclaration} */ ({
           height: `${node === canvas ? renderHeight : height}px`
         })
     )
     // @ts-expect-error: resizeObservers are mocked
-    window.resizeObservers[0].notify()
+    window.resizeObservers[window.resizeObservers.length - 1].notify()
     await sleep(20)
   }
 })

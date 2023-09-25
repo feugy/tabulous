@@ -54,12 +54,15 @@ import {
   initialize3dEngine
 } from '../../test-utils'
 
+// TODO is it needed?
 vi.mock('@src/3d/managers/indicator')
 
 /** @type {Engine} */
 let engine
 /** @type {Mesh} */
 let box
+/** @type {import('@src/3d/managers').Managers} */
+let managers
 /** @type {typeof import('@src/3d/behaviors/anchorable').AnchorBehavior} */
 let AnchorBehavior
 /** @type {typeof import('@src/3d/behaviors/animatable').AnimateBehavior} */
@@ -84,7 +87,7 @@ let StackBehavior
 let TargetBehavior
 
 beforeAll(async () => {
-  engine = initialize3dEngine().engine
+  ;({ managers, engine } = initialize3dEngine())
   // use dynamic import to break the cyclic dependency
   ;({
     AnchorBehavior,
@@ -111,13 +114,13 @@ afterEach(() => disposeAllMeshes(box.getScene()))
 
 describe('getAnimatableBehavior() 3D utility', () => {
   it('finds rotable', () => {
-    const rotable = new RotateBehavior()
+    const rotable = new RotateBehavior({}, managers)
     box.addBehavior(rotable, true)
     expect(getAnimatableBehavior(box)).toEqual(rotable)
   })
 
   it('finds flippable', () => {
-    const flippable = new FlipBehavior()
+    const flippable = new FlipBehavior({}, managers)
     box.addBehavior(flippable, true)
     expect(getAnimatableBehavior(box)).toEqual(flippable)
   })
@@ -129,41 +132,41 @@ describe('getAnimatableBehavior() 3D utility', () => {
   })
 
   it('finds drawable', () => {
-    const drawable = new DrawBehavior()
+    const drawable = new DrawBehavior({}, managers)
     box.addBehavior(drawable, true)
     expect(getAnimatableBehavior(box)).toEqual(drawable)
   })
 
   it('finds movable over others', () => {
-    const flippable = new FlipBehavior()
+    const flippable = new FlipBehavior({}, managers)
     box.addBehavior(flippable, true)
     const animatable = new AnimateBehavior()
     box.addBehavior(animatable, true)
-    const movable = new MoveBehavior()
+    const movable = new MoveBehavior({}, managers)
     box.addBehavior(movable, true)
-    const rotable = new RotateBehavior()
+    const rotable = new RotateBehavior({}, managers)
     box.addBehavior(rotable, true)
-    const drawable = new DrawBehavior()
+    const drawable = new DrawBehavior({}, managers)
     box.addBehavior(drawable, true)
     expect(getAnimatableBehavior(box)).toEqual(movable)
   })
 
   it('finds flippable over others', () => {
-    const flippable = new FlipBehavior()
+    const flippable = new FlipBehavior({}, managers)
     box.addBehavior(flippable, true)
     const animatable = new AnimateBehavior()
     box.addBehavior(animatable, true)
-    const rotable = new RotateBehavior()
+    const rotable = new RotateBehavior({}, managers)
     box.addBehavior(rotable, true)
-    const drawable = new DrawBehavior()
+    const drawable = new DrawBehavior({}, managers)
     box.addBehavior(drawable, true)
     expect(getAnimatableBehavior(box)).toEqual(flippable)
   })
 
   it('finds drawable over others', () => {
-    const drawable = new DrawBehavior()
+    const drawable = new DrawBehavior({}, managers)
     box.addBehavior(drawable, true)
-    const rotable = new RotateBehavior()
+    const rotable = new RotateBehavior({}, managers)
     box.addBehavior(rotable, true)
     const animatable = new AnimateBehavior()
     box.addBehavior(animatable, true)
@@ -171,7 +174,7 @@ describe('getAnimatableBehavior() 3D utility', () => {
   })
 
   it('finds rotable over others', () => {
-    const rotable = new RotateBehavior()
+    const rotable = new RotateBehavior({}, managers)
     box.addBehavior(rotable, true)
     const animatable = new AnimateBehavior()
     box.addBehavior(animatable, true)
@@ -185,51 +188,51 @@ describe('getAnimatableBehavior() 3D utility', () => {
 
 describe('getTargetableBehavior() 3D utility', () => {
   it('finds anchorable', () => {
-    const anchorable = new AnchorBehavior()
+    const anchorable = new AnchorBehavior({}, managers)
     box.addBehavior(anchorable, true)
     expect(getTargetableBehavior(box)).toEqual(anchorable)
   })
 
   it('finds stackable', () => {
-    const stackable = new StackBehavior()
+    const stackable = new StackBehavior({}, managers)
     box.addBehavior(stackable, true)
     expect(getTargetableBehavior(box)).toEqual(stackable)
   })
 
   it('finds targetable', () => {
-    const targetable = new TargetBehavior()
+    const targetable = new TargetBehavior({}, managers)
     box.addBehavior(targetable, true)
     expect(getTargetableBehavior(box)).toEqual(targetable)
   })
 
   it('finds quantifiable', () => {
-    const quantifiable = new QuantityBehavior()
+    const quantifiable = new QuantityBehavior({}, managers)
     box.addBehavior(quantifiable, true)
     expect(getTargetableBehavior(box)).toEqual(quantifiable)
   })
 
   it('finds stackable over others', () => {
-    const anchorable = new AnchorBehavior()
+    const anchorable = new AnchorBehavior({}, managers)
     box.addBehavior(anchorable, true)
-    const stackable = new StackBehavior()
+    const stackable = new StackBehavior({}, managers)
     box.addBehavior(stackable, true)
-    const targetable = new TargetBehavior()
+    const targetable = new TargetBehavior({}, managers)
     box.addBehavior(targetable, true)
     expect(getTargetableBehavior(box)).toEqual(stackable)
   })
 
   it('finds anchorable over quantifiable', () => {
-    const quantifiable = new QuantityBehavior()
+    const quantifiable = new QuantityBehavior({}, managers)
     box.addBehavior(quantifiable, true)
-    const anchorable = new AnchorBehavior()
+    const anchorable = new AnchorBehavior({}, managers)
     box.addBehavior(anchorable, true)
     expect(getTargetableBehavior(box)).toEqual(anchorable)
   })
 
   it('finds quantifiable over targetable', () => {
-    const quantifiable = new QuantityBehavior()
+    const quantifiable = new QuantityBehavior({}, managers)
     box.addBehavior(quantifiable, true)
-    const targetable = new TargetBehavior()
+    const targetable = new TargetBehavior({}, managers)
     box.addBehavior(targetable, true)
     expect(getTargetableBehavior(box)).toEqual(quantifiable)
   })
@@ -251,7 +254,7 @@ describe('animateMove() 3D utility', () => {
   it('moves and rotates without animation when omitting duration', async () => {
     const position = [-2, -4, -0.5]
     const rotation = [Math.PI, Math.PI * 0.5, 0]
-    box.addBehavior(new FlipBehavior(), true)
+    box.addBehavior(new FlipBehavior({}, managers), true)
     animateMove(
       box,
       Vector3.FromArray(position),
@@ -277,7 +280,7 @@ describe('animateMove() 3D utility', () => {
 
   it('moves an animatable mesh without gravity', async () => {
     const position = [10, 0.5, 4]
-    box.addBehavior(new RotateBehavior(), true)
+    box.addBehavior(new RotateBehavior({}, managers), true)
     await animateMove(box, Vector3.FromArray(position), null, 100, true)
     expectPosition(box, position)
     expectCloseVector(box.rotation, [0, 0, 0])
@@ -304,7 +307,7 @@ describe('registerBehaviors() 3D utility', () => {
       snapDistance: 0.5,
       duration: 345
     }
-    registerBehaviors(box, { movable: state })
+    registerBehaviors(box, { movable: state }, managers)
     expect(box.getBehaviorByName(MoveBehaviorName)).toHaveProperty(
       'state',
       state
@@ -313,7 +316,7 @@ describe('registerBehaviors() 3D utility', () => {
 
   it('adds flippable behavior to a mesh', () => {
     const state = { isFlipped: true, duration: 123 }
-    registerBehaviors(box, { flippable: state })
+    registerBehaviors(box, { flippable: state }, managers)
     expect(box.getBehaviorByName(FlipBehaviorName)).toHaveProperty(
       'state',
       state
@@ -322,14 +325,14 @@ describe('registerBehaviors() 3D utility', () => {
 
   it('adds rotable behavior to a mesh', () => {
     const state = { angle: Math.PI * 0.5, duration: 321 }
-    registerBehaviors(box, { rotable: state })
+    registerBehaviors(box, { rotable: state }, managers)
     const behavior = box.getBehaviorByName(RotateBehaviorName)
     expect(behavior?.state).toEqualWithAngle(state)
   })
 
   it('adds detailable behavior to a mesh', () => {
     const state = { frontImage: 'front.png', backImage: 'back.png' }
-    registerBehaviors(box, { detailable: state })
+    registerBehaviors(box, { detailable: state }, managers)
     expect(box.getBehaviorByName(DetailBehaviorName)).toHaveProperty(
       'state',
       state
@@ -353,7 +356,7 @@ describe('registerBehaviors() 3D utility', () => {
       ],
       duration: 415
     }
-    registerBehaviors(box, { anchorable: state })
+    registerBehaviors(box, { anchorable: state }, managers)
     expect(box.getBehaviorByName(AnchorBehaviorName)).toHaveProperty(
       'state',
       state
@@ -367,7 +370,7 @@ describe('registerBehaviors() 3D utility', () => {
       kinds: ['round-token'],
       duration: 415
     }
-    registerBehaviors(box, { stackable: state })
+    registerBehaviors(box, { stackable: state }, managers)
     expect(box.getBehaviorByName(StackBehaviorName)).toHaveProperty(
       'state',
       state
@@ -381,7 +384,7 @@ describe('registerBehaviors() 3D utility', () => {
       flipOnPlay: true,
       angleOnPick: 0
     }
-    registerBehaviors(box, { drawable: state })
+    registerBehaviors(box, { drawable: state }, managers)
     expect(box.getBehaviorByName(DrawBehaviorName)).toHaveProperty(
       'state',
       state
@@ -390,7 +393,7 @@ describe('registerBehaviors() 3D utility', () => {
 
   it('adds lockable behavior to a mesh', () => {
     const state = { isLocked: true }
-    registerBehaviors(box, { lockable: state })
+    registerBehaviors(box, { lockable: state }, managers)
     expect(box.getBehaviorByName(LockBehaviorName)).toHaveProperty(
       'state',
       state
@@ -398,15 +401,19 @@ describe('registerBehaviors() 3D utility', () => {
   })
 
   it('adds multiple behaviors to a mesh', () => {
-    registerBehaviors(box, {
-      detailable: { frontImage: '' },
-      movable: {},
-      stackable: { extent: 1.5 },
-      anchorable: { anchors: [] },
-      flippable: { isFlipped: false },
-      rotable: { angle: Math.PI },
-      lockable: { isLocked: false }
-    })
+    registerBehaviors(
+      box,
+      {
+        detailable: { frontImage: '' },
+        movable: {},
+        stackable: { extent: 1.5 },
+        anchorable: { anchors: [] },
+        flippable: { isFlipped: false },
+        rotable: { angle: Math.PI },
+        lockable: { isLocked: false }
+      },
+      managers
+    )
     expect(box.getBehaviorByName(AnchorBehaviorName)?.state).toEqual({
       anchors: [],
       duration: 100
@@ -433,12 +440,16 @@ describe('registerBehaviors() 3D utility', () => {
   })
 
   it('adds nothing without parameters', () => {
-    registerBehaviors(box, { animatable: true })
+    registerBehaviors(box, { animatable: true }, managers)
     expect(box.behaviors).toHaveLength(0)
   })
 
   it('adds lockable after all other behavior', () => {
-    registerBehaviors(box, { lockable: { isLocked: true }, movable: {} })
+    registerBehaviors(
+      box,
+      { lockable: { isLocked: true }, movable: {} },
+      managers
+    )
 
     expect(box.getBehaviorByName(LockBehaviorName)?.state).toEqual({
       isLocked: true
@@ -450,7 +461,7 @@ describe('registerBehaviors() 3D utility', () => {
 describe('restoreBehaviors() 3D utility', () => {
   it('restores movable behavior', () => {
     const state = { snapDistance: 0.5, duration: 345 }
-    const movable = new MoveBehavior()
+    const movable = new MoveBehavior({}, managers)
     box.addBehavior(movable, true)
     restoreBehaviors(box.behaviors, { movable: state })
     expect(movable.state).toEqual(state)
@@ -458,7 +469,7 @@ describe('restoreBehaviors() 3D utility', () => {
 
   it('restores flippable behavior', () => {
     const state = { isFlipped: true, duration: 123 }
-    const flippable = new FlipBehavior()
+    const flippable = new FlipBehavior({}, managers)
     box.addBehavior(flippable, true)
     restoreBehaviors(box.behaviors, { flippable: state })
     expect(flippable.state).toEqual(state)
@@ -466,7 +477,7 @@ describe('restoreBehaviors() 3D utility', () => {
 
   it('restores rotable behavior', () => {
     const state = { angle: Math.PI * -0.5, duration: 432 }
-    const rotable = new RotateBehavior()
+    const rotable = new RotateBehavior({}, managers)
     box.addBehavior(rotable, true)
     restoreBehaviors(box.behaviors, { rotable: state })
     expect(rotable.state).toEqualWithAngle(state)
@@ -474,7 +485,7 @@ describe('restoreBehaviors() 3D utility', () => {
 
   it('restores detailable behavior', () => {
     const state = { frontImage: 'front.png', backImage: 'back.jpg' }
-    const detailable = new DetailBehavior()
+    const detailable = new DetailBehavior({ frontImage: '' }, managers)
     box.addBehavior(detailable, true)
     restoreBehaviors(box.behaviors, { detailable: state })
     expect(detailable.state).toEqual(state)
@@ -497,7 +508,7 @@ describe('restoreBehaviors() 3D utility', () => {
       ],
       duration: 415
     }
-    const anchorable = new AnchorBehavior()
+    const anchorable = new AnchorBehavior({}, managers)
     box.addBehavior(anchorable, true)
     restoreBehaviors(box.behaviors, { anchorable: state })
     expect(anchorable.state).toEqual(state)
@@ -505,7 +516,7 @@ describe('restoreBehaviors() 3D utility', () => {
 
   it('restores lockable behavior', () => {
     const state = { isLocked: false }
-    const lockable = new LockBehavior()
+    const lockable = new LockBehavior({}, managers)
     box.addBehavior(lockable, true)
     restoreBehaviors(box.behaviors, { lockable: state })
     expect(lockable.state).toEqual(state)
@@ -518,7 +529,7 @@ describe('restoreBehaviors() 3D utility', () => {
       kinds: ['round-token'],
       duration: 415
     }
-    const stackable = new StackBehavior()
+    const stackable = new StackBehavior({}, managers)
     box.addBehavior(stackable, true)
     restoreBehaviors(box.behaviors, { stackable: state })
     expect(stackable.state).toEqual({
@@ -559,14 +570,14 @@ describe('restoreBehaviors() 3D utility', () => {
     }
     const detailable = { frontImage: 'something.png' }
     const lockable = { isLocked: false }
-    box.addBehavior(new MoveBehavior(), true)
-    box.addBehavior(new FlipBehavior(), true)
-    box.addBehavior(new RotateBehavior(), true)
-    box.addBehavior(new DetailBehavior(), true)
-    box.addBehavior(new AnchorBehavior(), true)
-    box.addBehavior(new StackBehavior(), true)
+    box.addBehavior(new MoveBehavior({}, managers), true)
+    box.addBehavior(new FlipBehavior({}, managers), true)
+    box.addBehavior(new RotateBehavior({}, managers), true)
+    box.addBehavior(new DetailBehavior({ frontImage: '' }, managers), true)
+    box.addBehavior(new AnchorBehavior({}, managers), true)
+    box.addBehavior(new StackBehavior({}, managers), true)
     box.addBehavior(new AnimateBehavior(), true)
-    box.addBehavior(new LockBehavior(), true)
+    box.addBehavior(new LockBehavior({}, managers), true)
     restoreBehaviors(box.behaviors, {
       detailable,
       movable,
@@ -592,14 +603,14 @@ describe('restoreBehaviors() 3D utility', () => {
   })
 
   it('does nothing without parameters', () => {
-    box.addBehavior(new MoveBehavior(), true)
-    box.addBehavior(new FlipBehavior(), true)
-    box.addBehavior(new RotateBehavior(), true)
-    box.addBehavior(new DetailBehavior(), true)
-    box.addBehavior(new AnchorBehavior(), true)
-    box.addBehavior(new StackBehavior(), true)
+    box.addBehavior(new MoveBehavior({}, managers), true)
+    box.addBehavior(new FlipBehavior({}, managers), true)
+    box.addBehavior(new RotateBehavior({}, managers), true)
+    box.addBehavior(new DetailBehavior({ frontImage: '' }, managers), true)
+    box.addBehavior(new AnchorBehavior({}, managers), true)
+    box.addBehavior(new StackBehavior({}, managers), true)
     box.addBehavior(new AnimateBehavior(), true)
-    box.addBehavior(new LockBehavior(), true)
+    box.addBehavior(new LockBehavior({}, managers), true)
     restoreBehaviors(box.behaviors, {})
     expect(box.getBehaviorByName(MoveBehaviorName)?.state).toEqual({
       snapDistance: 0.25,
@@ -631,14 +642,14 @@ describe('restoreBehaviors() 3D utility', () => {
 describe('serializeBehaviors() 3D utility', () => {
   it('serializes movable behavior', () => {
     const state = { snapDistance: 0.5, duration: 345 }
-    expect(serializeBehaviors([new MoveBehavior(state)])).toEqual({
+    expect(serializeBehaviors([new MoveBehavior(state, managers)])).toEqual({
       movable: state
     })
   })
 
   it('serializes flippable behavior', () => {
     const state = { isFlipped: true, duration: 123 }
-    expect(serializeBehaviors([new FlipBehavior(state)])).toEqual({
+    expect(serializeBehaviors([new FlipBehavior(state, managers)])).toEqual({
       flippable: state
     })
   })
@@ -646,7 +657,7 @@ describe('serializeBehaviors() 3D utility', () => {
   it('serializes rotable behavior', () => {
     const state = { angle: Math.PI, duration: 432 }
     const mesh = createBox('box1')
-    const rotable = new RotateBehavior(state)
+    const rotable = new RotateBehavior(state, managers)
     mesh.addBehavior(rotable, true)
     expect(serializeBehaviors([rotable]).rotable).toEqualWithAngle(state)
   })
@@ -658,7 +669,7 @@ describe('serializeBehaviors() 3D utility', () => {
       kinds: ['round-token'],
       duration: 415
     }
-    expect(serializeBehaviors([new StackBehavior(state)])).toEqual({
+    expect(serializeBehaviors([new StackBehavior(state, managers)])).toEqual({
       stackable: { ...state, stackIds: [] }
     })
   })
@@ -680,28 +691,28 @@ describe('serializeBehaviors() 3D utility', () => {
       ],
       duration: 415
     }
-    expect(serializeBehaviors([new AnchorBehavior(state)])).toEqual({
+    expect(serializeBehaviors([new AnchorBehavior(state, managers)])).toEqual({
       anchorable: state
     })
   })
 
   it('serializes detailable behavior', () => {
     const state = { frontImage: 'front.png', backImage: 'back.jpg' }
-    expect(serializeBehaviors([new DetailBehavior(state)])).toEqual({
+    expect(serializeBehaviors([new DetailBehavior(state, managers)])).toEqual({
       detailable: state
     })
   })
 
   it('serializes drawable behavior', () => {
     const state = { duration: 415 }
-    expect(serializeBehaviors([new DrawBehavior(state)])).toEqual({
+    expect(serializeBehaviors([new DrawBehavior(state, managers)])).toEqual({
       drawable: state
     })
   })
 
   it('serializes lockable behavior', () => {
     const state = { isLocked: true }
-    expect(serializeBehaviors([new LockBehavior(state)])).toEqual({
+    expect(serializeBehaviors([new LockBehavior(state, managers)])).toEqual({
       lockable: state
     })
   })
@@ -737,14 +748,14 @@ describe('serializeBehaviors() 3D utility', () => {
     }
     const detailable = { frontImage: 'front.png', backImage: 'back.jpg' }
     const lockable = { isLocked: false }
-    box.addBehavior(new MoveBehavior(movable), true)
-    box.addBehavior(new FlipBehavior(flippable), true)
-    box.addBehavior(new RotateBehavior(rotable), true)
-    box.addBehavior(new DetailBehavior(detailable), true)
-    box.addBehavior(new AnchorBehavior(anchorable), true)
-    box.addBehavior(new StackBehavior(stackable), true)
+    box.addBehavior(new MoveBehavior(movable, managers), true)
+    box.addBehavior(new FlipBehavior(flippable, managers), true)
+    box.addBehavior(new RotateBehavior(rotable, managers), true)
+    box.addBehavior(new DetailBehavior(detailable, managers), true)
+    box.addBehavior(new AnchorBehavior(anchorable, managers), true)
+    box.addBehavior(new StackBehavior(stackable, managers), true)
     box.addBehavior(new AnimateBehavior(), true)
-    box.addBehavior(new LockBehavior(lockable), true)
+    box.addBehavior(new LockBehavior(lockable, managers), true)
     expect(serializeBehaviors(box.behaviors)).toEqual({
       flippable,
       anchorable,
@@ -882,12 +893,15 @@ describe('isMeshFlipped()', () => {
   })
 
   it('returns false for un-flipped mesh', () => {
-    box.addBehavior(new FlipBehavior(), true)
+    box.addBehavior(new FlipBehavior({}, managers), true)
     expect(isMeshFlipped(box)).toBe(false)
   })
 
   it('returns true for flipped mesh', async () => {
-    box.addBehavior(new FlipBehavior({ isFlipped: true, duration: 50 }), true)
+    box.addBehavior(
+      new FlipBehavior({ isFlipped: true, duration: 50 }, managers),
+      true
+    )
     expect(isMeshFlipped(box)).toBe(true)
     await box.metadata.flip?.()
     expect(isMeshFlipped(box)).toBe(false)
@@ -905,7 +919,10 @@ describe('isMeshInverted()', () => {
   })
 
   it('returns true for inverted mesh', async () => {
-    box.addBehavior(new RotateBehavior({ angle: Math.PI, duration: 50 }), true)
+    box.addBehavior(
+      new RotateBehavior({ angle: Math.PI, duration: 50 }, managers),
+      true
+    )
     expect(isMeshInverted(box)).toBe(true)
     await box.metadata.rotate?.()
     expect(isMeshInverted(box)).toBe(false)
@@ -920,10 +937,10 @@ describe('isMeshInverted()', () => {
   it('returns true for inverted child mesh', async () => {
     const parent = createBox('parent')
     parent.addBehavior(
-      new RotateBehavior({ angle: Math.PI, duration: 50 }),
+      new RotateBehavior({ angle: Math.PI, duration: 50 }, managers),
       true
     )
-    box.addBehavior(new RotateBehavior({ duration: 50 }), true)
+    box.addBehavior(new RotateBehavior({ duration: 50 }, managers), true)
     box.parent = parent
     expect(isMeshInverted(parent)).toBe(true)
     expect(isMeshInverted(box)).toBe(true)
@@ -936,7 +953,7 @@ describe('isMeshLocked()', () => {
   })
 
   it('returns true for inverted mesh', async () => {
-    box.addBehavior(new LockBehavior({ isLocked: true }), true)
+    box.addBehavior(new LockBehavior({ isLocked: true }, managers), true)
     expect(isMeshLocked(box)).toBe(true)
     await box.metadata.toggleLock?.()
     expect(isMeshLocked(box)).toBe(false)
@@ -1066,28 +1083,31 @@ describe('selectDetailedFace()', () => {
   })
 
   it('returns null for a Detailable without front image', () => {
-    box.addBehavior(new DetailBehavior(), true)
+    box.addBehavior(new DetailBehavior({ frontImage: '' }, managers), true)
     expect(selectDetailedFace(box)).toBeNull()
   })
 
   it('returns front image of Detailable', () => {
     const frontImage = 'front.png'
-    box.addBehavior(new DetailBehavior({ frontImage }), true)
+    box.addBehavior(new DetailBehavior({ frontImage }, managers), true)
     expect(selectDetailedFace(box)).toEqual(frontImage)
   })
 
   it('returns null for a flipped Detailable without back image', () => {
     const frontImage = 'front.png'
-    box.addBehavior(new DetailBehavior({ frontImage }), true)
-    box.addBehavior(new FlipBehavior({ isFlipped: true }), true)
+    box.addBehavior(new DetailBehavior({ frontImage }, managers), true)
+    box.addBehavior(new FlipBehavior({ isFlipped: true }, managers), true)
     expect(selectDetailedFace(box)).toBeNull()
   })
 
   it('returns back image of a flipped Detailable', () => {
     const frontImage = 'front.png'
     const backImage = 'back.png'
-    box.addBehavior(new DetailBehavior({ frontImage, backImage }), true)
-    box.addBehavior(new FlipBehavior({ isFlipped: true }), true)
+    box.addBehavior(
+      new DetailBehavior({ frontImage, backImage }, managers),
+      true
+    )
+    box.addBehavior(new FlipBehavior({ isFlipped: true }, managers), true)
     expect(selectDetailedFace(box)).toEqual(backImage)
   })
 })

@@ -45,7 +45,7 @@ describe.each(
     })
 
     beforeEach(() => {
-      vi.resetAllMocks()
+      vi.clearAllMocks()
     })
 
     it('debounce input and saves username', async () => {

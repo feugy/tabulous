@@ -1,24 +1,19 @@
 // @ts-check
-/**
- * @template {any[]} P, R
- * @typedef {import('vitest').SpyInstance<P, R>} SpyInstance
- */
-
 import { faker } from '@faker-js/faker'
 import { makeLogger } from '@src/utils/logger'
 import { randomUUID } from 'crypto'
 import { beforeEach, describe, expect, it, vi } from 'vitest'
 
 describe('Logger', () => {
-  /** @type {SpyInstance<Parameters<typeof console.trace>, void>} */
+  /** @type {import('vitest').Spy<typeof console.trace>} */
   let trace
-  /** @type {SpyInstance<Parameters<typeof console.log>, void>} */
+  /** @type {import('vitest').Spy<typeof console.log>} */
   let log
-  /** @type {SpyInstance<Parameters<typeof console.info>, void>} */
+  /** @type {import('vitest').Spy<typeof console.info>} */
   let info
-  /** @type {SpyInstance<Parameters<typeof console.warn>, void>} */
+  /** @type {import('vitest').Spy<typeof console.warn>} */
   let warn
-  /** @type {SpyInstance<Parameters<typeof console.error>, void>} */
+  /** @type {import('vitest').Spy<typeof console.error>} */
   let error
 
   beforeEach(() => {

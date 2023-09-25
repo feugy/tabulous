@@ -28,7 +28,12 @@
     on:change
   >
     {#if !currentTab}
-      <Discussion {playerById} {thread} {history} />
+      <Discussion
+        {playerById}
+        {thread}
+        {history}
+        currentPlayerId={players[2].id}
+      />
     {/if}
     {#if currentTab === 1}
       <span class="p-4">

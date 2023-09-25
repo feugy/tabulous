@@ -165,6 +165,7 @@ fragment fullGame on Game {
     playerId
     meshId
     duration
+    fromHand
     ... on PlayerAction {
       fn
       argsStr

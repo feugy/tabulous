@@ -17,12 +17,6 @@
  * @typedef {import('@src/utils').ScreenPosition} ScreenPosition
  * @typedef {import('@tabulous/server/src/graphql').ActionName} ActionName
  * @typedef {import('fastify').FastifyInstance} FastifyInstance
- * @typedef {typeof import('@src/3d/managers/hand').handManager} HandManager
- * @typedef {typeof import('@src/3d/managers/indicator').indicatorManager} IndicatorManager
- */
-/**
- * @template {any[]} Args, Return
- * @typedef {import('vitest').SpyInstance<Args, Return>} SpyInstance
  */
 /**
  * @template T
@@ -47,7 +41,19 @@ import {
   MoveBehaviorName,
   RotateBehaviorName
 } from '@src/3d/behaviors/names'
-import { indicatorManager } from '@src/3d/managers'
+import {
+  CameraManager,
+  ControlManager,
+  CustomShapeManager,
+  HandManager,
+  IndicatorManager,
+  InputManager,
+  MaterialManager,
+  MoveManager,
+  ReplayManager,
+  SelectionManager,
+  TargetManager
+} from '@src/3d/managers'
 import { getTargetableBehavior } from '@src/3d/utils/behaviors'
 import { getCenterAltitudeAbove } from '@src/3d/utils/gravity'
 import { setExtras } from '@src/3d/utils/mesh'
@@ -62,6 +68,17 @@ import { vi } from 'vitest'
 /** @typedef {import('vitest').Mock<Parameters<RunQuery>, ReturnType<RunQuery>>} RunQueryMock */
 /** @typedef {import('vitest').Mock<Parameters<RunMutation>, ReturnType<RunMutation>>} RunMutationMock */
 /** @typedef {import('vitest').Mock<Parameters<RunSubscription>, ReturnType<RunSubscription>>} RunSubscriptionMock */
+/**
+ * @typedef {object} Initialized3DEngine
+ * @property {import('@babylonjs/core').Engine} engine - rendering engine.
+ * @property {import('@babylonjs/core').Scene} scene - main scene.
+ * @property {import('@babylonjs/core').Scene} handScene - hand scene.
+ * @property {ArcRotateCamera} camera - main scene camera.
+ * @property {import('@src/3d/managers').Managers} managers - current managers, all initialized except input, customShape, material and replay
+ * @property {string} playerId - current player id, used to initialized managers.
+ * @property {string} gameAssetsUrl - used to build the material manager.
+ * @property {import('vitest').Mock<[HTMLElement], CSSStyleDeclaration>} getComputedStyle - mock for getComputedStyle
+ */
 
 /**
  * Mocks a logger to silent its input (except errors)
@@ -124,16 +141,20 @@ export function extractAttribute(nodes, attributeName) {
 /**
  * Creates headless 3D engine for testing.
  * @param {object} [engineProps]
- * @param {number} engineProps.renderWidth - rendered surface width.
- * @param {number} engineProps.renderHeight - rendered surface width.
- * @returns {{ engine: Engine, scene: Scene, camera: ArcRotateCamera, handScene: Scene}} created objects.
+ * @param {number} [engineProps.renderWidth] - rendered surface width.
+ * @param {number} [engineProps.renderHeight] - rendered surface width.
+ * @param {boolean} [engineProps.isSimulation] - whether this engine is a aimulation.
+ * @returns {Initialized3DEngine} created objects.
  */
-export function initialize3dEngine(
-  engineProps = { renderWidth: 2048, renderHeight: 1024 }
-) {
+export function initialize3dEngine({
+  isSimulation = false,
+  renderWidth = 2048,
+  renderHeight = 1024
+} = {}) {
   Logger.LogLevels = Logger.NoneLogLevel
   const engine = new NullEngine({
-    ...engineProps,
+    renderWidth,
+    renderHeight,
     textureSize: 512,
     deterministicLockstep: false,
     lockstepMaxSteps: 4
@@ -146,7 +167,70 @@ export function initialize3dEngine(
     handScene.render()
   })
   engine.inputElement = document.body
-  return { engine, ...main, handScene }
+  engine.simulation = isSimulation ? null : engine
+
+  const scene = main.scene
+
+  const interaction = document.createElement('div')
+  const overlay = document.createElement('div')
+  const gameAssetsUrl = 'https://localhost:3000'
+
+  const getComputedStyle = vi.fn(
+    () =>
+      /** @type {CSSStyleDeclaration}  */ ({
+        height: `${renderHeight / 4}px`
+      })
+  )
+
+  vi.spyOn(window, 'getComputedStyle').mockImplementation(getComputedStyle)
+
+  const managers = {
+    camera: new CameraManager({ scene, handScene }),
+    input: new InputManager({
+      scene,
+      handScene,
+      interaction,
+      longTapDelay: 100
+    }),
+    move: new MoveManager({ scene }),
+    control: new ControlManager({ scene, handScene }),
+    indicator: new IndicatorManager({ scene }),
+    selection: new SelectionManager({ scene, handScene }),
+    customShape: new CustomShapeManager({ gameAssetsUrl }),
+    target: new TargetManager({ scene }),
+    material: new MaterialManager({ gameAssetsUrl, scene, handScene }),
+    hand: new HandManager({
+      scene,
+      handScene,
+      overlay,
+      duration: globalThis.use3dSimulation ? 0 : 100
+    }),
+    replay: new ReplayManager({
+      engine,
+      moveDuration: globalThis.use3dSimulation ? 0 : 200
+    })
+  }
+  const playerId = faker.person.fullName()
+  const color = '#ff0000'
+  managers.control.init({ managers })
+  managers.move.init({ managers })
+  managers.selection.init({
+    managers,
+    playerId,
+    colorByPlayerId: new Map([[playerId, color]])
+  })
+  managers.hand.init({ managers, playerId })
+  managers.target.init({ managers, playerId, color })
+  return {
+    engine,
+    ...main,
+    handScene,
+    managers,
+    playerId,
+    gameAssetsUrl,
+    // @ts-expect-error -- signatures are different
+    getComputedStyle
+  }
 }
 
 /**
@@ -180,9 +264,10 @@ export function disposeAllMeshes(scene) {
 
 /**
  * To be called within a test `describe`
- * Automaticall creates and headless 3D engine, scenes and camera when the test suite starts,
- * disposes all meshes after each tests, and disposes the engine at the end.
- * @param {(args: ReturnType<initialize3dEngine>) => void} [callback] - invoked with the created objects.
+ * Automaticall creates and headless 3D engine, scenes, cameras and managers when the test suite starts.
+ * Disposes all meshes after each tests, and disposes the engine at the end.
+ * Also created managers are initialized (except input, customShape, material and replay).
+ * @param {?(args: Initialized3DEngine) => void} [callback] - invoked with the created objects.
  * @param {Parameters<initialize3dEngine>} engineProps - engine properties
  */
 export function configures3dTestEngine(callback, ...engineProps) {
@@ -193,10 +278,10 @@ export function configures3dTestEngine(callback, ...engineProps) {
   /** @type {Scene} */
   let handScene
 
-  beforeAll(() => {
+  beforeAll(async () => {
     const data = initialize3dEngine(...engineProps)
     ;({ engine, scene, handScene } = data)
-    callback?.(data)
+    await callback?.(data)
   })
 
   afterEach(() => {
@@ -358,11 +443,13 @@ export function expectAbsoluteRotation(mesh, angle, axis) {
 }
 
 /**
+ * @param {import('@src/3d/managers').Managers} managers - actual managers.
  * @param {Mesh[]} meshes - list of stacked meshes, who should relate to each other as a stack.
  * @param {boolean} isLastMovable - whether the top-most mesh should be movable or not
  * @param {string} [baseParentId] - parent mesh id for the stack base mesh (undefined by default)
  */
 export function expectStacked(
+  managers,
   meshes,
   isLastMovable = true,
   baseParentId = undefined
@@ -385,47 +472,51 @@ export function expectStacked(
     }
     if (rank === meshes.length - 1) {
       expectInteractible(mesh, true, isLastMovable)
-      expectStackIndicator(mesh, meshes.length === 1 ? 0 : meshes.length)
+      expectStackIndicator(
+        managers,
+        mesh,
+        meshes.length === 1 ? 0 : meshes.length
+      )
     } else {
       expectInteractible(mesh, false)
       expectOnTop(meshes[rank + 1], mesh)
-      expectStackIndicator(mesh)
+      expectStackIndicator(managers, mesh)
     }
   }
 }
 
 /**
+ * @param {import('@src/3d/managers').Managers} managers - actual managers.
  * @param {Mesh} mesh - actual mesh.
  * @param {number} size - the expected size indicator attached to this mesh, or 0 to expect no indicator
  */
-export function expectStackIndicator(mesh, size = 0) {
+export function expectStackIndicator({ indicator }, mesh, size = 0) {
   const id = `${mesh.id}.stack-size`
-  expect(indicatorManager.isManaging({ id })).toBe(size > 0)
+  expect(indicator.isManaging({ id })).toBe(size > 0)
   if (size) {
     expect(
-      /** @type {MeshSizeIndicator|undefined} */ (indicatorManager.getById(id))
-        ?.size
+      /** @type {MeshSizeIndicator|undefined} */ (indicator.getById(id))?.size
     ).toEqual(size)
   }
 }
 
 /**
+ * @param {import('@src/3d/managers').Managers} managers - actual managers.
  * @param {Mesh} mesh - actual mesh.
  * @param {number} quantity - the expected quantity indicator attached to this mesh, or 1 to expect no indicator
  */
-export function expectQuantityIndicator(mesh, quantity = 1) {
+export function expectQuantityIndicator({ indicator }, mesh, quantity = 1) {
   const id = `${mesh.id}.quantity`
-  expect(indicatorManager.isManaging({ id })).toBe(quantity > 1)
+  expect(indicator.isManaging({ id })).toBe(quantity > 1)
   if (quantity > 1) {
     expect(
-      /** @type {MeshSizeIndicator|undefined} */ (indicatorManager.getById(id))
-        ?.size
+      /** @type {MeshSizeIndicator|undefined} */ (indicator.getById(id))?.size
     ).toEqual(quantity)
   }
 }
 
 /**
- * @param {SpyInstance<Parameters<IndicatorManager['registerFeedback']>, void>} registerFeedbackSpy - spy for indicatorManager.registerFeedback().
+ * @param {import('vitest').Spy<IndicatorManager['registerFeedback']>} registerFeedbackSpy - spy for indicatorManager.registerFeedback().
  * @param {ActionName|'unlock'|'lock'} action - the expected action reported.
  * @param {...(number[]|Mesh)} meshesOrPositions - expected mesh or position (Vector3 components) for this feedback.
  */
@@ -515,7 +606,7 @@ export async function waitNextRender(scene) {
 }
 
 /**
- * @param {SpyInstance<[MoveDetails], void>} moveRecorded - spy attached to moveManager.onMoveObservable.
+ * @param {import('vitest').SpyInstance<[MoveDetails], void>} moveRecorded - spy attached to moveManager.onMoveObservable.
  * @param {...Mesh} meshes - expected list of moved meshes.
  */
 export function expectMoveRecorded(moveRecorded, ...meshes) {
@@ -650,7 +741,10 @@ export function waitForObservable(observable, timeout = 100) {
  * @param {HandManager} manager - hand manager
  * @param {number} [timeout] - time to wait for layout, in ms.
  */
-export function waitForLayout(manager, timeout = 1000) {
+export function waitForLayout(
+  manager,
+  timeout = globalThis.use3dSimulation ? 150 : 1000 // must be longer than handManager.duration (usually 100ms)
+) {
   return new Promise((resolve, reject) => {
     const timer = setTimeout(
       () => reject(new Error(`no hand layout after ${timeout}ms`)),

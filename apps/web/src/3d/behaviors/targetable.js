@@ -9,8 +9,6 @@
 
 import { Observable } from '@babylonjs/core/Misc/observable.js'
 
-import { indicatorManager } from '../managers/indicator'
-import { targetManager } from '../managers/target'
 import { TargetBehaviorName } from './names'
 
 /** @typedef {Targetable & Required<Pick<Targetable, 'extent'>> & Pick<Anchor, 'playerId'|'ignoreParts'|'angle'>} ZoneProps properties of a drop zone */
@@ -29,16 +27,18 @@ export class TargetBehavior {
    * A targetable mesh can have multiple drop zones, materialized with 3D geometries and each allowing one or several kinds.
    * All zones can be enable and disabled at once.
    * An observable emits every time one of the zone receives a drop.
-   * @param {object} params - parameters, including:
-   * @param {number} [params.moveDuration=100] - duration (in milliseconds) of an individual mesh re-order animation.
+   * @param {object} state - unused state.
+   * @param {import('@src/3d/managers').Managers} managers - current managers.
    */
-  constructor() {
+  constructor(state, managers) {
     /** @type {?Mesh} mesh - the related mesh. */
     this.mesh = null
     /** @type {SingleDropZone[]} defined drop zones for this target. */
     this.zones = []
     /** @type {Observable<DropDetails>} emits every time draggable meshes are dropped to one of the zones.*/
     this.onDropObservable = new Observable()
+    /** @internal */
+    this.managers = managers
   }
 
   /**
@@ -60,7 +60,7 @@ export class TargetBehavior {
    */
   attach(mesh) {
     this.mesh = mesh
-    targetManager.registerTargetable(this)
+    this.managers.target.registerTargetable(this)
   }
 
   /**
@@ -68,7 +68,7 @@ export class TargetBehavior {
    * and unregistering it from the target manager.
    */
   detach() {
-    targetManager.unregisterTargetable(this)
+    this.managers.target.unregisterTargetable(this)
     for (const { mesh } of this.zones) {
       mesh.dispose()
     }
@@ -81,7 +81,7 @@ export class TargetBehavior {
    * By default, zone is enabled, accepts all kind, with a priority of 0, and no playerId.
    * @param {Mesh} mesh - invisible, unpickable mesh acting as drop zone.
    * @param {ZoneProps} properties - drop zone properties.
-   * @returns {SingleDropZone} the created zone.
+   * @returns the created zone.
    */
   addZone(mesh, properties) {
     mesh.visibility = 0
@@ -100,7 +100,7 @@ export class TargetBehavior {
     }
     if (properties.playerId) {
       const id = `${properties.playerId}.drop-zone.${mesh.id}`
-      indicatorManager.registerMeshIndicator({
+      this.managers.indicator.registerMeshIndicator({
         id,
         mesh,
         playerId: properties.playerId

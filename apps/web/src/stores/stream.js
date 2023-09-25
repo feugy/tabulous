@@ -1,12 +1,6 @@
 // @ts-check
-/**
- * @template T
- * @typedef {import('rxjs').Observable<T>} Observable
- */
-/** @typedef {import('@src/utils').StreamState} StreamState */
-
 import { makeLogger } from '@src/utils'
-import { BehaviorSubject, Subject } from 'rxjs'
+import { BehaviorSubject } from 'rxjs'
 
 import { browser } from '$app/environment'
 
@@ -21,7 +15,13 @@ const currentCamera = new BehaviorSubject(
   /** @type {?MediaDeviceInfo} */ (null)
 )
 const currentMic = new BehaviorSubject(/** @type {?MediaDeviceInfo} */ (null))
-const streamChange$ = /** @type {Subject<StreamState>} */ (new Subject())
+const streamChange$ = new BehaviorSubject(
+  /** @type {import('@src/utils').StreamState} */ ({
+    muted: false,
+    stopped: false
+  })
+)
+
 if (browser) {
   navigator.mediaDevices?.addEventListener('devicechange', enumerateDevices)
 }
@@ -113,6 +113,7 @@ async function acquire(video, audio) {
         : undefined
     })
     stream.next(result)
+    recordStreamChange(streamChange$.value)
     logger.info(`media successfully attached`)
     return result
   } catch (error) {
@@ -140,11 +141,17 @@ export function releaseMediaStream() {
 /**
  * Records a change in the local media stream state.
  * Emits on localStreamChange$.
- * @param {StreamState} state - new state for the current video stream.
+ * @param {import('@src/utils').StreamState} state - new state for the current video stream.
  */
-export function recordStreamChange(state) {
+export function recordStreamChange({ muted, stopped }) {
   if (stream.value) {
-    streamChange$.next(state)
+    for (const track of stream.value.getAudioTracks()) {
+      track.enabled = !muted
+    }
+    for (const track of stream.value.getVideoTracks()) {
+      track.enabled = !stopped
+    }
+    streamChange$.next({ muted, stopped })
   }
 }
 

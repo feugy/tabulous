@@ -35,51 +35,49 @@ KhronosTextureContainer2.URLConfig.wasmMSCTranscoder =
 
 const logger = makeLogger('material')
 
-class MaterialManager {
+export class MaterialManager {
   /**
    * Creates a manager to manage and reuse materials
    * - builds textured or colored material for a given scene
    * - reuse built materials based on their texture file (or color)
    * - allows using the same texture in between hand and main scene
    * - automatically clears cache scene disposal.
-   */
-  constructor() {
-    /** @type {Scene} main scene. */
-    this.scene
-    /** @type {Scene|undefined} hand scene. */
-    this.handScene
-    /** @type {string} base url hosting the game textures. */
-    this.gameAssetsUrl = ''
-    /** @property {string} locale used to download the game textures. */
-    this.locale = ''
-    /** @internal @type {Map<string, PBRSpecularGlossinessMaterial>} map of material for the main scene. */
-    this.mainMaterialByUrl = new Map()
-    /** @internal @type {Map<string, PBRSpecularGlossinessMaterial>} map of material for the hand scene.*/
-    this.handMaterialByUrl = new Map()
-    /** @internal @type {boolean} */
-    this.isWebGL1 = false
-  }
-
-  /**
-   * Initialize manager with scene and configuration values.
    * @param {object} params - parameters, including:
    * @param {Scene} params.scene - main scene.
    * @param {Scene} [params.handScene] - scene for meshes in hand.
    * @param {string} [params.gameAssetsUrl] - base url hosting the game textures.
    * @param {string} [params.locale] - locale used to download the game textures.
    * @param {boolean} [params.isWebGL1] - true if the rendering engine only supports WebGL1.
-   * @param {Game} [game] - loaded game data.
+   * @param {boolean} [params.disabled] - true to disable material support and always return scene's default material.
    */
-  init({ scene, handScene, gameAssetsUrl, locale, isWebGL1 }, game) {
+  constructor({ scene, handScene, gameAssetsUrl, locale, isWebGL1, disabled }) {
+    /** main scene. */
     this.scene = scene
+    /** optional hand scene. */
     this.handScene = handScene
+    /** base url hosting the game textures. */
     this.gameAssetsUrl = gameAssetsUrl ?? ''
+    /** used to download the game textures. */
     this.locale = locale ?? 'fr'
+    /** @internal @type {Map<string, PBRSpecularGlossinessMaterial>} map of material for the main scene. */
+    this.mainMaterialByUrl = new Map()
+    /** @internal @type {Map<string, PBRSpecularGlossinessMaterial>} map of material for the hand scene.*/
+    this.handMaterialByUrl = new Map()
+    /** true to disable material support and always return scene's default material. */
+    this.disabled = disabled ?? false
+    /** @internal */
     this.isWebGL1 = isWebGL1 === true
     logger.debug('material manager initialized')
     this.clear()
     scene.onDisposeObservable.addOnce(() => this.clear())
-    if (game) {
+  }
+
+  /**
+   * Initializes with game data.
+   * @param {Game} game - loaded game data.
+   */
+  init(game) {
+    if (!this.disabled) {
       preloadMaterials(this, game)
     }
   }
@@ -92,8 +90,12 @@ class MaterialManager {
    */
   configure(mesh, texture) {
     const scene = mesh.getScene()
-    mesh.material = buildMaterials(this, texture, scene)
-    mesh.receiveShadows = true
+    if (this.disabled) {
+      mesh.material = scene.defaultMaterial
+    } else {
+      mesh.material = buildMaterials(this, texture, scene)
+      mesh.receiveShadows = true
+    }
   }
 
   /**
@@ -104,7 +106,9 @@ class MaterialManager {
    * @returns the build (or cached) material.
    */
   buildOnDemand(texture, scene) {
-    return buildMaterials(this, texture, scene)
+    return this.disabled
+      ? scene.defaultMaterial
+      : buildMaterials(this, texture, scene)
   }
 
   /**
@@ -126,17 +130,12 @@ class MaterialManager {
    * @returns whether this material is managed or not
    */
   isManaging(texture) {
-    return (
-      this.mainMaterialByUrl.has(texture) || this.handMaterialByUrl.has(texture)
-    )
+    return this.disabled
+      ? true
+      : this.mainMaterialByUrl.has(texture) ||
+          this.handMaterialByUrl.has(texture)
   }
 }
-
-/**
- * Material manager singleton.
- * @type {MaterialManager}
- */
-export const materialManager = new MaterialManager()
 
 /**
  * @param {MaterialManager} manager - manager instance.
@@ -149,11 +148,10 @@ function getMaterialCache(manager, scene) {
     : manager.handMaterialByUrl
 }
 
-/**
- * @param {MaterialManager} manager - manager instance.
- * @param {Game} game - parsed game data.
- */
-function preloadMaterials(manager, game) {
+function preloadMaterials(
+  /** @type {MaterialManager} */ manager,
+  /** @type {Game} */ game
+) {
   for (const { texture } of [
     ...(game.meshes ?? []),
     ...(game.hands ?? []).flatMap(({ meshes }) => meshes)

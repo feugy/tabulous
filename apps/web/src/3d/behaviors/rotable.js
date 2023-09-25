@@ -9,7 +9,6 @@
 import { Vector3 } from '@babylonjs/core/Maths/math'
 
 import { makeLogger } from '../../utils/logger'
-import { controlManager } from '../managers/control'
 import { actionNames } from '../utils/actions'
 import {
   attachFunctions,
@@ -35,10 +34,13 @@ export class RotateBehavior extends AnimateBehavior {
    * It will add to this mesh's metadata:
    * - a `rotate()` function to rotate by 45°.
    * - a rotation `angle` (in radian).
-   * @param {RotableState} state - behavior state.
+   * @param {RotableState} state - rotable state.
+   * @param {import('@src/3d/managers').Managers} managers - current managers.
    */
-  constructor(state = {}) {
+  constructor(state, managers) {
     super()
+    /** @internal */
+    this.managers = managers
     this._state = /** @type {RequiredRotableState} */ (state)
   }
 
@@ -141,7 +143,7 @@ async function internalRotate(
     rotation *= -1
   }
 
-  controlManager.record({
+  behavior.managers.control.record({
     mesh,
     fn: actionNames.rotate,
     args: [rotation],

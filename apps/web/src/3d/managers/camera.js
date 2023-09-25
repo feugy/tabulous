@@ -18,29 +18,13 @@ import { isPositionAboveTable, screenToGround } from '../utils/vector'
 
 /** @typedef {Omit<RawCameraPosition, 'playerId'|'id'|'index'>} CameraPosition */
 
-class CameraManager {
+export class CameraManager {
   /**
    * Creates a manager to control the camera:
    * - pan, zoom and rotate
    * - save and restore its position
    * An ArcRotateCamera with no controls nor behaviors is created when initializing the manager.
    * Clears all observers on scene disposal.
-   */
-  constructor() {
-    /** @type {?ArcRotateCamera} managed camera.*/
-    this.camera = null
-    /** @type {?TargetCamera} camera for the hand scene, fixed.*/
-    this.type = null
-    /** @type {CameraPosition[]} list of camera state saves.*/
-    this.saves = []
-    /** @type {Observable<CameraPosition[]>} emits when saving new camera positions.*/
-    this.onSaveObservable = new Observable()
-    /** @type {Observable<CameraPosition>} emits when moving current camera (target, angle or elevation).*/
-    this.onMoveObservable = new Observable()
-  }
-
-  /**
-   * Creates a camera in current scene, that supports animated zooming and panning.
    * It can not leave the table.
    * Altitude is always in 3D world coordinate, angle in radians, and position in screen coordinates
    * It maintains a list of saves, the first being its initial state.
@@ -53,7 +37,7 @@ class CameraManager {
    * @param {Scene} [params.scene] - main scene.
    * @param {Scene} [params.handScene] - hand scene.
    */
-  init({
+  constructor({
     y = 35,
     beta = Math.PI / 8,
     minY = 5,
@@ -63,6 +47,7 @@ class CameraManager {
     handScene
   } = {}) {
     logger.info({ y, minY, maxY }, 'initialize camera manager')
+    /** managed camera.*/
     this.camera = new ArcRotateCamera(
       'camera',
       (3 * Math.PI) / 2,
@@ -88,8 +73,7 @@ class CameraManager {
       this.onMoveObservable.clear()
     })
 
-    this.saves = [serialize(this.camera)]
-
+    /** camera for the hand scene, fixed.*/
     this.handSceneCamera = new TargetCamera(
       'camera',
       new Vector3(0, 20, 0),
@@ -97,6 +81,13 @@ class CameraManager {
     )
     // providing exactly PI/2 gives unpredictable result depending on the CPU architecture
     this.handSceneCamera.rotation.x = Math.PI / 2.00001
+
+    /** @type {Observable<CameraPosition[]>} emits when saving new camera positions.*/
+    this.onSaveObservable = new Observable()
+    /** @type {Observable<CameraPosition>} emits when moving current camera (target, angle or elevation).*/
+    this.onMoveObservable = new Observable()
+    /** list of camera state saves.*/
+    this.saves = [serialize(this.camera)]
   }
 
   /**
@@ -106,11 +97,6 @@ class CameraManager {
    */
   adjustZoomLevels({ min, max, hand } = {}) {
     const { camera, handSceneCamera } = this
-    if (!camera) {
-      throw new Error(
-        `please init the camera manager prior to adjusting zoom levels`
-      )
-    }
     if (min) {
       camera.lowerRadiusLimit = min
     }
@@ -129,10 +115,8 @@ class CameraManager {
    * @param {ScreenPosition} movementStart - movement starting point, in screen coordinate.
    * @param {ScreenPosition} movementEnd -movement ending point, in screen coordinate.
    * @param {number} [duration=300] - animation duration, in ms.
-   * @returns {Promise<void>}
    */
   async pan(movementStart, movementEnd, duration = 300) {
-    if (!this.camera) return
     const scene = this.camera.getScene()
 
     const start = screenToGround(scene, movementStart)
@@ -155,11 +139,8 @@ class CameraManager {
    * @param {number} [alpha=0] - longitudinal rotation (around the Z axis), in radian.
    * @param {number} [beta=0] - latitudinal rotation, in radian, between minAngle and PI/2.
    * @param {number} [duration=300] - animation duration, in ms.
-   * @returns {Promise<void>}
    */
   async rotate(alpha = 0, beta = 0, duration = 300) {
-    if (!this.camera) return
-
     if ((alpha || beta) && !currentAnimation) {
       await animate(
         this,
@@ -174,10 +155,8 @@ class CameraManager {
    * Ends with the animation.
    * @param {number} elevation - positive or negative elevation (in 3D world coordinates).
    * @param {number} [duration=300] - animation duration, in ms.
-   * @returns {Promise<void>}
    */
   async zoom(elevation, duration = 300) {
-    if (!this.camera) return
     await animate(this, { elevation: this.camera.radius + elevation }, duration)
   }
 
@@ -188,7 +167,7 @@ class CameraManager {
    * @param {number} [index=0] - slot where the state is saved.
    */
   save(index = 0) {
-    if (!this.camera || index < 0 || index > this.saves.length) return
+    if (index < 0 || index > this.saves.length) return
     this.saves[index] = serialize(this.camera)
     this.onSaveObservable.notifyObservers([...this.saves])
   }
@@ -200,7 +179,7 @@ class CameraManager {
    * @param {number} [duration=300] - animation duration, in milliseconds.
    */
   async restore(index = 0, duration = 300) {
-    if (!this.camera || !this.saves[index]) return
+    if (!this.saves[index]) return
     await animate(
       this,
       {
@@ -222,12 +201,6 @@ class CameraManager {
     await this.restore()
   }
 }
-
-/**
- * Camera manager singleton.
- * @type {CameraManager}
- */
-export const cameraManager = new CameraManager()
 
 const logger = makeLogger('camera')
 
@@ -276,17 +249,15 @@ const pan = /** @type {Animation & {targetProperty: 'lockedTarget'}} */ (
 /** @type {?Animatable} */
 let currentAnimation = null
 
-/**
- *
- * @param {CameraManager} manager
- * @param {Partial<Omit<CameraPosition, 'target'>> & { target?: Vector3 }} newPosition
- * @param {number} duration
- * @returns
- */
 async function animate(
-  { camera, onMoveObservable },
-  { alpha, beta, elevation, target },
-  duration
+  /** @type {CameraManager} */ { camera, onMoveObservable },
+  /** @type {Partial<Omit<CameraPosition, 'target'>> & { target?: Vector3 }} */ {
+    alpha,
+    beta,
+    elevation,
+    target
+  },
+  /** @type {number} */ duration
 ) {
   if (!camera) return
   const lastFrame = Math.round(frameRate * (duration / 1000))
@@ -346,11 +317,7 @@ async function animate(
   })
 }
 
-/**
- * @param {ArcRotateCamera} camera
- * @returns {CameraPosition}
- */
-function serialize(camera) {
+function serialize(/** @type {ArcRotateCamera} */ camera) {
   return addHash({
     hash: '',
     alpha: camera[rotateAlpha.targetProperty],
@@ -360,19 +327,12 @@ function serialize(camera) {
   })
 }
 
-/**
- * @param {CameraPosition} save
- * @returns {CameraPosition}
- */
-function addHash(save) {
+function addHash(/** @type {CameraPosition} */ save) {
   save.hash = `${save.target[0]}-${save.target[1]}-${save.target[2]}-${save.alpha}-${save.beta}-${save.elevation}`
   return save
 }
 
-/**
- * @param {ArcRotateCamera} camera
- */
-function fixAlpha(camera) {
+function fixAlpha(/** @type {ArcRotateCamera} */ camera) {
   if (camera.alpha < Math.PI / 2) {
     camera.alpha += 2 * Math.PI
   } else if (camera.alpha > (5 * Math.PI) / 2) {

@@ -1,11 +1,4 @@
 // @ts-check
-/**
- * @typedef {import('@babylonjs/core').Mesh} Mesh
- * @typedef {import('@babylonjs/core').Scene} Scene
- * @typedef {import('@tabulous/server/src/graphql').RandomizableState} RandomizableState
- * @typedef {import('@src/3d/utils/behaviors').SerializedMesh} SerializedMesh
- */
-
 import { Matrix, Quaternion } from '@babylonjs/core/Maths/math.vector'
 
 import { toRad } from '../../utils/math'
@@ -16,9 +9,10 @@ import { createCustom } from './custom'
 /**
  * Creates a die, which could have from 4, 6, or 8 faces.
  * By default, dices have a diameter of 1, and 6 faces.
- * @param {Omit<SerializedMesh, 'shape'>} params - die parameters.
- * @param {Scene} scene - scene for the created mesh.
- * @returns {Promise<Mesh>} the created die mesh.
+ * @param {Omit<import('@src/3d/utils/behaviors').SerializedMesh, 'shape'>} params - die parameters.
+ * @param {import('@src/3d/managers').Managers} managers - current managers.
+ * @param {import('@babylonjs/core').Scene} scene - scene for the created mesh.
+ * @returns the created die mesh.
  */
 export async function createDie(
   {
@@ -32,6 +26,7 @@ export async function createDie(
     transform = undefined,
     ...behaviorStates
   },
+  managers,
   scene
 ) {
   const mesh = await createCustom(
@@ -43,6 +38,7 @@ export async function createDie(
       z,
       file: getDieModelFile(faces)
     },
+    managers,
     scene
   )
 
@@ -74,7 +70,7 @@ export async function createDie(
     max: faces,
     quaternionPerFace: getQuaternions(faces)
   }
-  registerBehaviors(mesh, behaviorStates)
+  registerBehaviors(mesh, behaviorStates, managers)
 
   return mesh
 }
@@ -82,7 +78,7 @@ export async function createDie(
 /**
  * Computes the model file url for a given die.
  * @param {number} faces - number of faces for this die (4, 6, 8).
- * @returns {string} url of the model file.
+ * @returns url of the model file.
  * @throws {Error} if the desired number of faces is not supported.
  */
 export function getDieModelFile(faces) {

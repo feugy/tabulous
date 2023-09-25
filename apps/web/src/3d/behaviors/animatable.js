@@ -81,7 +81,6 @@ export class AnimateBehavior {
    * @param {?Vector3} rotation - its final rotation (set to null to leave unmodified).
    * @param {number} duration - move duration (in milliseconds).
    * @param {boolean} [gravity=true] - applies gravity at the end.
-   * @returns {Promise<void>}
    */
   async moveTo(to, rotation, duration, gravity = true) {
     const { mesh, moveAnimation, rotateAnimation } = this

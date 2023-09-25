@@ -1,8 +1,5 @@
 // @ts-check
-/**
- * @typedef {import('@babylonjs/core').Engine} Engine
- * @typedef {import('@babylonjs/core').Mesh} Mesh
- */
+/** @typedef {import('@babylonjs/core').Mesh} Mesh */
 
 import { Scene } from '@babylonjs/core/scene.js'
 
@@ -11,7 +8,7 @@ import { Scene } from '@babylonjs/core/scene.js'
  */
 export class ExtendedScene extends Scene {
   /**
-   * @param {Engine} engine - rendering engine.
+   * @param {import('@babylonjs/core').Engine} engine - rendering engine.
    * @param {?} [options] - scene options.
    * @see https://doc.babylonjs.com/typedoc/classes/babylon.scene#constructor
    */
@@ -42,7 +39,7 @@ export class ExtendedScene extends Scene {
   /**
    * @param {Mesh} mesh - removed mesh.
    * @param {boolean} [recursive] - whether to remove children meshes as well.
-   * @returns {number} removed mesh index.
+   * @returns removed mesh index.
    * @see https://doc.babylonjs.com/typedoc/classes/babylon.scene#removeMesh
    */
   removeMesh(mesh, recursive) {
@@ -52,7 +49,7 @@ export class ExtendedScene extends Scene {
 
   /**
    * @param {string} id - searched mesh id.
-   * @returns {?Mesh} found mesh.
+   * @returns found mesh.
    * @see https://doc.babylonjs.com/typedoc/classes/babylon.scene#getMeshByID
    */
   getMeshById(id) {

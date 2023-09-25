@@ -20,7 +20,6 @@ import {
   getTargetableBehavior
 } from '../utils/behaviors'
 import { isAbove } from '../utils/gravity'
-import { selectionManager } from './selection'
 
 const logger = makeLogger('target')
 
@@ -43,20 +42,21 @@ const logger = makeLogger('target')
 
 /** @typedef {{ zone: SingleDropZone, distance: number }} Candidate */
 
-class TargetManager {
+export class TargetManager {
   /**
    * Creates a manager to manages drop targets for draggable meshes:
    * - find relevant zones physically bellow a given mesh, according to their kind
    * - highlight zones
    * - drop mesh onto their relevant zones
    * Each registered behavior can have multiple zones
+   * Invokes init() before any other function.
    *
-   *
-   * @property {string} playerId - current player Id.
+   * @param {object} params - parameters, including:
+   * @param {Scene} params.scene - main scene.
    */
-  constructor() {
-    /** @type {Scene} the main scene. */
-    this.scene
+  constructor({ scene }) {
+    /** the main scene. */
+    this.scene = scene
     /** @type {string} current player Id. */
     this.playerId
     /** @type {Color4} current player color. */
@@ -67,20 +67,23 @@ class TargetManager {
     this.droppablesByDropZone = new Map()
     /** @internal @type {StandardMaterial} material applied to active drop zones. */
     this.material
+    /** @internal @type {import('@src/3d/managers').Managers} */
+    this.managers
   }
 
   /**
-   * Gives scenes to the manager.
+   * Initialize with game data.
    * @param {object} params - parameters, including:
-   * @param {Scene} params.scene - main scene.
+   * @param {import('@src/3d/managers').Managers} params.managers - other managers.
    * @param {string} params.playerId - current player Id.
    * @param {string} params.color - hexadecimal color string used for highlighting targets.
    */
-  init({ scene, playerId, color }) {
-    this.scene = scene
+  init({ managers, playerId, color }) {
+    this.managers = managers
     this.playerId = playerId
+    /** current player color. */
     this.color = Color4.FromHexString(color)
-    this.material = new StandardMaterial('target-material', scene)
+    this.material = new StandardMaterial('target-material', this.scene)
     this.material.diffuseColor = Color3.FromArray(this.color.asArray())
     this.material.alpha = 0.5
   }
@@ -110,7 +113,7 @@ class TargetManager {
 
   /**
    * @param {Mesh} mesh - tested mesh.
-   * @returns {boolean} whether this mesh's target behavior is controlled or not
+   * @returns whether this mesh's target behavior is controlled or not
    */
   isManaging(mesh) {
     const behavior = getTargetableBehavior(mesh)
@@ -124,7 +127,7 @@ class TargetManager {
    *
    * @param {Mesh} dragged - a dragged mesh.
    * @param {string} [kind] - drag kind.
-   * @returns {?DropZone} matching zone, if any.
+   * @returns matching zone, if any.
    */
   findPlayerZone(dragged, kind) {
     logger.debug(
@@ -147,7 +150,7 @@ class TargetManager {
    *
    * @param {Mesh} dragged - a dragged mesh.
    * @param {string} [kind] - drag kind.
-   * @returns {?DropZone} matching zone, if any.
+   * @returns matching zone, if any.
    */
   findDropZone(dragged, kind) {
     logger.debug(
@@ -187,7 +190,7 @@ class TargetManager {
    * It clears the target.
    * @param {DropZone} zone - the zone dropped onto.
    * @param {Partial<DropDetails>} props - other properties passed to the drop zone observables
-   * @returns {Mesh[]} list of droppable meshes, if any.
+   * @returns list of droppable meshes, if any.
    */
   dropOn(zone, props = {}) {
     const dropped = this.droppablesByDropZone.get(zone) ?? []
@@ -216,7 +219,7 @@ class TargetManager {
    * Does not consider mesh position.
    * @param {Partial<SingleDropZone>} [zone] - the tested zone.
    * @param {string} [kind] - the tested kind.
-   * @returns {boolean} true if provided kind is acceptable.
+   * @returns true if provided kind is acceptable.
    */
   canAccept(zone, kind) {
     if (!zone || !zone.enabled) return false
@@ -228,20 +231,14 @@ class TargetManager {
 }
 
 /**
- * Mesh drop target manager singleton.
- * @type {TargetManager}
- */
-export const targetManager = new TargetManager()
-
-/**
  * @param {TargetManager} manager - manager instance.
  * @param {Mesh} dragged - dragged mesh to check.
  * @param {(zone: SingleDropZone, partCenters: Vector3[]) => boolean} isMatching - matching function to test candidate zones.
  * @param {string} [kind] - dragged kind.
- * @returns {?DropZone} matching zone, if any.
+ * @returns  matching zone, if any.
  */
 function findZone(manager, dragged, isMatching, kind) {
-  const { behaviors, scene: mainScene } = manager
+  const { behaviors, scene: mainScene, managers } = manager
   const partCenters = getMeshAbsolutePartCenters(dragged)
   /** @type {Candidate[]} */
   const zones = []
@@ -250,7 +247,7 @@ function findZone(manager, dragged, isMatching, kind) {
     // until we support target in hand, rely on manager.scene only
     return null
   }
-  const excluded = [dragged, ...selectionManager.meshes]
+  const excluded = [dragged, ...managers.selection.meshes]
   for (const targetable of behaviors) {
     const { mesh } = /** @type {TargetBehavior & { mesh: Mesh }} */ (targetable)
     if (!excluded.includes(mesh) && mesh.getScene() === scene) {
@@ -288,7 +285,7 @@ function findZone(manager, dragged, isMatching, kind) {
  * @param {?DropZone} zone - matching zone to highlight.
  * @param {Mesh} dragged - dragged mesh to check.
  * @param {string} [kind] - dragged kind.
- * @returns {?DropZone} matching zone, if any.
+ * @returns matching zone, if any.
  */
 function highlightZone(manager, zone, dragged, kind) {
   if (!zone) {

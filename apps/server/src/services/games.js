@@ -225,6 +225,7 @@ import { canAccess } from './catalog.js'
  * @property {number} time - when this record happened (timestamp).
  * @property {string} playerId - who created this record.
  * @property {string} meshId - modified mesh id.
+ * @property {boolean} fromHand - whether this operation happened in this player's hand.
  * @property {number} [duration] - optional animation duration, in milliseconds.
  */
 

@@ -544,14 +544,16 @@ describe('given a started server', () => {
               playerId: player.id,
               meshId: 'box1',
               fn: /** @type {ActionName} */ ('flip'),
-              argsStr: '[]'
+              argsStr: '[]',
+              fromHand: true
             },
             {
               time: Date.now() - 3000,
               playerId: player.id,
               meshId: 'box1',
               pos: [0, 0, 3],
-              prev: [0, 0, 0]
+              prev: [0, 0, 0],
+              fromHand: false
             }
           ],
           guestIds: [],
@@ -585,6 +587,7 @@ describe('given a started server', () => {
         time,
         playerId,
         meshId,
+        fromHand,
         ... on PlayerAction {
           fn,
           argsStr
@@ -1149,6 +1152,29 @@ describe('given a started server', () => {
             )
           ])
         ).rejects.toThrow('timeout')
+        expect(services.getPlayerById).toHaveBeenCalledWith(playerId)
+        expect(services.getPlayerById).toHaveBeenCalledOnce()
+      })
+
+      it('send update on game deletion', async () => {
+        await startSubscription(
+          ws,
+          `subscription { 
+            receiveGameUpdates(gameId: "${games[0].id}") { 
+              id 
+              created
+              players { id username }
+            } 
+          }`,
+          signToken(playerId, configuration.auth.jwt.key)
+        )
+        const data = waitOnMessage(ws, data => data.type === 'data')
+        services.gameListsUpdate.next({ playerId, games: [] })
+        expect(await data).toEqual(
+          expect.objectContaining({
+            payload: { data: { receiveGameUpdates: null } }
+          })
+        )
         expect(services.getPlayerById).toHaveBeenCalledWith(playerId)
         expect(services.getPlayerById).toHaveBeenCalledOnce()
       })

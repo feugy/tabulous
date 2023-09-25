@@ -13,7 +13,6 @@ import { Observable } from '@babylonjs/core/Misc/observable.js'
 
 import { actionNames } from '../utils/actions'
 import { animateMove } from '../utils/behaviors'
-import { handManager } from './hand'
 
 /**
  * @typedef {object} _Action
@@ -27,6 +26,8 @@ import { handManager } from './hand'
  * @property {boolean} fromHand - indicates whether this action comes from hand or main scene.
  *
  * @typedef {Omit<RecordedMove, 'mesh'> & _Move} Move applied move to a given mesh.
+ *
+ * @typedef {Action|Move} ActionOrMove
  *
  * @typedef {object} RecordedAction applied action to a given mesh:
  * @property {Mesh} mesh - modified mesh.
@@ -47,46 +48,52 @@ import { handManager } from './hand'
  * @property {string[]} images - list of images for this mesh (could be multiple for stacked meshes).
  */
 
-class ControlManager {
+export class ControlManager {
   /**
    * Creates a manager to remotely control a collection of meshes:
    * - applies actions received to specific meshes
    * - propagates applied actions to observers (with cycle breaker)
    * Clears all observers on scene disposal.
+   * Invokes init() before any other function.
+   * @param {object} params - parameters, including:
+   * @param {Scene} params.scene - main scene.
+   * @param {Scene} params.handScene - scene for meshes in hand.
    */
-  constructor() {
-    /** @type {Observable<Action|Move>} emits applied actions. */
+  constructor({ scene, handScene }) {
+    /** @type {Observable<ActionOrMove>} emits applied actions. */
     this.onActionObservable = new Observable()
     /** @type {Observable<?MeshDetails>} emits when displaying details of a given mesh. */
     this.onDetailedObservable = new Observable()
     /** @type {Observable<Map<String, Mesh>>} emits the list of controlled meshes. */
     this.onControlledObservable = new Observable()
 
-    /** @private @type {?Scene} */
-    this.scene = null
-    /** @private @type {?Scene} */
-    this.handScene = null
-    /** @private @type {Map<string, Mesh>} */
+    /** @internal */
+    this.scene = scene
+    /** @internal */
+    this.handScene = handScene
+    /** @internal @type {Map<string, Mesh>} */
     this.controlables = new Map()
     // prevents loops when applying an received action
-    /** @private @type {Set<string>} */
+    /** @internal @type {Set<string>} */
     this.localKeys = new Set()
-  }
+    /** @internal @type {import('@src/3d/managers').Managers} */
+    this.managers
 
-  /**
-   * Gives a scene to the manager.
-   * @param {object} params - parameters, including:
-   * @param {Scene} params.scene - main scene.
-   * @param {Scene} params.handScene - scene for meshes in hand.
-   */
-  init({ scene, handScene }) {
-    this.scene = scene
-    this.handScene = handScene
     this.scene.onDisposeObservable.addOnce(() => {
       this.onActionObservable.clear()
       this.onDetailedObservable.clear()
       this.onControlledObservable.clear()
     })
+  }
+
+  /**
+   * Initializes with game data and managers
+   *
+   * @param {object} params - parameters, including:
+   * @param {import('@src/3d/managers').Managers} params.managers - current managers.
+   */
+  init({ managers }) {
+    this.managers = managers
   }
 
   /**
@@ -117,7 +124,7 @@ class ControlManager {
 
   /**
    * @param {Mesh} mesh - tested mesh
-   * @returns {boolean} whether this mesh is controlled or not
+   * @returns whether this mesh is controlled or not
    */
   isManaging(mesh) {
     return this.controlables.has(mesh?.id)
@@ -188,7 +195,7 @@ class ControlManager {
     if ('fn' in actionOrMove) {
       const { fn, args } = actionOrMove
       if (fn === actionNames.draw) {
-        await handManager.applyPlay(args[0], args[1])
+        await this.managers.hand.applyPlay(args[0], args[1])
       } else {
         for (const behavior of mesh?.behaviors ?? []) {
           if ('revert' in behavior) {
@@ -220,7 +227,7 @@ class ControlManager {
     if ('fn' in action) {
       const args = action.args || []
       if (action.fn === actionNames.play) {
-        await handManager.applyPlay(args[0], args[1])
+        await this.managers.hand.applyPlay(args[0], args[1])
       } else {
         // @ts-expect-error -- args can not be narrowed
         await mesh?.metadata?.[action.fn]?.(...args)
@@ -237,16 +244,6 @@ class ControlManager {
   }
 }
 
-/**
- * Control manager singleton.
- * @type {ControlManager}
- */
-export const controlManager = new ControlManager()
-
-/**
- * @param {Partial<Pick<Action, 'meshId'|'fn'>>} action - keyed action
- * @returns {string} key for this action
- */
-function getKey(action) {
+function getKey(/** @type {Partial<Pick<Action, 'meshId'|'fn'>>} */ action) {
   return `${action?.meshId}-${action.fn?.toString() || 'pos'}`
 }

@@ -30,7 +30,7 @@ const fps = /** @type {BehaviorSubject<string>} */ (actualFps)
 
 describe('FPSViewer connected component', () => {
   beforeEach(() => {
-    vi.resetAllMocks()
+    vi.clearAllMocks()
   })
 
   it('displays current frame per seconds', async () => {

@@ -5,20 +5,24 @@
 
 import { faker } from '@faker-js/faker'
 import { TargetBehavior, TargetBehaviorName } from '@src/3d/behaviors'
-import { indicatorManager, targetManager } from '@src/3d/managers'
 import { beforeEach, describe, expect, it, vi } from 'vitest'
 
 import { configures3dTestEngine, createBox } from '../../test-utils'
 
 describe('TargetBehavior', () => {
-  configures3dTestEngine()
+  /** @type {import('@src/3d/managers').Managers} */
+  let managers
+
+  configures3dTestEngine(created => (managers = created.managers), {
+    isSimulation: globalThis.use3dSimulation
+  })
 
   beforeEach(() => {
-    vi.resetAllMocks()
+    vi.clearAllMocks()
   })
 
   it('has initial state', () => {
-    const behavior = new TargetBehavior()
+    const behavior = new TargetBehavior({}, managers)
     const mesh = createBox('box', {})
 
     expect(behavior.name).toEqual(TargetBehaviorName)
@@ -30,7 +34,7 @@ describe('TargetBehavior', () => {
   })
 
   it('adds zones', () => {
-    const behavior = new TargetBehavior()
+    const behavior = new TargetBehavior({}, managers)
     const mesh1 = createBox('box1', {})
     const zone1 = behavior.addZone(mesh1, { extent: 1.2 })
     expect(behavior.zones).toEqual([zone1])
@@ -75,21 +79,21 @@ describe('TargetBehavior', () => {
     const meshId = 'box1'
     const playerId = faker.string.uuid()
     const id = `${playerId}.drop-zone.${meshId}`
-    expect(indicatorManager.isManaging({ id })).toBe(false)
-    const behavior = new TargetBehavior()
+    expect(managers.indicator.isManaging({ id })).toBe(false)
+    const behavior = new TargetBehavior({}, managers)
     const mesh = createBox(meshId, {})
     const zone = behavior.addZone(mesh, { playerId, extent: 1 })
     expect(behavior.zones).toEqual([zone])
     expect(zone).toEqual(
       expect.objectContaining({ mesh, enabled: true, priority: 0, playerId })
     )
-    expect(indicatorManager.isManaging({ id })).toBe(true)
+    expect(managers.indicator.isManaging({ id })).toBe(true)
     behavior.removeZone(zone)
-    expect(indicatorManager.isManaging({ id })).toBe(false)
+    expect(managers.indicator.isManaging({ id })).toBe(false)
   })
 
   it('removes added zone and disposes their mesh', () => {
-    const behavior = new TargetBehavior()
+    const behavior = new TargetBehavior({}, managers)
     const mesh = createBox('box', {})
     const zone = behavior.addZone(mesh, { extent: 1.2 })
     expect(behavior.zones).toEqual([zone])
@@ -100,7 +104,7 @@ describe('TargetBehavior', () => {
   })
 
   it('can not remove random zone', () => {
-    const behavior = new TargetBehavior()
+    const behavior = new TargetBehavior({}, managers)
     const mesh = createBox('box', {})
 
     behavior.removeZone({
@@ -121,14 +125,14 @@ describe('TargetBehavior', () => {
     let behavior
 
     beforeEach(() => {
-      behavior = new TargetBehavior()
+      behavior = new TargetBehavior({}, managers)
       mesh = createBox('box', {})
       mesh.addBehavior(behavior, true)
     })
 
     it('registers to the target manager', () => {
       expect(behavior.mesh).toEqual(mesh)
-      expect(targetManager.isManaging(mesh)).toBe(true)
+      expect(managers.target.isManaging(mesh)).toBe(true)
     })
 
     it('unregisteres from manager and removes zones upon detaching', () => {
@@ -143,7 +147,7 @@ describe('TargetBehavior', () => {
         kinds: ['box', 'card'],
         enabled: false
       })
-      expect(indicatorManager.isManaging({ id })).toBe(true)
+      expect(managers.indicator.isManaging({ id })).toBe(true)
 
       mesh.dispose()
       expect(behavior.mesh).toBeNull()
@@ -151,7 +155,7 @@ describe('TargetBehavior', () => {
       expect(mesh1.isDisposed()).toBe(true)
       expect(mesh2.isDisposed()).toBe(true)
       expect(behavior.zones).toEqual([])
-      expect(indicatorManager.isManaging({ id })).toBe(false)
+      expect(managers.indicator.isManaging({ id })).toBe(false)
     })
   })
 })

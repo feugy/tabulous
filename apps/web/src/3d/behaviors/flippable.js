@@ -6,7 +6,6 @@
  */
 
 import { makeLogger } from '../../utils/logger'
-import { controlManager } from '../managers/control'
 import { actionNames } from '../utils/actions'
 import {
   attachFunctions,
@@ -30,9 +29,12 @@ export class FlipBehavior extends AnimateBehavior {
   /**
    * Creates behavior to make a mesh flippable with animation.
    * @param {FlippableState} state - behavior state.
+   * @param {import('@src/3d/managers').Managers} managers - current managers.
    */
-  constructor(state = {}) {
+  constructor(state, managers) {
     super()
+    /** @internal */
+    this.managers = managers
     /** @type {RequiredFlippableState} state - the behavior's current state. */
     this.state = /** @type {RequiredFlippableState} */ (state)
   }
@@ -112,7 +114,7 @@ async function internalFlip(
     return
   }
   logger.debug({ mesh }, `start flipping ${mesh.id}`)
-  controlManager.record({
+  behavior.managers.control.record({
     mesh,
     fn: actionNames.flip,
     duration,

@@ -51,7 +51,7 @@ import { setExtras } from './mesh'
 
 const animationLogger = makeLogger('animatable')
 
-/** @type {?[BehaviorNames, { new (state: ?): Behavior }][]} */
+/** @type {?[BehaviorNames, { new (state: ?, managers: import('@src/3d/managers').Managers): Behavior }][]} */
 let constructors = null
 
 function getConstructors() {
@@ -80,11 +80,12 @@ function getConstructors() {
  * and attach it to the mesh.
  * @param {Mesh} mesh - the modified mesh.
  * @param {BehaviorState} params - parameters, which may contain behavior specific states.
+ * @param {import('@src/3d/managers').Managers} managers - current managers
  */
-export function registerBehaviors(mesh, params) {
+export function registerBehaviors(mesh, params, managers) {
   for (const [name, constructor] of getConstructors()) {
     if (params[name]) {
-      mesh.addBehavior(new constructor(params[name]), true)
+      mesh.addBehavior(new constructor(params[name], managers), true)
     }
   }
 }
@@ -135,10 +136,15 @@ export function animateMove(
 ) {
   const movable = getAnimatableBehavior(mesh)
   if (!mesh.getEngine().isLoading && movable && duration) {
-    return movable.moveTo(absolutePosition, rotation, duration, withGravity)
+    return movable.moveTo(
+      absolutePosition,
+      rotation,
+      mesh.getEngine().simulation === null ? 0 : duration,
+      withGravity
+    )
   } else {
     mesh.setAbsolutePosition(absolutePosition)
-    if (rotation) {
+    if (rotation != undefined) {
       mesh.rotation = rotation
     }
     if (withGravity) {
@@ -284,7 +290,6 @@ export function attachFunctions(behavior, ...functionNames) {
  * @param {AnimateBehavior} behavior - animated behavior.
  * @param {?() => void} onEnd - function invoked when all animations have completed.
  * @param {AnimationSpec[]} animationSpecs - list of animation specs.
- * @returns {Promise<void>}
  */
 export function runAnimation({ mesh, frameRate }, onEnd, ...animationSpecs) {
   if (!mesh) {
@@ -316,31 +321,43 @@ export function runAnimation({ mesh, frameRate }, onEnd, ...animationSpecs) {
   const wasHittable = mesh.isHittable
   mesh.isHittable = false
   mesh.animationInProgress = true
-  animationLogger.debug({ mesh, animations }, `starts animations on ${mesh.id}`)
+  const speed = mesh.getEngine().simulation === null ? 100 : 1
+  animationLogger.debug(
+    { mesh, animations, speed },
+    `starts animations on ${mesh.id}`
+  )
   return new Promise(resolve =>
     mesh
       .getScene()
-      .beginDirectAnimation(mesh, animations, 0, lastFrame, false, 1, () => {
-        animationLogger.debug(
-          { mesh, animations, wasPickable, wasHittable },
-          `end animations on ${mesh.id}`
-        )
-        mesh.isPickable = wasPickable
-        mesh.isHittable = wasHittable
-        mesh.animationInProgress = false
-        // framed animation may not exactly end where we want, so force the final position
-        for (const { animation } of animationSpecs) {
-          // @ts-expect-error can not use animation.targetProperty to index Mesh
-          mesh[animation.targetProperty] =
-            animation.getKeys()[animation.getKeys().length - 1].value
+      .beginDirectAnimation(
+        mesh,
+        animations,
+        0,
+        lastFrame,
+        false,
+        speed,
+        () => {
+          animationLogger.debug(
+            { mesh, animations, wasPickable, wasHittable },
+            `end animations on ${mesh.id}`
+          )
+          mesh.isPickable = wasPickable
+          mesh.isHittable = wasHittable
+          mesh.animationInProgress = false
+          // framed animation may not exactly end where we want, so force the final position
+          for (const { animation } of animationSpecs) {
+            // @ts-expect-error can not use animation.targetProperty to index Mesh
+            mesh[animation.targetProperty] =
+              animation.getKeys()[animation.getKeys().length - 1].value
+          }
+          mesh.computeWorldMatrix(true)
+          if (onEnd) {
+            onEnd()
+          }
+          resolve(void 0)
+          mesh.onAnimationEnd.notifyObservers()
         }
-        mesh.computeWorldMatrix(true)
-        if (onEnd) {
-          onEnd()
-        }
-        resolve(void 0)
-        mesh.onAnimationEnd.notifyObservers()
-      })
+      )
   )
 }
 

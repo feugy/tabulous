@@ -12,8 +12,6 @@
  * @typedef {import('@src/3d/behaviors/quantifiable').QuantityBehavior} QuantityBehavior
  * @typedef {import('@src/3d/behaviors/rotable').RotateBehavior} RotateBehavior
  * @typedef {import('@src/3d/behaviors/stackable').StackBehavior} StackBehavior
- * @typedef {import('@src/3d/managers/control').Action} Action
- * @typedef {import('@src/3d/managers/control').Move} Move
  * @typedef {import('@src/3d/managers/input').DragData} DragData
  * @typedef {import('@src/3d/managers/target').DropZone} DropZone
  * @typedef {import('@src/3d/utils').ScreenPosition} ScreenPosition
@@ -50,12 +48,6 @@ import {
   isAboveTable,
   screenToGround
 } from '../utils/vector'
-import { controlManager } from './control'
-import { indicatorManager } from './indicator'
-import { inputManager } from './input'
-import { moveManager } from './move'
-import { selectionManager } from './selection'
-import { targetManager } from './target'
 
 /**
  * @typedef {Required<Pick<Dimension, 'width'|'height'>>} EngineDimension observed dimension of the rendering engine (pixels).
@@ -75,38 +67,57 @@ import { targetManager } from './target'
 
 const logger = makeLogger('hand')
 
-class HandManager {
+export class HandManager {
   /**
    * Creates a manager for the player's hand meshes:
    * - display and organize them in their dedicated scene.
    * - handles actions from and to the main scene.
-   * Is only enabled after having been initialized.
+   * Is starts disabled and must be manually enabled.
+   * Invokes init() before any other function.
+   * @param {object} params - parameters, including:
+   * @param {Scene} params.scene - main scene.
+   * @param {Scene} params.handScene - scene for meshes in hand.
+   * @param {HTMLElement} params.overlay - HTML element defining hand's available height.
+   * @param {number} [params.gap=0.5] - gap between hand meshes, when render width allows it, in 3D coordinates.
+   * @param {number} [params.verticalPadding=1] - vertical padding between meshes and the viewport edges, in 3D coordinates.
+   * @param {number} [params.horizontalPadding=2] - horizontal padding between meshes and the viewport edges, in 3D coordinates.
+   * @param {number} [params.transitionMargin=20] - margin (in pixel) applied to the hand scene border. Meshes dragged within this margin will be drawn or played.
+   * @param {number} [params.duration=100] - duration (in milliseconds) when moving meshes.
    */
-  constructor() {
-    /** @type {Scene} the main scene. */
-    this.scene
-    /** @type {Scene} scene for meshes in hand. */
-    this.handScene
-    /** @type {boolean} whether this manager is enabled. */
+  constructor({
+    scene,
+    handScene,
+    overlay,
+    gap = 0.5,
+    verticalPadding = 0.5,
+    horizontalPadding = 2,
+    transitionMargin = 20,
+    duration = 100
+  }) {
+    /** the main scene. */
+    this.scene = scene
+    /** scene for meshes in hand. */
+    this.handScene = handScene
+    /** whether this manager is enabled. */
     this.enabled = false
-    /** @type {number} gap between hand meshes, when render width allows it, in 3D coordinates. */
-    this.gap = 0
-    /** @type {number} vertical padding between meshes and the viewport edges, in 3D coordinates. */
-    this.verticalPadding = 0
-    /** @type {number} horizontal padding between meshes and the viewport edges, in 3D coordinates. */
-    this.horizontalPadding = 0
-    /** @type {number} duration (in milliseconds) when moving meshes. */
-    this.duration = 100
-    /** @type {number} margin (in pixel) applied to the hand scene border. Meshes dragged within this margin will be drawn or played. */
-    this.transitionMargin = 0
+    /** gap between hand meshes, when render width allows it, in 3D coordinates. */
+    this.gap = gap
+    /** vertical padding between meshes and the viewport edges, in 3D coordinates. */
+    this.verticalPadding = verticalPadding
+    /** horizontal padding between meshes and the viewport edges, in 3D coordinates. */
+    this.horizontalPadding = horizontalPadding
+    /** duration (in milliseconds) when moving meshes. */
+    this.duration = duration
+    /** margin (in pixel) applied to the hand scene border. Meshes dragged within this margin will be drawn or played. */
+    this.transitionMargin = transitionMargin
     /** @type {number} angle applied when playing rotable meshes, due to the player position. */
-    this.angleOnPlay = 0
+    this.angleOnPlay
     /** @type {Observable<HandChange>} emits new state on hand changes. */
     this.onHandChangeObservable = new Observable()
     /** @type {Observable<Boolean>} emits a boolean when dragged may (or not) be dragged to hand. */
     this.onDraggableToHandObservable = new Observable()
-    /** @type {HTMLElement} HTML element defining hand's available height. */
-    this.overlay
+    /** HTML element defining hand's available height. */
+    this.overlay = overlay
     /** @internal @type {Extent} */
     this.extent = {
       height: 0,
@@ -134,45 +145,22 @@ class HandManager {
       }
     })
     /** @internal @type {string} */
-    this.playerId = ''
+    this.playerId
+    /** @internal @type {import('@src/3d/managers').Managers} */
+    this.managers
   }
 
   /**
-   * Gives scenes to the manager.
+   * Initialize with game data
    * @param {object} params - parameters, including:
-   * @param {Scene} params.scene - main scene.
-   * @param {Scene} params.handScene - scene for meshes in hand.
-   * @param {HTMLElement} params.overlay - HTML element defining hand's available height.
+   * @param {import('@src/3d/managers').Managers} params.managers - current managers.
    * @param {string} params.playerId - id of the local player.
-   * @param {number} [params.gap=0.5] - gap between hand meshes, when render width allows it, in 3D coordinates.
-   * @param {number} [params.verticalPadding=1] - vertical padding between meshes and the viewport edges, in 3D coordinates.
-   * @param {number} [params.horizontalPadding=2] - horizontal padding between meshes and the viewport edges, in 3D coordinates.
-   * @param {number} [params.transitionMargin=20] - margin (in pixel) applied to the hand scene border. Meshes dragged within this margin will be drawn or played.
-   * @param {number} [params.duration=100] - duration (in milliseconds) when moving meshes.
    * @param {number} [params.angleOnPlay=0] - angle applied when playing rotable meshes, due to the player position.
    */
-  init({
-    scene,
-    handScene,
-    overlay,
-    playerId,
-    gap = 0.5,
-    verticalPadding = 0.5,
-    horizontalPadding = 2,
-    transitionMargin = 20,
-    duration = 100,
-    angleOnPlay = 0
-  }) {
-    this.scene = scene
-    this.handScene = handScene
-    this.gap = gap
-    this.verticalPadding = verticalPadding
-    this.horizontalPadding = horizontalPadding
-    this.duration = duration
-    this.transitionMargin = transitionMargin
-    this.overlay = overlay
-    this.angleOnPlay = angleOnPlay
+  init({ managers, playerId, angleOnPlay = 0 }) {
+    this.managers = managers
     this.playerId = playerId
+    this.angleOnPlay = angleOnPlay
 
     const engine = this.handScene.getEngine()
     /** @type {(() => void)[]} */
@@ -190,16 +178,17 @@ class HandManager {
         }
       },
       {
-        observable: controlManager.onActionObservable,
-        handle: (/** @type {Action|Move} */ action) =>
-          handleAction(this, action)
+        observable: this.managers.control.onActionObservable,
+        handle: (
+          /** @type {import('@src/3d/managers').ActionOrMove} */ action
+        ) => handleAction(this, action)
       },
       {
-        observable: inputManager.onDragObservable,
+        observable: this.managers.input.onDragObservable,
         handle: (/** @type {DragData} */ action) => handDrag(this, action)
       },
       {
-        observable: handScene.onNewMeshAddedObservable,
+        observable: this.handScene.onNewMeshAddedObservable,
         handle: (/** @type {Mesh} */ added) => {
           // delay because mesh names are set after being constructed
           setTimeout(() => {
@@ -211,7 +200,7 @@ class HandManager {
         }
       },
       {
-        observable: handScene.onMeshRemovedObservable,
+        observable: this.handScene.onMeshRemovedObservable,
         handle: (/** @type {Mesh} */ removed) => {
           if (isSerializable(removed)) {
             logger.info(
@@ -226,6 +215,15 @@ class HandManager {
             this.changes$.next()
           }
         }
+      },
+      {
+        observable: this.managers.replay.onReplayRankObservable,
+        handle: () =>
+          // delay until replay move is over
+          setTimeout(
+            () => this.changes$.next(),
+            this.managers.replay.moveDuration
+          )
       }
     ])) {
       const observer = observable.add(handle)
@@ -248,7 +246,6 @@ class HandManager {
 
     computeExtent(this, engine)
     storeMeshDimensions(this)
-    this.enabled = true
     layoutMeshs(this)
   }
 
@@ -293,8 +290,8 @@ class HandManager {
     ) {
       return
     }
-    await playMeshes(this, selectionManager.getSelection(playedMesh))
-    selectionManager.clear()
+    await playMeshes(this, this.managers.selection.getSelection(playedMesh))
+    this.managers.selection.clear()
   }
 
   /**
@@ -317,11 +314,11 @@ class HandManager {
       await pickMesh(this, mesh, true)
     } else {
       logger.info({ mesh, playerId }, `another player pick ${mesh.id} in hand`)
-      record(mesh, actionNames.draw, playerId, true)
+      record(mesh, this.managers, actionNames.draw, playerId, true)
       await animateToHand(mesh)
     }
     if (!isSamePlayer) {
-      indicatorManager.registerFeedback({
+      this.managers.indicator.registerFeedback({
         action: actionNames.draw,
         playerId,
         position
@@ -349,23 +346,23 @@ class HandManager {
     if (isSamePlayer) {
       this.handScene.getMeshById(state.id)?.dispose()
     }
-    const mesh = await createMeshFromState(state, this.scene)
+    const mesh = await createMeshFromState(state, this.scene, this.managers)
     logger.info(
       { mesh },
       `${isSamePlayer ? '' : 'another player '}play ${mesh.id} from hand`
     )
     // record should comes before dropping on a zone, but after creating main mesh
-    record(mesh, actionNames.play, playerId, true)
-    const dropZone = targetManager.findDropZone(
+    record(mesh, this.managers, actionNames.play, playerId, true)
+    const dropZone = this.managers.target.findDropZone(
       mesh,
       mesh.getBehaviorByName(MoveBehaviorName)?.state.kind
     )
     if (dropZone) {
-      targetManager.dropOn(dropZone, { immediate: true, isLocal: true })
+      this.managers.target.dropOn(dropZone, { immediate: true, isLocal: true })
     }
     await getDrawable(mesh)?.animateToMain()
     if (!isSamePlayer) {
-      indicatorManager.registerFeedback({
+      this.managers.indicator.registerFeedback({
         action: actionNames.play,
         playerId,
         position: [state.x ?? 0, state.y ?? 0, state.z ?? 0]
@@ -398,14 +395,8 @@ class HandManager {
 }
 
 /**
- * Player's hand manager singleton.
- * @type {HandManager}
- */
-export const handManager = new HandManager()
-
-/**
  * @param {HandManager} manager - manager instance.
- * @param {Action|Move} action - applied action.
+ * @param {import('@src/3d/managers').ActionOrMove} action - applied action.
  */
 function handleAction(manager, action) {
   if (
@@ -427,8 +418,8 @@ function handleAction(manager, action) {
  * @param {DragData} drag - drag details.
  */
 async function handDrag(manager, { type, mesh, event }) {
-  const { handScene } = manager
-  if (!hasSelectedDrawableMeshes(mesh)) {
+  const { handScene, managers } = manager
+  if (!hasSelectedDrawableMeshes(mesh, managers)) {
     return
   }
 
@@ -443,7 +434,7 @@ async function handDrag(manager, { type, mesh, event }) {
   if (mesh.getScene() === handScene) {
     let moved = manager.moved
     if (type === 'dragStart') {
-      moved = selectionManager.getSelection(mesh)
+      moved = manager.managers.selection.getSelection(mesh)
     } else if (type === 'dragStop') {
       moved = []
     }
@@ -461,16 +452,16 @@ async function handDrag(manager, { type, mesh, event }) {
           { mesh: movedMesh, x, z },
           `play mesh ${movedMesh.id} from hand by dragging`
         )
-        const wasSelected = selectionManager.meshes.has(movedMesh)
+        const wasSelected = managers.selection.meshes.has(movedMesh)
         const mesh = await createMainMesh(manager, movedMesh, { x, z })
         /** @type {?DropZone} */
         let dropZone
         if (droppedList.length) {
           // when first drawn mesh was dropped on player zone, tries to drop others on top of it.
-          dropZone = canDropAbove(droppedList[0], mesh)
+          dropZone = canDropAbove(managers, droppedList[0], mesh)
         } else {
           // can first mesh be dropped on player zone?
-          dropZone = targetManager.findPlayerZone(mesh)
+          dropZone = managers.target.findPlayerZone(mesh)
         }
 
         if (dropZone) {
@@ -489,22 +480,26 @@ async function handDrag(manager, { type, mesh, event }) {
           }
           record(
             mesh,
+            managers,
             actionNames.play,
             manager.playerId,
             false,
             getPositionAboveZone(mesh, dropZone)
           )
-          targetManager.dropOn(dropZone, { immediate: true, isLocal: true })
+          managers.target.dropOn(dropZone, {
+            immediate: true,
+            isLocal: true
+          })
         } else {
           if (wasSelected) {
-            selectionManager.select(mesh)
+            managers.selection.select(mesh)
           }
-          record(mesh, actionNames.play, manager.playerId)
+          record(mesh, managers, actionNames.play, manager.playerId)
         }
       }
       if (saved) {
-        moveManager.exclude(...droppedList)
-        selectionManager.clear()
+        managers.move.exclude(...droppedList)
+        managers.selection.clear()
         // play move animation for local player only
         const current = saved.mesh.absolutePosition.clone()
         saved.mesh.setAbsolutePosition(saved.position)
@@ -514,18 +509,18 @@ async function handDrag(manager, { type, mesh, event }) {
     layoutMeshs(manager)
   } else if (isMainMeshNextToHand(manager, mesh)) {
     if (type !== 'dragStop') {
-      inputManager.stopDrag(event)
+      managers.input.stopDrag(event)
     } else {
       // for replay, is it important we apply actions to highest meshes first,
       // so they could be poped from their stack
-      const drawn = sortByElevation(selectionManager.getSelection(mesh), true)
+      const drawn = sortByElevation(managers.selection.getSelection(mesh), true)
       logger.debug({ drawn }, `dragged meshes into hand`)
       const { x: positionX } = screenToGround(manager.handScene, event)
       const z = -manager.contentDimensions.depth
       const origin = drawn[0].absolutePosition.x
       for (const mesh of drawn) {
         logger.info({ mesh }, `pick mesh ${mesh.id} in hand by dragging`)
-        record(mesh, actionNames.draw, manager.playerId)
+        record(mesh, managers, actionNames.draw, manager.playerId)
         mesh.isPhantom = true
         const x = positionX + mesh.absolutePosition.x - origin
         await createHandMesh(manager, mesh, { x, z })
@@ -562,7 +557,11 @@ async function createMainMesh(manager, handMesh, extraState = {}) {
   transformOnPlay(manager, handMesh)
   const state = handMesh.metadata.serialize()
   handMesh.dispose()
-  return createMeshFromState({ ...state, ...extraState }, manager.scene)
+  return createMeshFromState(
+    { ...state, ...extraState },
+    manager.scene,
+    manager.managers
+  )
 }
 
 /**
@@ -574,11 +573,12 @@ async function createMainMesh(manager, handMesh, extraState = {}) {
 async function createHandMesh(manager, mainMesh, extraState = {}) {
   const state = { ...mainMesh.metadata.serialize(), ...extraState }
   transformOnPick(state)
-  return createMeshFromState(state, manager.handScene)
+  return createMeshFromState(state, manager.handScene, manager.managers)
 }
 
 function record(
   /** @type {Mesh} */ mesh,
+  /** @type {import('@src/3d/managers').Managers} */ managers,
   /** @type {actionNames['play'] | actionNames['draw']} */ fn,
   /** @type {string} */ playerId,
   /** @type {boolean} */ isLocal = false,
@@ -590,7 +590,7 @@ function record(
     state.y = finalPosition.y
     state.z = finalPosition.z
   }
-  controlManager.record({
+  managers.control.record({
     mesh,
     fn,
     args: [state, playerId],
@@ -749,10 +749,13 @@ function transformOnPlay(
 }
 
 /** @returns whether this selected mesh is drawable. */
-function hasSelectedDrawableMeshes(/** @type {?Mesh|undefined} */ mesh) {
+function hasSelectedDrawableMeshes(
+  /** @type {?Mesh|undefined} */ mesh,
+  /** @type {import('@src/3d/managers').Managers} */ managers
+) {
   return (
     Boolean(mesh) &&
-    selectionManager
+    managers.selection
       .getSelection(/** @type {Mesh} */ (mesh))
       .some(mesh => mesh.getBehaviorByName(DrawBehaviorName))
   )
@@ -762,6 +765,7 @@ async function playMeshes(
   /** @type {HandManager} */ manager,
   /** @type {Mesh[]} */ meshes
 ) {
+  const { extent, scene, managers } = manager
   /** @type {?Mesh} */
   let dropped = null
   /** @type {Mesh[]} */
@@ -770,10 +774,10 @@ async function playMeshes(
     logger.info({ mesh: drawnMesh }, `play mesh ${drawnMesh.id} from hand`)
     const screenPosition = {
       x: /** @type {ScreenPosition} */ (getMeshScreenPosition(drawnMesh)).x,
-      y: manager.extent.size.height * 0.5
+      y: extent.size.height * 0.5
     }
-    const position = screenToGround(manager.scene, screenPosition)
-    if (!position || !isAboveTable(manager.scene, screenPosition)) {
+    const position = screenToGround(scene, screenPosition)
+    if (!position || !isAboveTable(scene, screenPosition)) {
       return []
     }
     const mesh = await createMainMesh(manager, drawnMesh, {
@@ -786,10 +790,10 @@ async function playMeshes(
     let dropZone = null
     if (dropped) {
       // when first drawn mesh was dropped on player zone, tries to drop others on top of it.
-      dropZone = canDropAbove(dropped, mesh)
+      dropZone = canDropAbove(managers, dropped, mesh)
     } else {
       // can first mesh be dropped on player zone?
-      dropZone = targetManager.findPlayerZone(mesh)
+      dropZone = managers.target.findPlayerZone(mesh)
       if (dropZone) {
         dropped = mesh
       }
@@ -797,35 +801,40 @@ async function playMeshes(
 
     if (!dropZone) {
       // mesh can not be dropped on player zone nor first mesh, try to stack it.
-      dropZone = findStackZone(mesh)
+      dropZone = findStackZone(managers, mesh)
     }
     if (dropZone) {
       record(
         mesh,
+        managers,
         actionNames.play,
         manager.playerId,
         false,
         getPositionAboveZone(mesh, dropZone)
       )
-      targetManager.dropOn(dropZone, { immediate: true, isLocal: true })
+      managers.target.dropOn(dropZone, { immediate: true, isLocal: true })
     } else {
       // no possible drop: let it lie on the table.
       applyGravity(mesh)
-      record(mesh, actionNames.play, manager.playerId)
+      record(mesh, managers, actionNames.play, manager.playerId)
     }
   }
   await Promise.all(created.map(mesh => getDrawable(mesh)?.animateToMain()))
 }
 
-function findStackZone(/** @type {Mesh} */ mesh) {
+function findStackZone(
+  /** @type {import('@src/3d/managers').Managers} */ managers,
+  /** @type {Mesh} */ mesh
+) {
   mesh.computeWorldMatrix(true)
-  return targetManager.findDropZone(
+  return managers.target.findDropZone(
     mesh,
     mesh.getBehaviorByName(MoveBehaviorName)?.state.kind
   )
 }
 
 function canDropAbove(
+  /** @type {import('@src/3d/managers').Managers} */ managers,
   /** @type {Mesh} */ baseMesh,
   /** @type {Mesh} */ dropped
 ) {
@@ -833,7 +842,7 @@ function canDropAbove(
   dropped.setAbsolutePosition(
     baseMesh.absolutePosition.add(new Vector3(0, 100, 0))
   )
-  const dropZone = findStackZone(dropped)
+  const dropZone = findStackZone(managers, dropped)
   if (dropZone) {
     return dropZone
   }
@@ -848,7 +857,7 @@ async function pickMesh(
   isLocal = false
 ) {
   logger.info({ mesh }, `pick mesh ${mesh.id} in hand`)
-  record(mesh, actionNames.draw, manager.playerId, isLocal)
+  record(mesh, manager.managers, actionNames.draw, manager.playerId, isLocal)
   const { minZ } = manager.extent
   const { width } = manager.contentDimensions
   const { depth } = getDimensions(mesh)

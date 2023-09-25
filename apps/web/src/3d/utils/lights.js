@@ -29,15 +29,14 @@ import { TableId } from './table.js'
  * @param {object} params - parameters, including:
  * @param {Scene} params.scene - main scene.
  * @param {Scene} params.handScene - hand scene.
- * @param {boolean} [params.isWebGL1] - true if the rendering engine only supports WebGL1.
  * @returns {LightResult} an object containing created light and shadowGenerator.
  */
-export function createLights({ scene, handScene, isWebGL1 }) {
+export function createLights({ scene, handScene }) {
   const light = makeDirectionalLight(scene)
   const ambientLight = makeAmbientLight(scene)
 
   const shadowGenerator = new ShadowGenerator(1024, light)
-  shadowGenerator.usePercentageCloserFiltering = !isWebGL1
+  shadowGenerator.usePercentageCloserFiltering = scene.getEngine().version !== 1
   // https://forum.babylonjs.com/t/shadow-darkness-darker-than-0/22837
   // @ts-expect-error _darkness is private
   shadowGenerator._darkness = -1.5

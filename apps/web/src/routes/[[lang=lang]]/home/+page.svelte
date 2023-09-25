@@ -155,6 +155,9 @@
     return joinGame({
       gameId: game.id,
       .../** @type {DeepRequired<PlayerWithTurnCredentials>} */ (data.session),
+      onDeletion: () => {
+        toastInfo({ contentKey: 'labels.lobby-deleted-by-owner' })
+      },
       onPromotion: promoted => {
         handleSelectGame(
           /** @type {CustomEvent<LightGame>} */ ({ detail: promoted })

@@ -17,9 +17,6 @@ import { actionNames } from '../utils/actions'
 import { animateMove } from '../utils/behaviors'
 import { sortByElevation } from '../utils/gravity'
 import { isAboveTable, screenToGround } from '../utils/vector'
-import { controlManager } from './control'
-import { selectionManager } from './selection'
-import { targetManager } from './target'
 
 const logger = makeLogger('move')
 
@@ -33,7 +30,7 @@ const logger = makeLogger('move')
  * @property {Mesh[]} meshes - meshes that are about to be moved.
  */
 
-class MoveManager {
+export class MoveManager {
   /**
    * Creates a manager to move meshes with MoveBehavior:
    * - can start, continue and stop moving managed mesh
@@ -42,35 +39,39 @@ class MoveManager {
    * - release mesh on table, or on their relevant target
    *
    * Prior to move operation, the onPreMoveObservable allows to add or remove meshes to the list.
+   * Invokes init() before any other function.
+   * @param {object} params - parameters, including:
+   * @param {Scene} params.scene - scene attached to.
+   * @param {number} [params.elevation=0.5] - elevation applied to meshes while dragging them.
    */
-  constructor() {
-    /** @type {number} elevation applied to meshes while dragging them. */
-    this.elevation
-    /** @type {boolean} true while a move operation is in progress. */
+  constructor({ scene, elevation = 0.5 }) {
+    /** elevation applied to meshes while dragging them. */
+    this.elevation = elevation
+    /** true while a move operation is in progress. */
     this.inProgress = false
     /** @type {Observable<MoveDetails>} emits when moving a given mesh. */
     this.onMoveObservable = new Observable()
     /** @type {Observable<PreMoveDetails>} emits prior to starting the operation. */
     this.onPreMoveObservable = new Observable()
-    /** @internal @type {Scene} main scene. */
-    this.scene
+    /** @internal main scene. */
+    this.scene = scene
     /** @internal @type {Set<string>} managed mesh ids. */
     this.meshIds = new Set()
     /** @internal @type {Map<string, MoveBehavior>} managed behaviors by their mesh id. */
     this.behaviorByMeshId = new Map()
     /** @internal @type {Set<Mesh>} set of meshes to re-select after moving them. */
     this.autoSelect = new Set()
+    /** @internal @type {import('@src/3d/managers').Managers} */
+    this.managers
   }
 
   /**
-   * Gives a scene to the manager, and binds on input manager observables.
+   * Initializes with other managers.
    * @param {object} params - parameters, including:
-   * @param {Scene} params.scene - scene attached to.
-   * @param {number} [params.elevation=0.5] - elevation applied to meshes while dragging them.
+   * @param {import('@src/3d/managers').Managers} params.managers - current managers.
    */
-  init({ scene, elevation = 0.5 }) {
-    this.scene = scene
-    this.elevation = elevation
+  init({ managers }) {
+    this.managers = managers
   }
 
   /**
@@ -87,8 +88,8 @@ class MoveManager {
 
     this.autoSelect.clear()
     let sceneUsed = mesh.getScene()
-    const meshes = selectionManager.meshes.has(mesh)
-      ? [...selectionManager.meshes].filter(
+    const meshes = this.managers.selection.meshes.has(mesh)
+      ? [...this.managers.selection.meshes].filter(
           mesh => this.isManaging(mesh) && mesh.getScene() === sceneUsed
         )
       : [mesh]
@@ -108,7 +109,7 @@ class MoveManager {
     /** @type {Set<DropZone>} */
     let zones = new Set()
     this.inProgress = true
-    const actionObserver = controlManager.onActionObservable.add(
+    const actionObserver = this.managers.control.onActionObservable.add(
       actionOrMove => {
         if ('fn' in actionOrMove && actionOrMove.fn === actionNames.play) {
           const mesh = moved.find(({ id }) => id === actionOrMove.meshId)
@@ -135,20 +136,20 @@ class MoveManager {
     const deselectAuto = (/** @type {(?Mesh)[]} */ meshes) => {
       for (const mesh of meshes) {
         if (mesh && this.autoSelect.has(mesh)) {
-          selectionManager.unselect(mesh)
+          this.managers.selection.unselect(mesh)
           this.autoSelect.delete(mesh)
         }
       }
     }
 
     const startMoving = (/** @type {Mesh} */ mesh) => {
-      if (!selectionManager.meshes.has(mesh)) {
+      if (!this.managers.selection.meshes.has(mesh)) {
         this.autoSelect.add(mesh)
-        selectionManager.select(mesh)
+        this.managers.selection.select(mesh)
       }
       const { x, y, z } = mesh.absolutePosition
       mesh.setAbsolutePosition(new Vector3(x, y + this.elevation, z))
-      controlManager.record({
+      this.managers.control.record({
         mesh,
         pos: mesh.absolutePosition.asArray(),
         prev: [x, y, z]
@@ -160,7 +161,7 @@ class MoveManager {
     this.continue = (/** @type {ScreenPosition} */ event) => {
       if (moved.length === 0) return
       for (const zone of zones) {
-        targetManager.clear(zone)
+        this.managers.target.clear(zone)
       }
       zones.clear()
 
@@ -171,7 +172,12 @@ class MoveManager {
         lastPosition = currentPosition
 
         const { min, max } = computeMovedExtend(moved)
-        const boundingBoxes = findCollidingBoundingBoxes(sceneUsed, moved, min)
+        const boundingBoxes = findCollidingBoundingBoxes(
+          sceneUsed,
+          this.managers,
+          moved,
+          min
+        )
         const newY = elevateWhenColliding(boundingBoxes, min, max)
         if (newY) {
           move.y = newY + this.elevation
@@ -180,7 +186,7 @@ class MoveManager {
         for (const mesh of moved) {
           const prev = mesh.absolutePosition.asArray()
           mesh.setAbsolutePosition(mesh.absolutePosition.addInPlace(move))
-          const zone = targetManager.findDropZone(
+          const zone = this.managers.target.findDropZone(
             mesh,
             /** @type {MoveBehavior} */ (this.behaviorByMeshId.get(mesh.id))
               .state.kind
@@ -188,7 +194,7 @@ class MoveManager {
           if (zone) {
             zones.add(zone)
           }
-          controlManager.record({
+          this.managers.control.record({
             mesh,
             pos: mesh.absolutePosition.asArray(),
             prev
@@ -236,7 +242,7 @@ class MoveManager {
     // dynamically assign stop function to keep moved, zones and lastPosition in scope
     this.stop = async () => {
       if (actionObserver) {
-        controlManager.onActionObservable.remove(actionObserver)
+        this.managers.control.onActionObservable.remove(actionObserver)
       }
       this.continue = () => {}
       this.getActiveZones = () => []
@@ -254,7 +260,7 @@ class MoveManager {
       /** @type {Mesh[]} */
       const dropped = []
       for (const zone of zones) {
-        const meshes = targetManager.dropOn(zone)
+        const meshes = this.managers.target.dropOn(zone)
         logger.info(
           { zone, meshes },
           `completes move operation on target ${meshes.map(({ id }) => id)}`
@@ -287,7 +293,7 @@ class MoveManager {
               animateMove(mesh, absolutePosition, null, duration, true)
             )
             .then(() =>
-              controlManager.record({
+              this.managers.control.record({
                 mesh,
                 pos: mesh.absolutePosition.asArray(),
                 prev: [x, y, z]
@@ -339,7 +345,6 @@ class MoveManager {
    * Stops the move operation, releasing mesh(es) on its(their) target if any, or on the table.
    * When released on table, mesh(es) are snapped to the grid with possible animation.
    * Awaits until (all) animation(s) completes.
-   * @returns {Promise<void>}
    */
   async stop() {}
 
@@ -408,14 +413,8 @@ class MoveManager {
 }
 
 /**
- * Mesh move manager singleton.
- * @type {MoveManager}
- */
-export const moveManager = new MoveManager()
-
-/**
  * @param {Mesh[]} moved - moved meshes.
- * @returns {{ min: Vector3, max: Vector3 }} bounding box info for this group of meshes.
+ * @returns bounding box info for this group of meshes.
  */
 function computeMovedExtend(moved) {
   /** @type {Vector3} */
@@ -441,18 +440,19 @@ function computeMovedExtend(moved) {
 
 /**
  * @param {Scene} scene - scene used for moving meshes .
+ * @param {import('@src/3d/managers').Managers} managers - other managers.
  * @param {Mesh[]} moved - moved meshes.
  * @param {Vector3} min - moved mesh bounding box minimum.
- * @returns {BoundingInfo[]} a list of possibly colliding bounding boxes.
+ * @returns list of possibly colliding bounding boxes.
  */
-function findCollidingBoundingBoxes({ meshes }, moved, min) {
+function findCollidingBoundingBoxes({ meshes }, { selection }, moved, min) {
   /** @type {BoundingInfo[]} */
   const boxes = []
   for (const mesh of meshes) {
     if (
       mesh.isHittable &&
       !moved.includes(mesh) &&
-      !selectionManager.meshes.has(mesh)
+      !selection.meshes.has(mesh)
     ) {
       mesh.computeWorldMatrix(true)
       const box = mesh.getBoundingInfo()
@@ -503,16 +503,16 @@ function elevateWhenColliding(boundingBoxes, min, max) {
 /**
  * @param {MoveManager} manager - manager instance.
  * @param {Mesh} mesh - tested mesh.
- * @returns {boolean} whether this mesh could be moved.
+ * @returnswhether this mesh could be moved.
  */
-function isDisabled({ behaviorByMeshId }, mesh) {
+function isDisabled({ behaviorByMeshId, managers }, mesh) {
   return (
     behaviorByMeshId.get(mesh.id)?.enabled === false &&
     (!mesh.metadata?.stack ||
       mesh.metadata.stack.every(
         mesh => behaviorByMeshId.get(mesh.id)?.enabled === false
       ) ||
-      !selectionManager.meshes.has(
+      !managers.selection.meshes.has(
         mesh.metadata.stack[mesh.metadata.stack.length - 1]
       ))
   )

@@ -1,7 +1,6 @@
 // @ts-check
 /**
  * @typedef {import('@babylonjs/core').Engine} Engine
- * @typedef {import('@src/3d/managers/camera').cameraManager} cameraManager
  * @typedef {import('@src/3d/managers/camera').CameraPosition} CameraPosition
  * @typedef {import('@src/3d/managers/control').Action} Action
  * @typedef {import('@src/3d/managers/control').Move} Move
@@ -158,7 +157,7 @@ const cameraSaves = /** @type {BehaviorSubject<CameraPosition[]>} */ (
   actualCameraSaves
 )
 const loadCameraSaves =
-  /** @type {Mock<Parameters<cameraManager['loadSaves']>, Promise<void>>} */ (
+  /** @type {Mock<Parameters<import('@src/3d/managers').CameraManager['loadSaves']>, Promise<void>>} */ (
     actualLoadCameraSaves
   )
 const remoteSelection = /** @type {Subject<PlayerSelection>} */ (
@@ -1495,6 +1494,41 @@ describe('given a mocked game engine', () => {
           expect(runSubscription).toHaveBeenCalledOnce()
         })
 
+        it('reloads game data from host', async () => {
+          await nextPromise()
+          vi.clearAllMocks()
+          const data = { type: 'game-sync', ...game }
+          lastMessageReceived.next({ data, playerId: partner1.id })
+          await nextPromise()
+          expect(engine.load).toHaveBeenCalledWith(
+            data,
+            {
+              playerId: partner2.id,
+              colorByPlayerId: buildPlayerColors(game),
+              preferences: { color: '#ffffff' }
+            },
+            false
+          )
+          expect(engine.load).toHaveBeenCalledOnce()
+          expect(loadCameraSaves).not.toHaveBeenCalled()
+          expect(loadThread).toHaveBeenCalledWith(game.messages)
+          expect(loadThread).toHaveBeenCalledOnce()
+          expect(gamePlayerByIdReceived).toHaveBeenLastCalledWith(
+            new Map(
+              (game.players ?? []).map(gamer => [
+                gamer.id,
+                {
+                  ...gamer,
+                  ...findPlayerPreferences(game, gamer.id),
+                  isHost: gamer.id === partner1.id,
+                  playing: gamer.id === partner2.id
+                }
+              ])
+            )
+          )
+          expect(runSubscription).not.toHaveBeenCalled()
+        })
+
         it('share hand with other peers', async () => {
           vi.clearAllMocks()
           const handMeshes = meshes.slice(0, 1)
@@ -1627,7 +1661,7 @@ describe('given a mocked game engine', () => {
               ]
             ])
           )
-          expect(gamePlayerByIdReceived).toHaveBeenCalledTimes(2)
+          expect(gamePlayerByIdReceived).toHaveBeenCalledTimes(4)
           expect(runSubscription).toHaveBeenCalledWith(
             graphQL.receiveGameUpdates,
             { gameId: game.id }
@@ -1711,7 +1745,7 @@ describe('given a mocked game engine', () => {
               ]
             ])
           )
-          expect(gamePlayerByIdReceived).toHaveBeenCalledTimes(2)
+          expect(gamePlayerByIdReceived).toHaveBeenCalledTimes(4)
           expect(runSubscription).not.toHaveBeenCalled()
           expect(toastReceived).toHaveBeenCalledWith({
             content: translate('labels.player-left-game', { player }),

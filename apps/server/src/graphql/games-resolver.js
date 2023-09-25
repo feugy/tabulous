@@ -239,18 +239,24 @@ export default {
           const subscription = services.gameListsUpdate
             .pipe(filter(({ playerId }) => playerId === player.id))
             .subscribe(({ games }) => {
-              const game = games.find(({ id }) => id === gameId)
-              if (game) {
-                pubsub.publish({ topic, payload: { receiveGameUpdates: game } })
-                logger.debug(
-                  { res: { topic, game: { id: game.id, kind: game.kind } } },
-                  'sent single game update'
-                )
-              }
+              const game = games.find(({ id }) => id === gameId) ?? null
+              pubsub.publish({ topic, payload: { receiveGameUpdates: game } })
+              logger.debug(
+                {
+                  res: {
+                    topic,
+                    game: { id: gameId, kind: game?.kind, removed: !game }
+                  }
+                },
+                'sent single game update'
+              )
             })
           const queue = await pubsub.subscribe(topic)
           queue.once('close', () => subscription.unsubscribe())
-          logger.debug({ ctx: { topic } }, 'subscribed to single game updates')
+          logger.debug(
+            { ctx: { topic, playerId: player.id } },
+            'subscribed to single game updates'
+          )
           return queue
         }
       )

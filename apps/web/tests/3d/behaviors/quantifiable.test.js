@@ -11,7 +11,6 @@ import {
   QuantityBehavior,
   QuantityBehaviorName
 } from '@src/3d/behaviors'
-import { controlManager, moveManager, selectionManager } from '@src/3d/managers'
 import { createBox, createRoundToken } from '@src/3d/meshes'
 import { getTargetableBehavior } from '@src/3d/utils'
 import {
@@ -39,12 +38,19 @@ describe('QuantityBehavior', () => {
   const actionRecorded = vi.fn()
   /** @type {Scene} */
   let scene
+  /** @type {import('@src/3d/managers').Managers} */
+  let managers
 
-  configures3dTestEngine(created => (scene = created.scene))
+  configures3dTestEngine(
+    created => {
+      scene = created.scene
+      managers = created.managers
+    },
+    { isSimulation: globalThis.use3dSimulation }
+  )
 
   beforeAll(() => {
-    moveManager.init({ scene })
-    controlManager.onActionObservable.add(data => actionRecorded(data))
+    managers.control.onActionObservable.add(data => actionRecorded(data))
   })
 
   beforeEach(() => {
@@ -58,7 +64,7 @@ describe('QuantityBehavior', () => {
       kinds: [],
       quantity: faker.number.int(999)
     }
-    const behavior = new QuantityBehavior(state)
+    const behavior = new QuantityBehavior(state, managers)
 
     expect(behavior.name).toEqual(QuantityBehaviorName)
     expect(behavior.state).toEqual(state)
@@ -67,14 +73,14 @@ describe('QuantityBehavior', () => {
   })
 
   it('can not restore state without mesh', () => {
-    expect(() => new QuantityBehavior().fromState({ duration: 100 })).toThrow(
-      'Can not restore state without mesh'
-    )
+    expect(() =>
+      new QuantityBehavior({}, managers).fromState({ duration: 100 })
+    ).toThrow('Can not restore state without mesh')
   })
 
   it('can hydrate with default state', () => {
-    const behavior = new QuantityBehavior()
-    const mesh = createBox({ id: 'box0', texture: '' }, scene)
+    const behavior = new QuantityBehavior({}, managers)
+    const mesh = createBox({ id: 'box0', texture: '' }, managers, scene)
     mesh.addBehavior(behavior, true)
 
     behavior.fromState()
@@ -90,8 +96,8 @@ describe('QuantityBehavior', () => {
 
   it('can not increment', () => {
     expect(
-      new QuantityBehavior().canIncrement?.(
-        createBox({ id: 'box1', texture: '' }, scene)
+      new QuantityBehavior({}, managers).canIncrement?.(
+        createBox({ id: 'box1', texture: '' }, managers, scene)
       )
     ).toBe(false)
   })
@@ -116,13 +122,14 @@ describe('QuantityBehavior', () => {
             quantifiable: { duration: 10 },
             movable: {}
           },
+          managers,
           scene
         )
       )
       behavior = /** @type {QuantityBehavior} */ (getTargetableBehavior(mesh))
     })
 
-    afterEach(() => moveManager.stop())
+    afterEach(() => managers.move.stop())
 
     it('attaches metadata to its mesh', () => {
       expectQuantity(mesh, 1)
@@ -175,6 +182,7 @@ describe('QuantityBehavior', () => {
       mesh.removeBehavior(behavior)
       mesh = createRoundToken(
         { id: 'roundToken', texture: '', diameter },
+        managers,
         scene
       )
       mesh.addBehavior(behavior, true)
@@ -243,8 +251,8 @@ describe('QuantityBehavior', () => {
       ]
       await mesh.metadata.increment?.([other3.id, other2.id, other1.id])
       expectQuantity(mesh, 9)
-      expectQuantityIndicator(other1, 0)
-      expectQuantityIndicator(other3, 0)
+      expectQuantityIndicator(managers, other1, 0)
+      expectQuantityIndicator(managers, other3, 0)
       expect(actionRecorded).toHaveBeenCalledOnce()
       expect(actionRecorded).toHaveBeenCalledWith({
         fn: 'increment',
@@ -551,7 +559,7 @@ describe('QuantityBehavior', () => {
       behavior.fromState({ quantity })
       expectQuantity(mesh, quantity)
 
-      moveManager.start(mesh, { x: 0, y: 0 })
+      managers.move.start(mesh, { x: 0, y: 0 })
       await sleep()
 
       expect(scene.meshes.length).toBe(meshCount + 2)
@@ -585,8 +593,8 @@ describe('QuantityBehavior', () => {
         prev: [0, 0, 0],
         fromHand: false
       })
-      expect(moveManager.isMoving(mesh)).toBe(false)
-      expect(moveManager.isMoving(created)).toBe(true)
+      expect(managers.move.isMoving(mesh)).toBe(false)
+      expect(managers.move.isMoving(created)).toBe(true)
     })
 
     it('does not decrement when moving selected mesh', async () => {
@@ -594,9 +602,9 @@ describe('QuantityBehavior', () => {
       const meshCount = scene.meshes.length
       behavior.fromState({ quantity })
       expectQuantity(mesh, quantity)
-      selectionManager.select(mesh)
+      managers.selection.select(mesh)
 
-      moveManager.start(mesh, { x: 0, y: 0 })
+      managers.move.start(mesh, { x: 0, y: 0 })
       await sleep()
 
       expect(scene.meshes.length).toBe(meshCount)
@@ -608,7 +616,7 @@ describe('QuantityBehavior', () => {
         prev: [0, 0, 0],
         fromHand: false
       })
-      expect(moveManager.isMoving(mesh)).toBe(true)
+      expect(managers.move.isMoving(mesh)).toBe(true)
     })
 
     it('can revert decrement meshes', async () => {
@@ -683,12 +691,12 @@ describe('QuantityBehavior', () => {
       expect(mesh.metadata.canIncrement?.(meshes[2])).toBe(false)
     })
   })
-})
 
-function expectQuantity(
-  /** @type {Mesh} */ mesh,
-  /** @type {number} */ quantity
-) {
-  expect(mesh.metadata?.quantity).toBe(quantity)
-  expectQuantityIndicator(mesh, quantity)
-}
+  function expectQuantity(
+    /** @type {Mesh} */ mesh,
+    /** @type {number} */ quantity
+  ) {
+    expect(mesh.metadata?.quantity).toBe(quantity)
+    expectQuantityIndicator(managers, mesh, quantity)
+  }
+})

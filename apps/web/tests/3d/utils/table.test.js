@@ -5,37 +5,34 @@
  */
 
 import { faker } from '@faker-js/faker'
-import { materialManager } from '@src/3d/managers'
 import { createTable } from '@src/3d/utils'
-import { beforeAll, describe, expect, it } from 'vitest'
+import { describe, expect, it } from 'vitest'
 
 import { configures3dTestEngine } from '../../test-utils'
 
 describe('createTable() 3D utility', () => {
   /** @type {Scene} */
   let scene
-  /** @type {Scene} */
-  let handScene
+  /** @type {import('@src/3d/managers').Managers} */
+  let managers
 
   configures3dTestEngine(created => {
     scene = created.scene
-    handScene = created.handScene
+    managers = created.managers
   })
-
-  beforeAll(() => materialManager.init({ scene, handScene }))
 
   it('creates a table mesh with parameters', () => {
     const width = faker.number.int(999)
     const height = faker.number.int(999)
-    const texture = faker.internet.url()
-    const table = createTable({ width, height, texture }, scene)
+    const texture = `/${faker.lorem.word()}`
+    const table = createTable({ width, height, texture }, managers, scene)
     const { boundingBox } = table.getBoundingInfo()
     expect(table.name).toEqual('table')
     expect(boundingBox.extendSize.x * 2).toEqual(width)
     expect(boundingBox.extendSize.z * 2).toEqual(height)
     expect(
       /** @type {Material} */ (table.material).diffuseTexture?.name
-    ).toEqual(texture)
+    ).toEqual('https://localhost:3000' + texture)
     expect(table.isPickable).toBe(false)
     expect(table.absolutePosition.x).toEqual(0)
     expect(table.absolutePosition.y).toBeCloseTo(-0.01)
@@ -44,7 +41,7 @@ describe('createTable() 3D utility', () => {
 
   it('creates a table mesh with a color', () => {
     const texture = `${faker.internet.color().toUpperCase()}FF`
-    const table = createTable({ texture }, scene)
+    const table = createTable({ texture }, managers, scene)
     expect(
       /** @type {Material} */ (table.material).diffuseColor
         ?.toGammaSpace()
@@ -54,7 +51,7 @@ describe('createTable() 3D utility', () => {
   })
 
   it('creates a table mesh with default values', () => {
-    const table = createTable(undefined, scene)
+    const table = createTable(undefined, managers, scene)
     const { boundingBox } = table.getBoundingInfo()
     expect(table.name).toEqual('table')
     expect(boundingBox.extendSize.x * 2).toEqual(400)

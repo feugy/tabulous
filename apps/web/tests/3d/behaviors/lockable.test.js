@@ -5,10 +5,6 @@
  * @typedef {import('@src/3d/behaviors').MoveBehavior} MoveBehavior
  * @typedef {import('@src/3d/utils').BehaviorNames} BehaviorNames
  */
-/**
- * @template {any[]} P, R
- * @typedef {import('vitest').SpyInstance<P, R>} SpyInstance
- */
 
 import { faker } from '@faker-js/faker'
 import {
@@ -17,7 +13,6 @@ import {
   MoveBehaviorName,
   StackBehaviorName
 } from '@src/3d/behaviors'
-import { controlManager, indicatorManager } from '@src/3d/managers'
 import { createBox } from '@src/3d/meshes'
 import { beforeAll, beforeEach, describe, expect, it, vi } from 'vitest'
 
@@ -26,29 +21,36 @@ import { configures3dTestEngine, expectMeshFeedback } from '../../test-utils'
 describe('LockBehavior', () => {
   const actionRecorded = vi.fn()
 
-  /** @type {SpyInstance<Parameters<typeof indicatorManager['registerFeedback']>, void>} */
+  /** @type {import('vitest').Spy<import('@src/3d/managers').IndicatorManager['registerFeedback']>} */
   let registerFeedbackSpy
   /** @type {Scene} */
   let scene
+  /** @type {import('@src/3d/managers').Managers} */
+  let managers
 
-  configures3dTestEngine(created => (scene = created.scene))
+  configures3dTestEngine(
+    created => {
+      scene = created.scene
+      managers = created.managers
+    },
+    { isSimulation: globalThis.use3dSimulation }
+  )
 
   beforeAll(() => {
-    controlManager.onActionObservable.add(actionRecorded)
-    indicatorManager.init({ scene })
+    managers.control.onActionObservable.add(actionRecorded)
   })
 
   beforeEach(() => {
-    vi.resetAllMocks()
-    registerFeedbackSpy = vi.spyOn(indicatorManager, 'registerFeedback')
+    vi.clearAllMocks()
+    registerFeedbackSpy = vi.spyOn(managers.indicator, 'registerFeedback')
   })
 
   it('has initial state', () => {
     const state = {
       isLocked: faker.datatype.boolean()
     }
-    const behavior = new LockBehavior(state)
-    const mesh = createBox({ id: 'box', texture: '' }, scene)
+    const behavior = new LockBehavior(state, managers)
+    const mesh = createBox({ id: 'box', texture: '' }, managers, scene)
 
     expect(behavior.mesh).toBeNull()
     expect(behavior.name).toEqual(LockBehaviorName)
@@ -60,13 +62,13 @@ describe('LockBehavior', () => {
   })
 
   it('can not restore state without mesh', () => {
-    expect(() => new LockBehavior().fromState({})).toThrow(
+    expect(() => new LockBehavior({}, managers).fromState({})).toThrow(
       'Can not restore state without mesh'
     )
   })
 
   it('can not toggle without mesh', () => {
-    const behavior = new LockBehavior()
+    const behavior = new LockBehavior({}, managers)
     behavior.toggleLock?.()
     expect(behavior.state).toEqual({ isLocked: false })
     expect(actionRecorded).not.toHaveBeenCalled()
@@ -76,6 +78,7 @@ describe('LockBehavior', () => {
     const isLocked = false
     const mesh = createBox(
       { id: 'box', texture: '', lockable: {}, movable: {} },
+      managers,
       scene
     )
     const behavior = getLockable(mesh)
@@ -91,6 +94,7 @@ describe('LockBehavior', () => {
   it('can hydrate with default state', () => {
     const mesh = createBox(
       { id: 'box', texture: '', lockable: {}, movable: {} },
+      managers,
       scene
     )
     const behavior = getLockable(mesh)
@@ -111,7 +115,11 @@ describe('LockBehavior', () => {
     const state = { isLocked: true }
 
     beforeEach(() => {
-      mesh = createBox({ id: 'box', texture: '', lockable: state }, scene)
+      mesh = createBox(
+        { id: 'box', texture: '', lockable: state },
+        managers,
+        scene
+      )
       behavior = getLockable(mesh)
     })
 
@@ -186,6 +194,7 @@ describe('LockBehavior', () => {
             movable: {},
             lockable: { isLocked: false }
           },
+          managers,
           scene
         )
     }
@@ -250,6 +259,7 @@ describe('LockBehavior', () => {
             movable: {},
             lockable: {}
           },
+          managers,
           scene
         )
       )

@@ -1,15 +1,7 @@
 // @ts-check
-/**
- * @typedef {import('@babylonjs/core').Mesh} Mesh
- * @typedef {import('@babylonjs/core').Scene} Scene
- * @typedef {import('@src/3d/utils/behaviors').SerializedMesh} SerializedMesh
- */
-
 import { Vector3, Vector4 } from '@babylonjs/core/Maths/math.vector.js'
 import { CreateBox } from '@babylonjs/core/Meshes/Builders/boxBuilder.js'
 
-import { controlManager } from '../managers/control'
-import { materialManager } from '../managers/material'
 import { registerBehaviors, serializeBehaviors } from '../utils/behaviors'
 import { applyInitialTransform, setExtras } from '../utils/mesh'
 
@@ -18,8 +10,9 @@ import { applyInitialTransform, setExtras } from '../utils/mesh'
  * Cards are boxes whith a given width, height and depth. Only top and back faces UVs can be specified
  * By default, the card dimension follows American poker card standard (beetween 1.39 & 1.41).
  * A card's texture must have 2 faces, back then front, aligned horizontally.
- * @param {Omit<SerializedMesh, 'shape'>} params - card parameters.
- * @param {Scene} scene - scene for the created mesh.
+ * @param {Omit<import('@src/3d/utils/behaviors').SerializedMesh, 'shape'>} params - card parameters.
+ * @param {import('@src/3d/managers').Managers} managers - current managers.
+ * @param {import('@babylonjs/core').Scene} scene - scene for the created mesh.
  * @returns the created card mesh.
  */
 export function createCard(
@@ -39,6 +32,7 @@ export function createCard(
     transform = undefined,
     ...behaviorStates
   },
+  managers,
   scene
 ) {
   const mesh = CreateBox(
@@ -60,7 +54,7 @@ export function createCard(
     scene
   )
   mesh.name = 'card'
-  materialManager.configure(mesh, texture)
+  managers.material.configure(mesh, texture)
   applyInitialTransform(mesh, transform)
   mesh.setAbsolutePosition(new Vector3(x, y, z))
   mesh.isPickable = false
@@ -84,8 +78,8 @@ export function createCard(
     }
   })
 
-  registerBehaviors(mesh, behaviorStates)
+  registerBehaviors(mesh, behaviorStates, managers)
 
-  controlManager.registerControlable(mesh)
+  managers.control.registerControlable(mesh)
   return mesh
 }

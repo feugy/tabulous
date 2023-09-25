@@ -11,7 +11,8 @@
   props={{
     replayRank: 0,
     playerById: new Map(players.map(player => [player.id, player])),
-    history: []
+    history: [],
+    currentPlayerId: players[2].id
   }}
   events={['sendMessage']}
   layout="centered"

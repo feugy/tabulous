@@ -606,6 +606,8 @@ exports[`thread and history 1`] = `
       </span>
     </button>
     <!--&lt;HistoryRecord&gt;-->
+     
+    
     
     
     <div
@@ -682,6 +684,8 @@ exports[`thread and history 1`] = `
       </span>
     </button>
     <!--&lt;HistoryRecord&gt;-->
+     
+    
     
     
     <button
@@ -720,6 +724,8 @@ exports[`thread and history 1`] = `
       </span>
     </button>
     <!--&lt;HistoryRecord&gt;-->
+     
+    
     
     
     <button
@@ -758,6 +764,8 @@ exports[`thread and history 1`] = `
       </span>
     </button>
     <!--&lt;HistoryRecord&gt;-->
+     
+    
     
     
     <span
@@ -841,6 +849,11 @@ exports[`thread and history 1`] = `
       </span>
     </button>
     <!--&lt;HistoryRecord&gt;-->
+     
+    
+    
+    
+    
     
     
   </div>

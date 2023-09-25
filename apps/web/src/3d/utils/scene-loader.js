@@ -8,6 +8,7 @@
  * @typedef {import('@tabulous/server/src/graphql').StackableState} StackableState
  * @typedef {import('@src/3d/behaviors/anchorable').AnchorBehavior} AnchorBehavior
  * @typedef {import('@src/3d/behaviors/stackable').StackBehavior} StackBehavior
+ * @typedef {import('@src/3d/managers').Managers} Managers
  */
 
 // mandatory side effect
@@ -27,7 +28,7 @@ import { createRoundToken } from '../meshes/round-token'
 import { createRoundedTile } from '../meshes/rounded-tile'
 import { restoreBehaviors } from './behaviors'
 
-/** @typedef {(state: Omit<SerializedMesh, 'shape'>, scene: Scene) => Mesh|Promise<Mesh>} MeshCreator */
+/** @typedef {(state: Omit<SerializedMesh, 'shape'>, managers: Managers, scene: Scene) => Mesh|Promise<Mesh>} MeshCreator */
 
 const logger = makeLogger('scene-loader')
 
@@ -47,7 +48,7 @@ const supportedNames = new Set([...meshCreatorByName.keys()])
 /**
  * Indicates whether a mesh can be serialized and loaded
  * @param {Mesh} mesh - tested mesh.
- * @returns {boolean} whether this mesh could be serialized and loaded.
+ * @returns whether this mesh could be serialized and loaded.
  */
 export function isSerializable(mesh) {
   return supportedNames.has(/** @type {Shape} */ (mesh.name))
@@ -74,15 +75,20 @@ export function serializeMeshes(scene) {
  * Creates a meshes into the provided scene.
  * @param {SerializedMesh} state - serialized mesh state.
  * @param {Scene} scene - 3D scene used.
+ * @param {Managers} managers - current managers.
  * @returns mesh created.
  */
-export async function createMeshFromState(state, scene) {
+export async function createMeshFromState(state, scene, managers) {
   const { shape } = state
   logger.debug({ state }, `create new ${shape} ${state.id}`)
   if (!supportedNames.has(shape)) {
     throw new Error(`mesh shape ${shape} is not supported`)
   }
-  return /** @type {MeshCreator} */ (meshCreatorByName.get(shape))(state, scene)
+  return /** @type {MeshCreator} */ (meshCreatorByName.get(shape))(
+    state,
+    managers,
+    scene
+  )
 }
 
 /**
@@ -91,8 +97,9 @@ export async function createMeshFromState(state, scene) {
  * - deletes existing mesh that are not found in the provided data
  * @param {Scene} scene - 3D scene used.
  * @param {SerializedMesh[]} meshes - a list of serialized meshes data.
+ * @param {Managers} managers - current managers.
  */
-export async function loadMeshes(scene, meshes) {
+export async function loadMeshes(scene, meshes, managers) {
   const disposables = new Set(scene.meshes)
   for (const mesh of disposables) {
     if (!isSerializable(mesh)) {
@@ -120,7 +127,11 @@ export async function loadMeshes(scene, meshes) {
       restoreBehaviors(mesh.behaviors, state)
     } else {
       logger.debug({ state }, `create new ${name} ${state.id}`)
-      mesh = await createMeshFromState(skipDelayableBehaviors(state), scene)
+      mesh = await createMeshFromState(
+        skipDelayableBehaviors(state),
+        scene,
+        managers
+      )
     }
     const stackBehavior = mesh.getBehaviorByName(StackBehaviorName)
     if (stackable && stackBehavior) {

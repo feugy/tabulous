@@ -29,7 +29,7 @@ describe.each([{ lang: 'fr' }, { lang: 'en' }])('$lang', ({ lang }) => {
     const game = 'cards'
 
     beforeEach(() => {
-      vi.resetAllMocks()
+      vi.clearAllMocks()
     })
 
     function renderComponent(props = {}) {

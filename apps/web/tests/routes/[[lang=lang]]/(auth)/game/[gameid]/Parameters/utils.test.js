@@ -1107,7 +1107,7 @@ describe('Parameters findViolations() utility', () => {
     }
 
     beforeEach(() => {
-      vi.resetAllMocks()
+      vi.clearAllMocks()
     })
 
     it('invokes enrichProps on valid then', () => {

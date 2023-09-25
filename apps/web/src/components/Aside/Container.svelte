@@ -12,6 +12,7 @@
    */
 
   import { isLobby as checkIfLobby } from '@src/utils'
+  import { beforeUpdate } from 'svelte'
   import { _ } from 'svelte-intl'
 
   import { ControlsHelp, FriendList, MinimizableSection, RuleViewer } from '..'
@@ -49,6 +50,7 @@
   /** @type {SectionTab[]} */
   let tabs = []
   let hasPeers = false
+  let previousConnectedLength = 0
 
   $: isLobby = checkIfLobby(game)
 
@@ -57,34 +59,47 @@
   $: hasInvites = friends?.some(({ isRequest }) => isRequest)
 
   $: {
-    tabs = [{ icon: 'people_alt', id: friendsId, key: 'F2' }]
+    // computes new tabs based onreceived game and peers
+    const newTabs = [{ icon: 'people_alt', id: friendsId, key: 'F2' }]
     if (game) {
       if ((game.availableSeats ?? 0) === 0 && playerById.size === 1) {
-        tabs.splice(0, 1)
+        newTabs.splice(0, 1)
       }
       if (!isLobby) {
-        tabs.push({ icon: 'help', id: helpId, key: 'F1' })
+        newTabs.push({ icon: 'help', id: helpId, key: 'F1' })
         if ((game.rulesBookPageCount ?? 0) > 1) {
-          tabs.splice(0, 0, { icon: 'auto_stories', id: rulesId, key: 'F3' })
+          newTabs.splice(0, 0, { icon: 'auto_stories', id: rulesId, key: 'F3' })
         }
       }
       if (hasPeers) {
-        tabs.splice(0, 0, { icon: 'contacts', id: playersId, key: 'F4' })
+        newTabs.splice(0, 0, { icon: 'contacts', id: playersId, key: 'F4' })
       }
     }
-    tab = isLobby ? tabs.length - 1 : 0
+    if (makeTabsKey(newTabs) !== makeTabsKey(tabs)) {
+      tabs = newTabs
+      tab = isLobby ? newTabs.length - 1 : 0
+    }
   }
-  $: if (hasPeers && connected?.length) {
-    tab = 0
-  }
+
+  beforeUpdate(() => {
+    // when someone connects, automatically displays videos,
+    if (connected?.length > previousConnectedLength) {
+      tab = 0
+    }
+    previousConnectedLength = connected?.length ?? 0
+  })
 
   function handleSetTab(
     /** @type {CustomEvent<{ currentTab: number }>} */ {
       detail: { currentTab }
     }
   ) {
-    // do nor use `bind:currentTab={tab}` because it computes tabs again, which reset cuttent tab
+    // do nor use `bind:currentTab={tab}` because it computes tabs again, which reset current tab
     tab = currentTab
+  }
+
+  function makeTabsKey(/** @type {SectionTab[]} */ tabs) {
+    return tabs.map(({ id }) => id).join('-')
   }
 </script>
 

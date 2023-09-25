@@ -7,9 +7,8 @@
 
 import { Color3 } from '@babylonjs/core/Maths/math.color'
 import { faker } from '@faker-js/faker'
-import { controlManager, materialManager } from '@src/3d/managers'
 import { createCard } from '@src/3d/meshes'
-import { beforeAll, beforeEach, describe, expect, it } from 'vitest'
+import { beforeEach, describe, expect, it } from 'vitest'
 
 import {
   configures3dTestEngine,
@@ -19,13 +18,17 @@ import {
 
 /** @type {Scene} */
 let scene
-configures3dTestEngine(created => (scene = created.scene))
+/** @type {import('@src/3d/managers').Managers} */
+let managers
 
-beforeAll(() => materialManager.init({ scene }))
+configures3dTestEngine(created => {
+  scene = created.scene
+  managers = created.managers
+})
 
 describe('createCard()', () => {
   it('creates a card with default values, faces and no behavior', async () => {
-    const mesh = await createCard({ id: '', texture: '' }, scene)
+    const mesh = await createCard({ id: '', texture: '' }, managers, scene)
     expect(mesh.name).toEqual('card')
     expectDimension(mesh, [3, 0.01, 4.25])
     expect(mesh.isPickable).toBe(false)
@@ -39,7 +42,7 @@ describe('createCard()', () => {
 
   it('creates a card with a single color', async () => {
     const color = '#1E282F'
-    const mesh = await createCard({ id: '', texture: color }, scene)
+    const mesh = await createCard({ id: '', texture: color }, managers, scene)
     expect(mesh.name).toEqual('card')
     expectDimension(mesh, [3, 0.01, 4.25])
     expect(mesh.isPickable).toBe(false)
@@ -57,6 +60,7 @@ describe('createCard()', () => {
         depth: 2,
         transform: { yaw: Math.PI * -0.5 }
       },
+      managers,
       scene
     )
     expect(mesh.name).toEqual('card')
@@ -103,6 +107,7 @@ describe('createCard()', () => {
           faceUV,
           ...behaviors
         },
+        managers,
         scene
       )
     })
@@ -130,9 +135,9 @@ describe('createCard()', () => {
     })
 
     it('unregisters card from controllables on disposal', () => {
-      expect(controlManager.isManaging(mesh)).toBe(true)
+      expect(managers.control.isManaging(mesh)).toBe(true)
       mesh.dispose()
-      expect(controlManager.isManaging(mesh)).toBe(false)
+      expect(managers.control.isManaging(mesh)).toBe(false)
     })
 
     it('serialize with its state', () => {

@@ -1,6 +1,10 @@
 /* eslint-disable no-unused-vars */
 import type { AbstractMesh } from '@babylonjs/core'
-import type { Assertion, AsymmetricMatchersContaining } from 'vitest'
+import type {
+  Assertion,
+  AsymmetricMatchersContaining,
+  SpyInstance
+} from 'vitest'
 
 interface CustomMatchers<R = unknown> {
   toEqualWithAngle<E extends { angle: number }>(expected: E): R
@@ -10,4 +14,5 @@ interface CustomMatchers<R = unknown> {
 declare module 'vitest' {
   interface Assertion<T = ?> extends CustomMatchers<T> {}
   interface AsymmetricMatchersContaining extends CustomMatchers {}
+  type Spy<T extends Function> = SpyInstance<Parameters<T>, ReturnType<T>>
 }

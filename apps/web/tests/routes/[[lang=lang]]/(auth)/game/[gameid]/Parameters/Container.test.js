@@ -11,7 +11,7 @@ describe('Parameters component', () => {
   const handleSubmit = vi.fn()
 
   beforeEach(() => {
-    vi.resetAllMocks()
+    vi.clearAllMocks()
   })
 
   async function renderComponent(/** @type {Schema} */ schema) {
