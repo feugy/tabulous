@@ -61,7 +61,7 @@ describe('Aside component', () => {
         connected: [],
         thread: [],
         playerById: new Map(),
-        user: null,
+        user,
         ...props
       }
     })
@@ -71,7 +71,6 @@ describe('Aside component', () => {
 
   it('can have friends tab only', () => {
     renderComponent({
-      user,
       friends: [{ player: players[1] }, { player: players[2] }],
       playerById: new Map(
         players.slice(0, 1).map(player => [player.id, player])
@@ -85,7 +84,6 @@ describe('Aside component', () => {
 
   it('opens friends tab when it contains requests', () => {
     renderComponent({
-      user,
       friends: [
         { player: players[1], isRequest: true },
         { player: players[2] }
@@ -103,7 +101,6 @@ describe('Aside component', () => {
   it('only has help on single player game without rules book', () => {
     renderComponent({
       game: { kind: 'belote' },
-      user,
       playerById: new Map(
         players.slice(0, 1).map(player => [player.id, player])
       )
@@ -116,7 +113,6 @@ describe('Aside component', () => {
 
   it('has help and rules book on single player game', () => {
     renderComponent({
-      user,
       game: { kind: 'splendor', rulesBookPageCount: 4 },
       playerById: toMap(players.slice(0, 1))
     })
@@ -131,7 +127,6 @@ describe('Aside component', () => {
 
   it('has help, friends and peer tabs on game without rules book', () => {
     renderComponent({
-      user,
       game: { kind: 'splendor' },
       playerById: toMap(players),
       thread
@@ -154,7 +149,6 @@ describe('Aside component', () => {
 
   it('has help, friends and peer tabs on game without rules book and no available seats', () => {
     renderComponent({
-      user,
       game: { kind: 'splendor', availableSeats: 0 },
       playerById: toMap(players),
       thread
@@ -177,7 +171,6 @@ describe('Aside component', () => {
 
   it('has help, friends, rules book and peer tabs on game', () => {
     renderComponent({
-      user,
       game: { kind: 'splendor', rulesBookPageCount: 4 },
       playerById: toMap(players),
       thread
@@ -201,7 +194,6 @@ describe('Aside component', () => {
 
   it('has only friends and peer tabs on lobby', () => {
     renderComponent({
-      user,
       game: { rulesBookPageCount: 4 },
       playerById: toMap(players),
       thread
@@ -217,7 +209,6 @@ describe('Aside component', () => {
 
   it('has streams for connected peers', async () => {
     renderComponent({
-      user,
       game: { kind: 'belote' },
       playerById: toMap(playingPlayers),
       connected,
@@ -241,7 +232,7 @@ describe('Aside component', () => {
   })
 
   it('can send messages', async () => {
-    renderComponent({ user, game: {}, playerById: toMap(players), thread })
+    renderComponent({ game: {}, playerById: toMap(players), thread })
 
     await fireEvent.click(screen.getAllByRole('tab')[1])
     expect(
@@ -265,7 +256,6 @@ describe('Aside component', () => {
 
     beforeEach(() => {
       ;({ component } = renderComponent({
-        user,
         game: { kind: 'splendor', rulesBookPageCount: 4 },
         playerById: toMap(playingPlayers),
         connected,
@@ -335,7 +325,13 @@ describe('Aside component', () => {
       await fireEvent.click(ruleTab)
       expect(screen.getByRole('tab', { selected: true })).toEqual(ruleTab)
       component.$set({
-        game: { kind: 'splendor', rulesBookPageCount: 4, meshs: [] }
+        game: {
+          id: 'blha',
+          created: Date.now(),
+          kind: 'splendor',
+          rulesBookPageCount: 4,
+          meshes: []
+        }
       })
       await tick()
       expect(screen.getByRole('tab', { selected: true })).toEqual(ruleTab)

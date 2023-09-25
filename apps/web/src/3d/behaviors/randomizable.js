@@ -319,7 +319,7 @@ function applyRotation(
   mesh.updateVerticesData(VertexBuffer.PositionKind, [...save.positions])
   mesh.updateVerticesData(VertexBuffer.NormalKind, [...save.normals])
   mesh.rotationQuaternion = /** @type {Quaternion} */ (
-    quaternionPerFace.get(face ?? 0)
+    quaternionPerFace.get(face ?? 1)
   ).clone()
   mesh.bakeCurrentTransformIntoVertices()
   mesh.refreshBoundingInfo()
