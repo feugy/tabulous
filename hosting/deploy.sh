@@ -7,6 +7,7 @@ set -x
 mkdir -p ~/nginx
 mkdir -p ~/systemd
 mkdir -p ~/server
+mkdir -p ~/game-utils
 mkdir -p ~/games
 mkdir -p ~/node_modules/@tabulous
 
@@ -18,6 +19,7 @@ mv -f ~/dist/.nvmrc ~/server
 
 # unpack files
 tar -x --file ~/dist/server.tar.gz -z --directory ~/server
+tar -x --file ~/dist/game-utils.tar.gz -z --directory ~/game-utils
 tar -x --file ~/dist/games.tar.gz -z --directory ~/games
 
 # creates modules internal links

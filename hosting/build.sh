@@ -21,6 +21,11 @@ tar --create --file ../server.tar.gz -z node_modules/ src/ migrations/ package.j
 cd ../..
 rm -rd dist/server
 
+# build game-utils
+cd apps/game-utils
+tar --create --file ../../dist/game-utils.tar.gz -z *
+cd ../..
+
 # build games
 cd apps/games
 tar --create --file ../../dist/games.tar.gz -z *
