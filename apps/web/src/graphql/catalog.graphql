@@ -10,7 +10,6 @@ query listCatalog {
       }
     }
     minAge
-    maxAge
     minTime
     minSeats
     maxSeats

@@ -17,7 +17,7 @@ export type CatalogItem = Pick<GameDescriptor, 'name' | 'locales'> &
   Partial<
     Pick<
       GameDescriptor,
-      'copyright' | 'minSeats' | 'maxSeats' | 'minAge' | 'maxAge' | 'minTime'
+      'copyright' | 'minSeats' | 'maxSeats' | 'minAge' | 'minTime'
     >
   >
 

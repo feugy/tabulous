@@ -15,15 +15,17 @@ cp .nvmrc dist/
 
 # build server
 rm -rf node_modules apps/*/node_modules
-pnpm --filter server --prod deploy dist/server
+pnpm -F server --ignore-scripts --prod deploy dist/server
 cd dist/server
 tar --create --file ../server.tar.gz -z node_modules/ src/ migrations/ package.json 
 cd ../..
 rm -rd dist/server
 
 # build game-utils
-cd apps/game-utils
-tar --create --file ../../dist/game-utils.tar.gz -z *
+rm -rf node_modules apps/*/node_modules
+pnpm -F game-utils --ignore-scripts --prod deploy dist/game-utils
+cd dist/game-utils
+tar --create --file ../../dist/game-utils.tar.gz -z node_modules/ src/ package.json
 cd ../..
 
 # build games

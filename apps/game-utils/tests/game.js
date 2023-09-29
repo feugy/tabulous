@@ -38,7 +38,6 @@ export function buildDescriptorTestSuite(
       expectNumber(descriptor, 'minSeats')
       expectNumber(descriptor, 'maxSeats', 0, 8)
       expectNumber(descriptor, 'minAge')
-      expectNumber(descriptor, 'maxAge')
       expectNumber(descriptor, 'minTime')
       expectObject(descriptor, 'copyright', {
         authors: ['array', 'object', { name: ['string'] }],

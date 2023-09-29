@@ -46,8 +46,6 @@ declare module '.' {
     maxSeats?: number
     /** minimum age suggested. */
     minAge?: number
-    /** maximum age suggested. */
-    maxAge?: number
     /** minimum time observed. */
     minTime?: number
     /** copyright data, meaning this item has restricted access. */

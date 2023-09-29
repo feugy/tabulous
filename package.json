@@ -21,7 +21,7 @@
     "lint": "eslint .",
     "migrate": "pnpm -F server migrate",
     "prepare": "husky install",
-    "start": "pnpm run -r --stream --if-present start",
+    "start": "pnpm run -F server -F web --stream start",
     "test": "pnpm -r --stream --if-present t",
     "test:cli": "pnpm -F cli t",
     "test:games": "pnpm -F games t",
