@@ -39,6 +39,7 @@
   },
   "files": [
     "src/",
-    "migrations/"
+    "migrations/",
+    "package.json"
   ]
 }

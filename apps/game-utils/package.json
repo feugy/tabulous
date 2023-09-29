@@ -10,10 +10,14 @@
     "typecheck": "tsc -p jsconfig.json --noEmit"
   },
   "dependencies": {
-    "@tabulous/types": "workspace:*",
     "deepmerge": "^4.3.1"
   },
   "devDependencies": {
+    "@tabulous/types": "workspace:*",
     "ajv": "^8.12.0"
-  }
+  },
+  "files": [
+    "src/",
+    "package.json"
+  ]
 }

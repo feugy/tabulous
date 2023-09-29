@@ -10,7 +10,7 @@
   "repository": {
     "url": "https://github.com/feugy/tabulous"
   },
-  "packageManager": "pnpm@8.5.1",
+  "packageManager": "pnpm@8.8.0",
   "scripts": {
     "dev:cli": "pnpm -F cli test:dev",
     "dev:server": "pnpm -F server test:dev",

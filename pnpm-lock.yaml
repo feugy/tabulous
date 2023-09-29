@@ -121,13 +121,13 @@ importers:
 
   apps/game-utils:
     dependencies:
-      '@tabulous/types':
-        specifier: workspace:*
-        version: link:../types
       deepmerge:
         specifier: ^4.3.1
         version: 4.3.1
     devDependencies:
+      '@tabulous/types':
+        specifier: workspace:*
+        version: link:../types
       ajv:
         specifier: ^8.12.0
         version: 8.12.0

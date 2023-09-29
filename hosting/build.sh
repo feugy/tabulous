@@ -17,7 +17,7 @@ cp .nvmrc dist/
 rm -rf node_modules apps/*/node_modules
 pnpm -F server --ignore-scripts --prod deploy dist/server
 cd dist/server
-tar --create --file ../server.tar.gz -z node_modules/ src/ migrations/ package.json 
+tar --create --file ../server.tar.gz -z * 
 cd ../..
 rm -rd dist/server
 
@@ -25,8 +25,9 @@ rm -rd dist/server
 rm -rf node_modules apps/*/node_modules
 pnpm -F game-utils --ignore-scripts --prod deploy dist/game-utils
 cd dist/game-utils
-tar --create --file ../../dist/game-utils.tar.gz -z node_modules/ src/ package.json
+tar --create --file ../../dist/game-utils.tar.gz -z *
 cd ../..
+rm -rd dist/game-utils
 
 # build games
 cd apps/games
