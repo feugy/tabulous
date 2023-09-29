@@ -1,6 +1,4 @@
 // @ts-check
-/** @typedef {import('@babylonjs/core').Mesh} Mesh */
-
 import { Scene } from '@babylonjs/core/scene.js'
 
 /**
@@ -14,13 +12,13 @@ export class ExtendedScene extends Scene {
    */
   constructor(engine, options) {
     super(engine, options)
-    /** @type {Map<string, Mesh>} */
+    /** @type {Map<string, import('@babylonjs/core').Mesh>} */
     this.meshById = new Map()
     this.detachControl()
   }
 
   /**
-   * @param {Mesh} mesh - added mesh.
+   * @param {import('@babylonjs/core').Mesh} mesh - added mesh.
    * @param {boolean} [recursive] - whether to add children meshes as well.
    * @see https://doc.babylonjs.com/typedoc/classes/babylon.scene#addMesh
    */
@@ -37,7 +35,7 @@ export class ExtendedScene extends Scene {
   }
 
   /**
-   * @param {Mesh} mesh - removed mesh.
+   * @param {import('@babylonjs/core').Mesh} mesh - removed mesh.
    * @param {boolean} [recursive] - whether to remove children meshes as well.
    * @returns removed mesh index.
    * @see https://doc.babylonjs.com/typedoc/classes/babylon.scene#removeMesh
@@ -53,7 +51,9 @@ export class ExtendedScene extends Scene {
    * @see https://doc.babylonjs.com/typedoc/classes/babylon.scene#getMeshByID
    */
   getMeshById(id) {
-    return /** @type {?Mesh} */ (this.meshById.get(id) ?? null)
+    return /** @type {?import('@babylonjs/core').Mesh} */ (
+      this.meshById.get(id) ?? null
+    )
   }
 
   /** @see https://doc.babylonjs.com/typedoc/classes/babylon.scene#dispose */

@@ -1,13 +1,4 @@
 // @ts-check
-/**
- * @typedef {import('@babylonjs/core').Engine} Engine
- * @typedef {import('@babylonjs/core').Mesh} Mesh
- * @typedef {import('@babylonjs/core').Scene} Scene
- * @typedef {import('@src/3d/managers').Action} Action
- * @typedef {import('@tabulous/server/src/graphql').HistoryRecord} HistoryRecord
- * @typedef {import('@tabulous/server/src/graphql').Mesh} SerializedMesh
- */
-
 import { Vector3 } from '@babylonjs/core/Maths/math.vector'
 import { createCard } from '@src/3d/meshes'
 import { animateMove } from '@src/3d/utils'
@@ -16,15 +7,15 @@ import { beforeEach, describe, expect, it, vi } from 'vitest'
 import { configures3dTestEngine } from '../../test-utils'
 
 describe('managers.Control', () => {
-  /** @type {Engine} */
+  /** @type {import('@babylonjs/core').Engine} */
   let engine
-  /** @type {Scene} */
+  /** @type {import('@babylonjs/core').Scene} */
   let scene
-  /** @type {Mesh} */
+  /** @type {import('@babylonjs/core').Mesh} */
   let mesh
-  /** @type {Mesh} */
+  /** @type {import('@babylonjs/core').Mesh} */
   let mesh2
-  /** @type {HistoryRecord[]} */
+  /** @type {import('@tabulous/types').HistoryRecord[]} */
   let history
   let rank = 0
   /** @type {import('@src/3d/managers').Managers} */
@@ -102,7 +93,7 @@ describe('managers.Control', () => {
       })
 
       it('records action with no revert', () => {
-        /** @type {Action} */
+        /** @type {import('@src/3d/managers').Action} */
         const action = {
           meshId: mesh.id,
           fn: 'flip',
@@ -122,7 +113,7 @@ describe('managers.Control', () => {
       })
 
       it('can record action with revert', () => {
-        /** @type {Action} */
+        /** @type {import('@src/3d/managers').Action} */
         const action = {
           meshId: mesh.id,
           fn: 'push',
@@ -287,7 +278,7 @@ describe('managers.Control', () => {
           prev: [0, 0, 0],
           fromHand: false
         }
-        /** @type {Action} */
+        /** @type {import('@src/3d/managers').Action} */
         const draw1 = { meshId: mesh.id, args: [], fn: 'draw', fromHand: false }
         const move1_2 = {
           meshId: mesh.id,
@@ -301,7 +292,7 @@ describe('managers.Control', () => {
           prev: [0, 0, 0],
           fromHand: false
         }
-        /** @type {Action} */
+        /** @type {import('@src/3d/managers').Action} */
         const draw2 = {
           meshId: mesh2.id,
           args: [],
@@ -354,7 +345,7 @@ describe('managers.Control', () => {
           prev: [1, 0.5, 1],
           fromHand: false
         }
-        /** @type {Action} */
+        /** @type {import('@src/3d/managers').Action} */
         const draw1 = { meshId: mesh.id, args: [], fn: 'draw', fromHand: false }
         const move3 = {
           meshId: mesh.id,
@@ -398,7 +389,7 @@ describe('managers.Control', () => {
       const playerId2 = 'player-id-2'
 
       function makeComparable(
-        /** @type {SerializedMesh|undefined} */ state,
+        /** @type {import('@tabulous/types').Mesh|undefined} */ state,
         approx = false
       ) {
         return state

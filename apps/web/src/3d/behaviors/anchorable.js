@@ -1,19 +1,4 @@
 // @ts-check
-/**
- * @typedef {import('@babylonjs/core').Mesh} Mesh
- * @typedef {import('@babylonjs/core').Scene} Scene
- * @typedef {import('@tabulous/server/src/graphql').AnchorableState} AnchorableState
- * @typedef {import('@tabulous/server/src/graphql').ActionName} ActionName
- * @typedef {import('@src/3d/behaviors/stackable').StackBehavior} StackBehavior
- * @typedef {import('@src/3d/behaviors/targetable').DropDetails} DropDetails
- * @typedef {import('@src/3d/managers/move').MoveDetails} MoveDetails
- * @typedef {import('@src/3d/managers/target').SingleDropZone} SingleDropZone
- */
-/**
- * @template T
- * @typedef {import('@babylonjs/core').Observer<T>} Observer
- */
-
 import { Vector3 } from '@babylonjs/core/Maths/math.vector.js'
 
 import { makeLogger } from '../../utils/logger'
@@ -30,7 +15,7 @@ import {
 import { AnchorBehaviorName } from './names'
 import { TargetBehavior } from './targetable'
 
-/** @typedef {AnchorableState & Required<Pick<AnchorableState, 'duration'|'anchors'>>} RequiredAnchorableState */
+/** @typedef {import('@tabulous/types').AnchorableState & Required<Pick<import('@tabulous/types').AnchorableState, 'duration'|'anchors'>>} RequiredAnchorableState */
 
 const logger = makeLogger(AnchorBehaviorName)
 
@@ -38,26 +23,23 @@ export class AnchorBehavior extends TargetBehavior {
   /**
    * Creates behavior to make a mesh anchorable: it has one or several anchors to snap other meshes.
    * Each anchor can take up to one mesh only.
-   * @param {AnchorableState} state - behavior state.
-   * @param {import('@src/3d/managers').Managers} managers - current managers.
+   * @param {import('@tabulous/types').AnchorableState} state - behavior state.
+   * @param {import('../managers').Managers} managers - current managers.
    */
   constructor(state, managers) {
     super({}, managers)
-    /** @type {RequiredAnchorableState} state - the behavior's current state. */
+    /** the behavior's current state. */
     this.state = /** @type {RequiredAnchorableState} */ (state)
-    /** @protected @type {?Observer<DropDetails>} */
+    /** @protected @type {?import('@babylonjs/core').Observer<import('../managers').DropDetails>} */
     this.dropObserver = null
-    /** @protected @type {?Observer<MoveDetails>} */
+    /** @protected @type {?import('@babylonjs/core').Observer<import('../managers').MoveDetails>} */
     this.moveObserver = null
-    /** @protected @type {?Observer<import('@src/3d/managers').ActionOrMove>}} */
+    /** @protected @type {?import('@babylonjs/core').Observer<import('../managers').ActionOrMove>}} */
     this.actionObserver = null
-    /** @internal @type {Map<string, SingleDropZone>} */
+    /** @internal @type {Map<string, import('../managers').SingleDropZone>} */
     this.zoneBySnappedId = new Map()
   }
 
-  /**
-   * @property {string} name - this behavior's constant name.
-   */
   get name() {
     return AnchorBehaviorName
   }
@@ -70,7 +52,7 @@ export class AnchorBehavior extends TargetBehavior {
    * - the `unsnapAll()` method.
    * It binds to its drop observable to snap dropped meshes on the anchor (unless the anchor is already full).
    * It binds to the drag manager to unsnap dragged meshes, when dragged independently from the current mesh
-   * @param {Mesh} mesh - which becomes anchorable.
+   * @param {import('@babylonjs/core').Mesh} mesh - which becomes anchorable.
    */
   attach(mesh) {
     super.attach(mesh)
@@ -97,7 +79,9 @@ export class AnchorBehavior extends TargetBehavior {
         this.zoneBySnappedId.has(mesh?.id) &&
         !(
           this.managers.selection.meshes.has(mesh) &&
-          this.managers.selection.meshes.has(/** @type {Mesh} */ (this.mesh))
+          this.managers.selection.meshes.has(
+            /** @type {import('@babylonjs/core').Mesh} */ (this.mesh)
+          )
         )
       ) {
         this.unsnap(mesh.id)
@@ -233,7 +217,7 @@ export class AnchorBehavior extends TargetBehavior {
 
   /**
    * Revert snap and unsnap actions. Ignores other actions
-   * @param {ActionName} action - reverted action.
+   * @param {import('@tabulous/types').ActionName} action - reverted action.
    * @param {any[]} [args] - reverted arguments.
    */
   async revert(action, args = []) {
@@ -259,7 +243,7 @@ export class AnchorBehavior extends TargetBehavior {
 
   /**
    * Updates this behavior's state and mesh to match provided data.
-   * @param {AnchorableState} state - state to update to.
+   * @param {import('@tabulous/types').AnchorableState} state - state to update to.
    */
   fromState({ anchors = [], duration = 100 } = {}) {
     if (!this.mesh) {
@@ -394,7 +378,7 @@ async function internalUnsnap(
 /**
  * @param {AnchorBehavior} behavior - concerned behavior.
  * @param {string} snappedId - snapped mesh id.
- * @param {SingleDropZone} zone - drop zone.
+ * @param {import('../managers').SingleDropZone} zone - drop zone.
  * @param {boolean} [loading=false] - whether the scene is loading.
  */
 async function snapToAnchor(behavior, snappedId, zone, loading = false) {
@@ -441,8 +425,8 @@ async function snapToAnchor(behavior, snappedId, zone, loading = false) {
 
 /**
  * @param {AnchorBehavior} behavior - concerned behavior.
- * @param {SingleDropZone} zone - drop zone.
- * @param {Mesh} snapped - snapped mesh.
+ * @param {import('../managers').SingleDropZone} zone - drop zone.
+ * @param {import('@babylonjs/core').Mesh} snapped - snapped mesh.
  */
 function setAnchor(behavior, zone, snapped) {
   const {
@@ -459,8 +443,8 @@ function setAnchor(behavior, zone, snapped) {
 
 /**
  * @param {AnchorBehavior} behavior - concerned behavior.
- * @param {SingleDropZone} zone - drop zone.
- * @param {Mesh} snapped - unsnapped mesh.
+ * @param {import('../managers').SingleDropZone} zone - drop zone.
+ * @param {import('@babylonjs/core').Mesh} snapped - unsnapped mesh.
  */
 function unsetAnchor(behavior, zone, snapped) {
   const {
@@ -475,7 +459,7 @@ function unsetAnchor(behavior, zone, snapped) {
 }
 
 /**
- * @param {Scene|undefined} scene - scene containing meshes.
+ * @param {import('@babylonjs/core').Scene|undefined} scene - scene containing meshes.
  * @param {string} meshId - searched mesh id.
  * @returns list of stacked meshes, if any.
  */
@@ -484,6 +468,8 @@ function getMeshList(scene, meshId) {
   if (!mesh) {
     return null
   }
-  const stackable = /** @type {?StackBehavior} */ (getTargetableBehavior(mesh))
+  const stackable = /** @type {?import('.').StackBehavior} */ (
+    getTargetableBehavior(mesh)
+  )
   return stackable?.stack ? [...stackable.stack] : [mesh]
 }

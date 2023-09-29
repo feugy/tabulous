@@ -1,11 +1,4 @@
 // @ts-check
-/**
- * @typedef {import('rxjs').Subscription} Subscription
- * @typedef {import('@tabulous/server/src/graphql').Player} Player
- * @typedef {import('@tabulous/server/src/graphql').TurnCredentials} TurnCredentials
- * @typedef {import('@src/utils').StreamState} StreamState
- * @typedef {import('@src/utils').Stream} Stream
- */
 
 // mandatory side effect
 import 'webrtc-adapter'
@@ -22,12 +15,12 @@ import {
   stream$
 } from './stream'
 
-/** @typedef {{ playerId: string } & Partial<StreamState>} Connected */
+/** @typedef {{ playerId: string } & Partial<import('../utils').StreamState>} Connected */
 
 const logger = makeLogger('peer-channels')
 
 /**
- * @typedef {object} Message message received or sent viw WebRTC.
+ * @typedef {object} WebRTCMessage message received or sent viw WebRTC.
  * @property {string} playerId - if of the sending/receiving player.
  * @property {?} data - data sent or received.
  */
@@ -35,20 +28,20 @@ const logger = makeLogger('peer-channels')
 const bitrate = 128
 /** @type {Map<string, PeerConnection>} */
 const connections = new Map()
-/** @type {Subject<Message>} */
+/** @type {Subject<WebRTCMessage>} */
 const lastMessageSent$ = new Subject()
-/** @type {Subject<Message>} */
+/** @type {Subject<WebRTCMessage>} */
 const lastMessageReceived$ = new Subject()
 const connected$ = new BehaviorSubject(/** @type {Connected[]} */ ([]))
 /** @type {Subject<string>} */
 const lastConnectedId$ = new Subject()
 /** @type {Subject<string>} */
 const lastDisconnectedId$ = new Subject()
-/** @type {Subscription[]} */
+/** @type {import('rxjs').Subscription[]} */
 let subscriptions = []
-/** @type {?{ player: Player }} */
+/** @type {?{ player: import('@tabulous/types').Player }} */
 let current = null
-/** @type {Stream} */
+/** @type {import('../utils').Stream} */
 let local = {
   stream: null,
   muted: false,
@@ -83,8 +76,8 @@ export const lastDisconnectedId = lastDisconnectedId$.asObservable()
 
 /**
  * Configures communication channels in order to honor other players' connection requests
- * @param {Player} player - current player
- * @param {TurnCredentials} turnCredentials - turn credentials from session.
+ * @param {import('@tabulous/types').Player} player - current player
+ * @param {import('@tabulous/types').TurnCredentials} turnCredentials - turn credentials from session.
  * @param {string} gameId - joined game Id.
  * @returns {Promise<void>}
  */
@@ -168,7 +161,7 @@ export async function openChannels(player, turnCredentials, gameId) {
  * Connects with another player, asking to attach media if necessary.
  * @async
  * @param {string} playerId - id of the player to connect with.
- * @param {TurnCredentials} turnCredentials - turn credentials from session.
+ * @param {import('@tabulous/types').TurnCredentials} turnCredentials - turn credentials from session.
  * @throws {Error} when no connected peer is matching provided id.
  */
 export async function connectWith(playerId, turnCredentials) {
@@ -271,7 +264,12 @@ function refreshConnected() {
   connected$.next(
     peers.length > 0
       ? [
-          { playerId: /** @type {{ player: Player }} */ (current).player.id },
+          {
+            playerId:
+              /** @type {{ player: import('@tabulous/types').Player }} */ (
+                current
+              ).player.id
+          },
           ...peers.map(({ playerId, remote }) => ({
             playerId: /** @type {string} */ (playerId),
             ...remote

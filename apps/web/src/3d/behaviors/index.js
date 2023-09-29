@@ -1,3 +1,4 @@
+// @ts-check
 export * from './anchorable'
 export * from './animatable'
 export * from './detailable'

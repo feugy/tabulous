@@ -1,10 +1,4 @@
 // @ts-check
-/**
- * @typedef {import('@babylonjs/core').Mesh} Mesh
- * @typedef {import('@babylonjs/core').Vector3} Vector3
- * @typedef {import('@src/3d/utils').Vector3KeyFrame} Vector3KeyFrame
- */
-
 import { Animation } from '@babylonjs/core/Animations/animation'
 
 import { runAnimation } from '../utils/behaviors'
@@ -21,7 +15,7 @@ export class AnimateBehavior {
    * @param {number} [params.frameRate=60] - number of frames per second.
    */
   constructor({ frameRate } = {}) {
-    /** @type {?Mesh} mesh - the related mesh. */
+    /** @type {?import('@babylonjs/core').Mesh} mesh - the related mesh. */
     this.mesh = null
     /** @type {number} frameRate - number of frames per second. */
     this.frameRate = frameRate ?? 60
@@ -43,9 +37,6 @@ export class AnimateBehavior {
     )
   }
 
-  /**
-   * @property {string} name - this behavior's constant name.
-   */
   get name() {
     return AnimateBehaviorName
   }
@@ -58,7 +49,7 @@ export class AnimateBehavior {
 
   /**
    * Attaches this behavior to a mesh.
-   * @param {Mesh} mesh - which becomes detailable.
+   * @param {import('@babylonjs/core').Mesh} mesh - which becomes detailable.
    */
   attach(mesh) {
     this.mesh = mesh
@@ -77,8 +68,8 @@ export class AnimateBehavior {
    * - applies gravity (if requested)
    * - returns
    * Does nothing if the mesh is already being animated.
-   * @param {Vector3} to - the desired new absolute position.
-   * @param {?Vector3} rotation - its final rotation (set to null to leave unmodified).
+   * @param {import('@babylonjs/core').Vector3} to - the desired new absolute position.
+   * @param {?import('@babylonjs/core').Vector3} rotation - its final rotation (set to null to leave unmodified).
    * @param {number} duration - move duration (in milliseconds).
    * @param {boolean} [gravity=true] - applies gravity at the end.
    */
@@ -91,7 +82,7 @@ export class AnimateBehavior {
       {
         animation: moveAnimation,
         duration: mesh.getEngine().isLoading ? 0 : duration,
-        keys: /** @type {Vector3KeyFrame[]} */ ([
+        keys: /** @type {import('../utils').Vector3KeyFrame[]} */ ([
           {
             frame: 0,
             values: convertToLocal(mesh.absolutePosition, mesh).asArray()
@@ -104,7 +95,7 @@ export class AnimateBehavior {
       frameSpecs.push({
         animation: rotateAnimation,
         duration: mesh.getEngine().isLoading ? 0 : duration,
-        keys: /** @type {Vector3KeyFrame[]} */ ([
+        keys: /** @type {import('../utils').Vector3KeyFrame[]} */ ([
           { frame: 0, values: mesh.rotation.asArray() },
           { frame: 100, values: rotation.asArray() }
         ])

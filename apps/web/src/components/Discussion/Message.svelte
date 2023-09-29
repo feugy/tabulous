@@ -1,17 +1,12 @@
 <script>
   // @ts-check
-  /**
-   * @typedef {import('@src/stores/game-manager').Player} Player
-   * @typedef {import('@tabulous/server/src/graphql').Message} Message
-   */
-
   import { PlayerThumbnail } from '@src/components'
   import { _ } from 'svelte-intl'
 
-  /** @type {Player|undefined} message's author. */
+  /** @type {import('@src/stores').PlayerWithPref|undefined} message's author. */
   export let player
 
-  /** @type {Message} message text content. */
+  /** @type {import('@tabulous/types').Message} message text content. */
   export let item
 </script>
 

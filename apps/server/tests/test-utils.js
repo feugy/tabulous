@@ -100,17 +100,6 @@ export function mockMethods(object) {
 }
 
 /**
- * Performs a deep clone, using JSON parse and stringify
- * This is a slow, destructive (functions, Date and Regex are lost) method, only suitable in tests
- * @template {object} T
- * @param {T} object - cloned object
- * @returns {T} a clone
- */
-export function cloneAsJSON(object) {
-  return JSON.parse(JSON.stringify(object))
-}
-
-/**
  * For testing purposes, signs a player id in a valid JWT.
  * @param {string} playerId - signed player id.
  * @param {string} key - key used to sign the token.

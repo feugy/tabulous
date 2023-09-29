@@ -1,13 +1,4 @@
 // @ts-check
-/**
- * @typedef {import('@src/graphql').Friendship} Friendship
- * @typedef {import('@src/graphql').PlayerFragment} PlayerFragment
- */
-/**
- * @template {any[]} P, R
- * @typedef {import('vitest').Mock<P, R>} Mock
- */
-
 import { faker } from '@faker-js/faker'
 import { FriendList } from '@src/components'
 import {
@@ -34,9 +25,7 @@ vi.mock('@src/stores/friends')
 vi.mock('@src/stores/players')
 vi.mock('@src/stores/game-manager')
 
-const searchPlayers = /** @type {Mock<[string], Promise<PlayerFragment[]>>} */ (
-  actualSearchPlayers
-)
+const searchPlayers = vi.mocked(actualSearchPlayers)
 
 describe('FriendList component', () => {
   const user = {
@@ -579,7 +568,7 @@ describe('FriendList component', () => {
 
 function expectFriendships(
   /** @type {HTMLElement[]} */ actualItems,
-  /** @type {Friendship[]} */ expectedFriends
+  /** @type {Partial<import('@src/graphql').Friendship>[]} */ expectedFriends
 ) {
   for (const [i, item] of actualItems.entries()) {
     const { player, isRequest, isProposal } = expectedFriends[i]
@@ -587,18 +576,18 @@ function expectFriendships(
       ? translate('labels.friendship-requested', player)
       : isProposal
       ? translate('labels.friendship-proposed', player)
-      : player.username
+      : player?.username
     expect(
       within(item).getByRole('term'),
       `friend rank #${1 + i}`
-    ).toHaveTextContent(label)
+    ).toHaveTextContent(label ?? 'not found')
   }
   expect(actualItems).toHaveLength(expectedFriends.length)
 }
 
 function expectPlayers(
   /** @type {HTMLElement[]} */ actualItems,
-  /** @type {PlayerFragment[]} */ expectedPlayers
+  /** @type {import('@src/graphql').Player[]} */ expectedPlayers
 ) {
   for (const [i, item] of actualItems.entries()) {
     expect(

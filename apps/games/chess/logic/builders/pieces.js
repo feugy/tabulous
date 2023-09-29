@@ -1,13 +1,8 @@
 // @ts-check
-/**
- * @typedef {import('@tabulous/server/src/graphql').Mesh} Mesh
- * @typedef {import('../constants').Side} Side
- */
-
 import { blackId, colors, pieces } from '../constants.js'
 
-export function buildPieces(/** @type {Side} */ color) {
-  /** @type {Mesh[]} */
+export function buildPieces(/** @type {import('../constants').Side} */ color) {
+  /** @type {import('@tabulous/types').Mesh[]} */
   const meshes = []
   const invert = color === blackId
   for (const kind of pieces) {

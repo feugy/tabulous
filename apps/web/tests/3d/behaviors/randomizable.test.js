@@ -1,9 +1,4 @@
 // @ts-check
-/**
- * @typedef {import('@babylonjs/core').Mesh} Mesh
- * @typedef {import('@babylonjs/core').Scene} Scene
- */
-
 import { RandomBehavior, RandomBehaviorName } from '@src/3d/behaviors'
 import {
   createBox,
@@ -20,7 +15,7 @@ import { configures3dTestEngine } from '../../test-utils'
 
 describe('RandomBehavior', () => {
   const actionRecorded = vi.fn()
-  /** @type {Scene} */
+  /** @type {import('@babylonjs/core').Scene} */
   let scene
   /** @type {import('@src/3d/managers').Managers} */
   let managers
@@ -62,21 +57,23 @@ describe('RandomBehavior', () => {
   })
 
   it('has initial state', async () => {
-    const state = { face: 3, quaternionPerFace: getQuaternions(6), max: 6 }
-    const behavior = new RandomBehavior(state, managers)
+    const behavior = new RandomBehavior({}, managers, {
+      face: 3,
+      quaternionPerFace: getQuaternions(6),
+      max: 6
+    })
     const mesh = createBox({ id: 'box', texture: '' }, managers, scene)
 
     expect(behavior.mesh).toBeNull()
     expect(behavior.name).toEqual(RandomBehaviorName)
-    expect(behavior.state).toEqual(state)
+    expect(behavior.state).toEqual({})
 
     mesh.addBehavior(behavior, true)
     expect(behavior.mesh).toEqual(mesh)
   })
 
   it('can not build without quaternions', () => {
-    // @ts-expect-error
-    expect(() => new RandomBehavior({})).toThrow(
+    expect(() => new RandomBehavior({}, managers, { max: 4 })).toThrow(
       'RandomBehavior needs quaternionPerFace'
     )
   })
@@ -84,39 +81,38 @@ describe('RandomBehavior', () => {
   it('can not build without maximum', () => {
     expect(
       () =>
-        // @ts-expect-error -- missing max property
-        new RandomBehavior({ quaternionPerFace: getQuaternions(8) }, managers)
+        new RandomBehavior({}, managers, {
+          quaternionPerFace: getQuaternions(8)
+        })
     ).toThrow(`RandomBehavior's max should be higher than 1`)
   })
 
   it('can not build without positive maximum', () => {
     expect(
       () =>
-        new RandomBehavior(
-          { max: 0, quaternionPerFace: getQuaternions(8) },
-          managers
-        )
+        new RandomBehavior({}, managers, {
+          max: 0,
+          quaternionPerFace: getQuaternions(8)
+        })
     ).toThrow(`RandomBehavior's max should be higher than 1`)
   })
 
   it('can not restore state without mesh', () => {
     expect(() =>
-      new RandomBehavior(
-        {
-          max: 4,
-          quaternionPerFace: getQuaternions(4)
-        },
-        managers
-      ).fromState({ face: 1 })
+      new RandomBehavior({}, managers, {
+        max: 4,
+        quaternionPerFace: getQuaternions(4)
+      }).fromState({ face: 1 })
     ).toThrow('Can not restore state without mesh')
   })
 
   it('can not restore state with face higher than maximum', async () => {
-    const mesh = await createBox(
+    const mesh = await createDie(
       {
         id: 'box',
         texture: '',
-        randomizable: { max: 4, quaternionPerFace: getQuaternions(8), face: 1 }
+        faces: 4,
+        randomizable: { face: 1 }
       },
       managers,
       scene
@@ -129,14 +125,10 @@ describe('RandomBehavior', () => {
 
   it('can not random without mesh', () => {
     const face = 2
-    const behavior = new RandomBehavior(
-      {
-        face,
-        max: 4,
-        quaternionPerFace: getQuaternions(4)
-      },
-      managers
-    )
+    const behavior = new RandomBehavior({ face }, managers, {
+      max: 4,
+      quaternionPerFace: getQuaternions(4)
+    })
     behavior.random()
     expect(behavior.state).toMatchObject({ face })
     expect(actionRecorded).not.toHaveBeenCalled()
@@ -144,14 +136,10 @@ describe('RandomBehavior', () => {
 
   it('can not set face without mesh', () => {
     const face = 2
-    const behavior = new RandomBehavior(
-      {
-        face,
-        max: 4,
-        quaternionPerFace: getQuaternions(4)
-      },
-      managers
-    )
+    const behavior = new RandomBehavior({ face }, managers, {
+      max: 4,
+      quaternionPerFace: getQuaternions(4)
+    })
     behavior.setFace?.(1)
     expect(behavior.state).toMatchObject({ face })
     expect(actionRecorded).not.toHaveBeenCalled()
@@ -160,7 +148,7 @@ describe('RandomBehavior', () => {
   describe.each([{ title: 'a 6 face die', max: 6 }])(
     'given attached to $title',
     ({ max }) => {
-      /** @type {Mesh} */
+      /** @type {import('@babylonjs/core').Mesh} */
       let mesh
       /** @type {RandomBehavior} */
       let behavior
@@ -352,7 +340,7 @@ describe('RandomBehavior', () => {
   )
 })
 
-function getRandomizable(/** @type {Mesh} */ mesh) {
+function getRandomizable(/** @type {import('@babylonjs/core').Mesh} */ mesh) {
   return /** @type {RandomBehavior} */ (
     mesh.getBehaviorByName(RandomBehaviorName)
   )

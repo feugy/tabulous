@@ -1,3 +1,4 @@
+// @ts-check
 export * from './actions'
 export * from './behaviors'
 export * from './gravity'

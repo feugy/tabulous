@@ -2,7 +2,7 @@
 import { buildBoard, buildPawns } from './builders/index.js'
 import { blackId, counts, whiteId } from './constants.js'
 
-/** @type {import('@tabulous/server/src/services/catalog').Build} */
+/** @type {import('@tabulous/types').Build} */
 export function build() {
   // 20 white pawns, 20 black pawns
   const meshes = [...buildPawns(), buildBoard()]

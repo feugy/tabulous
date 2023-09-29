@@ -1,10 +1,4 @@
 // @ts-check
-/**
- * @typedef {import('vitest').Mock<?, ?>} Mock
- * @typedef {import('@babylonjs/core').Mesh} Mesh
- * @typedef {import('@src/3d/behaviors').RotableState} RotableState
- */
-
 import { Vector3 } from '@babylonjs/core/Maths/math.vector'
 import { faker } from '@faker-js/faker'
 import {
@@ -34,7 +28,7 @@ describe('RotateBehavior', () => {
   })
 
   const actionRecorded = vi.fn()
-  /** @type {Mock} */
+  /** @type {import('vitest').Mock} */
   let animationEndReceived
 
   beforeAll(() => {
@@ -90,7 +84,7 @@ describe('RotateBehavior', () => {
   })
 
   describe('given attached to a mesh', () => {
-    /** @type {Mesh} */
+    /** @type {import('@babylonjs/core').Mesh} */
     let mesh
     /** @type {RotateBehavior} */
     let behavior
@@ -421,10 +415,10 @@ describe('RotateBehavior', () => {
     })
   })
 
-  /** @returns {[RotateBehavior, Mesh]} */
+  /** @returns {[RotateBehavior, import('@babylonjs/core').Mesh]} */
   function createAttachedRotable(
     /** @type {string} */ id,
-    /** @type {RotableState}*/ state
+    /** @type {import('@tabulous/types').RotableState}*/ state
   ) {
     const behavior = new RotateBehavior(state, managers)
     const mesh = createBox(id, {})

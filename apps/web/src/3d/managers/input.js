@@ -1,9 +1,4 @@
 // @ts-check
-/**
- * @typedef {import('@babylonjs/core').Mesh} Mesh
- * @typedef {import('@src/3d/managers/camera').CameraPosition} CameraPosition
- */
-
 import { Observable } from '@babylonjs/core/Misc/observable.js'
 import { Scene } from '@babylonjs/core/scene.js'
 
@@ -30,7 +25,7 @@ const DragMinimumDistance = 5
 
 /**
  * @typedef {object} _TapData
- * @property {?Mesh} mesh - mesh (if any) bellow the pointer.
+ * @property {?import('@babylonjs/core').Mesh} mesh - mesh (if any) bellow the pointer.
  * @property {number} button - the pointer button used
  * @property {number} pointers - number of pointers pressed.
  * @property {boolean} fromHand - whether the event occured on the hand or the main scene.
@@ -41,7 +36,7 @@ const DragMinimumDistance = 5
 
 /**
  * @typedef {object} _DragData
- * @property {?Mesh} mesh - mesh (if any) bellow the pointer.
+ * @property {?import('@babylonjs/core').Mesh} mesh - mesh (if any) bellow the pointer.
  * @property {number} button - the pointer button used
  * @property {number} pointers - number of pointers pressed.
  * @property {boolean} [long] - whether pinch started with a long press ('dragStart' only).
@@ -51,7 +46,7 @@ const DragMinimumDistance = 5
 
 /**
  * @typedef {object} _KeyData
- * @property {?Mesh} mesh - mesh upon which event occured.
+ * @property {?import('@babylonjs/core').Mesh} mesh - mesh upon which event occured.
  * @property {KeyModifiers} modifiers - for key event, active modifiers.
  * @property {string} key - which key was pressed
  * @see https://developer.mozilla.org/en-US/docs/Web/API/UI_Events/Keyboard_event_key_values
@@ -61,7 +56,7 @@ const DragMinimumDistance = 5
 
 /**
  * @typedef {object} _WheelData
- * @property {?Mesh} mesh - mesh upon which event occured.
+ * @property {?import('@babylonjs/core').Mesh} mesh - mesh upon which event occured.
  *
  * @typedef {EventData<'wheel', WheelEvent> & _WheelData} WheelData Mouse wheel events.
  */
@@ -84,7 +79,7 @@ const DragMinimumDistance = 5
 
 /**
  * @typedef {object} _HoverData
- * @property {Mesh} mesh - mesh upon which event occured.
+ * @property {import('@babylonjs/core').Mesh} mesh - mesh upon which event occured.
  *
  * @typedef {EventData<'hoverStart'|'hoverStop', PointerEvent> & _HoverData} HoverData Hover events.
  */
@@ -99,7 +94,7 @@ const DragMinimumDistance = 5
 
 /**
  * @typedef {object} StoredPointer
- * @property {?Mesh} mesh - mesh (if any) bellow the pointer.
+ * @property {?import('@babylonjs/core').Mesh} mesh - mesh (if any) bellow the pointer.
  * @property {number} button - the pointer button used
  * @property {PointerEvent} event - the original event object.
  * @property {number} timestamp - input timestamp in milliseconds.
@@ -150,7 +145,7 @@ export class InputManager {
     this.interaction = interaction
     /** @internal */
     interaction.style.setProperty('--cursor', 'move')
-    /** @internal @type {import('@src/3d/managers').Managers} */
+    /** @internal @type {import('.').Managers} */
     this.managers
     /** @internal */
   }
@@ -158,7 +153,7 @@ export class InputManager {
   /**
    * Initializes with other managers.
    * @param {object} params - parameters, including:
-   * @param {import('@src/3d/managers').Managers} params.managers - current managers.
+   * @param {import('.').Managers} params.managers - current managers.
    */
   init({ managers }) {
     // same finger/stylus/mouse will have same pointerId for down, move(s) and up events
@@ -176,7 +171,7 @@ export class InputManager {
     }
     /** @type {?StoredPointer} */
     let dragOrigin = null
-    /** @type {Map<number, Mesh>} */
+    /** @type {Map<number, import('@babylonjs/core').Mesh>} */
     let hoveredByPointerId = new Map()
     let lastTap = 0
     let lastMoveEvent = /** @type {PointerEvent} */ ({})
@@ -196,7 +191,7 @@ export class InputManager {
 
     const startHover = (
       /** @type {PointerEvent} */ event,
-      /** @type {Mesh} */ mesh
+      /** @type {import('@babylonjs/core').Mesh} */ mesh
     ) => {
       if (hoveredByPointerId.get(event.pointerId) !== mesh) {
         /** @type {HoverData} */
@@ -610,18 +605,20 @@ export class InputManager {
 
 /**
  * @param {Scene} scene - scene in which mesh are picked.
- * @param {import('@src/3d/managers').Managers} managers - other managers.
+ * @param {import('.').Managers} managers - other managers.
  * @param {MouseEvent} event - picking event.
  * @returns picked mesh, if any.
  */
 function findPickedMesh(scene, { selection }, { x, y }) {
-  return /** @type {?Mesh} */ (
+  return /** @type {?import('@babylonjs/core').Mesh} */ (
     scene
       .multiPickWithRay(
         scene.createPickingRay(x, y, null, null),
         mesh =>
           mesh.isPickable &&
-          !selection.isSelectedByPeer(/** @type {Mesh} */ (mesh))
+          !selection.isSelectedByPeer(
+            /** @type {import('@babylonjs/core').Mesh} */ (mesh)
+          )
       )
       ?.sort((a, b) => a.distance - b.distance)[0]?.pickedMesh ?? null
   )

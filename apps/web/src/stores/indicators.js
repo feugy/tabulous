@@ -1,23 +1,4 @@
 // @ts-check
-/**
- * @typedef {import('@babylonjs/core').Engine} Engine
- * @typedef {import('@babylonjs/core').Mesh} Mesh
- * @typedef {import('@src/3d/managers/indicator').Indicator} Indicator
- * @typedef {import('@src/3d/managers/indicator').ManagedIndicator} ManagedIndicator
- * @typedef {import('@src/3d/managers/indicator').ManagedPointer} ManagedPointer
- * @typedef {import('@src/3d/managers/indicator').ManagedFeedback} ManagedFeedback
- * @typedef {import('@src/stores/game-manager').Player} Player
- * @typedef {import('@src/utils/game-interaction').ActionMenuProps} ActionMenuProps
- */
-/**
- * @template T
- * @typedef {import('@src/types').ArrayItem<T>} ArrayItem
- */
-/**
- * @template T
- * @typedef {import('@src/types').Observed<T>} Observed
- */
-
 import { BehaviorSubject, map, merge, of, withLatestFrom } from 'rxjs'
 
 import { getPixelDimension, observeDimension } from '../utils/dom'
@@ -28,14 +9,16 @@ import {
 } from './game-engine'
 import { gamePlayerById as gamePlayerById$ } from './game-manager'
 
-/** @typedef {ArrayItem<Observed<typeof visibleIndicators>>} VisibleIndicator */
-/** @typedef {ArrayItem<Observed<typeof visibleFeedbacks>>} VisibleFeedback */
+/** @typedef {import('@src/types').ArrayItem<import('@src/types').Observed<typeof visibleIndicators>>} VisibleIndicator */
+/** @typedef {import('@src/types').ArrayItem<import('@src/types').Observed<typeof visibleFeedbacks>>} VisibleFeedback */
 
 const visible$ = new BehaviorSubject(true)
 const handPosition$ = new BehaviorSubject(Number.POSITIVE_INFINITY)
-const hoveredMesh$ = new BehaviorSubject(/** @type {?Mesh} */ (null))
+const hoveredMesh$ = new BehaviorSubject(
+  /** @type {?import('@babylonjs/core').Mesh} */ (null)
+)
 
-/** @type {Map<string, Player>} */
+/** @type {Map<string, import('@src/stores').PlayerWithPref>} */
 let playerById = new Map()
 gamePlayerById$.subscribe(value => (playerById = value))
 /** @type {import('@babylonjs/core').Engine} */
@@ -45,7 +28,7 @@ let feedbackById = new Map()
 /**
  * Initializes the indicators store with the hand DOM node.
  * @param {object} params - parameters
- * @param {Engine} params.engine - 3D engine.
+ * @param {import('@babylonjs/core').Engine} params.engine - 3D engine.
  * @param {HTMLCanvasElement} params.canvas - HTML canvas used to display the scene.
  * @param {HTMLElement} params.hand - HTML element holding hand.
  */
@@ -99,7 +82,10 @@ export const visibleIndicators = merge(
   withLatestFrom(
     merge(of(new Set()), selectedMeshes),
     merge(of(null), actionMenuProps),
-    merge(of(/** @type {Indicator[]} */ ([])), indicators$),
+    merge(
+      of(/** @type {import('@src/3d/managers').Indicator[]} */ ([])),
+      indicators$
+    ),
     handPosition$,
     hoveredMesh$
   ),
@@ -131,11 +117,11 @@ export const visibleFeedbacks = merge(visible$, indicators$).pipe(
 
 /**
  * @param {boolean} allVisible - whether all indicators are visible.
- * @param {Set<Mesh>} selected - list of currently selected meshes.
- * @param {?ActionMenuProps} menuProps - current menu items, if any.
- * @param {Indicator[]} indicators - list of all indicators.
+ * @param {Set<import('@babylonjs/core').Mesh>} selected - list of currently selected meshes.
+ * @param {?import('@src/utils/game-interaction').ActionMenuProps} menuProps - current menu items, if any.
+ * @param {import('@src/3d/managers').Indicator[]} indicators - list of all indicators.
  * @param {number} handPosition - position of the limit between main and hand scene.
- * @param {?Mesh} hovered - currently hovered mesh.
+ * @param {?import('@babylonjs/core').Mesh} hovered - currently hovered mesh.
  */
 function getVisibleIndicators(
   allVisible,
@@ -145,7 +131,7 @@ function getVisibleIndicators(
   handPosition,
   hovered
 ) {
-  return /** @type {(ManagedPointer|ManagedIndicator)[]} */ (
+  return /** @type {(import('@src/3d/managers').ManagedPointer|import('@src/3d/managers').ManagedIndicator)[]} */ (
     allVisible
       ? indicators.filter(
           ({ screenPosition, isFeedback }) =>
@@ -160,15 +146,15 @@ function getVisibleIndicators(
 }
 
 function hasMenu(
-  /** @type {?ActionMenuProps} */ menuProps,
-  /** @type {Set<Mesh>} */ selected
+  /** @type {?import('@src/utils/game-interaction').ActionMenuProps} */ menuProps,
+  /** @type {Set<import('@babylonjs/core').Mesh>} */ selected
 ) {
   return menuProps !== null && !selected.has(menuProps.interactedMesh)
 }
 
 function getMenuIndicators(
-  /** @type {?ActionMenuProps} */ menuProps,
-  /** @type {Indicator[]} */ indicators
+  /** @type {?import('@src/utils/game-interaction').ActionMenuProps} */ menuProps,
+  /** @type {import('@src/3d/managers').Indicator[]} */ indicators
 ) {
   return indicators.filter(indicator =>
     'mesh' in indicator ? indicator.mesh === menuProps?.interactedMesh : false
@@ -176,9 +162,9 @@ function getMenuIndicators(
 }
 
 function getSelectedIndicators(
-  /** @type {?Mesh} */ hovered,
-  /** @type {Set<Mesh>} */ selected,
-  /** @type {Indicator[]} */ indicators
+  /** @type {?import('@babylonjs/core').Mesh} */ hovered,
+  /** @type {Set<import('@babylonjs/core').Mesh>} */ selected,
+  /** @type {import('@src/3d/managers').Indicator[]} */ indicators
 ) {
   return indicators.filter(indicator =>
     'mesh' in indicator
@@ -188,13 +174,14 @@ function getSelectedIndicators(
 }
 
 /**
- * @template {Indicator} T
+ * @template {import('@src/3d/managers').Indicator} T
  * @param {T[]} indicators
- * @returns {(T & { player?: Player })[]}
+ * @returns {(T & { player?: import('@src/stores').PlayerWithPref })[]}
  */
 function enrichWithPlayerData(indicators) {
   for (const raw of indicators) {
-    const indicator = /** @type {T & { player?: Player }} */ (raw)
+    const indicator =
+      /** @type {T & { player?: import('@src/stores').PlayerWithPref }} */ (raw)
     if ('playerId' in indicator && indicator.playerId) {
       const player = playerById.get(indicator.playerId) ?? {
         id: indicator.playerId,
@@ -213,7 +200,7 @@ function enrichWithPlayerData(indicators) {
 }
 
 /**
- * @template {Indicator} T
+ * @template {import('@src/3d/managers').Indicator} T
  * @param {T[]} indicators
  * @returns {(T & { hovered?: boolean })[]}
  */
@@ -228,7 +215,7 @@ function enrichWithHovered(indicators) {
 }
 
 /**
- * @template {Indicator} T
+ * @template {import('@src/3d/managers').Indicator} T
  * @param {T[]} indicators
  * @returns {(T & { onClick?: () => void })[]}
  */
@@ -251,11 +238,10 @@ function enrichWithInteraction(indicators) {
 }
 
 /**
- * @param {Indicator[]} indicators
- * @returns {(ManagedFeedback & { start?: number })[]}
+ * @param {import('@src/3d/managers').Indicator[]} indicators
  */
 function memorizeAndMergeFeedback(indicators) {
-  /** @type {(ManagedFeedback & { start?: number })[]} */
+  /** @type {(import('@src/3d/managers').ManagedFeedback & { start?: number })[]} */
   const results = []
   const now = Date.now()
   for (const [id, feedback] of feedbackById) {
@@ -266,7 +252,10 @@ function memorizeAndMergeFeedback(indicators) {
     }
   }
   for (const raw of indicators) {
-    const indicator = /** @type {ManagedFeedback & { start?: number }} */ (raw)
+    const indicator =
+      /** @type {import('@src/3d/managers').ManagedFeedback & { start?: number }} */ (
+        raw
+      )
     if (indicator.isFeedback) {
       if (!feedbackById.has(indicator.id)) {
         indicator.start = now

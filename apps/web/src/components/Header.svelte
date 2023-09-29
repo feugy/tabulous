@@ -1,14 +1,5 @@
 <script>
   // @ts-check
-  /**
-   * @typedef {import('@src/graphql').PlayerFragment} PlayerFragment
-   * @typedef {import('@src/components').MenuOption} MenuOption
-   */
-  /**
-   * @template {import('svelte').SvelteComponent} T
-   * @typedef {import('svelte').ComponentEvents<T>} ComponentEvents
-   */
-
   import { supportedLanguages } from '@src/params/lang'
   import { logOut } from '@src/stores'
   import Logo from '@src/svg/tabulous-logo.svg?component'
@@ -21,9 +12,9 @@
   import Dropdown from './Dropdown.svelte'
   import PlayerThumbnail from './PlayerThumbnail.svelte'
 
-  /** @typedef {MenuOption & { act: () => void }} Option   */
+  /** @typedef {import('@src/components').MenuOption & { act: () => void }} Option   */
 
-  /** @type {?PlayerFragment} current authenticated user, if any. */
+  /** @type {?import('@src/graphql').Player} current authenticated user, if any. */
   export let user = null
 
   /** @type {Option[]}*/

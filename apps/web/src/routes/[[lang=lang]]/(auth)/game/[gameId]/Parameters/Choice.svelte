@@ -1,12 +1,5 @@
 <script>
   // @ts-check
-  /**
-   * @typedef {import('@src/types').JSONValue} JSONValue
-   * @typedef {import('@src/components').LabelMenuOption} LabelMenuOption
-   * @typedef {import('@src/components').ColorMenuOption} ColorMenuOption
-   * @typedef {Partial<import('@tabulous/server/src/services/catalog').Schema<?>>} Schema
-   */
-
   import { Dropdown } from '@src/components'
   import { gameAssetsUrl, injectLocale } from '@src/utils'
   import { _, locale } from 'svelte-intl'
@@ -15,15 +8,15 @@
 
   /** @type {string} property's name. */
   export let name
-  /** @type {Schema}} represented property. */
+  /** @type {import('@tabulous/types').Schema<?>}} represented property. */
   export let property
-  /** @type {JSONValue} chosen values. */
+  /** @type {import('@src/types').JSONValue} chosen values. */
   export let values
 
   // only build options for valid candidates
-  /** @type {(LabelMenuOption|ColorMenuOption)[]} */
+  /** @type {(import('@src/components').LabelMenuOption|import('@src/components').ColorMenuOption)[]} */
   $: options = findCandidates(property, name, values).map(value => {
-    /** @type {LabelMenuOption|ColorMenuOption} */
+    /** @type {import('@src/components').LabelMenuOption|import('@src/components').ColorMenuOption} */
     const result = {
       value,
       label: translate(value),
@@ -44,7 +37,9 @@
   }
 
   function handleSelection(
-    /** @type {{ detail: LabelMenuOption|ColorMenuOption }} */ { detail }
+    /** @type {{ detail: import('@src/components').LabelMenuOption|import('@src/components').ColorMenuOption }} */ {
+      detail
+    }
   ) {
     values[name] = detail.value
   }
@@ -54,18 +49,20 @@
   }
 
   function findImage(
-    /** @type {Schema} */ property,
+    /** @type {import('@tabulous/types').Schema<?>} */ property,
     /** @type {string} */ key
   ) {
     return property.metadata?.images?.[key]
   }
 
   function findCandidates(
-    /** @type {Schema} */ property,
+    /** @type {import('@tabulous/types').Schema<?>} */ property,
     /** @type {string} */ name,
-    /** @type {JSONValue} */ values
+    /** @type {import('@src/types').JSONValue} */ values
   ) {
-    const candidates = /** @type {JSONValue[]} */ (property.enum)
+    const candidates = /** @type {import('@src/types').JSONValue[]} */ (
+      property.enum
+    )
     const schema = { type: 'object', properties: { [name]: property } }
     const result = candidates.filter(
       value => findViolations({ [name]: value }, schema, values).length === 0

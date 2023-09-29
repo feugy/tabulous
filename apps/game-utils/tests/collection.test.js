@@ -1,7 +1,7 @@
 // @ts-check
 import { describe, expect, it } from 'vitest'
 
-import { pickRandom, shuffle } from '../../src/utils/index.js'
+import { pickRandom, shuffle } from '../src/collection.js'
 
 describe('shuffle()', () => {
   it('randomizes elements of an array, leaving source array unmodified', () => {

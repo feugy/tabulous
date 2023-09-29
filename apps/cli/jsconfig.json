@@ -1,4 +1,11 @@
 {
   "extends": "../../jsconfig.json",
+  "compilerOptions": {
+    "baseUrl": ".",
+    "paths": {
+      "@src/*": ["src/*"],
+      "@tabulous/server/*": ["../server/src/*"]
+    }
+  },
   "include": ["src/**/*.js", "tests/**/*.js"]
 }

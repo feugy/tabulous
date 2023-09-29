@@ -1,13 +1,4 @@
 // @ts-check
-/**
- * @typedef {import('fastify').FastifyInstance} FastifyInstance
- * @typedef {import('@tabulous/server/src/services/players').Player} Player
- * @typedef {import('@tabulous/server/src/services/games').ActionName} ActionName
- * @typedef {import('@tabulous/server/src/services/games').GameData} GameData
- * @typedef {import('@tabulous/server/src/services/games').GameListUpdate} GameListUpdate
- * @typedef {import('@tabulous/server/src/services/games').GameParameters<?>} GameParameters
- */
-
 import { faker } from '@faker-js/faker'
 import fastify from 'fastify'
 import { Subject } from 'rxjs'
@@ -36,23 +27,23 @@ import {
 } from '../test-utils.js'
 
 describe('given a started server', () => {
-  /** @type {FastifyInstance} */
+  /** @type {import('fastify').FastifyInstance} */
   let server
   /** @type {import('ws')} */
   let ws
   /** @type {ReturnType<typeof mockMethods>} */
   let restoreServices
   const services =
-    /** @type {import('../test-utils').MockedMethods<typeof realServices> & {gameListsUpdate: Subject<GameListUpdate>}} */ (
+    /** @type {import('../test-utils').MockedMethods<typeof realServices> & {gameListsUpdate: Subject<import('@src/services/games').GameListUpdate>}} */ (
       realServices
     )
   vi.spyOn(makeLogger('graphql-plugin'), 'warn').mockImplementation(() => {})
-  const players = /** @type {Player[]} */ ([
+  const players = /** @type {import('@tabulous/types').Player[]} */ ([
     { id: 'player-0', username: faker.person.firstName() },
     { id: 'player-1', username: faker.person.firstName() },
     { id: 'player-2', username: faker.person.firstName() }
   ])
-  const guests = /** @type {Player[]} */ ([
+  const guests = /** @type {import('@tabulous/types').Player[]} */ ([
     { id: 'guest-0', username: faker.person.firstName() },
     { id: 'guest-1', username: faker.person.firstName() },
     { id: 'guest-2', username: faker.person.firstName() }
@@ -68,7 +59,7 @@ describe('given a started server', () => {
     await server.listen()
     ws = await openGraphQLWebSocket(server)
     restoreServices = mockMethods(services)
-    /** @type {Subject<GameListUpdate>} */
+    /** @type {Subject<import('@src/services/games').GameListUpdate>} */
     services.gameListsUpdate = new Subject()
   })
 
@@ -106,7 +97,7 @@ describe('given a started server', () => {
 
       it('returns current games', async () => {
         const playerId = players[0].id
-        const games = /** @type {GameData[]} */ ([
+        const games = /** @type {import('@tabulous/types').GameData[]} */ ([
           {
             id: faker.string.uuid(),
             created: faker.date.past().getTime(),
@@ -383,7 +374,7 @@ describe('given a started server', () => {
 
       it('loads game details and resolves player objects', async () => {
         const [player] = players
-        const game = /** @type {GameData} */ ({
+        const game = /** @type {import('@tabulous/types').GameData} */ ({
           id: faker.string.uuid(),
           kind: 'tarot',
           created: faker.date.past().getTime(),
@@ -455,13 +446,14 @@ describe('given a started server', () => {
 
       it('loads game parameters', async () => {
         const [player] = players
-        const gameParameters = /** @type {GameParameters} */ ({
-          id: faker.string.uuid(),
-          schema: {},
-          ownerId: player.id,
-          playerIds: players.map(({ id }) => id),
-          guestIds: guests.map(({ id }) => id)
-        })
+        const gameParameters =
+          /** @type {import('@tabulous/types').GameParameters<?>} */ ({
+            id: faker.string.uuid(),
+            schema: {},
+            ownerId: player.id,
+            playerIds: players.map(({ id }) => id),
+            guestIds: guests.map(({ id }) => id)
+          })
         const value = faker.lorem.words()
         services.getPlayerById
           .mockResolvedValueOnce(player)
@@ -543,7 +535,7 @@ describe('given a started server', () => {
               time: Date.now() - 5000,
               playerId: player.id,
               meshId: 'box1',
-              fn: /** @type {ActionName} */ ('flip'),
+              fn: /** @type {const} */ ('flip'),
               argsStr: '[]',
               fromHand: true
             },

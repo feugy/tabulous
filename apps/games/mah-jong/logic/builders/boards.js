@@ -1,13 +1,7 @@
 // @ts-check
-/**
- * @typedef {import('@tabulous/server/src/graphql').Anchor} Anchor
- * @typedef {import('@tabulous/server/src/graphql').Mesh} Mesh
- * @typedef {import('../constants').Wall} Wall
- */
-
 import { kinds, riverSize, shapes, walls, wallSize } from '../constants.js'
 
-/** @returns {Mesh} */
+/** @returns {import('@tabulous/types').Mesh} */
 export function buildMainBoard() {
   const { east, south, west, north } = walls
   return {
@@ -31,13 +25,13 @@ export function buildMainBoard() {
 }
 
 function buildWallAnchors(
-  /** @type {{ wall: Wall, isHorizontal: boolean, angle: number }} */ {
+  /** @type {{ wall: import('../constants').Wall, isHorizontal: boolean, angle: number }} */ {
     wall,
     isHorizontal,
     angle
   }
 ) {
-  /** @type {Anchor[]} */
+  /** @type {import('@tabulous/types').Anchor[]} */
   const anchors = []
   const { width, height, depth } = shapes.anchor
   const start = (width * wallSize - 2) * -0.5
@@ -65,13 +59,13 @@ function buildWallAnchors(
 }
 
 function buildRiverAnchors(
-  /** @type {{ wall: Wall, isHorizontal: boolean, angle: number }} */ {
+  /** @type {{ wall: import('../constants').Wall, isHorizontal: boolean, angle: number }} */ {
     wall,
     isHorizontal,
     angle
   }
 ) {
-  /** @type {Anchor[]} */
+  /** @type {import('@tabulous/types').Anchor[]} */
   const anchors = []
   const { width, height, depth } = shapes.anchor
   const anchorWidth = width * 1.2

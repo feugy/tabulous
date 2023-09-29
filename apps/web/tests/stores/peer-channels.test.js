@@ -1,23 +1,18 @@
-// @ts-check§
-/**
- * @typedef {import('@src/utils/peer-connection').PeerConnectionOptions} PeerConnectionOptions
- */
-/**
- * @template T
- * @typedef {import('vitest').MockedObject<T>} MockedObject
- */
-
+// @ts-check
 import { faker } from '@faker-js/faker'
 import * as graphQL from '@src/graphql'
-import { runMutation, runSubscription } from '@src/stores/graphql-client'
+import {
+  runMutation as originalRunMutation,
+  runSubscription as originalRunSubscription
+} from '@src/stores/graphql-client'
 import * as communication from '@src/stores/peer-channels'
 import {
-  acquireMediaStream,
-  localStreamChange$,
-  releaseMediaStream,
-  stream$
+  acquireMediaStream as originalAcquireMediaStream,
+  localStreamChange$ as originalLocalStreamChange$,
+  releaseMediaStream as originalReleaseMediaStream,
+  stream$ as originalStream$
 } from '@src/stores/stream'
-import { PeerConnection, sleep } from '@src/utils'
+import { PeerConnection as OriginalPeerConnection, sleep } from '@src/utils'
 import { mockLogger } from '@tests/test-utils'
 import { randomUUID } from 'crypto'
 import EventEmitter, { once } from 'events'
@@ -34,25 +29,42 @@ import {
   vi
 } from 'vitest'
 
+const PeerConnection = vi.mocked(OriginalPeerConnection, true)
+const runMutation = vi.mocked(originalRunMutation)
+const runSubscription = vi.mocked(originalRunSubscription)
+const localStreamChange$ =
+  /** @type {Subject<import('@src/utils').StreamState>} */ (
+    /** @type {?} */ (originalLocalStreamChange$)
+  )
+const acquireMediaStream = vi.mocked(originalAcquireMediaStream)
+const releaseMediaStream = vi.mocked(originalReleaseMediaStream)
+const stream$ = /** @type {import('rxjs').BehaviorSubject<any>} */ (
+  originalStream$
+)
+
 vi.mock('@src/utils/peer-connection', () => {
-  const PeerConnection = vi
+  const Connection = vi
     .fn()
     .mockImplementation(
-      function (/** @type {PeerConnectionOptions} */ options) {
+      function (
+        /** @type {import('@src/utils/peer-connection').PeerConnectionOptions} */ options
+      ) {
         Object.assign(this, options)
         this.local = {}
         this.remote = {}
-        peers.push(this)
+        /** @type {import('vitest').MockedObject<OriginalPeerConnection>} */
+        const that = /** @type {?} */ (this)
+        peers.push(that)
         this.handleSignal = vi.fn()
         this.attachLocalStream = vi
           .fn()
-          .mockImplementation(stream => (this.local.stream = stream))
+          .mockImplementation(stream => (that.local.stream = stream))
         this.setLocalState = vi
           .fn()
           .mockImplementation(state => Object.assign(this.local, state))
         this.hasLocalStream = vi
           .fn()
-          .mockImplementation(() => !!this.local.stream)
+          .mockImplementation(() => !!that.local.stream)
         this.setRemote = vi
           .fn()
           .mockImplementation(options => Object.assign(this.remote, options))
@@ -61,15 +73,15 @@ vi.mock('@src/utils/peer-connection', () => {
         // we need to break references in order to assert passed `local`
         const {
           mock: { calls }
-        } = PeerConnection
+        } = Connection
         const lastCallArg = calls[calls.length - 1][0]
         calls[calls.length - 1][0] = JSON.parse(JSON.stringify(lastCallArg))
         return this
       }
     )
 
-  PeerConnection.prototype.connect = vi.fn()
-  return { PeerConnection }
+  Connection.prototype.connect = vi.fn()
+  return { PeerConnection: Connection }
 })
 
 vi.mock('@src/stores/graphql-client')
@@ -83,7 +95,8 @@ vi.mock('@src/stores/stream', () => {
   }
 })
 
-let peers = /** @type {MockedObject<PeerConnection>[]} */ ([])
+let peers =
+  /** @type {import('vitest').MockedObject<OriginalPeerConnection>[]} */ ([])
 
 describe('Peer channels store', () => {
   mockLogger('peer-channels')
@@ -97,10 +110,15 @@ describe('Peer channels store', () => {
   const stream = faker.string.uuid()
   const gameId = faker.string.uuid()
 
+  /** @type {import('rxjs').Subscription[]} */
   let subscriptions = []
+  /** @type {?string} */
   let lastConnectedId
+  /** @type {?string} */
   let lastDisconnectedId
+  /** @type {import('@src/stores').WebRTCMessage[]} */
   let messagesSent = []
+  /** @type {import('@src/stores').WebRTCMessage[]} */
   let messagesReceived = []
 
   beforeAll(() => {
@@ -128,7 +146,7 @@ describe('Peer channels store', () => {
     messagesReceived = []
     acquireMediaStream.mockImplementation(async () => {
       stream$.next(stream)
-      return stream
+      return /** @type {MediaStream} */ (/** @type {?} */ (stream))
     })
   })
 
@@ -150,7 +168,11 @@ describe('Peer channels store', () => {
     const awaitSignal = new Subject()
     runSubscription.mockReturnValueOnce(awaitSignal)
     const openPromise = communication
-      .openChannels({ id: playerId1 }, turnCredentials, gameId)
+      .openChannels(
+        { id: playerId1, username: 'bar', currentGameId: null },
+        turnCredentials,
+        gameId
+      )
       .then(() => (done = true))
     expect(done).toBe(false)
     awaitSignal.next({ data: JSON.stringify({ type: 'ready' }) })
@@ -169,21 +191,28 @@ describe('Peer channels store', () => {
     beforeEach(() => {
       stream$.next(null)
       runSubscription.mockReturnValueOnce(awaitSignal)
-      communication.openChannels({ id: playerId1 }, turnCredentials, gameId)
+      communication.openChannels(
+        { id: playerId1, username: 'bar', currentGameId: null },
+        turnCredentials,
+        gameId
+      )
     })
 
     it('opens WebRTC peer when receiving an offer, and sends the answer through mutation', async () => {
       const offer = { type: 'offer', data: faker.lorem.words() }
       const candidate = { data: `candidate-${faker.lorem.words()}` }
-      const answer = { type: 'answer', data: faker.lorem.words() }
+      /** @type {RTCSessionDescription} */
+      const answer = { type: 'answer', sdp: faker.lorem.words(), toJSON() {} }
       expect(PeerConnection).not.toHaveBeenCalled()
       const emitter = new EventEmitter()
       PeerConnection.prototype.connect.mockImplementationOnce(
-        async function (playerId) {
+        async function (/** @type {string} */ playerId) {
           this.playerId = playerId
-          this.sendSignal(playerId, answer)
-          this.handleSignal.mockImplementation((...args) =>
-            this.sendSignal(playerId, ...args)
+          /** @type {import('vitest').MockedObject<OriginalPeerConnection>} */
+          const that = /** @type {?} */ (this)
+          that.sendSignal(playerId, answer)
+          that.handleSignal.mockImplementation(signal =>
+            that.sendSignal(playerId, signal)
           )
           await once(emitter, 'ready')
           this.established = true
@@ -252,7 +281,7 @@ describe('Peer channels store', () => {
     it('cleans up on peer disconnection', async () => {
       const offer = { type: 'offer', data: faker.lorem.words() }
       PeerConnection.prototype.connect.mockImplementationOnce(
-        async function (playerId) {
+        async function (/** @type {string} */ playerId) {
           this.playerId = playerId
           this.established = true
         }
@@ -281,12 +310,15 @@ describe('Peer channels store', () => {
 
     describe('connectWith()', () => {
       it('opens WebRTC peer, sends offer through WebSocket and accept answer', async () => {
-        const offer = { type: 'offer', data: faker.lorem.words() }
+        /** @type {RTCSessionDescription} */
+        const offer = { type: 'offer', sdp: faker.lorem.words(), toJSON() {} }
         const emitter = new EventEmitter()
         PeerConnection.prototype.connect.mockImplementationOnce(
-          async function (playerId) {
+          async function (/** @type {string} */ playerId) {
             this.playerId = playerId
-            this.sendSignal(playerId, offer)
+            /** @type {import('vitest').MockedObject<OriginalPeerConnection>} */
+            const that = /** @type {?} */ (this)
+            that.sendSignal(playerId, offer)
             await once(emitter, 'ready')
             this.established = true
           }
@@ -339,11 +371,14 @@ describe('Peer channels store', () => {
 
         const emitter = new EventEmitter()
         PeerConnection.prototype.connect.mockImplementationOnce(
-          async function (playerId) {
+          async function (/** @type {string} */ playerId) {
             this.playerId = playerId
-            this.sendSignal(playerId, {
+            /** @type {import('vitest').MockedObject<OriginalPeerConnection>} */
+            const that = /** @type {?} */ (this)
+            that.sendSignal(playerId, {
               type: 'offer',
-              data: faker.lorem.words()
+              sdp: '',
+              toJSON() {}
             })
             await once(emitter, 'ready')
             this.established = true
@@ -370,13 +405,13 @@ describe('Peer channels store', () => {
       runSubscription.mockReturnValueOnce(awaitSignal)
       expect(get(communication.connected)).toEqual([])
       PeerConnection.prototype.connect.mockImplementation(
-        async function (playerId) {
+        async function (/** @type {string} */ playerId) {
           this.playerId = playerId
           this.established = true
         }
       )
       let openPromise = communication.openChannels(
-        { id: playerId1 },
+        { id: playerId1, username: 'foo', currentGameId: null },
         turnCredentials,
         gameId
       )
@@ -424,7 +459,8 @@ describe('Peer channels store', () => {
     })
 
     it('can receive peer stream', async () => {
-      const peerStream = randomUUID()
+      /** @type {MediaStream} */
+      const peerStream = /** @type {?} */ (randomUUID())
       peers[1].onRemoteStream(peerStream)
       expect(get(communication.connected)).toEqual([
         { playerId: playerId1 },
@@ -507,7 +543,7 @@ describe('Peer channels store', () => {
 
     it('does not send message to unknown peer', () => {
       const data = { whatever: randomUUID() }
-      communication.send(data, 500)
+      communication.send(data, 'unknown')
       expect(peers[0].sendData).not.toHaveBeenCalled()
       expect(peers[1].sendData).not.toHaveBeenCalled()
       expect(messagesSent).toEqual([])
@@ -515,6 +551,7 @@ describe('Peer channels store', () => {
   })
 
   function expectPeerOptions(
+    /** @type {{ stream: ?any, muted: boolean, stopped: boolean }} */
     local = { stream: null, muted: false, stopped: false }
   ) {
     expect(PeerConnection).toHaveBeenCalledWith(

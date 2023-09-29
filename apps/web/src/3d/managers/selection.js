@@ -50,7 +50,7 @@ export class SelectionManager {
     this.selectionByPeerId = new Map()
     /** @internal @type {Map<string, Color4>} */
     this.colorByPlayerId = new Map()
-    /** @internal @type {import('@src/3d/managers').Managers} */
+    /** @internal @type {import('.').Managers} */
     this.managers
   }
 
@@ -59,7 +59,7 @@ export class SelectionManager {
    * Updates colors to reflect players in game.
    * @param {object} params - parameters, including:
    * @param {string} params.playerId - current player id, to find selection box color.
-   * @param {import('@src/3d/managers').Managers} params.managers - other managers.
+   * @param {import('.').Managers} params.managers - other managers.
    * @param {Map<string, string>} params.colorByPlayerId - map of hexadecimal color strings used for selection box, and selected mesh overlay, by player id.
    */
   init({ managers, playerId, colorByPlayerId }) {
@@ -76,8 +76,8 @@ export class SelectionManager {
 
   /**
    * Draws selection box between two points (in screen coordinates)
-   * @param {import('@src/3d/utils').ScreenPosition} start - selection box's start screen position.
-   * @param {import('@src/3d/utils').ScreenPosition} end - selection box's end screen position.
+   * @param {import('../utils').ScreenPosition} start - selection box's start screen position.
+   * @param {import('../utils').ScreenPosition} end - selection box's end screen position.
    */
   drawSelectionBox(start, end) {
     logger.debug({ start, end }, `draw selection box`)

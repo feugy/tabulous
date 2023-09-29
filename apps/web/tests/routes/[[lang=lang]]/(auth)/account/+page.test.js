@@ -1,13 +1,4 @@
 // @ts-check
-/**
- * @typedef {import('@src/common').Locale} Locale
- * @typedef {import('@src/graphql').PlayerWithSearchable}  PlayerWithSearchable
- */
-/**
- * @template {any[]} P, R
- * @typedef {import('vitest').Mock<P, R>} Mock
- */
-
 import { faker } from '@faker-js/faker'
 import { initLocale } from '@src/common'
 import AccountPage from '@src/routes/[[lang=lang]]/(auth)/account/+page.svelte'
@@ -22,13 +13,10 @@ import { invalidate } from '$app/navigation'
 
 vi.mock('@src/stores')
 
-const updateCurrentPlayer =
-  /** @type {Mock<[String, string], Promise<PlayerWithSearchable>>} */ (
-    originalUpdateCurrentPlayer
-  )
+const updateCurrentPlayer = vi.mocked(originalUpdateCurrentPlayer)
 
 describe.each(
-  /** @type {{title: string, lang: Locale|undefined}[]} */ ([
+  /** @type {{title: string, lang: import('@src/common').Locale|undefined}[]} */ ([
     { title: '/', lang: undefined },
     { title: '/en', lang: 'en' }
   ])

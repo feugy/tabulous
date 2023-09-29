@@ -1,6 +1,4 @@
 // @ts-check
-/** @typedef {import('@tabulous/server/src/graphql').Player} Player */
-
 import { gql } from '@urql/core'
 import chalkTemplate from 'chalk-template'
 import kebabCase from 'lodash.kebabcase'
@@ -18,7 +16,7 @@ import { commonOptions } from './help.js'
 
 /**
  * @typedef {object} AddPlayerResult player addition command result
- * @property {Player} player - added player.
+ * @property {import('@tabulous/types').Player} player - added player.
  */
 
 const addPlayerMutation = gql`
@@ -33,7 +31,7 @@ const addPlayerMutation = gql`
 /**
  * Triggers player addition command
  * @param {string[]} argv - array of parsed arguments (without executable and current file).
- * @returns {Promise<AddPlayerResult|string>} the added player (or help message).
+ * @returns the added player (or help message).
  */
 export default async function addPlayerCommand(argv) {
   const args = parseArgv(argv, {
@@ -57,7 +55,7 @@ export default async function addPlayerCommand(argv) {
 /**
  * Adds a new player account.
  * @param {AddPlayerArgs} args - creation arguments.
- * @returns {Promise<AddPlayerResult>} the added player.
+ * @returns the added player.
  */
 export async function addPlayer({ username, password }) {
   const { addPlayer: player } = await getGraphQLClient().mutation(
@@ -72,12 +70,7 @@ export async function addPlayer({ username, password }) {
   return attachFormater({ player }, formatPlayer)
 }
 
-/**
- *
- * @param {AddPlayerResult} result
- * @returns {string}
- */
-function formatPlayer({ player }) {
+function formatPlayer(/** @type {AddPlayerResult} */ { player }) {
   return chalkTemplate`player {bold ${player.username}} added with id {bold ${player.id}}`
 }
 

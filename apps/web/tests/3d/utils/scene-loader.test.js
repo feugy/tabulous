@@ -1,12 +1,4 @@
 // @ts-check
-/**
- * @typedef {import('@babylonjs/core').Engine} Engine
- * @typedef {import('@babylonjs/core').Mesh} Mesh
- * @typedef {import('@babylonjs/core').Scene} Scene
- * @typedef {import('@tabulous/server/src/graphql').Mesh} SerializedMesh
- * @typedef {import('@src/3d/utils/scene-loader').MeshCreator} MeshCreator
- */
-
 import { faker } from '@faker-js/faker'
 import {
   altitudeGap,
@@ -35,25 +27,25 @@ import {
   initialize3dEngine
 } from '../../test-utils'
 
-/** @type {Engine} */
+/** @type {import('@babylonjs/core').Engine} */
 let engine
-/** @type {Scene} */
+/** @type {import('@babylonjs/core').Scene} */
 let scene
-/** @type {Scene} */
+/** @type {import('@babylonjs/core').Scene} */
 let handScene
-/** @type {MeshCreator} */
+/** @type {import('@src/3d/utils').MeshCreator} */
 let createBox
-/** @type {MeshCreator} */
+/** @type {import('@src/3d/utils').MeshCreator} */
 let createCard
-/** @type {MeshCreator} */
+/** @type {import('@src/3d/utils').MeshCreator} */
 let createCustom
-/** @type {MeshCreator} */
+/** @type {import('@src/3d/utils').MeshCreator} */
 let createDie
-/** @type {MeshCreator} */
+/** @type {import('@src/3d/utils').MeshCreator} */
 let createPrism
-/** @type {MeshCreator} */
+/** @type {import('@src/3d/utils').MeshCreator} */
 let createRoundToken
-/** @type {MeshCreator} */
+/** @type {import('@src/3d/utils').MeshCreator} */
 let createRoundedTile
 const renderWidth = 2048
 const renderHeight = 1024
@@ -323,7 +315,9 @@ describe('serializeMeshes() 3D utility', () => {
       expect(serializeMeshes(scene)).toEqual([])
       expect(serializeMeshes(handScene)).toEqual([serialized])
 
-      const handMesh = /** @type {Mesh} */ (handScene.getMeshById(mesh.id))
+      const handMesh = /** @type {import('@babylonjs/core').Mesh} */ (
+        handScene.getMeshById(mesh.id)
+      )
       managers.hand.play(handMesh)
 
       expect(serializeMeshes(scene)).toEqual([serialized])
@@ -331,7 +325,9 @@ describe('serializeMeshes() 3D utility', () => {
 
       await expectAnimationEnd(
         getAnimatableBehavior(
-          /** @type {Mesh} */ (scene.getMeshById(handMesh.id))
+          /** @type {import('@babylonjs/core').Mesh} */ (
+            scene.getMeshById(handMesh.id)
+          )
         )
       )
 
@@ -536,7 +532,7 @@ describe('loadMeshes() 3D utility', () => {
   it('adds new meshes with their behaviors', async () => {
     await loadMeshes(
       scene,
-      /** @type {SerializedMesh[]} */ ([
+      /** @type {import('@tabulous/types').Mesh[]} */ ([
         card1,
         token1,
         tile1,
@@ -650,7 +646,7 @@ describe('loadMeshes() 3D utility', () => {
     )
     await loadMeshes(
       scene,
-      /** @type {SerializedMesh[]} */ ([
+      /** @type {import('@tabulous/types').Mesh[]} */ ([
         card1,
         card2,
         token1,
@@ -746,7 +742,7 @@ describe('loadMeshes() 3D utility', () => {
     }
     await loadMeshes(
       scene,
-      /** @type {SerializedMesh[]} */ ([
+      /** @type {import('@tabulous/types').Mesh[]} */ ([
         card5,
         card1,
         {
@@ -824,7 +820,7 @@ describe('loadMeshes() 3D utility', () => {
 
     await loadMeshes(
       scene,
-      /** @type {SerializedMesh[]} */ ([
+      /** @type {import('@tabulous/types').Mesh[]} */ ([
         card4,
         card1,
         { shape: 'card', id: 'card2', movable: {} },

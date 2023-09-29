@@ -7,9 +7,6 @@ import { dirname, join, resolve } from 'path'
 import { fileURLToPath } from 'url'
 import v8toIstanbul from 'v8-to-istanbul'
 
-/** @typedef {import('istanbul-lib-coverage/lib/coverage-map').CoverageMap} CoverageMap */
-/** @typedef {import('istanbul-lib-coverage').classes.FileCoverage} FileCoverage */
-
 const __filename = fileURLToPath(import.meta.url)
 const coverageJSON = join('coverage', 'coverage-final.json')
 /** @type {{name: string, opts?: ?}[]} */
@@ -33,7 +30,7 @@ export async function initializeCoverage() {
 }
 
 /**
- * @param {CoverageMap} coverageMap
+ * @param {import('istanbul-lib-coverage/lib/coverage-map').CoverageMap} coverageMap
  * @param {{url: string, source: string, functions: ? }[]} coverageData
  */
 export async function extendCoverage(coverageMap, coverageData) {
@@ -64,7 +61,9 @@ export async function extendCoverage(coverageMap, coverageData) {
   }
 }
 
-export async function writeCoverage(/** @type {CoverageMap} */ coverageMap) {
+export async function writeCoverage(
+  /** @type {import('istanbul-lib-coverage/lib/coverage-map').CoverageMap} */ coverageMap
+) {
   await writeFile(coverageJSON, JSON.stringify(coverageMap.toJSON()))
   const context = createContext({ coverageMap, dir: dirname(coverageJSON) })
 

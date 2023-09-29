@@ -1,22 +1,15 @@
 <script>
   // @ts-check
-  /**
-   * @typedef {import('@src/graphql').PlayerWithSearchable} PlayerWithSearchable
-   * @typedef {import('@src/stores').Connected} Connected
-   * @typedef {import('@src/stores/game-manager').Player} Player
-   * @typedef {import('@src/utils').Dimension} Dimension
-   */
-
   import { getPixelDimension, observeDimension } from '@src/utils'
   import { onMount } from 'svelte'
 
   import PlayerAvatar from './PlayerAvatar.svelte'
 
-  /** @type {PlayerWithSearchable} authenticated player. */
+  /** @type {import('@src/graphql').PlayerWithSearchable} authenticated player. */
   export let user
-  /** @type {Map<string, Player>} map of game/lobby players by their ids. */
+  /** @type {Map<string, import('@src/stores').PlayerWithPref>} map of game/lobby players by their ids. */
   export let playerById
-  /** @type {Connected[]} currently connected active players. */
+  /** @type {import('@src/stores').Connected[]} currently connected active players. */
   export let connected
 
   let absoluteMin = 0.4
@@ -55,7 +48,9 @@
     }
   })
 
-  function resize(/** @type {Dimension} */ { width, height }) {
+  function resize(
+    /** @type {import('@src/utils').Dimension} */ { width, height }
+  ) {
     if (width && height) {
       rows = 0
       columns = 0

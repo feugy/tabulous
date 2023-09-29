@@ -2,7 +2,7 @@
 import { buildBoard, buildPieces } from './builders/index.js'
 import { blackId, whiteId } from './constants.js'
 
-/** @type {import('@tabulous/server/src/services/catalog').Build} */
+/** @type {import('@tabulous/types').Build} */
 export function build() {
   return {
     /**

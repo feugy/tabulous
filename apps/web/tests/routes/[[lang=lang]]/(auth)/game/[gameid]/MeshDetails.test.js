@@ -1,6 +1,4 @@
 // @ts-check
-/** @typedef {import('@src/3d/managers').MeshDetails} MeshDetailsProps */
-
 import MeshDetails from '@src/routes/[[lang=lang]]/(auth)/game/[gameId]/MeshDetails.svelte'
 import { gameAssetsUrl } from '@src/utils'
 import { render, screen } from '@testing-library/svelte'
@@ -8,7 +6,7 @@ import html from 'svelte-htm'
 import { beforeEach, describe, expect, it, vi } from 'vitest'
 
 describe('/game/[gameId] MeshDetails component', () => {
-  /** @type {MeshDetailsProps} */
+  /** @type {import('@src/3d/managers').MeshDetails} */
   const details = { position: { x: 250, y: 120 }, images: ['/image1.webp'] }
 
   function renderComponent(props = {}) {

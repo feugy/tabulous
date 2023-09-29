@@ -1,8 +1,4 @@
 // @ts-check
-/**
- * @typedef {import('../../src/services/players').Player} Player
- */
-
 import { faker } from '@faker-js/faker'
 import { afterEach, beforeEach, describe, expect, it } from 'vitest'
 
@@ -24,12 +20,12 @@ describe('given a connected repository and several players', () => {
   const providerId2 = faker.string.sample()
   const providerId3 = faker.string.sample()
 
-  /** @type {Player[]} */
+  /** @type {import('@tabulous/types').Player[]} */
   let models = []
 
   beforeEach(async () => {
     await players.connect({ url: redisUrl })
-    models = /** @type {Player[]} */ ([
+    models = /** @type {import('@tabulous/types').Player[]} */ ([
       {
         id: `p1-${faker.number.int(100)}`,
         username: 'Jane',

@@ -3,7 +3,7 @@ import { createHash } from 'node:crypto'
 
 import { Subject } from 'rxjs'
 
-import repositories from '../repositories/index.js'
+import * as repositories from '../repositories/index.js'
 import { makeLogger } from '../utils/index.js'
 
 const {
@@ -15,49 +15,15 @@ const {
 
 const logger = makeLogger('players-service')
 
-/**
- * @typedef {object} Player a player account.
- * @property {string} id - unique id.
- * @property {string} username - player user name.
- * @property {?string} currentGameId - game this player is currently playing.
- * @property {string} [avatar] - avatar used for display.
- * @property {string} [provider] - player's authentication provider, when relevant.
- * @property {string} [providerId] - authentication provider own id, when relevant.
- * @property {string} [email] - email from authentication provider, when relevant.
- * @property {string} [fullName] - full name from the authentication provider, when relevant.
- * @property {boolean} [termsAccepted] - whether this player has accepted terms of service.
- * @property {string} [password] - the account password hash, when relevant.
- * @property {boolean} [isAdmin] - whether this player has elevated priviledges or not.
- * @property {string[]} [catalog] - list of copyrighted games this player has accessed to.
- * @property {boolean} [usernameSearchable] - whether this player could by found when searching usernames.
- */
-
-/**
- * @typedef {object} Friendship a relationship between two players.
- * @property {string} playerId - id of the target player (origin player is implicit).
- * @property {boolean} [isRequest] - when true, indicates a friendship request from the target player.
- * @property {boolean} [isProposal] - when true, indicates a friendship request sent to the target player.
- */
-
-/**
- * @typedef {object} FriendshipUpdate an update on a friendship relationship
- * @property {string} from - player sending the update.
- * @property {string} to - player receiving the update.
- * @property {boolean} [requested] - indicates that sender requested friendship.
- * @property {boolean} [proposed] - indicates that sender proposed new friendship.
- * @property {boolean} [accepted] - whether the relationship is accepted.
- * @property {boolean} [declined] - whether the relationship is decline.
- */
-
-/** @type {Subject<FriendshipUpdate>} */
+/** @type {Subject<import('@tabulous/types').FriendshipUpdate>} */
 export const friendshipUpdates = new Subject()
 
 /**
  * Creates or updates a player account, saving user details as they are provided.
  * If the incoming data contains provider & providerId fields, it keeps previous id, avatar and username.
  * In case no id is provided, a new one is created.
- * @param {Partial<Player>} userDetails - creation details.
- * @returns {Promise<Player>} the creates player.
+ * @param {Partial<import('@tabulous/types').Player>} userDetails - creation details.
+ * @returns the creates player.
  */
 export async function upsertPlayer(userDetails) {
   const ctx = { ...userDetails, external: false }
@@ -65,9 +31,8 @@ export async function upsertPlayer(userDetails) {
   if (userDetails.provider && userDetails.providerId && userDetails.username) {
     ctx.external = true
     // data comes from an external provider
-    const existing = await repositories.players.getByProviderDetails(
-      userDetails
-    )
+    const existing =
+      await repositories.players.getByProviderDetails(userDetails)
     if (!existing) {
       // first connection
       const { username } = userDetails
@@ -98,7 +63,7 @@ export async function upsertPlayer(userDetails) {
   }
   userDetails.currentGameId = null
   const saved = await repositories.players.save(
-    /** @type {Pick<Player, 'username' | 'id' | 'currentGameId'>} */ (
+    /** @type {Pick<import('@tabulous/types').Player, 'username' | 'id' | 'currentGameId'>} */ (
       userDetails
     )
   )
@@ -108,20 +73,19 @@ export async function upsertPlayer(userDetails) {
 
 /**
  * @overload
- * @param {(string|undefined)[]} [id]
- * @returns {Promise<(?Player)[]>}
+ * Returns a several players from their ids.
+ * @param {(string|undefined)[]} playerId - desired player ids.
+ * @returns {Promise<(?import('@tabulous/types').Player)[]>} matching players, or nulls.
  */
 /**
  * @overload
- * @param {string} [id]
- * @returns {Promise<?Player>}
+ * Returns a single player from its id.
+ * @param {string} playerId - desired player id.
+ * @returns {Promise<?import('@tabulous/types').Player>} matching player, or null.
  */
-/**
- * Returns a single or several player from their id.
- * @param {string|(string|undefined)[]} [playerId] - desired player id(s).
- * @returns {Promise<?Player|(?Player)[]>} matching player(s), or null(s).
- */
-export async function getPlayerById(playerId) {
+export async function getPlayerById(
+  /** @type {string|(string|undefined)[]} */ playerId
+) {
   // @ts-expect-error: overload + template does not play well together
   return repositories.players.getById(playerId)
 }
@@ -131,7 +95,7 @@ export async function getPlayerById(playerId) {
  * Does nothing when no player is matching the given id.
  * @param {string} playerId - related player id.
  * @param {?string} currentGameId - id of the current game, or null.
- * @returns {Promise<?Player>} the modified player.
+ * @returns the modified player.
  */
 export async function setCurrentGameId(playerId, currentGameId) {
   const player = await getPlayerById(playerId)
@@ -151,7 +115,7 @@ export async function setCurrentGameId(playerId, currentGameId) {
  * @param {string} search - searched text.
  * @param {string} playerId - the current player id.
  * @param {boolean} [excludeCurrent=true] - whether to exclude current player from results.
- * @returns {Promise<Player[]>} list of matching players.
+ * @returns list of matching players.
  */
 export async function searchPlayers(search, playerId, excludeCurrent = true) {
   if ((search ?? '').trim().length < 2) return []
@@ -180,7 +144,7 @@ export async function searchPlayers(search, playerId, excludeCurrent = true) {
  * It can include a player id from the results.
  * @param {string} username - tested username.
  * @param {string} [excludedId] - id of excluded player.
- * @returns {Promise<boolean>} whether this username is already in use, or not.
+ * @returns whether this username is already in use, or not.
  */
 export async function isUsernameUsed(username, excludedId) {
   const ctx = { username, excludedId }
@@ -196,8 +160,8 @@ export async function isUsernameUsed(username, excludedId) {
 
 /**
  * Records a player accepting terms of service.
- * @param {Player} player - the corresponding player.
- * @returns {Promise<Player>} the player, updates.
+ * @param {import('@tabulous/types').Player} player - the corresponding player.
+ * @returns the player, updates.
  */
 export async function acceptTerms(player) {
   logger.trace(
@@ -213,11 +177,9 @@ export async function acceptTerms(player) {
   return repositories.players.save({ ...player, termsAccepted: true })
 }
 
-/**
- * @param {Partial<Player>} userDetails
- * @returns {Promise<string|undefined>}
- */
-async function findGravatar(userDetails) {
+async function findGravatar(
+  /** @type {Partial<import('@tabulous/types').Player>} */ userDetails
+) {
   if (!userDetails.email) {
     return undefined
   }
@@ -238,11 +200,12 @@ async function findGravatar(userDetails) {
 /**
  * Returns the list of friends of a given player, including friendship requests, and blocked players.
  * @param {string} playerId - player id for who the list is returned.
- * @returns {Promise<Friendship[]>} list (possibly empty) of friendship relationships for the specified player.
+ * @returns list (possibly empty) of friendship relationships for the specified player.
  */
 export async function listFriends(playerId) {
   const ctx = { playerId }
   logger.trace({ ctx }, 'listing player friends')
+  /** @type {import('@tabulous/types').Friendship[]} */
   const list = []
   for (const { id, state } of await repositories.players.listFriendships(
     playerId
@@ -262,9 +225,9 @@ export async function listFriends(playerId) {
 /**
  * Proposes a friendship request from one player to another one.
  * Publishes an update.
- * @param {Player} sender - sender player.
+ * @param {import('@tabulous/types').Player} sender - sender player.
  * @param {string} playerId - id of the destination player.
- * @returns {Promise<boolean>} true if the request was proposed.
+ * @returns true if the request was proposed.
  */
 export async function requestFriendship(sender, playerId) {
   const ctx = { playerId: sender.id, futureFriend: playerId }
@@ -281,9 +244,9 @@ export async function requestFriendship(sender, playerId) {
 /**
  * Accepts a friendship request from another player.
  * Publishes an update.
- * @param {Player} sender - accepting player.
+ * @param {import('@tabulous/types').Player} sender - accepting player.
  * @param {string} playerId - id of the requesting player.
- * @returns {Promise<boolean>} true if the request was accepted.
+ * @returns true if the request was accepted.
  */
 export async function acceptFriendship(sender, playerId) {
   const ctx = { playerId: sender.id, futureFriend: playerId }
@@ -312,9 +275,8 @@ export async function acceptFriendship(sender, playerId) {
 
 /**
  * Declines a friendship request or ends existing friendship.
- * @param {Player} sender - declining player.
+ * @param {import('@tabulous/types').Player} sender - declining player.
  * @param {string} playerId - id of the declined player.
- * @returns {Promise<boolean>}
  */
 export async function endFriendship(sender, playerId) {
   const ctx = { playerId: sender.id, futureFriend: playerId }

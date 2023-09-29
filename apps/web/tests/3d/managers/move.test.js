@@ -1,21 +1,4 @@
 // @ts-check
-/**
- * @typedef {import('@babylonjs/core').ArcRotateCamera} ArcRotateCamera
- * @typedef {import('@babylonjs/core').Mesh} Mesh
- * @typedef {import('@babylonjs/core').Observer<?>} Observer
- * @typedef {import('@babylonjs/core').Scene} Scene
- * @typedef {import('@src/3d/behaviors/targetable').DropDetails} DropDetails
- * @typedef {import('@src/3d/managers/move').PreMoveDetails} PreMoveDetails
- * @typedef {import('@src/3d/managers/move').MoveDetails} MoveDetails
- * @typedef {import('@src/3d/managers/control').Action} Action
- * @typedef {import('@src/3d/managers/control').Move} Move
- * @typedef {import('@src/3d/managers/target').DropZone} DropZone
- */
-/**
- * @template {any[]} P, R
- * @typedef {import('vitest').Mock<P, R>} Mock
- */
-
 import { Vector3 } from '@babylonjs/core/Maths/math.vector'
 import { faker } from '@faker-js/faker'
 import {
@@ -51,27 +34,27 @@ import {
 describe('managers.Move', () => {
   const centerX = 1024
   const centerY = 512
-  /** @type {Mock<[Move|Action], void>} */
+  /** @type {import('vitest').Mock<[import('@src/3d/managers').ActionOrMove], void>} */
   const actionRecorded = vi.fn()
-  /** @type {Mock<[MoveDetails], void>} */
+  /** @type {import('vitest').Mock<[import('@src/3d/managers').MoveDetails], void>} */
   const moveRecorded = vi.fn()
-  /** @type {Mock<[PreMoveDetails], void>} */
+  /** @type {import('vitest').Mock<[import('@src/3d/managers').PreMoveDetails], void>} */
   const preMoveRecorded = vi.fn()
-  /** @type {Scene} */
+  /** @type {import('@babylonjs/core').Scene} */
   let scene
-  /** @type {Scene} */
+  /** @type {import('@babylonjs/core').Scene} */
   let handScene
   /** @type {import('@src/3d/managers').Managers} */
   let managers
-  /** @type {ArcRotateCamera} */
+  /** @type {import('@babylonjs/core').ArcRotateCamera} */
   let camera
-  /** @type {?Observer} */
+  /** @type {?import('@babylonjs/core').Observer<?>} */
   let actionObserver
-  /** @type {?Observer} */
+  /** @type {?import('@babylonjs/core').Observer<?>} */
   let moveObserver
-  /** @type {?Observer} */
+  /** @type {?import('@babylonjs/core').Observer<?>} */
   let preMoveObserver
-  /** @type {DropDetails[]} */
+  /** @type {import('@src/3d/managers').DropDetails[]} */
   let drops
   /** @type {string} */
   let playerId
@@ -186,9 +169,9 @@ describe('managers.Move', () => {
   })
 
   describe('given single mesh', () => {
-    /** @type {Mesh} */
+    /** @type {import('@babylonjs/core').Mesh} */
     let moved
-    /** @type {Mesh[]} */
+    /** @type {import('@babylonjs/core').Mesh[]} */
     let targets
 
     beforeEach(() => {
@@ -461,7 +444,7 @@ describe('managers.Move', () => {
   })
 
   describe('given a mesh in hand', () => {
-    /** @type {Mesh} */
+    /** @type {import('@babylonjs/core').Mesh} */
     let moved
     /** @type {Vector3} */
     let cameraPosition
@@ -483,7 +466,9 @@ describe('managers.Move', () => {
     })
 
     it('moves according to hand camera', async () => {
-      const camera = /** @type {ArcRotateCamera} */ (scene.activeCamera)
+      const camera = /** @type {import('@babylonjs/core').ArcRotateCamera} */ (
+        scene.activeCamera
+      )
       camera.setPosition(new Vector3(10, 0, 0))
       managers.move.start(moved, { x: centerX, y: centerY })
       expect(managers.move.inProgress).toBe(true)
@@ -536,7 +521,9 @@ describe('managers.Move', () => {
       await sleep()
       managers.move.continue(event)
 
-      const mainMoved = /** @type {Mesh} */ (scene.getMeshById(moved.id))
+      const mainMoved = /** @type {import('@babylonjs/core').Mesh} */ (
+        scene.getMeshById(moved.id)
+      )
       expect(mainMoved).not.toBeNull()
       expectPosition(mainMoved, [deltaX, y, deltaZ])
       expect(managers.move.inProgress).toBe(true)
@@ -577,7 +564,9 @@ describe('managers.Move', () => {
       )
       expectCloseVector(
         Vector3.FromArray(
-          /** @type {Move} */ (actionRecorded.mock.calls[2][0]).pos
+          /** @type {import('@src/3d/managers').Move} */ (
+            actionRecorded.mock.calls[2][0]
+          ).pos
         ),
         [deltaX, y, deltaZ]
       )
@@ -625,9 +614,9 @@ describe('managers.Move', () => {
   })
 
   describe('given active selection', () => {
-    /** @type {Mesh[]} */
+    /** @type {import('@babylonjs/core').Mesh[]} */
     let moved
-    /** @type {Mesh[]} */
+    /** @type {import('@babylonjs/core').Mesh[]} */
     let targets
     /** @type {(number[])[]} */
     let prevs
@@ -1142,7 +1131,7 @@ describe('managers.Move', () => {
   })
 
   describe('given parent and active selection', () => {
-    /** @type {Mesh[]} */
+    /** @type {import('@babylonjs/core').Mesh[]} */
     let moved
 
     beforeEach(() => {
@@ -1217,7 +1206,7 @@ describe('managers.Move', () => {
   })
 
   describe('given a stack of meshes', () => {
-    /** @type {Mesh[]} */
+    /** @type {import('@babylonjs/core').Mesh[]} */
     let moved
     /** @type {(number[])[]} */
     let prevs
@@ -1344,8 +1333,8 @@ describe('managers.Move', () => {
 
   function expectDroppedEvent(
     /** @type {number} */ rank,
-    /** @type {Mesh} */ target,
-    /** @type {Mesh[]} */ moved
+    /** @type {import('@babylonjs/core').Mesh} */ target,
+    /** @type {import('@babylonjs/core').Mesh[]} */ moved
   ) {
     expect(drops[rank]?.zone.mesh.id).toEqual(target.id)
     expect(getIds(drops[rank]?.dropped)).toEqual(getIds(moved))
@@ -1353,9 +1342,9 @@ describe('managers.Move', () => {
 
   function expectZoneForMeshes(
     /** @type {string} */ targetId,
-    /** @type {Mesh[]} */ meshes
+    /** @type {import('@babylonjs/core').Mesh[]} */ meshes
   ) {
-    const zone = /** @type {DropZone}) */ (
+    const zone = /** @type {import('@src/3d/managers').DropZone}) */ (
       managers.move.getActiveZones().find(({ mesh }) => mesh.id === targetId)
     )
     expect(zone).toBeDefined()
@@ -1365,8 +1354,8 @@ describe('managers.Move', () => {
   }
 
   function getAltitudeOnCollision(
-    /** @type {Mesh} */ moved,
-    /** @type {Mesh} */ obstacle,
+    /** @type {import('@babylonjs/core').Mesh} */ moved,
+    /** @type {import('@babylonjs/core').Mesh} */ obstacle,
     offset = 0
   ) {
     return (
@@ -1378,6 +1367,6 @@ describe('managers.Move', () => {
   }
 })
 
-function getIds(/** @type {Mesh[]} */ meshes = []) {
+function getIds(/** @type {import('@babylonjs/core').Mesh[]} */ meshes = []) {
   return meshes.map(({ id }) => id)
 }

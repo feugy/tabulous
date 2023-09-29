@@ -1,8 +1,4 @@
 // @ts-check
-/**
- * @typedef {import('@babylonjs/core').Mesh} Mesh
- */
-
 import { faker } from '@faker-js/faker'
 import { TargetBehavior, TargetBehaviorName } from '@src/3d/behaviors'
 import { beforeEach, describe, expect, it, vi } from 'vitest'
@@ -119,7 +115,7 @@ describe('TargetBehavior', () => {
   })
 
   describe('given attached to a mesh', () => {
-    /** @type {Mesh} */
+    /** @type {import('@babylonjs/core').Mesh} */
     let mesh
     /** @type {TargetBehavior} */
     let behavior

@@ -1,6 +1,4 @@
 // @ts-check
-/** @typedef {import('@tabulous/server/src/graphql').CatalogItem} CatalogItem */
-
 import { gql } from '@urql/core'
 import chalkTemplate from 'chalk-template'
 
@@ -49,7 +47,7 @@ const listCatalogQuery = gql`
 /**
  * Triggers catalog command
  * @param {string[]} argv - array of parsed arguments (without executable and current file).
- * @returns {Promise<CatalogResult|string>} this user catalog of accessible games (or help message).
+ * @returns this user catalog of accessible games (or help message).
  */
 export default async function catalogCommand(argv) {
   const args = parseArgv(argv, {
@@ -71,11 +69,11 @@ export default async function catalogCommand(argv) {
 /**
  * List all available games of a given user.
  * @param {CatalogArgs} args - catalog arguments.
- * @returns {Promise<CatalogResult>} this user catalog of accessible games.
+ * @returns this user catalog of accessible games.
  */
 export async function catalog({ username }) {
   const { id } = await findUser(username)
-  /** @type {{ listCatalog: CatalogItem[] }} */
+  /** @type {{ listCatalog: import('@tabulous/server/graphql').CatalogItem[] }} */
   const { listCatalog: catalog } = await getGraphQLClient().query(
     listCatalogQuery,
     signToken(id)
@@ -95,18 +93,14 @@ export async function catalog({ username }) {
 }
 
 /**
- * @param {CatalogItem} descriptor
- * @returns {string} the descriptor localized name.
+ * @param {import('@tabulous/server/graphql').CatalogItem} descriptor
+ * @returns the descriptor localized name.
  */
 function getLocaleName({ name, locales }) {
   return locales?.fr?.title ?? name
 }
 
-/**
- * @param {CatalogResult} result
- * @returns {string} formatted result
- */
-function formatCatalog({ games }) {
+function formatCatalog(/** @type {CatalogResult} */ { games }) {
   const output = []
   for (const { name, title, copyright } of games) {
     output.push(

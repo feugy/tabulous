@@ -1,10 +1,4 @@
 // @ts-check
-/**
- * @typedef {import('@babylonjs/core').Mesh} Mesh
- * @typedef {import('@babylonjs/core').Observer<?>} Observer
- * @typedef {import('@babylonjs/core').Scene} Scene
- */
-
 import { Vector3 } from '@babylonjs/core'
 import { faker } from '@faker-js/faker'
 import {
@@ -37,7 +31,7 @@ describe('DetailBehavior', () => {
   )
 
   const onDetailsReceived = vi.fn()
-  /** @type {?Observer} */
+  /** @type {?import('@babylonjs/core').Observer<?>} */
   let onDetailsObserver
 
   beforeEach(() => {
@@ -107,7 +101,7 @@ describe('DetailBehavior', () => {
       backImage: null
     }
   ])('given attached to a mesh$title', ({ frontImage, backImage }) => {
-    /** @type {Mesh} */
+    /** @type {import('@babylonjs/core').Mesh} */
     let mesh
     /** @type {DetailBehavior} */
     let behavior
@@ -151,7 +145,7 @@ describe('DetailBehavior', () => {
   })
 
   describe('given attached to a stacked mesh', () => {
-    /** @type {Mesh} */
+    /** @type {import('@babylonjs/core').Mesh} */
     let mesh
     const images = ['image1', 'image2', 'image3']
 

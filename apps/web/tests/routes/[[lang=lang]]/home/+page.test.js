@@ -1,17 +1,4 @@
 // @ts-check
-/**
- * @typedef {import('@src/common').Locale} Locale
- * @typedef {import('@src/graphql').CatalogItem} CatalogItem
- * @typedef {import('@src/graphql').Game} Game
- * @typedef {import('@src/graphql').Friendship} Friendship
- * @typedef {import('@src/graphql').LightGame} LightGame
- * @typedef {import('@src/graphql').LightPlayer} LightPlayer
- */
-/**
- * @template {any[]} P, R
- * @typedef {import('vitest').Mock<P, R>} Mock
- */
-
 import { faker } from '@faker-js/faker'
 import { initLocale } from '@src/common'
 import { load } from '@src/routes/[[lang=lang]]/home/+page'
@@ -46,47 +33,27 @@ vi.mock('@src/stores', async () => {
   }
 })
 
-const listCatalog =
-  /** @type {Mock<Parameters<typeof stores.listCatalog>, ReturnType<typeof stores.listCatalog>>} */ (
-    stores.listCatalog
+const listCatalog = vi.mocked(stores.listCatalog)
+const listGames = vi.mocked(stores.listGames)
+const createGame = vi.mocked(stores.createGame)
+const deleteGame = vi.mocked(stores.deleteGame)
+const joinGame = vi.mocked(stores.joinGame)
+const promoteGame = vi.mocked(stores.promoteGame)
+const listFriends = vi.mocked(stores.listFriends)
+const receiveGameListUpdates = vi.mocked(stores.receiveGameListUpdates)
+const currentGame =
+  /** @type {import('rxjs').BehaviorSubject<?import('@src/graphql').Game>} */ (
+    stores.currentGame
   )
-const listGames =
-  /** @type {Mock<Parameters<typeof stores.listGames>, ReturnType<typeof stores.listGames>>} */ (
-    stores.listGames
-  )
-const createGame =
-  /** @type {Mock<Parameters<typeof stores.createGame>, ReturnType<typeof stores.createGame>>} */ (
-    stores.createGame
-  )
-const deleteGame =
-  /** @type {Mock<Parameters<typeof stores.deleteGame>, ReturnType<typeof stores.deleteGame>>} */ (
-    stores.deleteGame
-  )
-const joinGame =
-  /** @type {Mock<Parameters<typeof stores.joinGame>, Promise<Game>>} */ (
-    stores.joinGame
-  )
-const promoteGame =
-  /** @type {Mock<Parameters<typeof stores.promoteGame>, ReturnType<typeof stores.promoteGame>>} */ (
-    stores.promoteGame
-  )
-const listFriends = /** @type {Mock<[], BehaviorSubject<Friendship[]>>} */ (
-  stores.listFriends
-)
-const receiveGameListUpdates =
-  /** @type {Mock<[LightGame[]|undefined], BehaviorSubject<LightGame[]>>} */ (
-    stores.receiveGameListUpdates
-  )
-const currentGame = /** @type {BehaviorSubject<?Game>} */ (stores.currentGame)
-const toastError = /** @type {Mock<?, ?>} */ (stores.toastError)
-const toastInfo = /** @type {Mock<?, ?>} */ (stores.toastInfo)
+const toastError = vi.mocked(stores.toastError)
+const toastInfo = vi.mocked(stores.toastInfo)
 
 beforeEach(() => {
   vi.clearAllMocks()
 })
 
 describe.each(
-  /** @type {{ title: String, lang: Locale|undefined, locale: Locale, urlRoot: string }[]} */ ([
+  /** @type {{ title: String, lang: import('@src/common').Locale|undefined, locale: import('@src/common').Locale, urlRoot: string }[]} */ ([
     { title: '/', lang: undefined, locale: 'fr', urlRoot: '' },
     { title: '/en', lang: 'en', locale: 'en', urlRoot: '/en' }
   ])
@@ -96,7 +63,7 @@ describe.each(
   describe('/home route loader', () => {
     it('loads catalog only for anonymous user', async () => {
       const parent = async () => ({ session: null })
-      /** @type {CatalogItem[]} */
+      /** @type {import('@src/graphql').CatalogItem[]} */
       const catalog = [
         { name: 'game-1', locales: {} },
         { name: 'game-2', locales: {} }
@@ -121,12 +88,12 @@ describe.each(
 
     it('loads catalog and current games for authenticated user', async () => {
       const parent = async () => ({ session: { player: { name: 'dude' } } })
-      /** @type {CatalogItem[]} */
+      /** @type {import('@src/graphql').CatalogItem[]} */
       const catalog = [
         { name: 'game-1', locales: {} },
         { name: 'game-2', locales: {} }
       ]
-      /** @type {LightGame[]} */
+      /** @type {import('@src/graphql').LightGame[]} */
       const currentGames = [{ id: 'game-3', created: Date.now() }]
       listCatalog.mockResolvedValueOnce(catalog)
       listGames.mockResolvedValueOnce(currentGames)
@@ -149,7 +116,7 @@ describe.each(
 
     it('does not create game when unauthenticated', async () => {
       const parent = async () => ({ session: null })
-      /** @type {CatalogItem[]} */
+      /** @type {import('@src/graphql').CatalogItem[]} */
       const catalog = [
         { locales: {}, name: 'klondike' },
         { locales: {}, name: 'chess' }
@@ -177,12 +144,12 @@ describe.each(
 
     describe('given an authenticated user', () => {
       const parent = async () => ({ session: { player: { name: 'dude' } } })
-      /** @type {CatalogItem[]} */
+      /** @type {import('@src/graphql').CatalogItem[]} */
       const catalog = [
         { locales: {}, name: 'klondike' },
         { locales: {}, name: 'chess' }
       ]
-      /** @type {LightGame[]} */
+      /** @type {import('@src/graphql').LightGame[]} */
       const currentGames = [
         { id: 'game-3', created: Date.now(), kind: 'chess' }
       ]
@@ -235,14 +202,14 @@ describe.each(
   })
 
   describe('/home route', () => {
-    /** @type {LightPlayer} */
+    /** @type {import('@src/graphql').LightPlayer} */
     const player = { username: 'dude', id: 'p1', currentGameId: null }
-    /** @type {LightPlayer} */
+    /** @type {import('@src/graphql').LightPlayer} */
     const peer = { username: 'duke', id: 'p2', currentGameId: null }
-    /** @type {LightPlayer} */
+    /** @type {import('@src/graphql').LightPlayer} */
     const peer2 = { username: 'reno', id: 'p3', currentGameId: null }
     const parent = async () => ({ session: { player } })
-    /** @type {CatalogItem[]} */
+    /** @type {import('@src/graphql').CatalogItem[]} */
     const catalog = [
       {
         name: 'klondike',
@@ -254,7 +221,7 @@ describe.each(
         locales: { fr: { title: 'Dames' }, en: { title: 'Draughts' } }
       }
     ]
-    /** @type {LightGame[]} */
+    /** @type {import('@src/graphql').LightGame[]} */
     const games = [
       {
         id: 'game-3',
@@ -270,7 +237,9 @@ describe.each(
       listCatalog.mockResolvedValueOnce([...catalog])
       listGames.mockResolvedValueOnce(games)
       listFriends.mockReturnValueOnce(
-        new BehaviorSubject(/** @type {Friendship[]} */ ([]))
+        new BehaviorSubject(
+          /** @type {import('@src/graphql').Friendship[]} */ ([])
+        )
       )
       receiveGameListUpdates.mockImplementation(
         games => new BehaviorSubject(games ?? [])
@@ -383,7 +352,7 @@ describe.each(
     })
 
     describe('given some lobbies', () => {
-      /** @type {Game[]} */
+      /** @type {import('@src/graphql').Game[]} */
       const gamesWithLobbies = [
         { id: 'game-4', created: Date.now(), players: [player, peer, peer2] },
         { id: 'game-5', created: Date.now(), players: [player] },
@@ -399,7 +368,7 @@ describe.each(
           () => new BehaviorSubject(gamesWithLobbies)
         )
         joinGame.mockImplementation(async ({ gameId }) => {
-          const game = /** @type {Game} */ (
+          const game = /** @type {import('@src/graphql').Game} */ (
             gamesWithLobbies.find(({ id }) => id === gameId)
           )
           currentGame.next(game)

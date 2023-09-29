@@ -1,8 +1,3 @@
-/**
- * @template T
- * @typedef {import('vitest').MockedObject<T>} MockedObject
- */
-
 import './styles.postcss'
 
 import * as kitClient from '../../node_modules/@sveltejs/kit/src/runtime/client/singletons'

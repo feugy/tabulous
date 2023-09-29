@@ -1,22 +1,5 @@
 <script>
   // @ts-check
-  /**
-   * @typedef {import('@src/graphql').CatalogItem} CatalogItemData
-   * @typedef {import('@src/graphql').Friendship} Friendship
-   * @typedef {import('@src/graphql').LightGame} LightGame
-   * @typedef {import('@src/graphql').Game} Game
-   * @typedef {import('@src/graphql').LightPlayer} LightPlayer
-   * @typedef {import('@src/graphql').PlayerWithTurnCredentials} PlayerWithTurnCredentials
-   */
-  /**
-   * @template T
-   * @typedef {import('@src/types').DeepRequired<T>} DeepRequired
-   */
-  /**
-   * @template T
-   * @typedef {import('rxjs').Observable<T>} Observable
-   */
-
   import {
     Aside,
     ConfirmDialogue,
@@ -57,13 +40,13 @@
   /** @type {import('./$types').PageData} */
   export let data
 
-  /** @type {?LightGame} */
+  /** @type {?import('@src/graphql').LightGame} */
   let gameToDelete = null
-  /** @type {LightPlayer} */
+  /** @type {import('@src/graphql').AuthenticatedPlayer['player']} */
   let user
-  /** @type {Observable<LightGame[]> }*/
+  /** @type {import('rxjs').Observable<import('@src/graphql').LightGame[]> }*/
   let games = /** @type {?} */ (readable(data.currentGames || []))
-  /** @type {Observable<Friendship[]> }*/
+  /** @type {import('rxjs').Observable<import('@src/graphql').Friendship[]> }*/
   let friends = /** @type {?} */ (readable([]))
   /** @type {?{ title: string, maxSeats: number }} */
   let tooManyPlayersCatalogItem = null
@@ -91,7 +74,9 @@
   })
 
   async function handleSelectGame(
-    /** @type {CustomEvent<LightGame>} */ { detail: game }
+    /** @type {CustomEvent<import('@src/graphql').LightGame>} */ {
+      detail: game
+    }
   ) {
     if (isLobby(game)) {
       if (game.id !== $currentGame?.id && user) {
@@ -104,7 +89,9 @@
   }
 
   async function handleDeleteGame(
-    /** @type {CustomEvent<LightGame>} */ { detail: game }
+    /** @type {CustomEvent<import('@src/graphql').LightGame>} */ {
+      detail: game
+    }
   ) {
     gameToDelete = game
   }
@@ -124,7 +111,7 @@
   }
 
   async function handleCreateGame(
-    /** @type {CustomEvent<CatalogItemData & { title: string }>} */ {
+    /** @type {CustomEvent<import('@src/graphql').CatalogItem & { title: string }>} */ {
       detail: { name, title, maxSeats = 2 }
     }
   ) {
@@ -151,16 +138,20 @@
     await enterGame(await createGame())
   }
 
-  function enterGame(/** @type {Game} */ game) {
+  function enterGame(/** @type {import('@src/graphql').Game} */ game) {
     return joinGame({
       gameId: game.id,
-      .../** @type {DeepRequired<PlayerWithTurnCredentials>} */ (data.session),
+      .../** @type {import('@src/graphql').AuthenticatedPlayer} */ (
+        data.session
+      ),
       onDeletion: () => {
         toastInfo({ contentKey: 'labels.lobby-deleted-by-owner' })
       },
       onPromotion: promoted => {
         handleSelectGame(
-          /** @type {CustomEvent<LightGame>} */ ({ detail: promoted })
+          /** @type {CustomEvent<import('@src/graphql').LightGame>} */ ({
+            detail: promoted
+          })
         )
       }
     })
@@ -173,8 +164,8 @@
   }
 
   function sortCatalogByTitle(
-    /** @type {CatalogItemData} */ { locales: gameA },
-    /** @type {CatalogItemData} */ { locales: gameB }
+    /** @type {import('@src/graphql').CatalogItem} */ { locales: gameA },
+    /** @type {import('@src/graphql').CatalogItem} */ { locales: gameB }
   ) {
     return $comparator$.compare(
       gameA?.[$locale]?.title,

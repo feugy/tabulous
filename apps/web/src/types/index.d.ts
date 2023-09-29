@@ -19,7 +19,7 @@ import type {
   RotateBehavior,
   StackBehavior
 } from '@src/3d/behaviors'
-import type { Mesh as SerializedMesh } from '@tabulous/server/src/graphql'
+import type { Mesh as SerializedMesh } from '@tabulous/types'
 import type { Observable as RxObservable, Subject } from 'rxjs'
 import type { ComponentType } from 'svelte'
 

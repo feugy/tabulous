@@ -9,6 +9,7 @@
     "typecheck": "tsc -p jsconfig.json --noEmit"
   },
   "dependencies": {
-    "@tabulous/server": "workspace:*"
+    "@tabulous/game-utils": "workspace:*",
+    "@tabulous/types": "workspace:*"
   }
 }

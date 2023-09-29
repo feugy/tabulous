@@ -1,3 +1,4 @@
+// @ts-check
 /**
  * @typedef {object} Managers
  * @property {import('@src/3d/managers/camera').CameraManager} camera

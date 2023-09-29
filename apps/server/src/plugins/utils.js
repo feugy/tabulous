@@ -1,20 +1,14 @@
 // @ts-check
-/**
- * @typedef {import('fast-jwt').SignerOptions} FullSignerOptions
- * @typedef {import('fast-jwt').SignerSync} Signer
- * @typedef {import('../services/players').Player} Player
- */
-
 import { createSigner, createVerifier } from 'fast-jwt'
 
 import services from '../services/index.js'
 import { makeLogger } from '../utils/logger.js'
 
-/** @typedef {Partial<FullSignerOptions> & { key: string }} SignerOptions */
+/** @typedef {Partial<import('fast-jwt').SignerOptions> & { key: string }} SignerOptions */
 
 /** @typedef {(jwt: string) => { id: string }} Verifier */
 
-/** @type {Map<string, Signer>} */
+/** @type {Map<string, import('fast-jwt').SignerSync>} */
 const signerByKey = new Map()
 /** @type {Map<string, Verifier>} */
 const verifierByKey = new Map()
@@ -25,9 +19,10 @@ const logger = makeLogger()
  * @async
  * @param {string} jwt - JWT set during authenticated and received from the incoming request.
  * @param {string} key - key used to verify the received sent.
- * @returns {Promise<?Player>} the corresponding player, if any.
+ * @returns the corresponding player, if any.
  */
 export async function getAuthenticatedPlayer(jwt, key) {
+  /** @type {?import('@tabulous/types').Player} */
   let player = null
   if (jwt) {
     try {
@@ -46,15 +41,15 @@ export async function getAuthenticatedPlayer(jwt, key) {
 
 /**
  * Creates a signed JWT to identify the current player.
- * @param {Player} player - authenticated player.
+ * @param {import('@tabulous/types').Player} player - authenticated player.
  * @param {SignerOptions} signerOptions - options used to sign the sent JWT.
- * @returns {string} the token created.
+ * @returns the token created.
  */
 export function makeToken(player, signerOptions) {
   return getSigner(signerOptions)({ id: player.id })
 }
 
-/** @type {(opts: SignerOptions) => Signer} */
+/** @type {(opts: SignerOptions) => import('fast-jwt').SignerSync} */
 function getSigner(opts) {
   let sign = signerByKey.get(opts.key)
   if (!sign) {

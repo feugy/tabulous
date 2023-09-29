@@ -7,7 +7,7 @@ import { makeLogger } from '../../utils/index.js'
 
 /**
  * @typedef {object} UserDetailsAndLocation
- * @property {Partial<import('../players').Player>} user - user details from the provider
+ * @property {Partial<import('@tabulous/types').Player>} user - user details from the provider
  * @property {string} location - final desired redirection url
  */
 
@@ -49,7 +49,7 @@ export class OAuth2Provider {
    * Store final location for 1h and return a unique key that can be used as CSRF token.
    * Intended for subclasses.
    * @param {string} [location='/'] - the stored location
-   * @returns {string} key to access this location
+   * @returns key to access this location
    */
   storeFinalLocation(location = '/') {
     const key = randomUUID()

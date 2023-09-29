@@ -1,22 +1,4 @@
 // @ts-check
-/**
- * @typedef {import('.').CreateGameArgs} CreateGameArgs
- * @typedef {import('.').DeleteGameArgs} DeleteGameArgs
- * @typedef {import('.').Game} Game
- * @typedef {import('.').GameParameters} GameParameters
- * @typedef {import('.').GamePlayer} Player
- * @typedef {import('.').InviteArgs} InviteArgs
- * @typedef {import('.').JoinGameArgs} JoinGameArgs
- * @typedef {import('.').KickArgs} KickArgs
- * @typedef {import('.').PlayerAction} PlayerAction
- * @typedef {import('.').PlayerMove} PlayerMove
- * @typedef {import('.').PromoteGameArgs} PromoteGameArgs
- * @typedef {import('.').ReceiveGameUpdatesArgs} ReceiveGameUpdatesArgs
- * @typedef {import('.').SaveGameArgs} SaveGameArgs
- * @typedef {import('./utils').GraphQLContext} GraphQLContext
- * @typedef {import('./utils').PubSubQueue} PubSubQueue
- */
-
 import { filter } from 'rxjs/operators'
 
 import services from '../services/index.js'
@@ -28,10 +10,11 @@ const logger = makeLogger('games-resolver')
 /**
  * Scafolds Mercurius loaders for specific properties of queried objects.
  * These loaders will fill populate a game's players field from its playerIds and guestIds array.
- * @returns {{ loader: import('mercurius').Loader<any, any, GraphQLContext>, opts: { cache: boolean } }} built loaders
+ * @returns built loaders
  */
 function buildPlayerLoader() {
   return {
+    /** @type {import('mercurius').Loader<any, any, import('./utils').GraphQLContext>}*/
     async loader(queries) {
       return Promise.all(
         queries.map(
@@ -40,13 +23,13 @@ function buildPlayerLoader() {
             services
               .getPlayerById([...obj.playerIds, ...obj.guestIds])
               .then(players =>
-                /** @type {Player[]} */ (players.filter(Boolean)).map(
-                  player => ({
-                    ...player,
-                    isGuest: obj.guestIds.includes(player.id),
-                    isOwner: obj.ownerId === player.id
-                  })
-                )
+                /** @type {import('@tabulous/types').Player[]} */ (
+                  players.filter(Boolean)
+                ).map(player => ({
+                  ...player,
+                  isGuest: obj.guestIds.includes(player.id),
+                  isOwner: obj.ownerId === player.id
+                }))
               )
         )
       )
@@ -76,8 +59,8 @@ export default {
        * Requires valid authentication.
        * @param {unknown} obj - graphQL object.
        * @param {unknown} args - subscription arguments.
-       * @param {GraphQLContext} context - graphQL context.
-       * @returns {Promise<Game[]>} list of current games.
+       * @param {import('./utils').GraphQLContext} context - graphQL context.
+       * @returns list of current games.
        */
       (obj, args, { player }) => services.listGames(player.id)
     )
@@ -89,9 +72,9 @@ export default {
        * Instanciates a new game for the a current player (who becomes its owner).
        * Requires valid authentication.
        * @param {unknown} obj - graphQL object.
-       * @param {CreateGameArgs} args - mutation arguments.
-       * @param {GraphQLContext} context - graphQL context.
-       * @returns {Promise<Game>} created game details, or null.
+       * @param {import('.').CreateGameArgs} args - mutation arguments.
+       * @param {import('./utils').GraphQLContext} context - graphQL context.
+       * @returns created game details, or null.
        */
       (obj, { kind }, { player }) => services.createGame(kind, player)
     ),
@@ -102,9 +85,9 @@ export default {
        * May returns other parameters if provided values disn't suffice, or the actual game content.
        * Requires valid authentication.
        * @param {unknown} obj - graphQL object.
-       * @param {JoinGameArgs} args - mutation arguments.
-       * @param {GraphQLContext} context - graphQL context.
-       * @returns {Promise<?Game|GameParameters>} joined game in case of success, new required parameters, or null.
+       * @param {import('.').JoinGameArgs} args - mutation arguments.
+       * @param {import('./utils').GraphQLContext} context - graphQL context.
+       * @returns joined game in case of success, new required parameters, or null.
        */
       (obj, { gameId, parameters: paramString }, { player }) => {
         let parameters = null
@@ -129,9 +112,9 @@ export default {
        * May returns parameters if needed, or the actual game content.
        * Requires valid authentication.
        * @param {unknown} obj - graphQL object.
-       * @param {PromoteGameArgs} args - mutation arguments.
-       * @param {GraphQLContext} context - graphQL context.
-       * @returns {Promise<?Game|GameParameters>} joined game in case of success, new required parameters, or null.
+       * @param {import('.').PromoteGameArgs} args - mutation arguments.
+       * @param {import('./utils').GraphQLContext} context - graphQL context.
+       * @returns joined game in case of success, new required parameters, or null.
        */
       (obj, { gameId, kind }, { player }) =>
         services.promoteGame(gameId, kind, player)
@@ -142,9 +125,9 @@ export default {
        * Saves a current player's existing game details.
        * Requires valid authentication.
        * @param {unknown} obj - graphQL object.
-       * @param {SaveGameArgs} args - mutation arguments.
-       * @param {GraphQLContext} context - graphQL context.
-       * @returns {Promise<?Game>} created game details, or null.
+       * @param {import('.').SaveGameArgs} args - mutation arguments.
+       * @param {import('./utils').GraphQLContext} context - graphQL context.
+       * @returns created game details, or null.
        */
       (obj, { game }, { player }) => services.saveGame(game, player.id)
     ),
@@ -154,9 +137,9 @@ export default {
        * Deletes a current player's existing game.
        * Requires valid authentication.
        * @param {unknown} obj - graphQL object.
-       * @param {DeleteGameArgs} args - mutation arguments.
-       * @param {GraphQLContext} context - graphQL context.
-       * @returns {Promise<?Game>} deleted game details, or null.
+       * @param {import('.').DeleteGameArgs} args - mutation arguments.
+       * @param {import('./utils').GraphQLContext} context - graphQL context.
+       * @returns deleted game details, or null.
        */
       (obj, { gameId }, { player }) => services.deleteGame(gameId, player)
     ),
@@ -166,9 +149,9 @@ export default {
        * Invites another player to a current player's game.
        * Requires valid authentication.
        * @param {unknown} obj - graphQL object.
-       * @param {InviteArgs} args - mutation arguments.
-       * @param {GraphQLContext} context - graphQL context.
-       * @returns {Promise<?Game>} saved game details, or null.
+       * @param {import('.').InviteArgs} args - mutation arguments.
+       * @param {import('./utils').GraphQLContext} context - graphQL context.
+       * @returns saved game details, or null.
        */
       (obj, { gameId, playerIds: guestIds }, { player }) =>
         services.invite(gameId, guestIds, player.id)
@@ -179,9 +162,9 @@ export default {
        * Kick a player from a current player's game.
        * Requires valid authentication.
        * @param {unknown} obj - graphQL object.
-       * @param {KickArgs} args - mutation arguments.
-       * @param {GraphQLContext} context - graphQL context.
-       * @returns {Promise<?Game>} saved game details, or null.
+       * @param {import('.').KickArgs} args - mutation arguments.
+       * @param {import('./utils').GraphQLContext} context - graphQL context.
+       * @returns saved game details, or null.
        */
       (obj, { gameId, playerId: kickedId }, { player }) =>
         services.kick(gameId, kickedId, player.id)
@@ -196,9 +179,8 @@ export default {
          * Requires valid authentication.
          * @param {unknown} obj - graphQL object.
          * @param {unknown} args - subscription arguments.
-         * @param {GraphQLContext} context - graphQL context.
-         * @yields {Game[]}
-         * @returns {import('./utils').PubSubQueue}
+         * @param {import('./utils').GraphQLContext} context - graphQL context.
+         * @yields {import('.').Game[]}
          */
         async (obj, args, { player, pubsub }) => {
           const topic = `listGames-${player.id}`
@@ -229,10 +211,9 @@ export default {
          * Sends a given game updates from server.
          * Requires valid authentication, and users must have this game in their list.
          * @param {unknown} obj - graphQL object.
-         * @param {ReceiveGameUpdatesArgs} args - subscription argument.
-         * @param {GraphQLContext} context - graphQL context.
-         * @yields {Game}
-         * @returns {PubSubQueue}
+         * @param {import('.').ReceiveGameUpdatesArgs} args - subscription argument.
+         * @param {import('./utils').GraphQLContext} context - graphQL context.
+         * @yields {import('.').Game}
          */
         async (obj, { gameId }, { player, pubsub }) => {
           const topic = `receiveGameUpdates-${player.id}-${gameId}`
@@ -266,7 +247,7 @@ export default {
   GameOrParameters: {
     /**
      * Distinguishes returned Game from GameParameters
-     * @param {?Game|GameParameters} obj - either a Game or a GameParameters object.
+     * @param {?import('.').Game|import('.').GameParameters} obj - either a Game or a GameParameters object.
      * @returns the type of this object.
      */
     resolveType(obj) {
@@ -277,7 +258,7 @@ export default {
   GameParameters: {
     /**
      * Serializer for schema.
-     * @param {import('../services/games').GameParameters<?>} obj - serialized game parameter schema
+     * @param {import('@tabulous/types').GameParameters<?>} obj - serialized game parameter schema
      */
     schemaString: obj => JSON.stringify(obj.schema)
   },
@@ -285,7 +266,7 @@ export default {
   HistoryRecord: {
     /**
      * Distinguishes returned PlayerMove and PlayerAction
-     * @param {?PlayerMove|PlayerAction} obj - either a player move or action object.
+     * @param {?import('@tabulous/types').HistoryRecord} obj - either a player move or action object.
      * @returns the type of this object.
      */
     resolveType(obj) {

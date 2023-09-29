@@ -1,16 +1,12 @@
 <script>
   // @ts-check
-  /**
-   * @typedef {import('@src/3d/managers/camera').CameraPosition} CameraPosition
-   */
-
   import { Button } from '@src/components'
   import { createEventDispatcher } from 'svelte'
   import { _ } from 'svelte-intl'
 
-  /** @type {?CameraPosition} current camera position. */
+  /** @type {?import('@src/3d/managers').CameraPosition} current camera position. */
   export let current = null
-  /** @type {CameraPosition[]} all saved camera positions. */
+  /** @type {import('@src/3d/managers').CameraPosition[]} all saved camera positions. */
   export let saves = []
   /** @type {number} maximum number of saveable positions. */
   export let maxCount = 9

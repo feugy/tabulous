@@ -1,12 +1,4 @@
 // @ts-check
-/**
- * @typedef {import('../plugins/auth').AuthOptions} AuthOptions
- * @typedef {import('../plugins/graphql').GraphQLOptions} GraphQLOptions
- * @typedef {import('../plugins/static').StaticOptions} StaticOptions
- * @typedef {import('../plugins/cors').CorsOptions} CorsOptions
- * @typedef {import('../utils/logger').Level} Level
- */
-
 import { isAbsolute, join } from 'node:path'
 import { cwd } from 'node:process'
 
@@ -21,7 +13,7 @@ import { makeLogger } from '../utils/index.js'
 
 /**
  * @typedef {object} LoggerOptions
- * @property {Level} level - level used for logging.
+ * @property {import('pino').LevelWithSilent} level - level used for logging.
  */
 
 /**
@@ -38,11 +30,11 @@ import { makeLogger } from '../utils/index.js'
  * @property {LoggerOptions} logger - Pino logger options, including:
  * @property {DataOptions} data - configuration to connect to the database:
  * @property {GamesOpptions} games - game engine properties, including;
- * @property {AuthOptions} auth - options for the authentication plugin.
+ * @property {import('@src/plugins/auth').Options} auth - options for the authentication plugin.
  * @property {object} plugins - options for all plugin used:
- * @property {GraphQLOptions} plugins.graphql - options for the GraphQL plugin.
- * @property {StaticOptions} plugins.static - options for the static files plugin.
- * @property {CorsOptions} plugins.cors - options for the CORS plugin.
+ * @property {import('@src/plugins/graphql').Options} plugins.graphql - options for the GraphQL plugin.
+ * @property {import('@src/plugins/static').Options} plugins.static - options for the static files plugin.
+ * @property {import('@src/plugins/cors').Options} plugins.cors - options for the CORS plugin.
  * @property {{secret: string}} turn - configuratino for the TURN server.
  * @see {@link https://nodejs.org/docs/latest-v16.x/api/net.html#net_server_listen_options_callback}
  * @see {@link https://nodejs.org/docs/latest-v16.x/api/tls.html#tls_tls_createsecurecontext_options}
@@ -134,11 +126,7 @@ const validate = new Ajv({ allErrors: true }).compile({
   }
 })
 
-/**
- * @param {string} path
- * @returns {string}
- */
-function makeAbsolute(path) {
+function makeAbsolute(/** @type {string} */ path) {
   return isAbsolute(path) ? path : join(cwd(), path)
 }
 
@@ -161,7 +149,7 @@ function makeAbsolute(path) {
  * - GOOGLE_ID: Optional Google OAuth application ID used to identify players.
  * - GOOGLE_SECRET: Optional Google OAuth application secret used to identify players.
  *
- * @returns {Configuration} the loaded configuration.
+ * @returns the loaded configuration.
  * @throws {Error} when the provided environment variables do not match expected values.
  */
 export function loadConfiguration() {
@@ -184,7 +172,7 @@ export function loadConfiguration() {
     TURN_SECRET
   } = process.env
 
-  // @ts-expect-error: NODE_ENV: Argument of type 'string | undefined' is not assignable to parameter of type 'string'
+  // @ts-expect-error -- NODE_ENV: Argument of type 'string | undefined' is not assignable to parameter of type 'string'
   const isProduction = /^\w*production\w*$/i.test(NODE_ENV)
   const allowedOrigins =
     ALLOWED_ORIGINS_REGEXP ??
@@ -200,14 +188,14 @@ export function loadConfiguration() {
       port: PORT ? Number(PORT) : 3001
     },
     logger: {
-      // @ts-expect-error: Type 'string' is not assignable to type 'Level'
+      // @ts-expect-error -- Type 'string' is not assignable to type 'Level'
       level: LOG_LEVEL ?? 'debug'
     },
     plugins: {
       graphql: {
         graphiql: !isProduction,
         allowedOrigins,
-        // @ts-expect-error: Type 'string | undefined' is not assignable to type 'string'
+        // @ts-expect-error -- Type 'string | undefined' is not assignable to type 'string'
         pubsubUrl:
           PUBSUB_URL ?? (isProduction ? undefined : 'redis://127.0.0.1:6379')
       },
@@ -223,16 +211,16 @@ export function loadConfiguration() {
       path: GAMES_PATH ?? join('..', 'games')
     },
     data: {
-      // @ts-expect-error: Type 'string | undefined' is not assignable to type 'string'
+      // @ts-expect-error -- Type 'string | undefined' is not assignable to type 'string'
       url: REDIS_URL ?? (isProduction ? undefined : 'redis://127.0.0.1:6379')
     },
     turn: {
-      // @ts-expect-error: Type 'string | undefined' is not assignable to type 'string'
+      // @ts-expect-error -- Type 'string | undefined' is not assignable to type 'string'
       secret: TURN_SECRET
     },
     auth: {
       jwt: {
-        // @ts-expect-error: Type 'string | undefined' is not assignable to type 'string'
+        // @ts-expect-error -- Type 'string | undefined' is not assignable to type 'string'
         key: JWT_KEY ?? (isProduction ? undefined : 'dummy-test-key')
       },
       domain:
@@ -259,7 +247,7 @@ export function loadConfiguration() {
       'configuration is invalid: please check your environment variables'
     )
     throw new Error(
-      // @ts-expect-error: 'validate.errors' is possibly 'null' or 'undefined'
+      // @ts-expect-error -- 'validate.errors' is possibly 'null' or 'undefined'
       validate.errors.reduce(
         (message, error) =>
           `${message}\n${error.instancePath} ${error.message}`,

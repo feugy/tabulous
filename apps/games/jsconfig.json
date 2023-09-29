@@ -1,5 +1,4 @@
 {
   "extends": "../../jsconfig.json",
-  "include": ["*/**/*.js"],
-  "exclude": ["*/**/*.test.js"]
+  "include": ["*/**/*.js"]
 }

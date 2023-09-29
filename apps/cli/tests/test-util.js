@@ -1,3 +1,4 @@
+// @ts-check
 import stripAnsi from 'strip-ansi'
 import { inspect } from 'util'
 import { afterEach, beforeEach, vi } from 'vitest'
@@ -11,19 +12,23 @@ export function mockConsole() {
 
   beforeEach(() => {
     output.stdout = ''
-    vi.spyOn(console, 'log').mockImplementation((...args) => {
-      output.stdout += args
-        .map(obj => {
-          const content =
-            typeof obj === 'string' ? stripAnsi(obj) : inspect(obj)
-          debug && process.stdout.write(`${content}\n`)
-          return content
-        })
-        .join(' ')
-    })
+    vi.spyOn(console, 'log').mockImplementation(
+      (/** @type {any} */ ...args) => {
+        output.stdout += args
+          .map((/** @type {any} */ obj) => {
+            const content =
+              typeof obj === 'string' ? stripAnsi(obj) : inspect(obj)
+            debug && process.stdout.write(`${content}\n`)
+            return content
+          })
+          .join(' ')
+      }
+    )
   })
 
-  afterEach(vi.resetAllMocks)
+  afterEach(() => {
+    vi.resetAllMocks()
+  })
 
   return output
 }

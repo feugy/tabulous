@@ -1,15 +1,4 @@
 // @ts-check
-/**
- * @typedef {import('@babylonjs/core').Mesh} Mesh
- * @typedef {import('@babylonjs/core').Scene} Scene
- * @typedef {import('@babylonjs/core').Vector3} Vector3
- * @typedef {import('@tabulous/server/src/graphql').Anchor} Anchor
- * @typedef {import('@tabulous/server/src/graphql').Targetable} Targetable
- * @typedef {import('@src/3d/behaviors/targetable').TargetBehavior} TargetBehavior
- * @typedef {import('@src/3d/behaviors/targetable').DropDetails} DropDetails
- * @typedef {import('@src/3d/utils').ScreenPosition} ScreenPosition
- */
-
 import { StandardMaterial } from '@babylonjs/core/Materials/standardMaterial'
 import { Color3, Color4 } from '@babylonjs/core/Maths/math.color'
 
@@ -24,18 +13,28 @@ import { isAbove } from '../utils/gravity'
 const logger = makeLogger('target')
 
 /**
+ * @typedef {object} DropDetails detailed images definitions for a given mesh:
+ * @property {import('@babylonjs/core').Mesh[]} dropped - a list of dropped meshes.
+ * @property {import('.').DropZone} zone - the zone onto meshes are dropped.
+ * @property {boolean} [immediate=false] - when true, no animation should be ran.dropped.
+ * @property {boolean} [isLocal=false] - set action locality.
+ */
+
+/**
  * @typedef {object} _SingleDropZone definition of a target drop zone
- * @property {TargetBehavior} targetable - the enclosing targetable behavior.
- * @property {Mesh} mesh - invisible, unpickable mesh acting as drop zone.
+ * @property {import('../behaviors').TargetBehavior} targetable - the enclosing targetable behavior.
+ * @property {import('@babylonjs/core').Mesh} mesh - invisible, unpickable mesh acting as drop zone.
  *
- * @typedef {Record<string, ?> & Targetable & Required<Omit<Targetable, 'kinds'>> & Pick<Anchor, 'playerId'> & Required<Pick<Anchor, 'ignoreParts'>> & _SingleDropZone} SingleDropZone definition of a target drop zone
+ * @typedef {Record<string, ?> & Omit<import('@tabulous/types').Anchor, 'id'|'snappedId'|'angle'|'flip'> &
+ * Required<Pick<import('@tabulous/types').Anchor, 'ignoreParts'|'enabled'|'extent'|'priority'>> &
+ * _SingleDropZone} SingleDropZone definition of a target drop zone
  */
 
 /**
  * @typedef {object} MultiDropZone a virtual drop zone made of several other zones
  * @property {SingleDropZone[]} parts - a list of part for this zone.
- * @property {TargetBehavior} targetable - targetable of the first part.
- * @property {Mesh} mesh - mesh of the first part.
+ * @property {import('../behaviors').TargetBehavior} targetable - targetable of the first part.
+ * @property {import('@babylonjs/core').Mesh} mesh - mesh of the first part.
  */
 
 /** @typedef {SingleDropZone|MultiDropZone} DropZone */
@@ -52,7 +51,7 @@ export class TargetManager {
    * Invokes init() before any other function.
    *
    * @param {object} params - parameters, including:
-   * @param {Scene} params.scene - main scene.
+   * @param {import('@babylonjs/core').Scene} params.scene - main scene.
    */
   constructor({ scene }) {
     /** the main scene. */
@@ -61,20 +60,20 @@ export class TargetManager {
     this.playerId
     /** @type {Color4} current player color. */
     this.color
-    /** @internal @type {Set<TargetBehavior>} set of managed behaviors. */
+    /** @internal @type {Set<import('../behaviors').TargetBehavior>} set of managed behaviors. */
     this.behaviors = new Set()
-    /** @internal @type {Map<DropZone, Mesh[]>} map of droppable meshes by drop zone.*/
+    /** @internal @type {Map<DropZone, import('@babylonjs/core').Mesh[]>} map of droppable meshes by drop zone.*/
     this.droppablesByDropZone = new Map()
     /** @internal @type {StandardMaterial} material applied to active drop zones. */
     this.material
-    /** @internal @type {import('@src/3d/managers').Managers} */
+    /** @internal @type {import('.').Managers} */
     this.managers
   }
 
   /**
    * Initialize with game data.
    * @param {object} params - parameters, including:
-   * @param {import('@src/3d/managers').Managers} params.managers - other managers.
+   * @param {import('.').Managers} params.managers - other managers.
    * @param {string} params.playerId - current player Id.
    * @param {string} params.color - hexadecimal color string used for highlighting targets.
    */
@@ -91,7 +90,7 @@ export class TargetManager {
   /**
    * Registers a new targetable behavior.
    * Does nothing if this behavior is already managed.
-   * @param {TargetBehavior} behavior - targetable behavior.
+   * @param {import('../behaviors').TargetBehavior} behavior - targetable behavior.
    */
   registerTargetable(behavior) {
     if (behavior?.mesh) {
@@ -102,7 +101,7 @@ export class TargetManager {
   /**
    * Unregisters a targetable behavior, clearing all its zones.
    * Does nothing on unmanaged behavior.
-   * @param {TargetBehavior} behavior - controlled behavior.
+   * @param {import('../behaviors').TargetBehavior} behavior - controlled behavior.
    */
   unregisterTargetable(behavior) {
     this.behaviors.delete(behavior)
@@ -112,7 +111,7 @@ export class TargetManager {
   }
 
   /**
-   * @param {Mesh} mesh - tested mesh.
+   * @param {import('@babylonjs/core').Mesh} mesh - tested mesh.
    * @returns whether this mesh's target behavior is controlled or not
    */
   isManaging(mesh) {
@@ -125,7 +124,7 @@ export class TargetManager {
    * In case several zones are valid, the one with highest priority, or with highest elevation, will prevail.
    * The found zone is highlithed, and the dragged mesh will be saved as potential droppable for this zone.
    *
-   * @param {Mesh} dragged - a dragged mesh.
+   * @param {import('@babylonjs/core').Mesh} dragged - a dragged mesh.
    * @param {string} [kind] - drag kind.
    * @returns matching zone, if any.
    */
@@ -148,7 +147,7 @@ export class TargetManager {
    * In case several zones are bellow the mesh, the one with highest priority, or with highest elevation, will prevail.
    * The found zone is highlithed, and the dragged mesh will be saved as potential droppable for this zone.
    *
-   * @param {Mesh} dragged - a dragged mesh.
+   * @param {import('@babylonjs/core').Mesh} dragged - a dragged mesh.
    * @param {string} [kind] - drag kind.
    * @returns matching zone, if any.
    */
@@ -232,8 +231,8 @@ export class TargetManager {
 
 /**
  * @param {TargetManager} manager - manager instance.
- * @param {Mesh} dragged - dragged mesh to check.
- * @param {(zone: SingleDropZone, partCenters: Vector3[]) => boolean} isMatching - matching function to test candidate zones.
+ * @param {import('@babylonjs/core').Mesh} dragged - dragged mesh to check.
+ * @param {(zone: SingleDropZone, partCenters: import('@babylonjs/core').Vector3[]) => boolean} isMatching - matching function to test candidate zones.
  * @param {string} [kind] - dragged kind.
  * @returns  matching zone, if any.
  */
@@ -249,7 +248,10 @@ function findZone(manager, dragged, isMatching, kind) {
   }
   const excluded = [dragged, ...managers.selection.meshes]
   for (const targetable of behaviors) {
-    const { mesh } = /** @type {TargetBehavior & { mesh: Mesh }} */ (targetable)
+    const { mesh } =
+      /** @type {import('../behaviors').TargetBehavior & { mesh: import('@babylonjs/core').Mesh }} */ (
+        targetable
+      )
     if (!excluded.includes(mesh) && mesh.getScene() === scene) {
       for (const zone of targetable.zones) {
         if (isMatching(zone, partCenters)) {
@@ -283,7 +285,7 @@ function findZone(manager, dragged, isMatching, kind) {
 /**
  * @param {TargetManager} manager - manager instance.
  * @param {?DropZone} zone - matching zone to highlight.
- * @param {Mesh} dragged - dragged mesh to check.
+ * @param {import('@babylonjs/core').Mesh} dragged - dragged mesh to check.
  * @param {string} [kind] - dragged kind.
  * @returns matching zone, if any.
  */
@@ -335,8 +337,8 @@ function sortCandidates(candidates) {
 }
 
 /**
- * @param {Mesh} mesh - considered mesh.
- * @param {Vector3[]} partCenters - part position for this mesh.
+ * @param {import('@babylonjs/core').Mesh} mesh - considered mesh.
+ * @param {import('@babylonjs/core').Vector3[]} partCenters - part position for this mesh.
  * @param {SingleDropZone} zone - candidate zone.
  * @returns whether this zone is close to the mesh or one of its part.
  */
@@ -353,7 +355,7 @@ function isAPartCenterClose(mesh, partCenters, zone) {
 }
 
 /**
- * @param {Vector3} position - checked position.
+ * @param {import('@babylonjs/core').Vector3} position - checked position.
  * @param {SingleDropZone} zone - candidate zone.
  * @returns whether this candidate is close enough to the point.
  */
@@ -370,7 +372,7 @@ function isCloseTo(
 }
 
 /**
- * @param {Vector3[]} partCenters - absolute position of the mesh parts.
+ * @param {import('@babylonjs/core').Vector3[]} partCenters - absolute position of the mesh parts.
  * @param {Candidate[]} candidates - list of drop zones to group together.
  * @returns the built multi drop zone, if all parts have a matching zone.
  */

@@ -1,7 +1,5 @@
 <script>
   // @ts-check
-  /** @typedef {import('@src/graphql').FullPlayer} Player */
-
   import {
     Button,
     Header,
@@ -27,12 +25,10 @@
 
   /** @type {Subject<string>} */
   const username$ = new Subject()
-  /** @type {Player} */
-  let user = data.session?.player ?? {
-    username: '',
-    id: '',
-    currentGameId: null
-  }
+
+  let user = /** @type {import('@src/graphql').AuthenticatedPlayer} */ (
+    data.session
+  ).player
   let isSaving = false
   /** @type {?Error} */
   let usernameError = null
@@ -66,6 +62,7 @@
     /** @type {CustomEvent<boolean>} */ { detail: confirmed }
   ) {
     if (confirmed) {
+      // @ts-expect-error -- user.avatar can be set to undefined
       user.avatar = (await updateCurrentPlayer(user.username, avatar)).avatar
     }
     avatar = user.avatar

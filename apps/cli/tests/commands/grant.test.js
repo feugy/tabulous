@@ -1,8 +1,4 @@
 // @ts-check
-/**
- * @typedef {import('../../src').Command} Command
- */
-
 import { faker } from '@faker-js/faker'
 import stripAnsi from 'strip-ansi'
 import { beforeAll, beforeEach, describe, expect, it, vi } from 'vitest'
@@ -20,7 +16,7 @@ vi.mock('../../src/util/graphql-client.js', () => ({
 }))
 
 describe('Player game granting command', () => {
-  /** @type {Command} */
+  /** @type {import('@src/index').Command} */
   let grant
   const adminUserId = faker.string.uuid()
   const jwtKey = faker.string.uuid()

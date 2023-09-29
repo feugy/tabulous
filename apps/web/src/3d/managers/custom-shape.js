@@ -1,8 +1,4 @@
 // @ts-check
-/**
- * @typedef {import('@src/graphql').Game} Game
- */
-
 import { makeLogger } from '../../utils/logger'
 import { getDieModelFile } from '../meshes'
 
@@ -23,7 +19,7 @@ export class CustomShapeManager {
 
   /**
    * Download modesl and cache their results.
-   * @param {Game} game - game data.
+   * @param {import('@src/graphql').Game} game - game data.
    */
   async init({ meshes, hands }) {
     logger.debug(
@@ -75,7 +71,9 @@ export class CustomShapeManager {
   }
 }
 
-function extractFiles(/** @type {Game['meshes']} */ meshes) {
+function extractFiles(
+  /** @type {import('@tabulous/types').Mesh[]|undefined} */ meshes
+) {
   /** @type {string[]} */
   const files = []
   for (const { id, shape, file, faces } of meshes ?? []) {

@@ -1,8 +1,4 @@
 // @ts-check
-/**
- * @typedef {import('@babylonjs/core').Mesh} Mesh
- */
-
 import { Vector3 } from '@babylonjs/core/Maths/math.vector'
 import { faker } from '@faker-js/faker'
 import { AnimateBehavior, AnimateBehaviorName } from '@src/3d/behaviors'
@@ -43,7 +39,7 @@ describe('AnimateBehavior', () => {
   })
 
   describe('given attached to a mesh', () => {
-    /** @type {Mesh} */
+    /** @type {import('@babylonjs/core').Mesh} */
     let mesh
     /** @type {AnimateBehavior} */
     let behavior

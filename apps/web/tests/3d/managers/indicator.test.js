@@ -1,13 +1,4 @@
 // @ts-check
-/**
- * @typedef {import('@babylonjs/core').Mesh} Mesh
- * @typedef {import('@babylonjs/core').Scene} Scene
- * @typedef {import('@src/3d/managers/indicator').FeedbackIndicator} FeedbackIndicator
- * @typedef {import('@src/3d/managers/indicator').ManagedFeedback} ManagedFeedback
- * @typedef {import('@src/3d/managers/indicator').ManagedPointer} ManagedPointer
- * @typedef {import('@src/3d/managers/indicator').ManagedIndicator} ManagedIndicator
- */
-
 import { Vector3 } from '@babylonjs/core/Maths/math.vector'
 import { faker } from '@faker-js/faker'
 import { IndicatorManager } from '@src/3d/managers'
@@ -21,12 +12,12 @@ import {
 } from '../../test-utils'
 
 describe('IndicatorManager', () => {
-  /** @type {Scene} */
+  /** @type {import('@babylonjs/core').Scene} */
   let scene
   /** @type {import('@src/3d/managers').Managers} */
   let managers
   const changeReceived = vi.fn()
-  /** @type {Mesh} */
+  /** @type {import('@babylonjs/core').Mesh} */
   let mesh
 
   configures3dTestEngine(
@@ -101,7 +92,7 @@ describe('IndicatorManager', () => {
 
   describe('registerFeedback()', () => {
     it('registers a new feedback', () => {
-      /** @type {FeedbackIndicator} */
+      /** @type {import('@src/3d/managers').FeedbackIndicator} */
       const indicator = {
         position: mesh.absolutePosition.asArray(),
         action: 'push'
@@ -111,7 +102,8 @@ describe('IndicatorManager', () => {
       )
 
       managers.indicator.registerFeedback(indicator)
-      const managed = /** @type {ManagedFeedback} */ (indicator)
+      const managed =
+        /** @type {import('@src/3d/managers').ManagedFeedback} */ (indicator)
       expect(managed.isFeedback).toBe(true)
       expect(managed.id).toBeDefined()
       expect(managed.screenPosition?.x).toBeCloseTo(1024)
@@ -124,7 +116,7 @@ describe('IndicatorManager', () => {
     })
 
     it('does not notify for out-of-screen feedback', () => {
-      /** @type {FeedbackIndicator} */
+      /** @type {import('@src/3d/managers').FeedbackIndicator} */
       const indicator = {
         position: [10000, 0, 10000],
         action: 'push'
@@ -134,7 +126,8 @@ describe('IndicatorManager', () => {
       )
 
       managers.indicator.registerFeedback(indicator)
-      const managed = /** @type {ManagedFeedback} */ (indicator)
+      const managed =
+        /** @type {import('@src/3d/managers').ManagedFeedback} */ (indicator)
       expect(managed.isFeedback).toBe(true)
       expect(managed.id).toBeDefined()
       expect(managed.screenPosition?.x).toBeCloseTo(4147.67)
@@ -167,12 +160,12 @@ describe('IndicatorManager', () => {
   })
 
   describe('given registered indicators', () => {
-    /** @type {ManagedIndicator[]} */
+    /** @type {import('@src/3d/managers').ManagedIndicator[]} */
     let indicators
     const playerIds = [faker.string.uuid(), faker.string.uuid()]
-    /** @type {ManagedPointer[]} */
+    /** @type {import('@src/3d/managers').ManagedPointer[]} */
     let pointers
-    /** @type {FeedbackIndicator} */
+    /** @type {import('@src/3d/managers').FeedbackIndicator} */
     let feedback
     /** @type {IndicatorManager} */
     let manager
@@ -337,7 +330,7 @@ describe('IndicatorManager', () => {
   })
 
   function expectChanged(
-    /** @type {(Partial<ManagedIndicator>|Partial<ManagedPointer>|Partial<ManagedFeedback>)[]} */ indicators = []
+    /** @type {(Partial<import('@src/3d/managers').ManagedIndicator>|Partial<import('@src/3d/managers').ManagedPointer>|Partial<import('@src/3d/managers').ManagedFeedback>)[]} */ indicators = []
   ) {
     expect(changeReceived).toHaveBeenCalledTimes(1)
     const changed = changeReceived.mock.calls[0][0]

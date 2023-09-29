@@ -1,8 +1,4 @@
 // @ts-check
-/**
- * @typedef {import('undici').Interceptable} Interceptable
- */
-
 import { faker } from '@faker-js/faker'
 import { createSigner } from 'fast-jwt'
 import { MockAgent, setGlobalDispatcher } from 'undici'
@@ -29,7 +25,7 @@ describe('Google authentication service', () => {
     const redirect = faker.internet.url()
     /** @type {MockAgent} */
     let mockAgent
-    /** @type {Interceptable} */
+    /** @type {import('undici').Interceptable} */
     let googleApiMock
 
     beforeEach(() => {

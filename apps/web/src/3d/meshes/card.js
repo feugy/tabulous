@@ -10,8 +10,8 @@ import { applyInitialTransform, setExtras } from '../utils/mesh'
  * Cards are boxes whith a given width, height and depth. Only top and back faces UVs can be specified
  * By default, the card dimension follows American poker card standard (beetween 1.39 & 1.41).
  * A card's texture must have 2 faces, back then front, aligned horizontally.
- * @param {Omit<import('@src/3d/utils/behaviors').SerializedMesh, 'shape'>} params - card parameters.
- * @param {import('@src/3d/managers').Managers} managers - current managers.
+ * @param {Omit<import('@tabulous/types').Mesh, 'shape'>} params - card parameters.
+ * @param {import('../managers').Managers} managers - current managers.
  * @param {import('@babylonjs/core').Scene} scene - scene for the created mesh.
  * @returns the created card mesh.
  */
@@ -62,7 +62,7 @@ export function createCard(
   setExtras(mesh, {
     metadata: {
       serialize: () => ({
-        shape: /** @type {'card'} */ (mesh.name),
+        shape: /** @type {import('@tabulous/types').Shape} */ (mesh.name),
         id,
         x: mesh.absolutePosition.x,
         y: mesh.absolutePosition.y,

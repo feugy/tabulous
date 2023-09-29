@@ -72,9 +72,6 @@ importers:
 
   apps/cli:
     dependencies:
-      '@tabulous/cli':
-        specifier: workspace:^
-        version: 'link:'
       '@urql/core':
         specifier: ^4.1.2
         version: 4.1.2(graphql@16.8.0)
@@ -115,15 +112,34 @@ importers:
         specifier: ^5.24.0
         version: 5.24.0
     devDependencies:
+      '@tabulous/types':
+        specifier: workspace:*
+        version: link:../types
       strip-ansi:
         specifier: ^7.1.0
         version: 7.1.0
 
+  apps/game-utils:
+    dependencies:
+      '@tabulous/types':
+        specifier: workspace:*
+        version: link:../types
+      deepmerge:
+        specifier: ^4.3.1
+        version: 4.3.1
+    devDependencies:
+      ajv:
+        specifier: ^8.12.0
+        version: 8.12.0
+
   apps/games:
     dependencies:
-      '@tabulous/server':
+      '@tabulous/game-utils':
         specifier: workspace:*
-        version: link:../server
+        version: link:../game-utils
+      '@tabulous/types':
+        specifier: workspace:*
+        version: link:../types
 
   apps/server:
     dependencies:
@@ -142,6 +158,12 @@ importers:
       '@orama/orama':
         specifier: ^1.2.4
         version: 1.2.4
+      '@tabulous/game-utils':
+        specifier: workspace:*
+        version: link:../game-utils
+      '@tabulous/types':
+        specifier: workspace:*
+        version: link:../types
       ajv:
         specifier: ^8.12.0
         version: 8.12.0
@@ -188,6 +210,12 @@ importers:
       ws:
         specifier: ^8.14.1
         version: 8.14.1
+
+  apps/types:
+    devDependencies:
+      ajv:
+        specifier: ^8.12.0
+        version: 8.12.0
 
   apps/web:
     devDependencies:
@@ -257,6 +285,9 @@ importers:
       '@sveltejs/vite-plugin-svelte':
         specifier: ^2.4.6
         version: 2.4.6(svelte@4.2.0)(vite@4.4.9)
+      '@tabulous/types':
+        specifier: workspace:*
+        version: link:../types
       '@testing-library/dom':
         specifier: ^9.3.1
         version: 9.3.1

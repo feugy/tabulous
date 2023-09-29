@@ -1,16 +1,12 @@
 // @ts-check
-/**
- * @typedef {import('@babylonjs/core').Scene} Scene
- */
-
 import { createLights } from '@src/3d/utils'
 import { describe, expect, it } from 'vitest'
 
 import { configures3dTestEngine } from '../../test-utils'
 
-/** @type {Scene} */
+/** @type {import('@babylonjs/core').Scene} */
 let scene
-/** @type {Scene} */
+/** @type {import('@babylonjs/core').Scene} */
 let handScene
 
 configures3dTestEngine(created => {

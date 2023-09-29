@@ -1,4 +1,10 @@
 {
   "extends": "../../jsconfig.json",
+  "compilerOptions": {
+    "baseUrl": ".",
+    "paths": {
+      "@src/*": ["src/*"]
+    }
+  },
   "include": ["src/**/*.js", "tests/**/*.js", "migrations/*.js"]
 }

@@ -17,21 +17,21 @@ export class ReplayManager {
   constructor({ engine, moveDuration = 200 }) {
     /** game engin. */
     this.engine = engine
-    /** @type {import('@tabulous/server/src/graphql').HistoryRecord[]} list of available history records. */
+    /** @type {import('@tabulous/types').HistoryRecord[]} list of available history records. */
     this.history = []
     /** @type {number} current rank when replaying records */
     this.rank = 0
-    /** @type {Observable<import('@tabulous/server/src/graphql').HistoryRecord[]>} emits when history has changed. */
+    /** @type {Observable<import('@tabulous/types').HistoryRecord[]>} emits when history has changed. */
     this.onHistoryObservable = new Observable()
     /** @type {Observable<number>} emits when the replay ranks is modified. */
     this.onReplayRankObservable = new Observable()
-    /** @type {import('@babylonjs/core').Observer<import('@src/3d/managers').ActionOrMove>?} */
+    /** @type {import('@babylonjs/core').Observer<import('.').ActionOrMove>?} */
     this.actionObserver
     /** @internal avoid concurrent replays */
     this.inhibitReplay = false
     /** @internal */
     this.moveDuration = moveDuration
-    /** @internal @type {import('@src/3d/managers').Managers} */
+    /** @internal @type {import('.').Managers} */
     this.managers
     /** @internal @type {string} */
     this.playerId
@@ -48,8 +48,8 @@ export class ReplayManager {
    * Set the initial history, and connects to the control manager to record new local actions.
    * @param {object} params - parameters, including:
    * @param {string} params.playerId - id of the local player.
-   * @param {import('@src/3d/managers').Managers} params.managers - current managers.
-   * @param {import('@tabulous/server/src/graphql').HistoryRecord[]} [params.history] - initial history.
+   * @param {import('.').Managers} params.managers - current managers.
+   * @param {import('@tabulous/types').HistoryRecord[]} [params.history] - initial history.
    */
   init({ managers, history = [], playerId }) {
     this.managers = managers
@@ -68,7 +68,7 @@ export class ReplayManager {
 
   /**
    * Reset records and rank, and notifies listeners.
-   * @param {import('@tabulous/server/src/graphql').HistoryRecord[]} [history] - history content.
+   * @param {import('@tabulous/types').HistoryRecord[]} [history] - history content.
    */
   reset(history = []) {
     this.history = history
@@ -81,7 +81,7 @@ export class ReplayManager {
    * Record a new action or move into history.
    * It collapses redundant moves together and notifies listeners.
    * Only updates current rank if it was on last.
-   * @param {import('@src/3d/managers').ActionOrMove} record - received record.
+   * @param {import('.').ActionOrMove} record - received record.
    * @param {string} [playerId] - id of the player who sent the record.
    */
   record(record, playerId = this.playerId) {
@@ -94,13 +94,11 @@ export class ReplayManager {
       'adding to the history'
     )
     const needsRankUpdate = this.rank === this.history.length
-    /** @type {import('@tabulous/server/src/graphql').HistoryRecord} */
+    /** @type {import('@tabulous/types').HistoryRecord} */
     const result =
       'fn' in record
         ? {
-            fn: /** @type {import('@tabulous/server/src/graphql').ActionName} */ (
-              record.fn
-            ),
+            fn: /** @type {import('@tabulous/types').ActionName} */ (record.fn),
             argsStr: JSON.stringify(record.args),
             revertStr: record.revert
               ? JSON.stringify(record.revert)
@@ -158,7 +156,7 @@ export class ReplayManager {
 /**
  * Apply or revert a given revord, unless it comes from a peer's hand.
  * @param {ReplayManager} manager - current manager.
- * @param {import('@tabulous/server/src/graphql').HistoryRecord} record - concerned record.
+ * @param {import('@tabulous/types').HistoryRecord} record - concerned record.
  * @param {boolean} [reverting] - whether the record should be reverted (true) or applied (false).
  */
 async function apply(
@@ -205,8 +203,8 @@ async function apply(
  * Appends a record to history. Also handles these cases:
  * - when moving a mesh, if this mesh's previous action is a move by the same player in the same scene, then collapse moves.
  * - when moving a mesh, if this mesh's previous action is a draw by the same player, then ignore the move on table.
- * @param {import('@tabulous/server/src/graphql').HistoryRecord[]} history - history of records.
- * @param {import('@tabulous/server/src/graphql').HistoryRecord} added - candidate record to add.
+ * @param {import('@tabulous/types').HistoryRecord[]} history - history of records.
+ * @param {import('@tabulous/types').HistoryRecord} added - candidate record to add.
  * @returns the collapsed history.
  */
 function collapseAndAppendHistory(history, added) {

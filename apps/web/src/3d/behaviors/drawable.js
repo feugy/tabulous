@@ -1,13 +1,4 @@
 // @ts-check
-/**
- * @typedef {import('@babylonjs/core').Mesh} Mesh
- * @typedef {import('@tabulous/server/src/graphql').ActionName} ActionName
- * @typedef {import('@tabulous/server/src/graphql').DrawableState} DrawableState
- * @typedef {import('@tabulous/server/src/graphql').Mesh} SerializedMesh
- * @typedef {import('@src/3d/utils').FloatKeyFrame} FloatKeyFrame
- * @typedef {import('@src/3d/utils').Vector3KeyFrame} Vector3KeyFrame
- */
-
 import { Animation } from '@babylonjs/core/Animations/animation'
 
 import { actionNames } from '../utils/actions'
@@ -21,19 +12,19 @@ import { isAnimationInProgress } from '../utils/mesh'
 import { AnimateBehavior } from './animatable'
 import { DrawBehaviorName } from './names'
 
-/** @typedef {Required<DrawableState>} RequiredDrawableState */
+/** @typedef {Required<import('@tabulous/types').DrawableState>} RequiredDrawableState */
 
 export class DrawBehavior extends AnimateBehavior {
   /**
    * Creates behavior to draw mesh from and to player's hand.
-   * @param {DrawableState} state - behavior state.
-   * @param {import('@src/3d/managers').Managers} managers - current managers.
+   * @param {import('@tabulous/types').DrawableState} state - behavior state.
+   * @param {import('../managers').Managers} managers - current managers.
    */
   constructor(state, managers) {
     super()
     /** @internal */
     this.managers = managers
-    /** @type {RequiredDrawableState} state - the behavior's current state. */
+    /** the behavior's current state. */
     this.state = /** @type {RequiredDrawableState} */ (state)
     /** @protected @type {Animation} */
     this.fadeAnimation = new Animation(
@@ -45,9 +36,6 @@ export class DrawBehavior extends AnimateBehavior {
     )
   }
 
-  /**
-   * @property {string} name - this behavior's constant name.
-   */
   get name() {
     return DrawBehaviorName
   }
@@ -64,7 +52,7 @@ export class DrawBehavior extends AnimateBehavior {
    * - the `play()` method.
    * - the `drawable` getter.
    * - the `playable` getter.
-   * @param {Mesh} mesh - which becomes drawable.
+   * @param {import('@babylonjs/core').Mesh} mesh - which becomes drawable.
    */
   attach(mesh) {
     this.mesh = mesh
@@ -81,7 +69,7 @@ export class DrawBehavior extends AnimateBehavior {
   /**
    * Draws the related mesh with an animation into the player's hand:
    * - delegates draw to hand manager, who will call animateToHand().
-   * @param {SerializedMesh} [state] - when applying drawn from peers, state of the drawn mesh.
+   * @param {import('@tabulous/types').Mesh} [state] - when applying drawn from peers, state of the drawn mesh.
    * @param {string} [playerId] - the peer who drew mesh, if any.
    */
   async draw(state, playerId) {
@@ -104,7 +92,7 @@ export class DrawBehavior extends AnimateBehavior {
 
   /**
    * Revert play actions. Ignores other actions.
-   * @param {ActionName} action - reverted action.
+   * @param {import('@tabulous/types').ActionName} action - reverted action.
    * @param {any[]} [args] - reverted arguments.
    */
   async revert(action, args = []) {
@@ -166,7 +154,7 @@ export class DrawBehavior extends AnimateBehavior {
 
   /**
    * Updates this behavior's state and mesh to match provided data.
-   * @param {DrawableState} state - state to update to.
+   * @param {import('@tabulous/types').DrawableState} state - state to update to.
    */
   fromState({
     duration = 750,
@@ -195,9 +183,9 @@ export class DrawBehavior extends AnimateBehavior {
 
 /**
  *
- * @param {Mesh} mesh - animated mesh.
+ * @param {import('@babylonjs/core').Mesh} mesh - animated mesh.
  * @param {boolean} [invert=false] - whether to invert or not.
- * @returns {Promise<{ fadeKeys: FloatKeyFrame[], moveKeys: Vector3KeyFrame[] }>} generated key frames.
+ * @returns {Promise<{ fadeKeys: import('../utils').FloatKeyFrame[], moveKeys: import('../utils').Vector3KeyFrame[] }>} generated key frames.
  */
 async function buildAnimationKeys(mesh, invert = false) {
   // delay so that all observer of onAction to perform: we need the mesh to be have not parents before getting its position

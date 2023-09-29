@@ -1,10 +1,4 @@
 // @ts-check
-/**
- * @typedef {import('@babylonjs/core').Mesh} Mesh
- * @typedef {import('@babylonjs/core').Scene} Scene
- * @typedef {import('@src/3d/behaviors').MoveBehavior} MoveBehavior
- */
-
 import { faker } from '@faker-js/faker'
 import {
   MoveBehaviorName,
@@ -36,7 +30,7 @@ import {
 
 describe('QuantityBehavior', () => {
   const actionRecorded = vi.fn()
-  /** @type {Scene} */
+  /** @type {import('@babylonjs/core').Scene} */
   let scene
   /** @type {import('@src/3d/managers').Managers} */
   let managers
@@ -103,9 +97,9 @@ describe('QuantityBehavior', () => {
   })
 
   describe('given attached to a mesh', () => {
-    /** @type {Mesh} */
+    /** @type {import('@babylonjs/core').Mesh} */
     let mesh
-    /** @type {Mesh[]} */
+    /** @type {import('@babylonjs/core').Mesh[]} */
     let meshes = []
     /** @type {QuantityBehavior} */
     let behavior
@@ -318,8 +312,12 @@ describe('QuantityBehavior', () => {
 
       await behavior.revert('increment', revert)
 
-      const reverted1 = /** @type {Mesh} */ (scene.getMeshById(other1.id))
-      const reverted2 = /** @type {Mesh} */ (scene.getMeshById(other2.id))
+      const reverted1 = /** @type {import('@babylonjs/core').Mesh} */ (
+        scene.getMeshById(other1.id)
+      )
+      const reverted2 = /** @type {import('@babylonjs/core').Mesh} */ (
+        scene.getMeshById(other2.id)
+      )
       expectNotDisposed(scene, mesh, reverted1, reverted2)
       expectQuantity(mesh, 1)
       expectQuantity(reverted2, 5)
@@ -441,7 +439,9 @@ describe('QuantityBehavior', () => {
       behavior.fromState({ quantity })
       expectQuantity(mesh, quantity)
 
-      const created1 = /** @type {Mesh} */ (await mesh.metadata.decrement?.())
+      const created1 = /** @type {import('@babylonjs/core').Mesh} */ (
+        await mesh.metadata.decrement?.()
+      )
       expect(created1.id).not.toBe(mesh.id)
       expectPosition(created1, mesh.absolutePosition.asArray())
       expect(created1.metadata.serialize()).toMatchObject({
@@ -462,7 +462,9 @@ describe('QuantityBehavior', () => {
         isLocal: false
       })
 
-      const created2 = /** @type {Mesh} */ (await mesh.metadata.decrement?.())
+      const created2 = /** @type {import('@babylonjs/core').Mesh} */ (
+        await mesh.metadata.decrement?.()
+      )
       expect(created2.id).not.toBe(mesh.id)
       expect(created2.id).not.toBe(created1.id)
       expectPosition(created2, mesh.absolutePosition.asArray())
@@ -495,7 +497,7 @@ describe('QuantityBehavior', () => {
       behavior.fromState({ quantity })
       expectQuantity(mesh, quantity)
 
-      const created = /** @type {Mesh} */ (
+      const created = /** @type {import('@babylonjs/core').Mesh} */ (
         await mesh.metadata.decrement?.(1, true)
       )
       expect(created.id).not.toBe(mesh.id)
@@ -527,7 +529,7 @@ describe('QuantityBehavior', () => {
       behavior.fromState({ quantity })
       expectQuantity(mesh, quantity)
 
-      const created = /** @type {Mesh} */ (
+      const created = /** @type {import('@babylonjs/core').Mesh} */ (
         await mesh.metadata.decrement?.(2, true)
       )
       expect(created.id).not.toBe(mesh.id)
@@ -622,7 +624,9 @@ describe('QuantityBehavior', () => {
     it('can revert decrement meshes', async () => {
       const quantity = 5
       behavior.fromState({ quantity })
-      const created = /** @type {Mesh} */ (await mesh.metadata.decrement?.(2))
+      const created = /** @type {import('@babylonjs/core').Mesh} */ (
+        await mesh.metadata.decrement?.(2)
+      )
       const state = created.metadata.serialize()
       expect(created.id).not.toBe(mesh.id)
       expectPosition(created, mesh.absolutePosition.asArray())
@@ -657,9 +661,10 @@ describe('QuantityBehavior', () => {
 
     it('can not increment mesh with different kind', () => {
       behavior.fromState({ kinds: ['card'] })
-      const moveBehavior = /** @type {MoveBehavior} */ (
-        meshes[0].getBehaviorByName(MoveBehaviorName)
-      )
+      const moveBehavior =
+        /** @type {import('@src/3d/behaviors').MoveBehavior} */ (
+          meshes[0].getBehaviorByName(MoveBehaviorName)
+        )
       moveBehavior.state.kind = 'token'
       expect(mesh.metadata.canIncrement?.(meshes[0])).toBe(false)
       expect(mesh.metadata.canIncrement?.(meshes[1])).toBe(false)
@@ -667,17 +672,19 @@ describe('QuantityBehavior', () => {
 
     it('can increment mesh with the same kind', () => {
       behavior.fromState({ kinds: ['card'] })
-      const moveBehavior = /** @type {MoveBehavior} */ (
-        meshes[0].getBehaviorByName(MoveBehaviorName)
-      )
+      const moveBehavior =
+        /** @type {import('@src/3d/behaviors').MoveBehavior} */ (
+          meshes[0].getBehaviorByName(MoveBehaviorName)
+        )
       moveBehavior.state.kind = 'card'
       expect(mesh.metadata.canIncrement?.(meshes[0])).toBe(true)
     })
 
     it('can increment mesh with kind on kindless zone', () => {
-      const moveBehavior = /** @type {MoveBehavior} */ (
-        meshes[0].getBehaviorByName(MoveBehaviorName)
-      )
+      const moveBehavior =
+        /** @type {import('@src/3d/behaviors').MoveBehavior} */ (
+          meshes[0].getBehaviorByName(MoveBehaviorName)
+        )
       moveBehavior.state.kind = 'card'
       expect(mesh.metadata.canIncrement?.(meshes[0])).toBe(true)
     })
@@ -693,7 +700,7 @@ describe('QuantityBehavior', () => {
   })
 
   function expectQuantity(
-    /** @type {Mesh} */ mesh,
+    /** @type {import('@babylonjs/core').Mesh} */ mesh,
     /** @type {number} */ quantity
   ) {
     expect(mesh.metadata?.quantity).toBe(quantity)

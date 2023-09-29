@@ -1,8 +1,4 @@
 // @ts-check
-/**
- * @typedef {import('ioredis').ChainableCommander} Transaction
- */
-
 import { randomUUID } from 'node:crypto'
 
 import Redis from 'ioredis'
@@ -21,7 +17,7 @@ import { makeLogger } from '../utils/index.js'
 /**
  * @template {object} T
  * @typedef {object} DeleteTransactionContext
- * @property {Transaction} transaction - deletion transaction.
+ * @property {import('ioredis').ChainableCommander} transaction - deletion transaction.
  * @property {(?T)[]} models - array of deleted record object.
  * @property {string[]} keys - array of deleted Redis keys.
  */
@@ -29,7 +25,7 @@ import { makeLogger } from '../utils/index.js'
 /**
  * @template {object} T
  * @typedef {object} SaveTransactionContext
- * @property {Transaction} transaction - save transaction.
+ * @property {import('ioredis').ChainableCommander} transaction - save transaction.
  * @property {T[]} models - array of saved models.
  * @property {(?T)[]} existings - array of pre-existing models.
  * @property {(number | string)[]} indexed - for newly inserted models, their score and id.
@@ -38,7 +34,7 @@ import { makeLogger } from '../utils/index.js'
 /**
  * @template {object} T
  * @typedef {object} SaveModelContext
- * @property {Transaction} transaction - save transaction.
+ * @property {import('ioredis').ChainableCommander} transaction - save transaction.
  * @property {T} model - saved model.
  * @property {string} key - Redis key for this model.
  */
@@ -89,7 +85,7 @@ export class AbstractRepository {
    * Builds the key of a given model of this repository
    * @protected
    * @param {string} id - the concerned model id.
-   * @returns {string} the corresponding key.
+   * @returns the corresponding key.
    */
   _buildKey(id) {
     return `${this.name}:${id}`
@@ -101,7 +97,6 @@ export class AbstractRepository {
    * @param {object} args - connection arguments:
    * @param {string} args.url - url to the Redis Database, including potential authentication.
    * @param {boolean} [args.isProduction = true] - when false, displays friendly stacktraces, which penalize performances.
-   * @returns {Promise<void>}
    */
   async connect({ url, isProduction = true }) {
     if (!this.client) {
@@ -138,7 +133,6 @@ export class AbstractRepository {
 
   /**
    * Tears the repository down to release its connection.
-   * @returns {Promise<void>}
    */
   async release() {
     this.logger.trace('releasing Redis connection')
@@ -177,20 +171,17 @@ export class AbstractRepository {
 
   /**
    * @overload
-   * @param {(string|undefined)[]} [id]
-   * @returns {Promise<(?T)[]>}
+   * Get a single model by id.
+   * @param {(string|undefined)[]} id - desired ids.
+   * @returns {Promise<(?T)[]>} matching models, or nulls.
    */
   /**
    * @overload
-   * @param {string} [id]
-   * @returns {Promise<?T>}
+   * Get a several model by their id.
+   * @param {undefined|string} id - desired id.
+   * @returns {Promise<?T>} matching model, or null.
    */
-  /**
-   * Get a single or several model by their id.
-   * @param {string|(string|undefined)[]} [id] - desired id(s).
-   * @returns {Promise<?T|(?T)[]>} matching model(s), or null(s).
-   */
-  async getById(id) {
+  async getById(/** @type {undefined|string|(string|undefined)[]} */ id) {
     const ids = /** @type {string[]} */ (
       (Array.isArray(id) ? id : [id]).filter(Boolean)
     )
@@ -214,7 +205,7 @@ export class AbstractRepository {
    * The default implementation hydrates a Redis hash into an JSON object: all its properties are strings.
    * @protected
    * @param {string} key - the Redis key.
-   * @returns {Promise<?T>} the corresponding model.
+   * @returns the corresponding model.
    */
   async _fetchModel(key) {
     const data = await /** @type {Redis} */ (this.client).hgetall(key)
@@ -232,23 +223,24 @@ export class AbstractRepository {
 
   /**
    * @overload
-   * @param {Partial<T>} data
-   * @returns {Promise<T>}
-   */
-  /**
-   * @overload
-   * @param {Partial<T>[]} data
-   * @returns {Promise<T[]>}
-   */
-  /**
    * Saves given model to storage.
    * It creates new model when needed, and updates existing ones (based on provided id).
    * Partial update is supported: incoming data is merged with previous (top level properties only).
    * Time complexity if O(2N + 1) + M * O(log(T)), with N saved records, M newly saved records, T total of records.
-   * @param {Partial<T>|Partial<T>[]} data - single or array of saved (partial) models.
-   * @returns {Promise<T|T[]>} single or array of saved models.
+   * @param {Partial<T>} data - single saved (partial) models.
+   * @returns {Promise<T>} single saved model.
    */
-  async save(data) {
+
+  /**
+   * @overload
+   * Saves given model to storage.
+   * It creates new model when needed, and updates existing ones (based on provided id).
+   * Partial update is supported: incoming data is merged with previous (top level properties only).
+   * Time complexity if O(2N + 1) + M * O(log(T)), with N saved records, M newly saved records, T total of records.
+   * @param {Partial<T>[]} data - array of saved (partial) models.
+   * @returns {Promise<T[]>} array of saved models.
+   */
+  async save(/** @type {Partial<T>|Partial<T>[]} */ data) {
     const records = Array.isArray(data) ? data : [data]
     this.logger.trace({ ctx: { count: records.length } }, 'saving model(s)')
     const models = []
@@ -314,7 +306,7 @@ export class AbstractRepository {
    * Allows subclasses to tweak the Redis transaction used to save records.
    * @protected
    * @param {SaveTransactionContext<T>} context - contextual information.
-   * @returns {Transaction|Promise<Transaction>} the applied transaction.
+   * @returns {import('ioredis').ChainableCommander|Promise<import('ioredis').ChainableCommander>} the applied transaction.
    */
   _enrichSaveTransaction({ transaction, indexed }) {
     if (indexed.length) {
@@ -327,21 +319,19 @@ export class AbstractRepository {
 
   /**
    * @overload
-   * @param {string[]} ids
-   * @returns {Promise<(?T)[]>}
+   * Deletes models by their ids.
+   * Unmatching ids will be simply ignored and null will be returned instead.
+   * @param {string[]} ids - ids of removed models.
+   * @returns {Promise<(?T)[]>} array of removed models or nulls.
    */
   /**
    * @overload
-   * @param {string} id
-   * @returns {Promise<?T>}
-   */
-  /**
    * Deletes models by their ids.
    * Unmatching ids will be simply ignored and null will be returned instead.
-   * @param {string|string[]} ids - ids of removed models.
-   * @returns {Promise<?T|(?T)[]>} single or array of removed models and nulls.
+   * @param {string} id - id of removed model.
+   * @returns {Promise<?T>} single removed model or null.
    */
-  async deleteById(ids) {
+  async deleteById(/** @type {string|string[]} */ ids) {
     const recordIds = Array.isArray(ids) ? ids : [ids]
     this.logger.trace({ ctx: { ids: recordIds } }, 'deleting model(s)')
     /** @type {(?T)[]} */
@@ -379,7 +369,7 @@ export class AbstractRepository {
    * Allows subclasses to tweak the Redis transaction used to delete records.
    * @protected
    * @param {DeleteTransactionContext<T>} context - contextual information.
-   * @returns {Transaction|Promise<Transaction>} the applied transaction.
+   * @returns {import('ioredis').ChainableCommander|Promise<import('ioredis').ChainableCommander>} the applied transaction.
    */
   _enrichDeleteTransaction({ transaction, models }) {
     const ids = /** @type {string[]} */ (
@@ -392,7 +382,7 @@ export class AbstractRepository {
 /**
  * Deserializer for boolean values.
  * @param {string} value - serialized boolean.
- * @returns {boolean} the corresponding boolean.
+ * @returns the corresponding boolean.
  */
 export function deserializeBoolean(value) {
   return value === 'true'
@@ -401,22 +391,22 @@ export function deserializeBoolean(value) {
 /**
  * Deserializer for number values.
  * @param {string} value - serialized number.
- * @returns {number} the corresponding number.
+ * @returns the corresponding number.
  */
 export const deserializeNumber = parseFloat
 
 /**
  * Deserializer for array values.
  * @param {string} value - serialized array.
- * @returns {string[]} the corresponding array.
+ * @returns the corresponding array.
  */
 export function deserializeArray(value) {
   return (value ?? '').split(',').filter(Boolean)
 }
 
 /**
- * @param {Transaction} transaction - Transaction to serialize.
- * @returns {string} serialized version of the transaction.
+ * @param {import('ioredis').ChainableCommander} transaction - Transaction to serialize.
+ * @returns serialized version of the transaction.
  */
 function serializeTransaction(transaction) {
   const commands = []

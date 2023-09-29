@@ -1,10 +1,4 @@
 // @ts-check
-/**
- * @typedef {import('../../src').Command} Command
- * @typedef {import('../../src/commands/show-player').Game} Game
- * @typedef {import('@tabulous/server/src/graphql').Player} Player
- */
-
 import { faker } from '@faker-js/faker'
 import stripAnsi from 'strip-ansi'
 import { beforeAll, beforeEach, describe, expect, it, vi } from 'vitest'
@@ -22,18 +16,18 @@ vi.mock('../../src/util/graphql-client.js', () => ({
 }))
 
 describe('Show player command', () => {
-  /** @type {Command} */
+  /** @type {import('@src/index').Command} */
   let showPlayer
   const adminUserId = faker.string.uuid()
   const jwtKey = faker.string.uuid()
-  /** @type {Player} */
+  /** @type {import('@tabulous/types').Player} */
   const player = {
     id: faker.string.uuid(),
     username: faker.person.fullName(),
     email: faker.internet.email(),
     currentGameId: null
   }
-  /** @type {Player} */
+  /** @type {import('@tabulous/types').Player} */
   const player2 = {
     id: faker.string.uuid(),
     username: faker.person.fullName(),
@@ -85,7 +79,7 @@ describe('Show player command', () => {
   })
 
   describe('given some games', () => {
-    const games = /** @type {Game[]} */ ([
+    const games = /** @type {import('@tabulous/server/graphql').Game[]} */ ([
       {
         id: 'game-1',
         kind: 'klondike',
@@ -100,7 +94,7 @@ describe('Show player command', () => {
       }
     ])
     games.push(
-      /** @type {Game} */ ({
+      /** @type {import('@tabulous/server/graphql').Game} */ ({
         id: 'game-3',
         kind: 'klondike',
         created: faker.date
@@ -110,7 +104,7 @@ describe('Show player command', () => {
       })
     )
     games.push(
-      /** @type {Game} */ ({
+      /** @type {import('@tabulous/server/graphql').Game} */ ({
         id: 'game-4',
         kind: 'klondike',
         created: faker.date

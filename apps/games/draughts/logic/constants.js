@@ -1,6 +1,4 @@
 // @ts-check
-/** @typedef {import("@tabulous/server/src/utils").CameraPosition} CameraPosition*/
-
 /** @typedef {'white'|'black'} Side */
 
 export const counts = { pawns: 20, columns: 10 }
@@ -33,7 +31,7 @@ export const faceUVs = {
   ]
 }
 
-/** @type {Record<Side, Partial<CameraPosition>>} */
+/** @type {Record<Side, Partial<import('@tabulous/types').CameraPosition>>} */
 export const cameraPositions = {
   [blackId]: {
     alpha: Math.PI / 2,

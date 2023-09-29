@@ -1,16 +1,5 @@
 // @ts-check
-/**
- * @typedef {import('@src/graphql').Game} Game
- * @typedef {import('@src/graphql').LightPlayer} LightPlayer
- * @typedef {import('@tabulous/server/src/graphql').PlayerPreference} PlayerPreference
- * @typedef {import('@tabulous/server/src/graphql').HistoryRecord} HistoryRecord
- */
-/**
- * @typedef {import('@src/stores/game-manager').Player} Player
- */
-
-/** @type {Map<string, Player>} a map of player details by their id. */
-/** @type {(LightPlayer & Omit<PlayerPreference, 'playerId'>)[]} */
+/** @type {(import('@src/graphql').LightPlayer & Omit<import('@tabulous/types').PlayerPreference, 'playerId'>)[]} */
 export const players = [
   {
     id: '123456',
@@ -21,6 +10,7 @@ export const players = [
   {
     id: '741852',
     username: 'Maître Follas',
+
     color: '#ff4500',
     currentGameId: null
   },
@@ -31,7 +21,7 @@ export const players = [
 // fixed time for toolshots
 const time = 1694760291878
 
-/** @type {Game['messages']} discussion thread. */
+/** @type {import('@tabulous/types').Message[]} discussion thread. */
 export const thread = [
   {
     playerId: '123456',
@@ -78,7 +68,7 @@ Oui, évidemment, n'importe comment une tournée d'inspection peut jamais nuire,
   }
 ]
 
-/** @type {HistoryRecord[]} */
+/** @type {import('@tabulous/types').HistoryRecord[]} */
 export const history = [
   {
     playerId: '369258',

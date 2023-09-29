@@ -1,11 +1,4 @@
 // @ts-check
-/**
- * @typedef {import('@babylonjs/core').ArcRotateCamera} ArcRotateCamera
- * @typedef {import('@babylonjs/core').Engine} Engine
- * @typedef {import('@babylonjs/core').Mesh} Mesh
- * @typedef {import('@babylonjs/core').Scene} Scene
- */
-
 import { Vector3 } from '@babylonjs/core/Maths/math.vector'
 import { CreateGround } from '@babylonjs/core/Meshes/Builders/groundBuilder'
 import {
@@ -24,13 +17,13 @@ import {
   initialize3dEngine
 } from '../../test-utils'
 
-/** @type {Engine} */
+/** @type {import('@babylonjs/core').Engine} */
 let engine
-/** @type {Scene} */
+/** @type {import('@babylonjs/core').Scene} */
 let scene
-/** @type {ArcRotateCamera} */
+/** @type {import('@babylonjs/core').ArcRotateCamera} */
 let camera
-/** @type {Mesh} */
+/** @type {import('@babylonjs/core').Mesh} */
 let box
 const renderWidth = 2048
 const renderHeight = 1024
@@ -104,7 +97,7 @@ describe('screenToGround() 3D utility', () => {
 })
 
 describe('isAboveTable() 3D utility', () => {
-  /** @type {Mesh} */
+  /** @type {import('@babylonjs/core').Mesh} */
   let table
   const width = 50
   const height = 25
@@ -165,7 +158,7 @@ describe('isAboveTable() 3D utility', () => {
 })
 
 describe('isPositionAboveTable() 3D utility', () => {
-  /** @type {Mesh} */
+  /** @type {import('@babylonjs/core').Mesh} */
   let table
   const width = 50
   const height = 25

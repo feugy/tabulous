@@ -1,12 +1,10 @@
 <script>
   // @ts-check
-  /** @typedef {import('@src/stores').Toast} Toast */
-
   import { onMount } from 'svelte'
 
   import Button from '../Button.svelte'
 
-  /** @type {Toast} message content. */
+  /** @type {import('@src/stores').Toast} message content. */
   export let toast
 
   const defaultColor = '#fcfcfc'

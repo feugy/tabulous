@@ -1,6 +1,4 @@
 // @ts-check
-/** @typedef {import('@tabulous/server/src/graphql').Game} Game */
-
 import { gql } from '@urql/core'
 import chalkTemplate from 'chalk-template'
 
@@ -17,7 +15,7 @@ import { commonOptions } from './help.js'
 
 /**
  * @typedef {object} DeleteGameResult game deletion command result
- * @property {Game} game - deleted game.
+ * @property {import('@tabulous/types').Game} game - deleted game.
  */
 
 const deleteGameMutation = gql`
@@ -33,7 +31,7 @@ const deleteGameMutation = gql`
 /**
  * Triggers game deletion command
  * @param {string[]} argv - array of parsed arguments (without executable and current file).
- * @returns {Promise<DeleteGameResult|string>} the deleted game (or help message).
+ * @returns the deleted game (or help message).
  */
 export default async function deleteGameCommand(argv) {
   const args = parseArgv(argv, {
@@ -57,7 +55,7 @@ export default async function deleteGameCommand(argv) {
 /**
  * Deletes an existing game.
  * @param {DeleteGameArgs} args - deletion arguments.
- * @returns {Promise<DeleteGameResult>} game deletion results.
+ * @returns game deletion results.
  */
 export async function deleteGame({ gameId }) {
   const { deleteGame: game } = await getGraphQLClient().mutation(
@@ -65,7 +63,7 @@ export async function deleteGame({ gameId }) {
     { gameId },
     signToken()
   )
-  return attachFormater({ game }, ({ game }) =>
+  return attachFormater({ game }, (/** @type {DeleteGameResult} */ { game }) =>
     game
       ? chalkTemplate`${formatGame(game)} {underline deleted}`
       : chalkTemplate`{underline no game} deleted`

@@ -9,7 +9,7 @@ import { buildCards, buildDice } from './build.js'
  * @property {number} die8Count - 'How many 8-faces die: 0~5.
  */
 
-/** @type {import('@tabulous/server/src/services/catalog').AskForParameters<Parameters>} */
+/** @type {import('@tabulous/types').AskForParameters<Parameters>} */
 export function askForParameters({ game: { preferences } }) {
   return preferences.length
     ? null
@@ -54,7 +54,7 @@ export function askForParameters({ game: { preferences } }) {
       }
 }
 
-/** @type {import('@tabulous/server/src/services/catalog').AddPlayer<Parameters>} */
+/** @type {import('@tabulous/types').AddPlayer<Parameters>} */
 export function addPlayer(game, player, parameters) {
   const { cardCount, die4Count, die6Count, die8Count } = parameters
   let offset = 0

@@ -1,9 +1,4 @@
 // @ts-check
-/**
- * @typedef {import('@babylonjs/core').Engine} Engine
- * @typedef {import('@babylonjs/core').Mesh} Mesh
- */
-
 import { NullEngine } from '@babylonjs/core/Engines/nullEngine'
 import { Vector3 } from '@babylonjs/core/Maths/math.vector'
 import { Logger } from '@babylonjs/core/Misc/logger'
@@ -17,7 +12,7 @@ import { afterAll, beforeAll, beforeEach, describe, expect, it } from 'vitest'
 
 import { createBox, expectDimension } from '../../test-utils'
 
-/** @type {Engine} */
+/** @type {import('@babylonjs/core').Engine} */
 let engine
 
 beforeAll(() => {
@@ -60,9 +55,9 @@ describe('getDimensions() 3D utility', () => {
 })
 
 describe('isContaining() 3D utility', () => {
-  /** @type {Mesh} */
+  /** @type {import('@babylonjs/core').Mesh} */
   let bigBox
-  /** @type {Mesh} */
+  /** @type {import('@babylonjs/core').Mesh} */
   let smallBox
 
   beforeAll(() => {
@@ -95,7 +90,7 @@ describe('isContaining() 3D utility', () => {
 })
 
 describe('applyInitialTransform() 3D utility', () => {
-  /** @type {Mesh} */
+  /** @type {import('@babylonjs/core').Mesh} */
   let box
 
   beforeEach(() => {

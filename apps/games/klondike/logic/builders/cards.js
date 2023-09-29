@@ -1,10 +1,8 @@
 // @ts-check
-/** @typedef {import('@tabulous/server/src/graphql').Mesh} Mesh */
-
 import { counts, sizes, spacing, suits } from '../constants.js'
 
 export function buildCards() {
-  /** @type {Mesh[]} */
+  /** @type {import('@tabulous/types').Mesh[]} */
   const meshes = []
   for (const suit of suits) {
     for (let index = 1; index <= counts.suits; index++) {

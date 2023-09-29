@@ -1,10 +1,4 @@
 // @ts-check
-/**
- * @typedef {import('vitest').Mock<?, ?>} Mock
- * @typedef {import('@babylonjs/core').Mesh} Mesh
- * @typedef {import('@src/3d/behaviors').FlippableState} FlippableState
- */
-
 import { Vector3 } from '@babylonjs/core/Maths/math.vector'
 import { faker } from '@faker-js/faker'
 import {
@@ -23,7 +17,7 @@ import {
 } from '../../test-utils'
 
 const actionRecorded = vi.fn()
-/** @type {Mock} */
+/** @type {import('vitest').Mock} */
 let animationEndReceived
 /** @type {import('@src/3d/managers').Managers} */
 let managers
@@ -86,7 +80,7 @@ describe('FlipBehavior', () => {
   })
 
   describe('given attached to a mesh', () => {
-    /** @type {Mesh} */
+    /** @type {import('@babylonjs/core').Mesh} */
     let mesh
     /** @type {FlipBehavior} */
     let behavior
@@ -194,9 +188,9 @@ describe('FlipBehavior', () => {
     })
 
     describe('given parent and children', () => {
-      /** @type {Mesh} */
+      /** @type {import('@babylonjs/core').Mesh} */
       let child
-      /** @type {Mesh} */
+      /** @type {import('@babylonjs/core').Mesh} */
       let granChild
 
       beforeEach(() => {
@@ -351,10 +345,10 @@ describe('FlipBehavior', () => {
   })
 })
 
-/** @returns {[FlipBehavior, Mesh]} */
+/** @returns {[FlipBehavior, import('@babylonjs/core').Mesh]} */
 function createAttachedFlippable(
   /** @type {string} */ id,
-  /** @type {FlippableState} */ state
+  /** @type {import('@tabulous/types').FlippableState} */ state
 ) {
   const behavior = new FlipBehavior(state, managers)
   const mesh = createBox(id, {})

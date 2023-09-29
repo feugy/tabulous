@@ -1,16 +1,11 @@
 <script>
   // @ts-check
-  /**
-   * @typedef {import('@src/stores/game-manager').Player} Player
-   * @typedef {import('@src/graphql').PlayerFragment} PlayerFragment
-   */
-
   import { stream$ } from '@src/stores/stream'
   import { _ } from 'svelte-intl'
 
   import PlayerThumbnail from '../PlayerThumbnail.svelte'
 
-  /** @type {Player|undefined} player displayed. */
+  /** @type {import('@src/stores').PlayerWithPref|undefined} player displayed. */
   export let player = undefined
   /** @type {?MediaStream} video/audio stream for this player. */
   export let stream = null

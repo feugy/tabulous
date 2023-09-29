@@ -1,18 +1,14 @@
 // @ts-check
-/**
- * @typedef {import('@tabulous/server/src/graphql').FlippableState} FlippableState
- * @typedef {import('@tabulous/server/src/graphql').Mesh} Mesh
- */
 import {
   buildCameraPosition,
-  draw,
   findAnchor,
+  pop,
   snapTo
-} from '@tabulous/server/src/utils/index.js'
+} from '@tabulous/game-utils'
 
 import { anchorIds, counts } from './constants.js'
 
-/** @type {import('@tabulous/server/src/services/catalog').AddPlayer<?>} */
+/** @type {import('@tabulous/types').AddPlayer<?>} */
 export function addPlayer(game, player) {
   game.cameras.push(
     buildCameraPosition({
@@ -27,9 +23,10 @@ export function addPlayer(game, player) {
 
   for (let column = 0; column < counts.columns; column++) {
     const anchorId = `${anchorIds.column}-${column + 1}`
-    const thread = /** @type {(Mesh & {flippable: FlippableState})[]} */ (
-      draw(reserveId, column + 1, game.meshes)
-    )
+    const thread =
+      /** @type {(import('@tabulous/types').Mesh & {flippable: import('@tabulous/types').FlippableState})[]} */ (
+        pop(reserveId, column + 1, game.meshes)
+      )
     for (
       let parent = thread[0], i = 1;
       i < thread.length;

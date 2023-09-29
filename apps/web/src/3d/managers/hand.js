@@ -1,27 +1,4 @@
 // @ts-check
-/**
- * @typedef {import('@babylonjs/core').Engine} Engine
- * @typedef {import('@babylonjs/core').Mesh} Mesh
- * @typedef {import('@babylonjs/core').Scene} Scene
- * @typedef {import('@tabulous/server/src/graphql').Dimension} Dimension
- * @typedef {import('@tabulous/server/src/graphql').Hand} Hand
- * @typedef {import('@tabulous/server/src/graphql').Mesh} SerializedMesh
- * @typedef {import('@src/3d/behaviors/anchorable').AnchorBehavior} AnchorBehavior
- * @typedef {import('@src/3d/behaviors/drawable').DrawBehavior} DrawBehavior
- * @typedef {import('@src/3d/behaviors/flippable').FlipBehavior} FlipBehavior
- * @typedef {import('@src/3d/behaviors/quantifiable').QuantityBehavior} QuantityBehavior
- * @typedef {import('@src/3d/behaviors/rotable').RotateBehavior} RotateBehavior
- * @typedef {import('@src/3d/behaviors/stackable').StackBehavior} StackBehavior
- * @typedef {import('@src/3d/managers/input').DragData} DragData
- * @typedef {import('@src/3d/managers/target').DropZone} DropZone
- * @typedef {import('@src/3d/utils').ScreenPosition} ScreenPosition
- * @typedef {import('@src/graphql').Game} Game
- */
-/**
- * @template T
- * @typedef {import('@babylonjs/core').Observer<T>} Observer
- */
-
 import { Vector3 } from '@babylonjs/core/Maths/math.vector.js'
 import { Observable } from '@babylonjs/core/Misc/observable.js'
 import { debounceTime, Subject } from 'rxjs'
@@ -50,9 +27,9 @@ import {
 } from '../utils/vector'
 
 /**
- * @typedef {Required<Pick<Dimension, 'width'|'height'>>} EngineDimension observed dimension of the rendering engine (pixels).
- * @typedef {Required<Omit<Dimension, 'diameter'>>} MeshDimension observed dimension of a mesh (3D units).
- * @typedef {{ meshes: Mesh[] }} HandChange details of a change in hand.
+ * @typedef {Required<Pick<import('@tabulous/types').Dimension, 'width'|'height'>>} EngineDimension observed dimension of the rendering engine (pixels).
+ * @typedef {Required<Omit<import('@tabulous/types').Dimension, 'diameter'>>} MeshDimension observed dimension of a mesh (3D units).
+ * @typedef {{ meshes: import('@babylonjs/core').Mesh[] }} HandChange details of a change in hand.
  */
 
 /**
@@ -75,8 +52,8 @@ export class HandManager {
    * Is starts disabled and must be manually enabled.
    * Invokes init() before any other function.
    * @param {object} params - parameters, including:
-   * @param {Scene} params.scene - main scene.
-   * @param {Scene} params.handScene - scene for meshes in hand.
+   * @param {import('@babylonjs/core').Scene} params.scene - main scene.
+   * @param {import('@babylonjs/core').Scene} params.handScene - scene for meshes in hand.
    * @param {HTMLElement} params.overlay - HTML element defining hand's available height.
    * @param {number} [params.gap=0.5] - gap between hand meshes, when render width allows it, in 3D coordinates.
    * @param {number} [params.verticalPadding=1] - vertical padding between meshes and the viewport edges, in 3D coordinates.
@@ -131,7 +108,7 @@ export class HandManager {
     this.contentDimensions = { width: 0, depth: 0 }
     /** @internal @type {Map<string, MeshDimension>} */
     this.dimensionsByMeshId = new Map()
-    /** @internal @type {Mesh[]} */
+    /** @internal @type {import('@babylonjs/core').Mesh[]} */
     this.moved = []
     /** @internal @type {Subject<void>} */
     this.changes$ = new Subject()
@@ -146,14 +123,14 @@ export class HandManager {
     })
     /** @internal @type {string} */
     this.playerId
-    /** @internal @type {import('@src/3d/managers').Managers} */
+    /** @internal @type {import('.').Managers} */
     this.managers
   }
 
   /**
    * Initialize with game data
    * @param {object} params - parameters, including:
-   * @param {import('@src/3d/managers').Managers} params.managers - current managers.
+   * @param {import('.').Managers} params.managers - current managers.
    * @param {string} params.playerId - id of the local player.
    * @param {number} [params.angleOnPlay=0] - angle applied when playing rotable meshes, due to the player position.
    */
@@ -179,17 +156,17 @@ export class HandManager {
       },
       {
         observable: this.managers.control.onActionObservable,
-        handle: (
-          /** @type {import('@src/3d/managers').ActionOrMove} */ action
-        ) => handleAction(this, action)
+        handle: (/** @type {import('.').ActionOrMove} */ action) =>
+          handleAction(this, action)
       },
       {
         observable: this.managers.input.onDragObservable,
-        handle: (/** @type {DragData} */ action) => handDrag(this, action)
+        handle: (/** @type {import('.').DragData} */ action) =>
+          handDrag(this, action)
       },
       {
         observable: this.handScene.onNewMeshAddedObservable,
-        handle: (/** @type {Mesh} */ added) => {
+        handle: (/** @type {import('@babylonjs/core').Mesh} */ added) => {
           // delay because mesh names are set after being constructed
           setTimeout(() => {
             if (isSerializable(added)) {
@@ -201,7 +178,7 @@ export class HandManager {
       },
       {
         observable: this.handScene.onMeshRemovedObservable,
-        handle: (/** @type {Mesh} */ removed) => {
+        handle: (/** @type {import('@babylonjs/core').Mesh} */ removed) => {
           if (isSerializable(removed)) {
             logger.info(
               { mesh: removed },
@@ -257,11 +234,11 @@ export class HandManager {
    * 4. if required (unflipOnPick is true), unflips flippable mesh
    * 5. if relevant (angleOnPick differs from mesh rotation), rotates rotable mesh
    *
-   * @param {Mesh} drawnMesh - drawn mesh
+   * @param {import('@babylonjs/core').Mesh} drawnMesh - drawn mesh
    */
   async draw(drawnMesh) {
     const drawable = getDrawable(drawnMesh)
-    /** @type {Mesh[]} */
+    /** @type {import('@babylonjs/core').Mesh[]} */
     if (!this.enabled || !drawable || drawnMesh.getScene() === this.handScene) {
       return
     }
@@ -278,11 +255,11 @@ export class HandManager {
    * 6. runs animation on the main scene (fades in and descends)
    * 7. clears current selection
    *
-   * @param {Mesh} playedMesh - played mesh
+   * @param {import('@babylonjs/core').Mesh} playedMesh - played mesh
    */
   async play(playedMesh) {
     const drawable = getDrawable(playedMesh)
-    /** @type {Mesh[]} */
+    /** @type {import('@babylonjs/core').Mesh[]} */
     if (
       !this.enabled ||
       !drawable ||
@@ -300,7 +277,7 @@ export class HandManager {
    * 2. if player is current player, same as draw() with a local action in control manager.
    * 3. if player is a peer, displays a peer indicator
    *
-   * @param {SerializedMesh} state - the state of the drawn mesh.
+   * @param {import('@tabulous/types').Mesh} state - the state of the drawn mesh.
    * @param {string} playerId - id of the peer who drawn mesh.
    */
   async applyDraw(state, playerId) {
@@ -335,7 +312,7 @@ export class HandManager {
    * 5. runs animation on the main scene (fades in and descends)
    * 6. if player is a peer, displays a peer indicator
    *
-   * @param {SerializedMesh} state - the state of the played mesh.
+   * @param {import('@tabulous/types').Mesh} state - the state of the played mesh.
    * @param {string} playerId - id of the peer who played mesh.
    */
   async applyPlay(state, playerId) {
@@ -372,7 +349,7 @@ export class HandManager {
 
   /**
    * Indicates when the user pointer (in screen coordinate) is over the hand.
-   * @param {MouseEvent|ScreenPosition|undefined} position - pointer or mouse event.
+   * @param {MouseEvent|import('../utils').ScreenPosition|undefined} position - pointer or mouse event.
    * @returns whether the pointer is over the hand or not.
    */
   isPointerInHand(position) {
@@ -382,7 +359,7 @@ export class HandManager {
   }
 
   /**
-   * @param {?Mesh} [mesh] - tested mesh
+   * @param {?import('@babylonjs/core').Mesh} [mesh] - tested mesh
    * @returns whether this mesh is in the hand or not
    */
   isManaging(mesh) {
@@ -396,7 +373,7 @@ export class HandManager {
 
 /**
  * @param {HandManager} manager - manager instance.
- * @param {import('@src/3d/managers').ActionOrMove} action - applied action.
+ * @param {import('.').ActionOrMove} action - applied action.
  */
 function handleAction(manager, action) {
   if (
@@ -415,7 +392,7 @@ function handleAction(manager, action) {
 
 /**
  * @param {HandManager} manager - manager instance.
- * @param {DragData} drag - drag details.
+ * @param {import('.').DragData} drag - drag details.
  */
 async function handDrag(manager, { type, mesh, event }) {
   const { handScene, managers } = manager
@@ -442,9 +419,9 @@ async function handDrag(manager, { type, mesh, event }) {
     if (moved.length && isHandMeshNextToMain(manager, event)) {
       const { x: positionX, z } = screenToGround(manager.scene, event)
       const origin = moved[0].absolutePosition.x
-      /** @type {Mesh[]} */
+      /** @type {import('@babylonjs/core').Mesh[]} */
       const droppedList = []
-      /** @type {?{ mesh: Mesh, position: Vector3, duration?: number }} */
+      /** @type {?{ mesh: import('@babylonjs/core').Mesh, position: Vector3, duration?: number }} */
       let saved = null
       for (const movedMesh of [...moved]) {
         const x = positionX + movedMesh.absolutePosition.x - origin
@@ -454,7 +431,7 @@ async function handDrag(manager, { type, mesh, event }) {
         )
         const wasSelected = managers.selection.meshes.has(movedMesh)
         const mesh = await createMainMesh(manager, movedMesh, { x, z })
-        /** @type {?DropZone} */
+        /** @type {?import('.').DropZone} */
         let dropZone
         if (droppedList.length) {
           // when first drawn mesh was dropped on player zone, tries to drop others on top of it.
@@ -473,7 +450,7 @@ async function handDrag(manager, { type, mesh, event }) {
               mesh,
               position: mesh.absolutePosition.clone(),
               duration:
-                /** @type {StackBehavior|AnchorBehavior|QuantityBehavior} */ (
+                /** @type {import('../behaviors').StackBehavior|import('../behaviors').AnchorBehavior|import('../behaviors').QuantityBehavior} */ (
                   dropZone.targetable
                 ).state.duration
             }
@@ -535,7 +512,7 @@ async function handDrag(manager, { type, mesh, event }) {
 
 function isMainMeshNextToHand(
   /** @type {HandManager} */ { transitionMargin, extent: { screenHeight } },
-  /** @type {Mesh} */ mesh
+  /** @type {import('@babylonjs/core').Mesh} */ mesh
 ) {
   return (getMeshScreenPosition(mesh)?.y ?? 0) > screenHeight - transitionMargin
 }
@@ -549,8 +526,8 @@ function isHandMeshNextToMain(
 
 /**
  * @param {HandManager} manager - manager instance.
- * @param {Mesh} handMesh - mesh transfered from hand to main scene.
- * @param {Partial<SerializedMesh>} [extraState] - optional state used to create the new mesh.
+ * @param {import('@babylonjs/core').Mesh} handMesh - mesh transfered from hand to main scene.
+ * @param {Partial<import('@tabulous/types').Mesh>} [extraState] - optional state used to create the new mesh.
  * @returns created mesh.
  */
 async function createMainMesh(manager, handMesh, extraState = {}) {
@@ -566,8 +543,8 @@ async function createMainMesh(manager, handMesh, extraState = {}) {
 
 /**
  * @param {HandManager} manager - manager instance.
- * @param {Mesh} mainMesh - mesh transfered from main to hand scene.
- * @param {Partial<SerializedMesh>} [extraState] - optional state used to create the new mesh.
+ * @param {import('@babylonjs/core').Mesh} mainMesh - mesh transfered from main to hand scene.
+ * @param {Partial<import('@tabulous/types').Mesh>} [extraState] - optional state used to create the new mesh.
  * @returns created mesh.
  */
 async function createHandMesh(manager, mainMesh, extraState = {}) {
@@ -577,8 +554,8 @@ async function createHandMesh(manager, mainMesh, extraState = {}) {
 }
 
 function record(
-  /** @type {Mesh} */ mesh,
-  /** @type {import('@src/3d/managers').Managers} */ managers,
+  /** @type {import('@babylonjs/core').Mesh} */ mesh,
+  /** @type {import('.').Managers} */ managers,
   /** @type {actionNames['play'] | actionNames['draw']} */ fn,
   /** @type {string} */ playerId,
   /** @type {boolean} */ isLocal = false,
@@ -600,7 +577,7 @@ function record(
 
 function computeExtent(
   /** @type {HandManager} */ manager,
-  /** @type {Engine} */ engine
+  /** @type {import('@babylonjs/core').Engine} */ engine
 ) {
   const { handScene } = manager
   const size = getViewPortSize(engine)
@@ -652,7 +629,7 @@ async function layoutMeshs(/** @type {HandManager} */ manager) {
     extent,
     onHandChangeObservable
   } = manager
-  const meshes = /** @type {Mesh[]} */ (
+  const meshes = /** @type {import('@babylonjs/core').Mesh[]} */ (
     [...dimensionsByMeshId.keys()]
       .map(id => handScene.getMeshById(id))
       .filter(Boolean)
@@ -699,25 +676,29 @@ async function layoutMeshs(/** @type {HandManager} */ manager) {
 }
 
 /** @returns {EngineDimension} this engine's dimention. */
-function getViewPortSize(/** @type {Engine} */ engine) {
+function getViewPortSize(
+  /** @type {import('@babylonjs/core').Engine} */ engine
+) {
   return {
     width: engine.getRenderWidth(),
     height: engine.getRenderHeight()
   }
 }
 
-function animateToHand(/** @type {Mesh} */ mesh) {
+function animateToHand(/** @type {import('@babylonjs/core').Mesh} */ mesh) {
   mesh.isPhantom = true
-  const drawable = /** @type {DrawBehavior} */ (getDrawable(mesh))
+  const drawable = /** @type {import('../behaviors').DrawBehavior} */ (
+    getDrawable(mesh)
+  )
   mesh.onAnimationEnd.addOnce(() => mesh.dispose())
   return drawable.animateToHand()
 }
 
-function getDrawable(/** @type {Mesh} */ mesh) {
+function getDrawable(/** @type {import('@babylonjs/core').Mesh} */ mesh) {
   return mesh?.getBehaviorByName(DrawBehaviorName)
 }
 
-function transformOnPick(/** @type {SerializedMesh} */ state) {
+function transformOnPick(/** @type {import('@tabulous/types').Mesh} */ state) {
   const { drawable } = state
   if (!drawable) return
   if (state.flippable?.isFlipped && drawable.unflipOnPick) {
@@ -733,7 +714,7 @@ function transformOnPick(/** @type {SerializedMesh} */ state) {
 
 function transformOnPlay(
   /** @type {HandManager} */ { angleOnPlay },
-  /** @type {Mesh} */ mesh
+  /** @type {import('@babylonjs/core').Mesh} */ mesh
 ) {
   const flippable = mesh.getBehaviorByName(FlipBehaviorName)
   const drawable = getDrawable(mesh)
@@ -750,30 +731,32 @@ function transformOnPlay(
 
 /** @returns whether this selected mesh is drawable. */
 function hasSelectedDrawableMeshes(
-  /** @type {?Mesh|undefined} */ mesh,
-  /** @type {import('@src/3d/managers').Managers} */ managers
+  /** @type {?import('@babylonjs/core').Mesh|undefined} */ mesh,
+  /** @type {import('.').Managers} */ managers
 ) {
   return (
     Boolean(mesh) &&
     managers.selection
-      .getSelection(/** @type {Mesh} */ (mesh))
+      .getSelection(/** @type {import('@babylonjs/core').Mesh} */ (mesh))
       .some(mesh => mesh.getBehaviorByName(DrawBehaviorName))
   )
 }
 
 async function playMeshes(
   /** @type {HandManager} */ manager,
-  /** @type {Mesh[]} */ meshes
+  /** @type {import('@babylonjs/core').Mesh[]} */ meshes
 ) {
   const { extent, scene, managers } = manager
-  /** @type {?Mesh} */
+  /** @type {?import('@babylonjs/core').Mesh} */
   let dropped = null
-  /** @type {Mesh[]} */
+  /** @type {import('@babylonjs/core').Mesh[]} */
   const created = []
   for (const drawnMesh of meshes) {
     logger.info({ mesh: drawnMesh }, `play mesh ${drawnMesh.id} from hand`)
     const screenPosition = {
-      x: /** @type {ScreenPosition} */ (getMeshScreenPosition(drawnMesh)).x,
+      x: /** @type {import('../utils').ScreenPosition} */ (
+        getMeshScreenPosition(drawnMesh)
+      ).x,
       y: extent.size.height * 0.5
     }
     const position = screenToGround(scene, screenPosition)
@@ -786,7 +769,7 @@ async function playMeshes(
       z: position.z
     })
     created.push(mesh)
-    /** @type {?DropZone} */
+    /** @type {?import('.').DropZone} */
     let dropZone = null
     if (dropped) {
       // when first drawn mesh was dropped on player zone, tries to drop others on top of it.
@@ -823,8 +806,8 @@ async function playMeshes(
 }
 
 function findStackZone(
-  /** @type {import('@src/3d/managers').Managers} */ managers,
-  /** @type {Mesh} */ mesh
+  /** @type {import('.').Managers} */ managers,
+  /** @type {import('@babylonjs/core').Mesh} */ mesh
 ) {
   mesh.computeWorldMatrix(true)
   return managers.target.findDropZone(
@@ -834,9 +817,9 @@ function findStackZone(
 }
 
 function canDropAbove(
-  /** @type {import('@src/3d/managers').Managers} */ managers,
-  /** @type {Mesh} */ baseMesh,
-  /** @type {Mesh} */ dropped
+  /** @type {import('.').Managers} */ managers,
+  /** @type {import('@babylonjs/core').Mesh} */ baseMesh,
+  /** @type {import('@babylonjs/core').Mesh} */ dropped
 ) {
   const positionSave = dropped.absolutePosition.clone()
   dropped.setAbsolutePosition(
@@ -853,7 +836,7 @@ function canDropAbove(
 
 async function pickMesh(
   /** @type {HandManager} */ manager,
-  /** @type {Mesh} */ mesh,
+  /** @type {import('@babylonjs/core').Mesh} */ mesh,
   isLocal = false
 ) {
   logger.info({ mesh }, `pick mesh ${mesh.id} in hand`)

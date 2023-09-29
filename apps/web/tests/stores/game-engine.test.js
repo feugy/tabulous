@@ -1,33 +1,4 @@
 // @ts-check
-/**
- * @typedef {import('@babylonjs/core').Engine} Engine
- * @typedef {import('@babylonjs/core').Scene} Scene
- * @typedef {import('@babylonjs/core').Mesh} Mesh
- * @typedef {import('@src/3d/managers/control').Action} Action
- * @typedef {import('@src/3d/managers/control').MeshDetails} MeshDetails
- * @typedef {import('@src/3d/managers/input').LongData} LongData
- * @typedef {import('@src/stores/peer-channels').Connected} Connected
- * @typedef {import('@src/stores/peer-channels').Message} Message
- * @typedef {import('@tabulous/server/src/graphql').Mesh} SerializedMesh
- * @typedef {import('rxjs').Subscription} Subscription
- */
-/**
- * @template T
- * @typedef {import('rxjs').BehaviorSubject<T>} BehaviorSubject
- */
-/**
- * @template T
- * @typedef {import('rxjs').Subject<T>} Subject
- */
-/**
- * @template {any[]} P, R
- * @typedef {import('vitest').Mock<P, R>} Mock
- */
-/**
- * @template T
- * @typedef {import('vitest').MockedObject<T>} MockedObject
- */
-
 import { Observable } from '@babylonjs/core/Misc/observable'
 import { faker } from '@faker-js/faker'
 import { createEngine } from '@src/3d'
@@ -81,9 +52,9 @@ beforeEach(() => {
 })
 
 describe('initEngine()', () => {
-  /** @type {Subscription[]} */
+  /** @type {import('rxjs').Subscription[]} */
   let subscriptions
-  /** @type {Scene} */
+  /** @type {import('@babylonjs/core').Scene} */
   let scene
   /** @type {import('@src/3d/managers').Managers} */
   let managers
@@ -103,16 +74,18 @@ describe('initEngine()', () => {
   const receiveRemoteSelection = vi.fn()
   const receiveHistory = vi.fn()
   const receiveReplayRank = vi.fn()
-  const sendToPeer = /** @type {Mock<Parameters<send>, ReturnType<send>>} */ (
-    send
-  )
-  const lastMessageReceived = /** @type {Subject<Message>} */ (
-    originalLastMessage
-  )
-  const lastDisconnectedId = /** @type {Subject<string>} */ (
+  const sendToPeer = /** @type {import('vitest').FunctionMock<send>} */ (send)
+  const lastMessageReceived =
+    /** @type {import('rxjs').Subject<import('@src/stores').WebRTCMessage>} */ (
+      originalLastMessage
+    )
+  const lastDisconnectedId = /** @type {import('rxjs').Subject<string>} */ (
     originalLastDisconnectedId
   )
-  const connectedPeers = /** @type {BehaviorSubject<Connected[]>} */ (connected)
+  const connectedPeers =
+    /** @type {import('rxjs').BehaviorSubject<import('@src/stores').Connected[]>} */ (
+      connected
+    )
 
   configures3dTestEngine(created => {
     scene = created.scene
@@ -147,13 +120,15 @@ describe('initEngine()', () => {
   afterAll(() => subscriptions.forEach(sub => sub.unsubscribe()))
 
   describe('given an engine', () => {
-    /** @type {MockedObject<Engine>} */
+    /** @type {import('vitest').MockedObject<import('@babylonjs/core').Engine>} */
     let engine
 
     beforeEach(() => {
       engine = create3DEngineMock()
       const createEngineMock =
-        /** @type {Mock<Parameters<createEngine>, Engine>} */ (createEngine)
+        /** @type {import('vitest').FunctionMock<createEngine>} */ (
+          createEngine
+        )
       createEngineMock.mockReturnValue(engine)
     })
 
@@ -209,7 +184,7 @@ describe('initEngine()', () => {
       })
 
       it('sends scene actions to peers', () => {
-        /** @type {Action} */
+        /** @type {import('@src/3d/managers').Action} */
         const data = {
           fn: 'pop',
           args: [],
@@ -225,7 +200,7 @@ describe('initEngine()', () => {
       })
 
       it('does not send local actions to peers', () => {
-        /** @type {Action} */
+        /** @type {import('@src/3d/managers').Action} */
         const data = {
           fn: 'pop',
           args: [],
@@ -241,7 +216,7 @@ describe('initEngine()', () => {
       })
 
       it('does not send hand actions to peers', () => {
-        /** @type {Action} */
+        /** @type {import('@src/3d/managers').Action} */
         const data = {
           fn: 'pop',
           args: [],
@@ -256,7 +231,7 @@ describe('initEngine()', () => {
       })
 
       it('sends selection to peers', () => {
-        const data = /** @type {Set<Mesh>} */ (
+        const data = /** @type {Set<import('@babylonjs/core').Mesh>} */ (
           new Set([{ id: 'mesh1' }, { id: 'mesh2' }])
         )
         managers.selection.onSelectionObservable.notifyObservers(data)
@@ -358,7 +333,7 @@ describe('initEngine()', () => {
       })
 
       it('proxies mesh detail events', () => {
-        /** @type {MeshDetails} */
+        /** @type {import('@src/3d/managers').MeshDetails} */
         const data = {
           position: { x: 0, y: 10 },
           images: [faker.image.avatar()]
@@ -395,14 +370,14 @@ describe('initEngine()', () => {
       it('proxies long input events', () => {
         const data = { timestamp: Date.now(), type: 'longTap' }
         managers.input.onLongObservable.notifyObservers(
-          /** @type {LongData} */ (data)
+          /** @type {import('@src/3d/managers').LongData} */ (data)
         )
         expect(receiveLongInput).toHaveBeenCalledWith(data)
         expect(receiveLongInput).toHaveBeenCalledOnce()
       })
 
       it('proxies hand change events', () => {
-        /** @type {SerializedMesh[]} */
+        /** @type {import('@tabulous/types').Mesh[]} */
         const handMeshes = [{ shape: 'box', id: '1', texture: '' }]
         engine.serialize.mockReturnValueOnce({
           handMeshes,
@@ -490,7 +465,7 @@ describe('initEngine()', () => {
   })
 
   function create3DEngineMock() {
-    return /** @type {MockedObject<Engine>} */ ({
+    return /** @type {import('vitest').MockedObject<import('@babylonjs/core').Engine>} */ ({
       applyRemoteAction: (...args) => managers.control.apply(args[0]),
       applyRemoteSelection: managers.selection.apply.bind(managers.selection),
       getFps: vi.fn(),

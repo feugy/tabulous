@@ -35,7 +35,7 @@ export { loaders, resolvers, schema }
 
 /**
  * @param {string} fileName - loaded file
- * @returns {string} file content
+ * @returns file content
  */
 function loadTypeDefs(fileName) {
   return readFileSync(join(folder, fileName)).toString()

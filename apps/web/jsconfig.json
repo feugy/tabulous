@@ -2,14 +2,12 @@
   "extends": "./.svelte-kit/tsconfig.json",
   "compilerOptions": {
     "allowJs": true,
-    // "checkJs": true,
-    "baseUrl": ".",
     "esModuleInterop": true,
-
+    "baseUrl": ".",
     "paths": {
       "@src/*": ["src/*"],
       "@tests/*": ["tests/*"],
-      "@tabulous/*": ["../*"]
+      "@tabulous/server/*": ["../server/src/*"]
     },
     "sourceMap": true,
     "strict": true,

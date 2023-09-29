@@ -1,42 +1,30 @@
 // @ts-check
-/**
- * @typedef {import('@tabulous/server/src/graphql').Game} Game
- * @typedef {import('@tabulous/server/src/services/catalog').AddPlayer<?>} AddPlayer
- * @typedef {import('@tabulous/server/src/services/catalog').Build} Build
- * @typedef {import('@tabulous/server/src/services/catalog').GameDescriptor} GameDescriptor
- * @typedef {import('@tabulous/server/src/services/games').Schema<?>} Schema
- * @typedef {import('@tabulous/server/src/services/games').StartedGameData} StartedGameData
- * @typedef {import('@tabulous/server/src/services/players').Player} Player
- * @typedef {import('@tabulous/server/src/utils/games').GameSetup} GameSetup
- */
-
 import { faker } from '@faker-js/faker'
-import {
-  ajv,
-  createMeshes,
-  pickRandom,
-  reportReusedIds
-} from '@tabulous/server/src/utils/index.js'
+import Ajv from 'ajv/dist/2020.js'
 import { beforeEach, describe, expect, it, vi } from 'vitest'
 
+import { createMeshes, pickRandom, reportReusedIds } from '../src'
+
+const ajv = new Ajv({
+  $data: true,
+  allErrors: true,
+  strictSchema: false
+})
+
+/** @template {Record<string, ?>} Parameters */
 export function buildDescriptorTestSuite(
   /** @type {string} */ name,
-  /** @type {GameDescriptor} */ descriptor
+  /** @type {Partial<import('@tabulous/types').GameDescriptor<Parameters>>} */ descriptor
 ) {
   describe(`${name} game descriptor`, () => {
-    vi.mock('node:crypto', async () => {
-      // no random factor so we get stable UUIDs.
-      const actual = /** @type {?} */ (await vi.importActual('node:crypto'))
-      let counter = 1
-      return {
-        ...actual,
-        randomUUID: () => `00000000-0000-0000-0000-000000${counter++}`
-      }
-    })
+    let counter = 1
 
     beforeEach(() => {
       // no random factor so we get stable results with game random bags.
       vi.spyOn(Math, 'random').mockReturnValue(0)
+      vi.spyOn(crypto, 'randomUUID').mockImplementation(
+        () => `00000000-0000-0000-0000-000000${counter++}`
+      )
     })
 
     it('exports a compliant game descriptor', () => {
@@ -108,7 +96,10 @@ export function buildDescriptorTestSuite(
       () => {
         it('enrolls each allowed players with a valid JSON schema', async () => {
           let game = await buildGame(
-            /** @type {GameDescriptor} */ ({ ...descriptor, name })
+            /** @type {import('@tabulous/types').GameDescriptor} */ ({
+              ...descriptor,
+              name
+            })
           )
           for (let rank = 1; rank <= (descriptor.maxSeats ?? 8); rank++) {
             const player = makePlayer(rank)
@@ -137,7 +128,7 @@ export function buildDescriptorTestSuite(
   })
 }
 
-/** @returns {Player} */
+/** @returns {import('@tabulous/types').Player} */
 function makePlayer(/** @type {number} */ rank) {
   return {
     id: `player-${rank}`,
@@ -146,8 +137,10 @@ function makePlayer(/** @type {number} */ rank) {
   }
 }
 
-/** @returns {Promise<StartedGameData>} */
-async function buildGame(/** @type {GameDescriptor} */ descriptor) {
+/** @returns {Promise<import('@tabulous/types').StartedGame>} */
+async function buildGame(
+  /** @type {import('@tabulous/types').GameDescriptor} */ descriptor
+) {
   return {
     id: 'game-unique-id',
     kind: descriptor.name,
@@ -167,10 +160,11 @@ async function buildGame(/** @type {GameDescriptor} */ descriptor) {
   }
 }
 
+/** @template {Record<string, ?>} Parameters */
 async function enroll(
-  /** @type {GameDescriptor} */ descriptor,
-  /** @type {StartedGameData} */ game,
-  /** @type {Player} */ guest,
+  /** @type {Partial<import('@tabulous/types').GameDescriptor<Parameters>>} */ descriptor,
+  /** @type {import('@tabulous/types').StartedGame} */ game,
+  /** @type {import('@tabulous/types').Player} */ guest,
   /** @type {Record<string, ?>} */ parameters
 ) {
   game.playerIds.push(guest.id)
@@ -184,12 +178,14 @@ async function enroll(
         game.preferences.map(({ color }) => color)
       )
   })
-  return await /** @type {GameDescriptor & { addPlayer: AddPlayer }} */ (
+  return await /** @type {import('@tabulous/types').GameDescriptor & { addPlayer: import('@tabulous/types').AddPlayer<?, typeof game> }} */ (
     descriptor
   ).addPlayer(game, guest, /** @type {?} */ (parameters))
 }
 
-function buildParameters(/** @type {?Schema} */ schema) {
+function buildParameters(
+  /** @type {?import('@tabulous/types').Schema<?>} */ schema
+) {
   /** @type {Record<string, ?>} */
   const result = {}
   if (schema?.type === 'object') {

@@ -1,11 +1,5 @@
 <script>
   // @ts-check
-  /**
-   * @typedef {import('@src/stores/game-manager').Player} Player
-   * @typedef {import('@tabulous/server/src/graphql').Message} MessageData
-   * @typedef {import('@tabulous/server/src/graphql').HistoryRecord} HistoryRecordData
-   */
-
   import { Button, Input } from '@src/components'
   import { afterUpdate, createEventDispatcher } from 'svelte'
   import { _ } from 'svelte-intl'
@@ -14,13 +8,13 @@
   import HistoryRecord from './HistoryRecord.svelte'
   import Message from './Message.svelte'
 
-  /** @type {MessageData[]|undefined} discussion thread. */
+  /** @type {import('@tabulous/types').Message[]|undefined} discussion thread. */
   export let thread
-  /** @type {HistoryRecordData[]|undefined} action history. */
+  /** @type {import('@tabulous/types').HistoryRecord[]|undefined} action history. */
   export let history
   /** @type {number} rank in the game history. */
   export let replayRank = 0
-  /** @type {Map<string, Player>} a map of player details by their id. */
+  /** @type {Map<string, import('@src/stores').PlayerWithPref>} a map of player details by their id. */
   export let playerById
   /** @type {string} id of the current player */
   export let currentPlayerId
@@ -31,7 +25,7 @@
   /** @type {?HTMLDivElement} */
   let messageContainer = null
 
-  /** @type {(MessageData|{rank: number} & HistoryRecordData|{ time: number })[]} */
+  /** @type {(import('@tabulous/types').Message|{rank: number} & import('@tabulous/types').HistoryRecord|{ time: number })[]} */
   let items = []
   let messageCount = 0
 

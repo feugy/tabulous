@@ -1,15 +1,5 @@
 <script>
   // @ts-check
-  /**
-   * @typedef {import('@src/graphql').Friendship} Friendship
-   * @typedef {import('@src/graphql').Game} Game
-   * @typedef {import('@src/graphql').GameOrGameParameters} GameOrGameParameters
-   * @typedef {import('@src/graphql').LightPlayer} LightPlayer
-   * @typedef {import('@src/graphql').PlayerFragment} PlayerFragment
-   * @typedef {import('@src/graphql').PlayerWithSearchable} PlayerWithSearchable
-   * @typedef {import('@src/stores/game-manager').Player} Player
-   */
-
   import { requestFriendship, searchPlayers } from '@src/stores'
   import { isLobby } from '@src/utils'
   import { debounceTime, map, Subject, switchMap } from 'rxjs'
@@ -21,30 +11,30 @@
   import InviteDialogue from './InviteDialogue.svelte'
   import PlayerList from './PlayerList.svelte'
 
-  /** @type {PlayerWithSearchable} authenticated player. */
+  /** @type {import('@src/graphql').PlayerWithSearchable} authenticated player. */
   export let user
-  /** @type {?GameOrGameParameters} game data. */
+  /** @type {?import('@src/graphql').GameOrGameParameters} game data. */
   export let game = null
-  /** @type {?Map<string, Player>} map of game/lobby players by their ids. */
+  /** @type {?Map<string, import('@src/stores').PlayerWithPref>} map of game/lobby players by their ids. */
   export let playerById = null
-  /** @type {Friendship[]} list of all friendships. */
+  /** @type {import('@src/graphql').Friendship[]} list of all friendships. */
   export let friends = []
-  /** @type {Game['messages']} list of messages. */
+  /** @type {import('@src/graphql').Game['messages']} list of messages. */
   export let thread = undefined
-  /** @type {Game['history']} action history. */
+  /** @type {import('@src/graphql').Game['history']} action history. */
   export let history = undefined
   /** @type {number} rank in the game history. */
   export let replayRank = 0
 
   /** @type {?HTMLInputElement} */
   let inputRef
-  /** @type {(PlayerFragment & { label:string })[]} list of search result candidate players. */
+  /** @type {(import('@src/graphql').Player & { label:string })[]} list of search result candidate players. */
   let candidates = []
-  /** @type {?PlayerFragment & { label:string }} selected player in candidate list. */
+  /** @type {?import('@src/graphql').Player & { label:string }} selected player in candidate list. */
   let futureFriend = null
-  /** @type {{ player: Player, isNotFriend: boolean }[]} players of the current game/loby if any. */
+  /** @type {{ player: import('@src/stores').PlayerWithPref, isNotFriend: boolean }[]} players of the current game/loby if any. */
   let players = []
-  /** @type {Friendship[]} list of friendships that are not active players. */
+  /** @type {import('@src/graphql').Friendship[]} list of friendships that are not active players. */
   let friendships = []
   let openInviteDialogue = false
   let search = new Subject()
@@ -97,7 +87,7 @@
   }
 
   function handleMakeFriendRequest(
-    /** @type {CustomEvent<?PlayerFragment>|MouseEvent} */ event
+    /** @type {CustomEvent<?import('@src/graphql').Player>|MouseEvent} */ event
   ) {
     if (typeof event.detail === 'object' && event.detail?.id) {
       futureFriend = { ...event.detail, label: '' }

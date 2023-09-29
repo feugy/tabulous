@@ -1,8 +1,4 @@
 // @ts-check
-/**
- * @typedef {import('fastify').FastifyInstance} FastifyInstance
- */
-
 import { faker } from '@faker-js/faker'
 import { createVerifier } from 'fast-jwt'
 import fastify from 'fastify'
@@ -41,7 +37,7 @@ describe('auth plugin', () => {
   const domain = 'https://localhost:3000'
   const jwtOptions = { key: faker.string.uuid() }
   const allowedOrigins = `http:\\/\\/localhost:80`
-  /** @type {FastifyInstance} */
+  /** @type {import('fastify').FastifyInstance} */
   let server
   /** @type {import('../../src/plugins/auth')} */
   let authPlugin

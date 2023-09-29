@@ -9,8 +9,8 @@ import { createCustom } from './custom'
 /**
  * Creates a die, which could have from 4, 6, or 8 faces.
  * By default, dices have a diameter of 1, and 6 faces.
- * @param {Omit<import('@src/3d/utils/behaviors').SerializedMesh, 'shape'>} params - die parameters.
- * @param {import('@src/3d/managers').Managers} managers - current managers.
+ * @param {Omit<import('@tabulous/types').Mesh, 'shape'>} params - die parameters.
+ * @param {import('../managers').Managers} managers - current managers.
  * @param {import('@babylonjs/core').Scene} scene - scene for the created mesh.
  * @returns the created die mesh.
  */
@@ -53,7 +53,7 @@ export async function createDie(
   scene.addMesh(mesh, true)
 
   mesh.metadata.serialize = () => ({
-    shape: /** @type {'die'} */ (mesh.name),
+    shape: /** @type {import('@tabulous/types').Shape} */ (mesh.name),
     id,
     x: mesh.absolutePosition.x,
     y: mesh.absolutePosition.y,
@@ -65,12 +65,10 @@ export async function createDie(
     ...serializeBehaviors(mesh.behaviors)
   })
 
-  behaviorStates.randomizable = {
-    ...(behaviorStates.randomizable || {}),
+  registerBehaviors(mesh, { randomizable: {}, ...behaviorStates }, managers, {
     max: faces,
     quaternionPerFace: getQuaternions(faces)
-  }
-  registerBehaviors(mesh, behaviorStates, managers)
+  })
 
   return mesh
 }
@@ -139,7 +137,7 @@ export function getQuaternions(faces) {
     ])
   }
   if (faces === 8) {
-    // axis along which rotation bringe 1 to 3, 5 and 7, or 2 to 4, 6 and 8
+    // axis along which rotation brings 1 to 3, 5 and 7, or 2 to 4, 6 and 8
     const x = 0
     const y = -cos(toRad(-55))
     const z = sin(toRad(-55))

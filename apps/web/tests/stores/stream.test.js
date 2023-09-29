@@ -1,8 +1,4 @@
 // @ts-check
-/**
- * @typedef {import('rxjs').Subscription} Subscription
- */
-
 import { faker } from '@faker-js/faker'
 import {
   acquireMediaStream,
@@ -37,7 +33,7 @@ describe('Media Stream store', () => {
   const localStreamChangeReceived = vi.fn()
   const noMediaMessage = 'does not support media devices'
   const unauthorizedMediaMessage = 'Failed to access media devices'
-  /** @type {Subscription[]} */
+  /** @type {import('rxjs').Subscription[]} */
   let subscriptions
   /** @type {import('vitest').MockedObject<typeof navigator.mediaDevices>} */
   let mediaDevicesMock

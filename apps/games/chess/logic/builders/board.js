@@ -1,12 +1,7 @@
 // @ts-check
-/**
- * @typedef {import('@tabulous/server/src/graphql').Anchor} Anchor
- * @typedef {import('@tabulous/server/src/graphql').Mesh} Mesh
- */
-
 import { blackId, faceUVs, pieces, sizes, whiteId } from '../constants.js'
 
-/** @returns {Mesh} */
+/** @returns {import('@tabulous/types').Mesh} */
 export function buildBoard() {
   return {
     shape: 'roundedTile',
@@ -19,7 +14,7 @@ export function buildBoard() {
   }
 }
 
-/** @returns {Anchor[]} */
+/** @returns {import('@tabulous/types').Anchor[]} */
 function buildAnchors() {
   const anchors = []
   const max = pieces.length

@@ -7,8 +7,8 @@ export const TableId = 'table'
 /**
  * Creates ground mesh to act as table, that received shadows but can not receive rays.
  * Table is always 0.01 unit bellow (Y axis) origin.
- * @param {import('@tabulous/server/src/graphql').TableSpec|undefined} tableSpec - table parameters
- * @param {import('@src/3d/managers').Managers} managers - current managers.
+ * @param {import('@tabulous/types').TableSpec|undefined} tableSpec - table parameters
+ * @param {import('../managers').Managers} managers - current managers.
  * @param {import('@babylonjs/core').Scene} scene - scene to host the table (default to last scene).
  * @returns the created table ground.
  */

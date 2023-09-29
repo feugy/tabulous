@@ -1,16 +1,4 @@
 // @ts-check
-/**
- * @typedef {import('@babylonjs/core').AbstractMesh} AbstractMesh
- * @typedef {import('@babylonjs/core').Mesh} Mesh
- * @typedef {import('@tabulous/server/src/graphql').Dimension} Dimension
- * @typedef {import('@tabulous/server/src/graphql').Mesh} _SerializedMesh
- * @typedef {import('@src/3d/behaviors').AnimateBehavior} AnimateBehavior
- * @typedef {import('@src/3d/behaviors').TargetBehavior} TargetBehavior
- * @typedef {import('@src/3d/behaviors/names')} _BehaviorNames
- * @typedef {import('@src/3d/behaviors/randomizable').Extras} Extras
- * @typedef {import('@src/3d/managers/target').DropZone} DropZone
- */
-
 import { Animation } from '@babylonjs/core/Animations/animation'
 import { Quaternion, Vector3 } from '@babylonjs/core/Maths/math.vector'
 import { CreateBox } from '@babylonjs/core/Meshes/Builders/boxBuilder'
@@ -44,14 +32,17 @@ import { StackBehavior } from '../behaviors/stackable'
 import { applyGravity, getCenterAltitudeAbove } from './gravity'
 import { setExtras } from './mesh'
 
-/** @typedef {_BehaviorNames[keyof _BehaviorNames]} BehaviorNames */
+/** @typedef {'anchorable'|'detailable'|'drawable'|'flippable'|'lockable'|'movable'|'quantifiable'|'randomizable'|'rotable'|'stackable'} BehaviorNames */
+
 /** @typedef {AnchorBehavior|DetailBehavior|DrawBehavior|FlipBehavior|LockBehavior|MoveBehavior|QuantityBehavior|RandomBehavior|RotateBehavior|StackBehavior} Behavior */
-/** @typedef {Record<string, ?> & Pick<SerializedMesh, 'anchorable'|'detailable'|'movable'|'drawable'|'flippable'|'lockable'|'quantifiable'|'randomizable'|'rotable'|'stackable'>} BehaviorState */
-/** @typedef {_SerializedMesh & { randomizable?: _SerializedMesh['randomizable'] & Partial<Extras> }} SerializedMesh */
+
+/** @typedef {Record<string, ?> & Pick<import('@tabulous/types').Mesh, BehaviorNames>} BehaviorState */
+
+/** @typedef {import('@tabulous/types').Mesh & { randomizable?: import('@tabulous/types').Mesh['randomizable'] & Partial<import('../behaviors').Extras> }} SerializedMesh */
 
 const animationLogger = makeLogger('animatable')
 
-/** @type {?[BehaviorNames, { new (state: ?, managers: import('@src/3d/managers').Managers): Behavior }][]} */
+/** @type {?[BehaviorNames, { new (state: ?, managers: import('../managers').Managers, extras: Record<string, ?>): Behavior }][]} */
 let constructors = null
 
 function getConstructors() {
@@ -78,14 +69,19 @@ function getConstructors() {
  * It uses behavior names to identify the desired behaviore.
  * For example, when given parameters contain 'anchorable' object, it creates an AnchorBehavior
  * and attach it to the mesh.
- * @param {Mesh} mesh - the modified mesh.
- * @param {BehaviorState} params - parameters, which may contain behavior specific states.
- * @param {import('@src/3d/managers').Managers} managers - current managers
+ * @param {import('@babylonjs/core').Mesh} mesh - the modified mesh.
+ * @param {Partial<import('@tabulous/types').Mesh>} params - parameters, which may contain behavior specific states.
+ * @param {import('../managers').Managers} managers - current managers
  */
-export function registerBehaviors(mesh, params, managers) {
+export function registerBehaviors(
+  mesh,
+  params,
+  managers,
+  /** @type {Record<string, any>} */ extras = {}
+) {
   for (const [name, constructor] of getConstructors()) {
     if (params[name]) {
-      mesh.addBehavior(new constructor(params[name], managers), true)
+      mesh.addBehavior(new constructor(params[name], managers, extras), true)
     }
   }
 }
@@ -98,8 +94,9 @@ export function registerBehaviors(mesh, params, managers) {
  */
 export function restoreBehaviors(behaviors, state) {
   for (const behavior of behaviors) {
-    if (state[behavior.name] && behavior.name !== StackBehaviorName) {
-      behavior.fromState?.(state[behavior.name])
+    const { name } = behavior
+    if (name in state && state[name] && name !== StackBehaviorName) {
+      behavior.fromState?.(state[name])
     }
   }
 }
@@ -121,7 +118,7 @@ export function serializeBehaviors(behaviors) {
 /**
  * Moves, with an animation if possible, a mesh to a given position.
  * When requested, will apply gravity at the end.
- * @param {Mesh} mesh - the moved mesh.
+ * @param {import('@babylonjs/core').Mesh} mesh - the moved mesh.
  * @param {Vector3} absolutePosition - its final, absolute position.
  * @param {?Vector3} rotation - its final rotation (set to null to leave unmodified).
  * @param {number} [duration] - how long, in ms, the move will last.
@@ -155,8 +152,8 @@ export function animateMove(
 
 /**
  * Finds and returns an animatable behavior of a given mesh.
- * @param {Mesh} [mesh] - related mesh.
- * @returns {?MoveBehavior|FlipBehavior|DrawBehavior|RotateBehavior|RandomBehavior|AnimateBehavior|undefined} an Animatable behavior (or one of its subimplementation) if any.
+ * @param {import('@babylonjs/core').Mesh} [mesh] - related mesh.
+ * @returns {?MoveBehavior|FlipBehavior|DrawBehavior|RotateBehavior|RandomBehavior|import('../behaviors').AnimateBehavior|undefined} an Animatable behavior (or one of its subimplementation) if any.
  */
 export function getAnimatableBehavior(mesh) {
   return (
@@ -171,8 +168,8 @@ export function getAnimatableBehavior(mesh) {
 
 /**
  * Finds and returns a targetable behavior of a given mesh.
- * @param {Mesh} [mesh] - related mesh.
- * @returns {?StackBehavior|AnchorBehavior|QuantityBehavior|TargetBehavior|undefined} a Target behavior (or one of its subimplementation) if any.
+ * @param {import('@babylonjs/core').Mesh} [mesh] - related mesh.
+ * @returns {?StackBehavior|AnchorBehavior|QuantityBehavior|import('../behaviors').TargetBehavior|undefined} a Target behavior (or one of its subimplementation) if any.
  */
 export function getTargetableBehavior(mesh) {
   return (
@@ -185,7 +182,7 @@ export function getTargetableBehavior(mesh) {
 
 /**
  * Indicates whether a mesh is flipped or not.
- * @param {Mesh} [mesh] - related mesh.
+ * @param {import('@babylonjs/core').Mesh} [mesh] - related mesh.
  * @returns whether the mesh is flipped.
  */
 export function isMeshFlipped(mesh) {
@@ -194,7 +191,7 @@ export function isMeshFlipped(mesh) {
 
 /**
  * Indicates whether a mesh has been rotated twice (its angle is PI).
- * @param {Mesh} [mesh] - related mesh.
+ * @param {import('@babylonjs/core').Mesh} [mesh] - related mesh.
  * @returns whether the mesh is inverted.
  */
 export function isMeshInverted(mesh) {
@@ -203,7 +200,7 @@ export function isMeshInverted(mesh) {
 
 /**
  * Indicates whether a mesh is locked (prevents moves and interactions)
- * @param {Mesh} [mesh] - related mesh.
+ * @param {import('@babylonjs/core').Mesh} [mesh] - related mesh.
  * @returns whether the mesh is locked.
  */
 export function isMeshLocked(mesh) {
@@ -212,7 +209,7 @@ export function isMeshLocked(mesh) {
 
 /**
  * Returns absolute position of all part centers of a given mesh (after applying any transformations).
- * @param {Mesh} mesh - related mesh
+ * @param {import('@babylonjs/core').Mesh} mesh - related mesh
  * @returns a list of absolute positions.
  */
 export function getMeshAbsolutePartCenters(mesh) {
@@ -287,7 +284,7 @@ export function attachFunctions(behavior, ...functionNames) {
  * - the mesh's onAnimationEnd observers are notified.
  *
  * The animation keys are serialized as per Babylon's Animation Curve Editor.
- * @param {AnimateBehavior} behavior - animated behavior.
+ * @param {import('../behaviors').AnimateBehavior} behavior - animated behavior.
  * @param {?() => void} onEnd - function invoked when all animations have completed.
  * @param {AnimationSpec[]} animationSpecs - list of animation specs.
  */
@@ -366,7 +363,7 @@ export function runAnimation({ mesh, frameRate }, onEnd, ...animationSpecs) {
  * one needs to temporary detach an animated mesh from its parent, or rotation may alter the movements.
  * This function detaches a given mesh, keeping its absolute position and rotation unchanged, then
  * returns a function to re-attach to the original parent (or new, if it has changed meanwhile).
- * @template {AbstractMesh} M
+ * @template {import('@babylonjs/core').AbstractMesh} M
  * @param {M} mesh - detached mesh.
  * @param {boolean} [detachChildren=true] - set to detach the mesh from its children.
  * @returns a function to re-attach to the original (or new) parent.
@@ -402,8 +399,8 @@ export function detachFromParent(mesh, detachChildren = true) {
 
 /**
  * Computes the final position of a given above a drop zone
- * @param {Mesh} droppedMesh - mesh dropped above zone.
- * @param {DropZone} zone - drop zone.
+ * @param {import('@babylonjs/core').Mesh} droppedMesh - mesh dropped above zone.
+ * @param {import('../managers').DropZone} zone - drop zone.
  * @returns absolute position for this mesh.
  */
 export function getPositionAboveZone(droppedMesh, zone) {
@@ -412,7 +409,7 @@ export function getPositionAboveZone(droppedMesh, zone) {
   return new Vector3(
     x,
     getCenterAltitudeAbove(
-      /** @type {Mesh} */ (zone.targetable.mesh),
+      /** @type {import('@babylonjs/core').Mesh} */ (zone.targetable.mesh),
       droppedMesh
     ),
     z
@@ -504,8 +501,8 @@ function parseFloat(
  * Creates a cylinder for cylindric meshes or when providing dimension's diameter.
  * Otherwise, creates a box.
  * @param {string} name - new mesh's name
- * @param {Mesh} parent - mesh to copy dimensions and shape from.
- * @param {Dimension} [dimensions] - target dimensions. When specified, prevail on parent's shape:
+ * @param {import('@babylonjs/core').Mesh} parent - mesh to copy dimensions and shape from.
+ * @param {import('@tabulous/types').Dimension} [dimensions] - target dimensions. When specified, prevail on parent's shape:
  * @returns created target mesh.
  */
 export function buildTargetMesh(name, parent, dimensions) {
@@ -535,7 +532,7 @@ export function buildTargetMesh(name, parent, dimensions) {
 
 /**
  * Returns the current face image of a Detailable mesh.
- * @param {Mesh} mesh - concerned mesh.
+ * @param {import('@babylonjs/core').Mesh} mesh - concerned mesh.
  * @returns the mesh back image if it is flipped, or its front image. Defaults to null.
  */
 export function selectDetailedFace(mesh) {

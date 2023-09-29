@@ -22,7 +22,7 @@ tar -x --file ~/dist/games.tar.gz -z --directory ~/games
 
 # creates modules internal links
 cd ~/node_modules/@tabulous/
-ln -s ~/server server
+ln -s ~/game-utils game-utils
 
 # ensures correct Node.js version
 cd ~/server

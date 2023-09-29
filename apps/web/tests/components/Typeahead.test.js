@@ -1,8 +1,4 @@
 // @ts-check
-/**
- * @typedef {import('@src/components').MenuOption} MenuOption
- */
-
 import { faker } from '@faker-js/faker'
 import Typeahead from '@src/components/Typeahead.svelte'
 import { sleep } from '@src/utils/index.js'
@@ -37,7 +33,7 @@ describe('Typeahead component', () => {
   }
 
   describe.each(
-    /** @type {[string, MenuOption[]][]} */ ([
+    /** @type {[string, import('@src/components').MenuOption[]][]} */ ([
       ['textual', ['Salut !', 'Hello!', 'Hallo !']],
       [
         'object',

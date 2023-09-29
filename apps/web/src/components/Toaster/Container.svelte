@@ -1,13 +1,11 @@
 <script>
   // @ts-check
-  /** @typedef {import('@src/stores').Toast} Toast */
-
   import Message from './Message.svelte'
 
-  /** @type {?Toast} displayed toast message. */
+  /** @type {?import('@src/stores').Toast} displayed toast message. */
   export let message = null
 
-  /** @type {(Toast & { id: string })[]} queue of displayed messages. */
+  /** @type {(import('@src/stores').Toast & { id: string })[]} queue of displayed messages. */
   let messages = []
 
   $: if (message) {

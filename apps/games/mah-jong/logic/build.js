@@ -3,7 +3,7 @@ import { buildDice, buildMainBoard, buildTiles } from './builders/index.js'
 import { buildDealerMark } from './builders/marks.js'
 import { walls, wallSize } from './constants.js'
 
-/** @type {import('@tabulous/server/src/services/catalog').Build} */
+/** @type {import('@tabulous/types').Build} */
 export function build() {
   const tiles = buildTiles()
   const bagId = 'tiles-bag'

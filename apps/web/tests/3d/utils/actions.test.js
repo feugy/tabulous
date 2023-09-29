@@ -1,8 +1,4 @@
 // @ts-check
-/**
- * @typedef {import('@babylonjs/core').Mesh} Mesh
- */
-
 import {
   DetailBehaviorName,
   DrawBehaviorName,

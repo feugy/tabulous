@@ -1,6 +1,5 @@
 <script>
   // @ts-check
-  /** @typedef {import('@src/utils').ScreenPosition} ScreenPosition */
 
   /** @type {string} feedback icon. */
   export let icon = ''
@@ -8,7 +7,7 @@
   export let content = ''
   /** @type {string|undefined} color hex string or name. */
   export let color = undefined
-  /** @type {ScreenPosition} absolute screen position. */
+  /** @type {import('@src/3d/utils').ScreenPosition} absolute screen position. */
   export let screenPosition = { x: 0, y: 0 }
 </script>
 

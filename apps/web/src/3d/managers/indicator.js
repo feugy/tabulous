@@ -1,14 +1,4 @@
 // @ts-check
-/**
- * @typedef {import('@babylonjs/core').Animatable} Animatable
- * @typedef {import('@babylonjs/core').Mesh} Mesh
- * @typedef {import('@babylonjs/core').Scene} Scene
- * @typedef {import('@tabulous/server/src/graphql').ActionName} ActionName
- * @typedef {import('@tabulous/server/src/graphql').ZoomSpec} ZoomSpec
- * @typedef {import('@src/3d/managers/camera').CameraPosition} CameraPosition
- * @typedef {import('@src/3d/utils').ScreenPosition} ScreenPosition
- */
-
 import { BoundingBox } from '@babylonjs/core/Culling/boundingBox.js'
 import { Vector3 } from '@babylonjs/core/Maths/math.vector.js'
 import { Observable } from '@babylonjs/core/Misc/observable.js'
@@ -20,14 +10,14 @@ import { getMeshScreenPosition, getScreenPosition } from '../utils/vector'
 /**
  * @typedef {object} MeshSizeIndicator indicates the size (or quantity) of a given mesh.
  * @property {string} id - indicator unique id.
- * @property {Mesh} mesh - concerned mesh.
+ * @property {import('@babylonjs/core').Mesh} mesh - concerned mesh.
  * @property {number} size - size displayed.
  */
 
 /**
  * @typedef {object} MeshPlayerIndicator indicates belonging to a specific player.
  * @property {string} id - indicator unique id.
- * @property {Mesh} mesh - concerned mesh.
+ * @property {import('@babylonjs/core').Mesh} mesh - concerned mesh.
  * @property {string} playerId - id of the related player.
  */
 
@@ -39,7 +29,7 @@ import { getMeshScreenPosition, getScreenPosition } from '../utils/vector'
 
 /**
  * @typedef {object} FeedbackIndicator temporary feedback for a given action.
- * @property {ActionName|'unlock'|'lock'} action - the related action
+ * @property {import('@tabulous/types').ActionName|'unlock'|'lock'} action - the related action
  * @property {number[]} position - feedback position in 3D coordinates.
  * @property {string} [playerId] - id of the related player, if any.
  */
@@ -47,7 +37,7 @@ import { getMeshScreenPosition, getScreenPosition } from '../utils/vector'
 /**
  * @typedef {object} _ManagedIndicator
  * @property {string} id - indicator unique id.
- * @property {ScreenPosition} screenPosition - 2D position in pixels.
+ * @property {import('../utils').ScreenPosition} screenPosition - 2D position in pixels.
  * @property {boolean} [isFeedback] - indicates temporary feedback.
  *
  * @typedef {(MeshSizeIndicator|MeshPlayerIndicator) & _ManagedIndicator} ManagedIndicator indicator managed by this manager.
@@ -63,10 +53,10 @@ export class IndicatorManager {
   /**
    * Creates a manager for indications above meshes.
    * @param {object} params - parameters, including:
-   * @param {Scene} params.scene - main scene
+   * @param {import('@babylonjs/core').Scene} params.scene - main scene
    */
   constructor({ scene }) {
-    /** @type {Scene} the main scene. */
+    /** the main scene. */
     this.scene = scene
     /** @type {Observable<Indicator[]>} emits when the indicator list has changed. */
     this.onChangeObservable = new Observable()
@@ -216,7 +206,7 @@ function handleFrame(/** @type {IndicatorManager} */ manager) {
  */
 function setMeshPosition(indicator) {
   const { depth } = getDimensions(indicator.mesh)
-  const { x, y } = /** @type {ScreenPosition} */ (
+  const { x, y } = /** @type {import('../utils').ScreenPosition} */ (
     getMeshScreenPosition(indicator.mesh, [0, 0, depth / 2])
   )
   const hasChanged =

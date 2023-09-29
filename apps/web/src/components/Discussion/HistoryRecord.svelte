@@ -1,17 +1,12 @@
 <script>
   // @ts-check
-  /**
-   * @typedef {import('@src/stores/game-manager').Player} Player
-   * @typedef {import('@tabulous/server/src/graphql').HistoryRecord} HistoryRecord
-   */
-
   import { PlayerThumbnail } from '@src/components'
   import { _ } from 'svelte-intl'
 
-  /** @type {Player|undefined} action's author. */
+  /** @type {import('@src/stores').PlayerWithPref|undefined} action's author. */
   export let player
 
-  /** @type {HistoryRecord} recorded item. */
+  /** @type {import('@tabulous/types').HistoryRecord} recorded item. */
   export let item
 
   /** Whether this record is currently active. */

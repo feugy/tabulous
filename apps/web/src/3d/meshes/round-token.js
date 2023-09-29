@@ -10,9 +10,9 @@ import { applyInitialTransform, setExtras } from '../utils/mesh'
  * Tokens are cylinders, so their position is their center.
  * A token's texture must have 3 faces, back then edge then front, aligned horizontally.
  * By default tokens have a diameter of 2.
- * @param {Omit<import('@src/3d/utils/behaviors').SerializedMesh, 'shape'>} params - token parameters.
+ * @param {Omit<import('@tabulous/types').Mesh, 'shape'>} params - token parameters.
  * @param {import('@babylonjs/core').Scene} scene - scene for the created mesh.
- * @param {import('@src/3d/managers').Managers} managers - current managers.
+ * @param {import('../managers').Managers} managers - current managers.
  * @returns the created token mesh.
  */
 export function createRoundToken(
@@ -55,7 +55,7 @@ export function createRoundToken(
     isCylindric: true,
     metadata: {
       serialize: () => ({
-        shape: /** @type {'roundToken'} */ (mesh.name),
+        shape: /** @type {import('@tabulous/types').Shape} */ (mesh.name),
         id,
         x: mesh.absolutePosition.x,
         y: mesh.absolutePosition.y,

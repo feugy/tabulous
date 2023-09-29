@@ -1,10 +1,4 @@
 // @ts-check
-/**
- * @typedef {import('@babylonjs/core').ArcRotateCamera} ArcRotateCamera
- * @typedef {import('@babylonjs/core').Scene} Scene
- * @typedef {import('@src/3d/managers/camera').CameraPosition} CameraPosition
- */
-
 import { faker } from '@faker-js/faker'
 import { CameraManager } from '@src/3d/managers'
 import { createTable } from '@src/3d/utils'
@@ -13,13 +7,13 @@ import { beforeEach, describe, expect, it, vi } from 'vitest'
 import { configures3dTestEngine } from '../../test-utils'
 
 describe('CameraManager', () => {
-  /** @type {Scene} */
+  /** @type {import('@babylonjs/core').Scene} */
   let scene
-  /** @type {Scene} */
+  /** @type {import('@babylonjs/core').Scene} */
   let handScene
-  /** @type {CameraPosition[]} */
+  /** @type {import('@src/3d/managers').CameraPosition[]} */
   let states
-  /** @type {CameraPosition[][]} */
+  /** @type {import('@src/3d/managers').CameraPosition[][]} */
   let saveUpdates
   /** @type {import('@src/3d/managers').Managers} */
   let managers
@@ -311,8 +305,8 @@ describe('CameraManager', () => {
   })
 
   function expectState(
-    /** @type {CameraPosition} */ state,
-    /** @type {Partial<CameraPosition>} */ {
+    /** @type {import('@src/3d/managers').CameraPosition} */ state,
+    /** @type {Partial<import('@src/3d/managers').CameraPosition>} */ {
       alpha,
       beta,
       elevation,

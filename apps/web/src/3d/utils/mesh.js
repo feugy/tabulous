@@ -1,15 +1,9 @@
 // @ts-check
-/**
- * @typedef {import('@babylonjs/core').AbstractMesh} AbstractMesh
- * @typedef {import('@babylonjs/core').Mesh} Mesh
- * @typedef {import('@tabulous/server/src/graphql').InitialTransform} InitialTransform
- */
-
 import { Observable } from '@babylonjs/core/Misc/observable'
 
 /**
  * Configures Tabulous extra mesh attributes on a Babylon.js mesh.
- * @template {AbstractMesh} M
+ * @template {import('@babylonjs/core').AbstractMesh} M
  * @param {M} mesh - initialized mesh.
  * @param {Partial<Pick<M, 'isCylindric'|'isHittable'|'isPhantom'|'isDropZone'|'animationInProgress'|'metadata'>>} [extras] - extra attribute values.
  * @return {M} the modified mesh.
@@ -28,7 +22,7 @@ export function setExtras(mesh, extras = {}) {
 }
 
 /**
- * @template {AbstractMesh} M
+ * @template {import('@babylonjs/core').AbstractMesh} M
  * @param {?M} [mesh] - tested mesh.
  * @returns {boolean} whether a mesh or any of ist (indirect) children are animated.
  */
@@ -44,7 +38,7 @@ export function isAnimationInProgress(mesh) {
 
 /**
  * Indicates whether a given container completely contain the tested mesh, using their bounding boxes.
- * @template {AbstractMesh} M
+ * @template {import('@babylonjs/core').AbstractMesh} M
  * @param {M} container - container that may contain the mesh.
  * @param {M} mesh - tested mesh.
  * @returns true if container contains mesh, false otherwise.
@@ -69,7 +63,7 @@ export function isContaining(container, mesh) {
 /**
  * Returns a given mesh's dimension, that is its extent on Y and X axes.
  * **Requires a fresh world matrix**.
- * @template {AbstractMesh} T
+ * @template {import('@babylonjs/core').AbstractMesh} T
  * @param {T} mesh - sized mesh.
  * @returns mesh's dimensions.
  */
@@ -81,8 +75,8 @@ export function getDimensions(mesh) {
 
 /**
  * Applies an initial transformation to the built mesh, baking it into the vertices.
- * @param {Mesh} mesh - transformed mesh.
- * @param {InitialTransform} [transform] - initial transform applied (may be undefined).
+ * @param {import('@babylonjs/core').Mesh} mesh - transformed mesh.
+ * @param {import('@tabulous/types').InitialTransform} [transform] - initial transform applied (may be undefined).
  */
 export function applyInitialTransform(mesh, transform) {
   if (transform) {

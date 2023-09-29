@@ -1,0 +1,19 @@
+{
+  "name": "@tabulous/game-utils",
+  "version": "0.0.1",
+  "description": "Utilities for dealing with game states",
+  "type": "module",
+  "main": "src/index.js",
+  "scripts": {
+    "test": "vitest run --coverage",
+    "test:dev": "vitest dev --reporter=verbose",
+    "typecheck": "tsc -p jsconfig.json --noEmit"
+  },
+  "dependencies": {
+    "@tabulous/types": "workspace:*",
+    "deepmerge": "^4.3.1"
+  },
+  "devDependencies": {
+    "ajv": "^8.12.0"
+  }
+}

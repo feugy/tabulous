@@ -1,8 +1,4 @@
 // @ts-check
-/**
- * @typedef {import('undici').Interceptable} Interceptable
- */
-
 import { faker } from '@faker-js/faker'
 import { MockAgent, setGlobalDispatcher } from 'undici'
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
@@ -25,9 +21,9 @@ describe('Github authentication service', () => {
     const secret = faker.internet.password()
     /** @type {MockAgent} */
     let mockAgent
-    /** @type {Interceptable} */
+    /** @type {import('undici').Interceptable} */
     let githubMock
-    /** @type {Interceptable} */
+    /** @type {import('undici').Interceptable} */
     let githubApiMock
 
     beforeEach(() => {

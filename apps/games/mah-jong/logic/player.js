@@ -1,10 +1,5 @@
 // @ts-check
-/** @typedef {import('@tabulous/server/src/graphql').Mesh} Mesh */
-
-import {
-  buildCameraPosition,
-  findAvailableValues
-} from '@tabulous/server/src/utils/index.js'
+import { buildCameraPosition, findAvailableValues } from '@tabulous/game-utils'
 
 import { buildSticks } from './builders/index.js'
 import { colors } from './constants.js'
@@ -14,7 +9,7 @@ import { colors } from './constants.js'
  * @property {string} color - player color;
  */
 
-/** @type {import('@tabulous/server/src/services/catalog').AskForParameters<Parameters>} */
+/** @type {import('@tabulous/types').AskForParameters<Parameters>} */
 export function askForParameters({ game: { preferences } }) {
   return {
     type: 'object',
@@ -38,7 +33,7 @@ export function askForParameters({ game: { preferences } }) {
  * - third is looking toward south,
  * - fourth is looking toward east
  * Then creates sticks for counting points
- * @type {import('@tabulous/server/src/services/catalog').AddPlayer<Parameters>}
+ * @type {import('@tabulous/types').AddPlayer<Parameters>}
  */
 export function addPlayer(game, player) {
   const rank = game.preferences.length - 1

@@ -1,9 +1,4 @@
 // @ts-check
-/**
- * @typedef {import('@tabulous/server/src/graphql').Game} Game
- * @typedef {import('@tabulous/server/src/graphql').Player} Player
- */
-
 import { gql } from '@urql/core'
 import chalkTemplate from 'chalk-template'
 
@@ -37,7 +32,7 @@ const listGamesQuery = gql`
 /**
  * Triggers show player command.
  * @param {string[]} argv - array of parsed arguments (without executable and current file).
- * @returns {Promise<Player | string>} whether the operation succeeded.
+ * @returns whether the operation succeeded.
  */
 export default async function showPlayerCommand(argv) {
   const args = parseArgv(argv, {
@@ -59,7 +54,7 @@ export default async function showPlayerCommand(argv) {
 /**
  * Show a player's details.
  * @param {ShowPlayerArgs} args - username.
- * @returns {Promise<Player>} found player details.
+ * @returns found player details.
  */
 export async function showPlayer({ username }) {
   const player = attachFormater(await findUser(username), formatPlayer)
@@ -76,19 +71,17 @@ export async function showPlayer({ username }) {
   )
 }
 
-/**
- * @param {Player} result
- * @returns {string} formatted results
- */
-function formatPlayer({
-  id,
-  isAdmin,
-  username,
-  email,
-  provider,
-  currentGameId,
-  termsAccepted
-}) {
+function formatPlayer(
+  /** @type {import('@tabulous/types').Player} */ {
+    id,
+    isAdmin,
+    username,
+    email,
+    provider,
+    currentGameId,
+    termsAccepted
+  }
+) {
   return chalkTemplate`{dim id:}             ${id} ${isAdmin ? '🥷' : ''}
 {dim username:}       ${username}
 {dim email:}          ${email || 'none'}
@@ -99,11 +92,12 @@ function formatPlayer({
 
 const spacing = '\n                '
 
-/**
- * @param {Player & {games: Game[]}} result
- * @returns {string} formatted results
- */
-function formatGames({ id: playerId, games }) {
+function formatGames(
+  /** @type {import('@tabulous/types').Player & { games: import('@tabulous/server/graphql').Game[] }} */ {
+    id: playerId,
+    games
+  }
+) {
   const { owned, invited } = games.reduce(
     (counts, game) => {
       if (game.players?.find(({ id, isOwner }) => isOwner && id === playerId)) {
@@ -113,7 +107,10 @@ function formatGames({ id: playerId, games }) {
       }
       return counts
     },
-    { owned: /** @type {Game[]} */ ([]), invited: /** @type {Game[]} */ ([]) }
+    {
+      owned: /** @type {import('@tabulous/server/graphql').Game[]} */ ([]),
+      invited: /** @type {import('@tabulous/server/graphql').Game[]} */ ([])
+    }
   )
   owned.sort(byCreatedDate)
   invited.sort(byCreatedDate)
@@ -136,11 +133,9 @@ showPlayerCommand.help = function help() {
     ${commonOptions}`
 }
 
-/**
- * @param {Game} gameA
- * @param {Game} gameB
- * @returns {number}
- */
-function byCreatedDate({ created: a }, { created: b }) {
+function byCreatedDate(
+  /** @type {import('@tabulous/server/graphql').Game} */ { created: a },
+  /** @type {import('@tabulous/server/graphql').Game} */ { created: b }
+) {
   return b - a
 }

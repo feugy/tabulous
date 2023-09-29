@@ -5,8 +5,6 @@
 
 <script>
   // @ts-check
-  /** @typedef {import('@src/components').SectionTab} SectionTab */
-
   import { buildCornerClipPath } from '@src/utils/dom'
   import { createEventDispatcher } from 'svelte'
 
@@ -18,7 +16,7 @@
   export let placement = 'top'
   /** @type {string|undefined} initial dimension: width for left/right sections, height for top/bottom sections. */
   export let dimension = undefined
-  /** @type {SectionTab[]|undefined} optional list of tabs inside this this section. */
+  /** @type {import('@src/components').SectionTab[]|undefined} optional list of tabs inside this this section. */
   export let tabs = undefined
   /** @type {number} index of the current tab, if any.*/
   export let currentTab = 0
@@ -44,7 +42,7 @@
       }
   $: innerTabs = Array.isArray(tabs)
     ? tabs
-    : /** @type {SectionTab[]} */ ([
+    : /** @type {import('@src/components').SectionTab[]} */ ([
         {
           icon: minimized
             ? placement === 'top'

@@ -7,7 +7,7 @@ import { parseArgs } from 'node:util'
 import { config } from 'dotenv'
 import Redis from 'ioredis'
 
-import repositories from '../src/repositories/index.js'
+import * as repositories from '../src/repositories/index.js'
 
 const __dirname = dirname(fileURLToPath(import.meta.url))
 const migrationfileRexExp = /^\d+-.+\.js$/

@@ -11,57 +11,51 @@ import {
   TermsSupportedMixin
 } from './mixins/index.js'
 
-/**
- * @typedef {import('@playwright/test').Page} Page
- * @typedef {import('@playwright/test').Locator} Locator
- * @typedef {import('../utils').Locale} Locale
- */
-
 export const HomePage = mixin(
   class HomePageConstructor {
     /**
      * Represent the home page for testing
-     * @param {Page} page - the actual page.
-     * @param {Locale} lang - current language.
+     * @param {import('@playwright/test').Page} page - the actual page.
+     * @param {import('../utils').Locale} lang - current language.
      */
     constructor(page, lang) {
       /** @type {string} */
       this.pageKind = 'home'
-      /** @type {Locale} */
+      /** @type {import('../utils').Locale} */
       this.lang = lang
-      /** @type {Page} */
+      /** @type {import('@playwright/test').Page} */
       this.page = page
-      /** @type {Locator} */
+      /** @type {import('@playwright/test').Locator} */
       this.heading = page.getByRole('heading', { level: 1 })
-      /** @type {Locator} */
+      /** @type {import('@playwright/test').Locator} */
       this.gamesHeading = page.getByRole('heading', {
         name: translate('titles.your-games', undefined, this.lang)
       })
-      /** @type {Locator} */
+      /** @type {import('@playwright/test').Locator} */
       this.games = page.locator('[aria-roledescription="games"] >> article')
-      /** @type {Locator} */
+      /** @type {import('@playwright/test').Locator} */
       this.catalogHeading = page.getByRole('heading', {
         name: translate('titles.catalog', undefined, this.lang)
       })
-      /** @type {Locator} */
+      /** @type {import('@playwright/test').Locator} */
       this.catalogItems = page.locator(
         '[aria-roledescription="catalog"] >> role=button'
       )
-      /** @type {Locator} */
+      /** @type {import('@playwright/test').Locator} */
       this.catalogItemHeadings = this.catalogItems.getByRole('heading', {
         level: 3
       })
-      /** @type {Locator} */
+      /** @type {import('@playwright/test').Locator} */
       this.closeGameButtons = this.games.getByRole('button', { name: 'close' })
-      /** @type {Locator} */
+      /** @type {import('@playwright/test').Locator} */
       this.loginButton = page
         .locator('header')
         .getByRole('button', { name: 'account_circle' })
-      /** @type {Locator} */
+      /** @type {import('@playwright/test').Locator} */
       this.deleteGameDialogue = page.getByRole('dialog').filter({
         hasText: translate('titles.confirm-game-deletion', undefined, this.lang)
       })
-      /** @type {Locator} */
+      /** @type {import('@playwright/test').Locator} */
       this.tooManyPlayerDialogue = page.getByRole('dialog').filter({
         hasText: translate('titles.too-many-players', undefined, this.lang)
       })
@@ -69,7 +63,6 @@ export const HomePage = mixin(
 
     /**
      * Navigates to the page.
-     * @returns {Promise<void>}
      */
     async goTo() {
       await this.page.goto(`/${this.lang}/home`)
@@ -114,9 +107,8 @@ export const HomePage = mixin(
     /**
      * Expects several catalog items, sorted by their locale title.
      * Lobby link creation is expected first.
-     * @param {import('@tabulous/server/src/graphql').CatalogItem[]} catalog - expected catalog items.
+     * @param {import('@src/graphql').CatalogItem[]} catalog - expected catalog items.
      * @param {boolean} [withLobby=true] - whether to include link to create lobby or not.
-     * @returns {Promise<void>}
      */
     async expectSortedCatalogItems(catalog, withLobby = true) {
       const names = [

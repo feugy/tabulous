@@ -1,11 +1,9 @@
 <script>
   // @ts-check
-  /** @typedef {import('@src/components').LabelMenuOption} LabelMenuOption */
-
   import { Typeahead } from '@src/components'
 
   export let withObject = false
-  /** @type {((Record<string, ?> & string)|LabelMenuOption)[]} */
+  /** @type {((Record<string, ?> & string)|import('@src/components').LabelMenuOption)[]} */
   let options
 
   function findOptions() {

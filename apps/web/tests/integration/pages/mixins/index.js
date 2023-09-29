@@ -4,13 +4,8 @@ export { AuthenticatedHeaderMixin } from './authenticated-header.js'
 export { TermsSupportedMixin } from './terms-supported.js'
 
 /**
- * @typedef {import('@playwright/test').Page} Page
- * @typedef {import('../../utils').Locale} Locale
- */
-
-/**
  * @template T
- * @typedef {{ new(page: Page, lang: Locale): T}} Constructor
+ * @typedef {{ new(page: import('@playwright/test').Page, lang: import('../../utils').Locale): T}} Constructor
  */
 
 /**
@@ -33,8 +28,8 @@ export function mixin(BaseConstructor, ...Mixins) {
   // @ts-ignore because TypeScript does not like constructor to have a generic parameter
   class Augmented extends BaseConstructor {
     /**
-     * @param {Page} page - the actual page.
-     * @param {Locale} lang - current language.
+     * @param {import('@playwright/test').Page} page - the actual page.
+     * @param {import('../../utils').Locale} lang - current language.
      */
     constructor(page, lang) {
       super(page, lang)

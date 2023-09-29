@@ -1,13 +1,4 @@
 // @ts-check
-/**
- * @typedef {import('@babylonjs/core').Mesh} Mesh
- * @typedef {import('@babylonjs/core').Scene} Scene
- * @typedef {import('@babylonjs/core').Texture} Texture
- * @typedef {import('@src/3d/managers/target').DropZone} DropZone
- * @typedef {import('@src/3d/managers/target').MultiDropZone} MultiDropZone
- * @typedef {import('@src/3d/managers/target').SingleDropZone} SingleDropZone
- */
-
 import { Vector3 } from '@babylonjs/core/Maths/math.vector'
 import { faker } from '@faker-js/faker'
 import { MoveBehavior, TargetBehavior } from '@src/3d/behaviors'
@@ -18,9 +9,9 @@ import { configures3dTestEngine, createBox } from '../../test-utils'
 
 describe('TargetManager', () => {
   let drops
-  /** @type {Scene} */
+  /** @type {import('@babylonjs/core').Scene} */
   let scene
-  /** @type {Scene} */
+  /** @type {import('@babylonjs/core').Scene} */
   let handScene
   /** @type {import('@src/3d/managers').Managers} */
   let managers
@@ -99,9 +90,9 @@ describe('TargetManager', () => {
   })
 
   describe('findDropZone()', () => {
-    /** @type {SingleDropZone} */
+    /** @type {import('@src/3d/managers').SingleDropZone} */
     let zone1
-    /** @type {SingleDropZone} */
+    /** @type {import('@src/3d/managers').SingleDropZone} */
     let zone2
     const aboveZone1 = new Vector3(5, 1, 5)
     const aboveZone2 = new Vector3(-5, 1, -5)
@@ -151,7 +142,9 @@ describe('TargetManager', () => {
     })
 
     it('ignores target part of the current selection', () => {
-      managers.selection.select(/** @type {Mesh} */ (zone1.targetable.mesh))
+      managers.selection.select(
+        /** @type {import('@babylonjs/core').Mesh} */ (zone1.targetable.mesh)
+      )
       const mesh = createBox('box2', {})
       mesh.setAbsolutePosition(zone1.mesh.absolutePosition)
 
@@ -261,7 +254,7 @@ describe('TargetManager', () => {
     })
 
     describe('given a mesh with parts', () => {
-      /** @type {Mesh} */
+      /** @type {import('@babylonjs/core').Mesh} */
       let mesh
 
       beforeEach(() => {
@@ -349,7 +342,7 @@ describe('TargetManager', () => {
     })
 
     describe('dropOn()', () => {
-      /** @type {Mesh[]} */
+      /** @type {import('@babylonjs/core').Mesh[]} */
       let meshes
       beforeEach(() => {
         meshes = ['box1', 'box2'].map(id => {
@@ -373,11 +366,11 @@ describe('TargetManager', () => {
   })
 
   describe('findPlayerZone()', () => {
-    /** @type {SingleDropZone} */
+    /** @type {import('@src/3d/managers').SingleDropZone} */
     let zone1
-    /** @type {SingleDropZone} */
+    /** @type {import('@src/3d/managers').SingleDropZone} */
     let zone2
-    /** @type {Mesh} */
+    /** @type {import('@babylonjs/core').Mesh} */
     let mesh
 
     beforeEach(() => {
@@ -409,7 +402,9 @@ describe('TargetManager', () => {
     })
 
     it('ignores target part of the current selection', () => {
-      managers.selection.select(/** @type {Mesh} */ (zone1.targetable.mesh))
+      managers.selection.select(
+        /** @type {import('@babylonjs/core').Mesh} */ (zone1.targetable.mesh)
+      )
       const mesh = createBox('box2', {})
       mesh.setAbsolutePosition(zone1.mesh.absolutePosition)
 
@@ -475,7 +470,7 @@ describe('TargetManager', () => {
     })
 
     describe('dropOn()', () => {
-      /** @type {Mesh[]} */
+      /** @type {import('@babylonjs/core').Mesh[]} */
       let meshes
       beforeEach(() => {
         meshes = ['box1', 'box2'].map(id => {
@@ -503,7 +498,7 @@ describe('TargetManager', () => {
     })
 
     describe('given a kindless zone', () => {
-      /** @type {Partial<SingleDropZone>} */
+      /** @type {Partial<import('@src/3d/managers').SingleDropZone>} */
       let zone
 
       beforeEach(() => {
@@ -525,7 +520,7 @@ describe('TargetManager', () => {
     })
 
     describe('given a zone with kind', () => {
-      /** @type {Partial<SingleDropZone>} */
+      /** @type {Partial<import('@src/3d/managers').SingleDropZone>} */
       let zone
 
       beforeEach(() => {
@@ -553,7 +548,7 @@ describe('TargetManager', () => {
 
   function createsTargetZone(
     /** @type {string} */ id,
-    /** @type {Record<string, ?> & Partial<{ position: Vector3, scene: Scene }>} */
+    /** @type {Record<string, ?> & Partial<{ position: Vector3, scene: import('@babylonjs/core').Scene }>} */
     { position = new Vector3(0, 0, 0), scene: usedScene, ...properties }
   ) {
     const targetable = createBox(`targetable-${id}`, {}, usedScene ?? scene)
@@ -568,8 +563,8 @@ describe('TargetManager', () => {
   }
 
   function expectActiveZone(
-    /** @type {?DropZone} */ actual,
-    /** @type {Partial<DropZone>} */ expected,
+    /** @type {?import('@src/3d/managers').DropZone} */ actual,
+    /** @type {Partial<import('@src/3d/managers').DropZone>} */ expected,
     /** @type {string} */ color
   ) {
     expect(actual?.mesh.id).toEqual(expected.mesh?.id)
@@ -580,7 +575,7 @@ describe('TargetManager', () => {
   }
 
   function expectVisibility(
-    /** @type {?DropZone} */ zone,
+    /** @type {?import('@src/3d/managers').DropZone} */ zone,
     /** @type {boolean} */ isVisible
   ) {
     expect(zone?.mesh.visibility).toEqual(isVisible ? 1 : 0)

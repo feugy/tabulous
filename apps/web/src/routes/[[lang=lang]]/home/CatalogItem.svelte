@@ -1,15 +1,13 @@
 <script>
   // @ts-check
-  /** @typedef {import('@src/graphql').CatalogItem} CatalogItem */
-
   import { gameAssetsUrl } from '@src/utils'
   import { createEventDispatcher } from 'svelte'
   import { _, locale } from 'svelte-intl'
 
-  /** @type {CatalogItem} displayed catalog item. */
+  /** @type {import('@src/graphql').CatalogItem} displayed catalog item. */
   export let game
 
-  /** @type {import('svelte').EventDispatcher<{ select: CatalogItem & { title: string } }>}*/
+  /** @type {import('svelte').EventDispatcher<{ select: import('@src/graphql').CatalogItem & { title: string } }>}*/
   const dispatch = createEventDispatcher()
   $: title = game?.locales?.[$locale]?.title
   $: seatsHidden = !game?.maxSeats && !game?.minSeats

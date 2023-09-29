@@ -1,12 +1,4 @@
 // @ts-check
-/**
- * @typedef {import('@babylonjs/core').Engine} Engine
- * @typedef {import('@babylonjs/core').Mesh} Mesh
- * @typedef {import('@src/3d/behaviors/animatable').AnimateBehavior} AnimateBehavior
- * @typedef {typeof import('@src/3d/behaviors/targetable').TargetBehavior} TargetBehavior
- */
-
-//
 import { Animation } from '@babylonjs/core/Animations/animation'
 import { Vector3 } from '@babylonjs/core/Maths/math.vector'
 import {
@@ -57,33 +49,33 @@ import {
 // TODO is it needed?
 vi.mock('@src/3d/managers/indicator')
 
-/** @type {Engine} */
+/** @type {import('@babylonjs/core').Engine} */
 let engine
-/** @type {Mesh} */
+/** @type {import('@babylonjs/core').Mesh} */
 let box
 /** @type {import('@src/3d/managers').Managers} */
 let managers
-/** @type {typeof import('@src/3d/behaviors/anchorable').AnchorBehavior} */
+/** @type {typeof import('@src/3d/behaviors').AnchorBehavior} */
 let AnchorBehavior
-/** @type {typeof import('@src/3d/behaviors/animatable').AnimateBehavior} */
+/** @type {typeof import('@src/3d/behaviors').AnimateBehavior} */
 let AnimateBehavior
-/** @type {typeof import('@src/3d/behaviors/detailable').DetailBehavior}} */
+/** @type {typeof import('@src/3d/behaviors').DetailBehavior}} */
 let DetailBehavior
-/** @type {typeof import('@src/3d/behaviors/drawable').DrawBehavior} */
+/** @type {typeof import('@src/3d/behaviors').DrawBehavior} */
 let DrawBehavior
-/** @type {typeof import('@src/3d/behaviors/flippable').FlipBehavior} */
+/** @type {typeof import('@src/3d/behaviors').FlipBehavior} */
 let FlipBehavior
-/** @type {typeof import('@src/3d/behaviors/lockable').LockBehavior} */
+/** @type {typeof import('@src/3d/behaviors').LockBehavior} */
 let LockBehavior
-/** @type {typeof import('@src/3d/behaviors/movable').MoveBehavior} */
+/** @type {typeof import('@src/3d/behaviors').MoveBehavior} */
 let MoveBehavior
-/** @type {typeof import('@src/3d/behaviors/quantifiable').QuantityBehavior} */
+/** @type {typeof import('@src/3d/behaviors').QuantityBehavior} */
 let QuantityBehavior
-/** @type {typeof import('@src/3d/behaviors/rotable').RotateBehavior} */
+/** @type {typeof import('@src/3d/behaviors').RotateBehavior} */
 let RotateBehavior
-/** @type {typeof import('@src/3d/behaviors/stackable').StackBehavior} */
+/** @type {typeof import('@src/3d/behaviors').StackBehavior} */
 let StackBehavior
-/** @type {typeof import('@src/3d/behaviors/targetable').TargetBehavior} */
+/** @type {typeof import('@src/3d/behaviors').TargetBehavior} */
 let TargetBehavior
 
 beforeAll(async () => {
@@ -440,6 +432,7 @@ describe('registerBehaviors() 3D utility', () => {
   })
 
   it('adds nothing without parameters', () => {
+    // @ts-expect-error -- animatable is not a valid behavior state
     registerBehaviors(box, { animatable: true }, managers)
     expect(box.behaviors).toHaveLength(0)
   })
@@ -773,7 +766,7 @@ describe('serializeBehaviors() 3D utility', () => {
 })
 
 describe('runAnimation() 3D utility', () => {
-  /** @type {AnimateBehavior} */
+  /** @type {import('@src/3d/behaviors').AnimateBehavior} */
   let behavior
 
   beforeEach(() => {
@@ -1121,7 +1114,7 @@ class TestBehavior {
 
   init() {}
 
-  attach(/** @type {Mesh} */ mesh) {
+  attach(/** @type {import('@babylonjs/core').Mesh} */ mesh) {
     this.mesh = mesh
   }
 

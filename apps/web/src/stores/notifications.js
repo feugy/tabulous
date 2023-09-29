@@ -1,13 +1,10 @@
 // @ts-check
-/**
- * @typedef {import('@src/types').Translate} Translate
- */
 import { _ } from 'svelte-intl'
 
 import { browser } from '$app/environment'
 
 let isActive = true
-/** @type {Translate} */
+/** @type {import('@src/types').Translate} */
 let translate
 _.subscribe(value => (translate = value))
 
@@ -21,7 +18,7 @@ if (browser) {
 /**
  * @typedef {object} Notification
  * @property {string} contentKey - i18n key used for content.
- * @property {Parameters<Translate>[1]} [args] - object argument passed to i18n formatMessage()
+ * @property {Parameters<import('@src/types').Translate>[1]} [args] - object argument passed to i18n formatMessage()
  */
 
 /**

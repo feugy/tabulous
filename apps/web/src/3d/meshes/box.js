@@ -15,8 +15,8 @@ import { applyInitialTransform, setExtras } from '../utils/mesh'
  *   5. negative Z (0°)
  *   6. positive Z (180°)
  * By default, boxes have a dimension of 1.
- * @param {Omit<import('@src/3d/utils/behaviors').SerializedMesh, 'shape'>} params - box parameters.
- * @param {import('@src/3d/managers').Managers} managers - current managers.
+ * @param {Omit<import('@tabulous/types').Mesh, 'shape'>} params - box parameters.
+ * @param {import('../managers').Managers} managers - current managers.
  * @param {import('@babylonjs/core').Scene} scene - scene for the created mesh.
  * @returns the created box mesh.
  */
@@ -63,7 +63,7 @@ export function createBox(
   setExtras(mesh, {
     metadata: {
       serialize: () => ({
-        shape: /** @type {'box'} */ (mesh.name),
+        shape: /** @type {import('@tabulous/types').Shape} */ (mesh.name),
         id,
         x: mesh.absolutePosition.x,
         y: mesh.absolutePosition.y,

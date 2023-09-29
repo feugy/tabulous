@@ -1,6 +1,4 @@
 // @ts-check
-/** @typedef {Partial<import('@tabulous/server/src/services/catalog').Schema<?>>} Schema */
-
 import Parameters from '@src/routes/[[lang=lang]]/(auth)/game/[gameId]/Parameters/Container.svelte'
 import { fireEvent, render, screen } from '@testing-library/svelte'
 import { extractText, sleep, translate } from '@tests/test-utils'
@@ -14,7 +12,9 @@ describe('Parameters component', () => {
     vi.clearAllMocks()
   })
 
-  async function renderComponent(/** @type {Schema} */ schema) {
+  async function renderComponent(
+    /** @type {Partial<import('@tabulous/types').Schema<?>>} */ schema
+  ) {
     function onSubmit(/** @type {CustomEvent<?>} */ { detail }) {
       handleSubmit(detail)
     }

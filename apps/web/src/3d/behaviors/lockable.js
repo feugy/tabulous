@@ -1,37 +1,29 @@
 // @ts-check
-/**
- * @typedef {import('@babylonjs/core').Mesh} Mesh
- * @typedef {import('@tabulous/server/src/graphql').ActionName} ActionName
- * @typedef {import('@tabulous/server/src/graphql').LockableState} LockableState
- */
-
 import { makeLogger } from '../../utils/logger'
 import { actionNames } from '../utils/actions'
 import { attachFunctions, attachProperty } from '../utils/behaviors'
+import { MoveBehavior } from './movable'
 import { LockBehaviorName, MoveBehaviorName } from './names'
 
-/** @typedef {LockableState & Required<Pick<LockableState, 'isLocked'>>} RequiredLockableState */
+/** @typedef {import('@tabulous/types').LockableState & Required<Pick<import('@tabulous/types').LockableState, 'isLocked'>>} RequiredLockableState */
 
 const logger = makeLogger(LockBehaviorName)
 
 export class LockBehavior {
   /**
    * Creates behavior to lock some actions on a mesh, by acting on other behaviors.
-   * @param {LockableState} state - behavior state.
-   * @param {import('@src/3d/managers').Managers} managers - current managers.
+   * @param {import('@tabulous/types').LockableState} state - behavior state.
+   * @param {import('../managers').Managers} managers - current managers.
    */
   constructor(state, managers) {
     /** @internal */
     this.managers = managers
-    /** @type {?Mesh} mesh - the related mesh. */
+    /** @type {?import('@babylonjs/core').Mesh} mesh - the related mesh. */
     this.mesh = null
-    /**  @type {RequiredLockableState} state - the behavior's current state. */
+    /**  the behavior's current state. */
     this.state = { isLocked: state?.isLocked ?? false }
   }
 
-  /**
-   * @property {string} name - this behavior's constant name.
-   */
   get name() {
     return LockBehaviorName
   }
@@ -47,7 +39,7 @@ export class LockBehavior {
    * - `isLocked` property.
    * - the `toggleLock()` method.
    * It also enables or disables companion behaviors based on desired state.
-   * @param {Mesh} mesh - which becomes detailable.
+   * @param {import('@babylonjs/core').Mesh} mesh - which becomes detailable.
    */
   attach(mesh) {
     this.mesh = mesh
@@ -74,7 +66,7 @@ export class LockBehavior {
 
   /**
    * Revert flip actions. Ignores other actions
-   * @param {ActionName} action - reverted action.
+   * @param {import('@tabulous/types').ActionName} action - reverted action.
    */
   async revert(action) {
     if (action === actionNames.toggleLock && this.mesh) {
@@ -84,7 +76,7 @@ export class LockBehavior {
 
   /**
    * Updates this behavior's state and mesh to match provided data.
-   * @param {LockableState} state - state to update to.
+   * @param {import('@tabulous/types').LockableState} state - state to update to.
    */
   fromState({ isLocked = false } = {}) {
     if (!this.mesh) {
@@ -117,7 +109,10 @@ function internalToggle(
   }
 }
 
-function setEnabled(/** @type {Mesh} */ mesh, /** @type {boolean} */ enabled) {
+function setEnabled(
+  /** @type {import('@babylonjs/core').Mesh} */ mesh,
+  /** @type {boolean} */ enabled
+) {
   const behavior = mesh.getBehaviorByName(MoveBehaviorName)
   if (
     behavior &&
@@ -126,7 +121,7 @@ function setEnabled(/** @type {Mesh} */ mesh, /** @type {boolean} */ enabled) {
   ) {
     logger.debug(
       { mesh, behavior },
-      `${enabled ? 'unlocks' : 'locks'} behavior ${MoveBehaviorName}`
+      `${enabled ? 'unlocks' : 'locks'} behavior ${MoveBehavior.name}`
     )
     behavior.enabled = enabled
   }

@@ -1,6 +1,13 @@
 /* eslint-disable no-unused-vars */
-import type { ActionSpec, GameDescriptor } from '../services/catalog'
-import type * as games from '../services/games'
+import type {
+  ActionSpec,
+  GameData,
+  GameDescriptor,
+  GameParameters as FullGameParameters,
+  Player as FullPlayer,
+  TurnCredentials
+} from '@tabulous/types'
+
 import type * as players from '../services/players'
 import type * as creds from '../services/turn-credentials'
 import type { Level } from '../utils/logger'
@@ -13,17 +20,6 @@ export type CatalogItem = Pick<GameDescriptor, 'name' | 'locales'> &
       'copyright' | 'minSeats' | 'maxSeats' | 'minAge' | 'maxAge' | 'minTime'
     >
   >
-
-export type {
-  ActionName,
-  ActionSpec,
-  ColorSpec,
-  Copyright,
-  ItemLocale,
-  ItemLocales,
-  TableSpec,
-  ZoomSpec
-} from '../services/catalog'
 
 export type ButtonName = keyof ActionSpec
 
@@ -39,13 +35,13 @@ export interface RevokeAccessArgs {
 
 // Generated from games.graphql
 
-export type GamePlayer = players.Player & {
+export type GamePlayer = FullPlayer & {
   isGuest?: boolean
   isOwner?: boolean
 }
 
 export type Game = Pick<
-  games.GameData,
+  GameData,
   | 'id'
   | 'created'
   | 'kind'
@@ -57,7 +53,7 @@ export type Game = Pick<
 > &
   Partial<
     Pick<
-      games.GameData,
+      GameData,
       | 'messages'
       | 'locales'
       | 'meshes'
@@ -69,40 +65,13 @@ export type Game = Pick<
     >
   > & { players?: GamePlayer[] }
 
-export type {
-  Anchor,
-  AnchorableState,
-  CameraPosition,
-  DetailableState,
-  Dimension,
-  DrawableState,
-  FlippableState,
-  Hand,
-  HistoryRecord,
-  InitialTransform,
-  LockableState,
-  Mesh,
-  Message,
-  MovableState,
-  PlayerAction,
-  PlayerMove,
-  PlayerPreference,
-  Point,
-  QuantifiableState,
-  RandomizableState,
-  RotableState,
-  Shape,
-  StackableState,
-  Targetable
-} from '../services/games'
-
 export type GameParameters = Pick<
-  games.GameParameters<unknown>,
+  FullGameParameters<unknown>,
   'error' | 'id' | 'kind'
 > &
   Partial<
     Pick<
-      games.GameParameters<unknown>,
+      FullGameParameters<unknown>,
       | 'locales'
       | 'preferences'
       | 'rulesBookPageCount'
@@ -154,10 +123,10 @@ export interface LoggerLevel {
 }
 
 // Generated from players.graphql
-export type Player = Pick<players.Player, 'id' | 'username'> &
+export type Player = Pick<FullPlayer, 'id' | 'username'> &
   Partial<
     Pick<
-      players.Player,
+      FullPlayer,
       | 'currentGameId'
       | 'avatar'
       | 'provider'
@@ -178,12 +147,10 @@ export type FriendshipUpdate = { from: Player } & Pick<
   'requested' | 'proposed' | 'accepted' | 'declined'
 >
 
-export type TurnCredentials = creds.TurnCredentials
-
 export interface PlayerWithTurnCredentials {
   token: string // authentication token.
   player: Player // authenticated player.
-  turnCredentials: creds.TurnCredentials // credentials for the TURN server.
+  turnCredentials: TurnCredentials // credentials for the TURN server.
 }
 
 export interface SearchPlayersArgs {

@@ -1,20 +1,4 @@
 // @ts-check
-/**
- * @typedef {import('@babylonjs/core').Mesh} Mesh
- * @typedef {import('@tabulous/server/src/graphql').ActionName} ActionName
- * @typedef {import('@tabulous/server/src/graphql').Anchor} Anchor
- * @typedef {import('@tabulous/server/src/graphql').StackableState} StackableState
- * @typedef {import('@src/3d/behaviors/animatable').AnimateBehavior} AnimateBehavior
- * @typedef {import('@src/3d/behaviors/targetable').DropDetails} DropDetails
- * @typedef {import('@src/3d/managers/move').MoveDetails} MoveDetails
- * @typedef {import('@src/3d/managers/target').SingleDropZone} SingleDropZone
- * @typedef {import('@src/3d/utils').Vector3KeyFrame} Vector3KeyFrame
- */
-/**
- * @template T
- * @typedef {import('@babylonjs/core').Observer<T>} Observer
- */
-
 import { Vector3 } from '@babylonjs/core/Maths/math.vector'
 
 import { makeLogger } from '../../utils/logger'
@@ -46,10 +30,10 @@ import {
 } from './names'
 import { TargetBehavior } from './targetable'
 
-/** @typedef {StackableState & Required<Pick<StackableState, 'duration'|'extent'>> & Required<Pick<Anchor, 'ignoreParts'>>} RequiredStackableState */
-/** @typedef {StackBehavior & { mesh: Mesh }} AttachedStackBehavior */
+/** @typedef {import('@tabulous/types').StackableState & Required<Pick<import('@tabulous/types').StackableState, 'duration'|'extent'>> & Required<Pick<import('@tabulous/types').Anchor, 'ignoreParts'>>} RequiredStackableState */
+/** @typedef {StackBehavior & { mesh: import('@babylonjs/core').Mesh }} AttachedStackBehavior */
 
-const logger = makeLogger('stackable')
+const logger = makeLogger(StackBehaviorName)
 
 export class StackBehavior extends TargetBehavior {
   /**
@@ -57,34 +41,31 @@ export class StackBehavior extends TargetBehavior {
    * and targetable (it can receive other stackable meshs).
    * Once a mesh is stacked bellow others, it can not be moved independently, and its targets and anchors are disabled.
    * Only the highest mesh on stack can be moved (it is automatically poped out) and be targeted.
-   * @param {StackableState} state - behavior state.
-   * @param {import('@src/3d/managers').Managers} managers - current managers.
+   * @param {import('@tabulous/types').StackableState} state - behavior state.
+   * @param {import('../managers').Managers} managers - current managers.
    */
   constructor(state = {}, managers) {
     super({}, managers)
     /** @type {RequiredStackableState} */
     this._state = /** @type {RequiredStackableState} */ (state)
-    /** @type {Mesh[]} array of meshes (initially contains this mesh). */
+    /** @type {import('@babylonjs/core').Mesh[]} array of meshes (initially contains this mesh). */
     this.stack = []
     /** @type {boolean} */
     this.inhibitControl = false
     /** @internal @type {?AttachedStackBehavior} */
     this.base = null
-    /** @protected @type {?Observer<MoveDetails>} */
+    /** @protected @type {?import('@babylonjs/core').Observer<import('../managers').MoveDetails>} */
     this.moveObserver = null
-    /** @protected @type {?Observer<DropDetails>} */
+    /** @protected @type {?import('@babylonjs/core').Observer<import('../managers').DropDetails>} */
     this.dropObserver = null
-    /** @protected @type {?Observer<import('@src/3d/managers').ActionOrMove>} */
+    /** @protected @type {?import('@babylonjs/core').Observer<import('../managers').ActionOrMove>} */
     this.actionObserver = null
     /** @internal @type {boolean} */
     this.isReordering = false
-    /** @protected @type {SingleDropZone}} */
+    /** @protected @type {import('../managers').SingleDropZone}} */
     this.dropZone
   }
 
-  /**
-   * @property {string} name - this behavior's constant name.
-   */
   get name() {
     return StackBehaviorName
   }
@@ -99,7 +80,7 @@ export class StackBehavior extends TargetBehavior {
    * - a `canPush()` function to determin whether a mesh could be pushed on this stack.
    * It binds to its drop observable to push dropped meshes to the stack.
    * It binds to the drag manager drag observable to pop the first stacked mesh when dragging it.
-   * @param {Mesh} mesh - which becomes detailable.
+   * @param {import('@babylonjs/core').Mesh} mesh - which becomes detailable.
    */
   attach(mesh) {
     super.attach(mesh)
@@ -159,7 +140,7 @@ export class StackBehavior extends TargetBehavior {
 
   /**
    * Determines whether a movable mesh can be stack onto this mesh (or its stack).
-   * @param {Mesh} mesh - tested (movable) mesh.
+   * @param {import('@babylonjs/core').Mesh} mesh - tested (movable) mesh.
    * @returns {boolean} true if this mesh can be stacked.
    */
   canPush(mesh) {
@@ -253,7 +234,7 @@ export class StackBehavior extends TargetBehavior {
 
   /**
    * Revert push, pop, flipAll and reorder actions. Ignores other actions
-   * @param {ActionName} action - reverted action.
+   * @param {import('@tabulous/types').ActionName} action - reverted action.
    * @param {any[]} [args] - reverted arguments.
    */
   async revert(action, args = []) {
@@ -307,7 +288,7 @@ export class StackBehavior extends TargetBehavior {
 
   /**
    * Gets this behavior's state.
-   * @returns {StackableState} this behavior's state for serialization.
+   * @returns {import('@tabulous/types').StackableState} this behavior's state for serialization.
    */
   get state() {
     return {
@@ -325,7 +306,7 @@ export class StackBehavior extends TargetBehavior {
 
   /**
    * Updates this behavior's state and mesh to match provided data.
-   * @param {StackableState} state - state to update to.
+   * @param {import('@tabulous/types').StackableState} state - state to update to.
    */
   fromState({
     stackIds = [],
@@ -449,14 +430,14 @@ function internalPop(
   /** @type {boolean} */ withMove,
   isLocal = false
 ) {
-  /** @type {Mesh[]} */
+  /** @type {import('@babylonjs/core').Mesh[]} */
   const poped = []
   const stack = behavior.base?.stack ?? behavior.stack
   if (stack.length <= 1) return poped
 
   const limit = Math.min(count, stack.length - 1)
   for (let times = 0; times < limit; times++) {
-    const mesh = /** @type {Mesh} */ (stack.pop())
+    const mesh = /** @type {import('@babylonjs/core').Mesh} */ (stack.pop())
     poped.push(mesh)
     setBase(mesh, null)
     updateIndicator(behavior.managers, mesh, 0)
@@ -497,7 +478,7 @@ async function internalReorder(
   }
 
   const posById = new Map(old.map(({ id }, i) => [id, i]))
-  /** @type {Mesh[]} */
+  /** @type {import('@babylonjs/core').Mesh[]} */
   const stack = ids.map(id => old[posById.get(id) ?? -1]).filter(Boolean)
   const oldIds = old.map(({ id }) => id)
 
@@ -563,7 +544,7 @@ async function internalReorder(
     const shift = getDimensions(stack[0]).width * 0.75
     await Promise.all(
       stack.slice(1).map((mesh, rank) => {
-        const behavior = /** @type {AnimateBehavior} */ (
+        const behavior = /** @type {import('.').AnimateBehavior} */ (
           getAnimatableBehavior(mesh)
         )
         const [x, y, z] = mesh.position.asArray()
@@ -618,7 +599,7 @@ async function internalReorder(
     // then restore
     await Promise.all(
       stack.slice(1).map((mesh, rank) => {
-        const behavior = /** @type {AnimateBehavior} */ (
+        const behavior = /** @type {import('.').AnimateBehavior} */ (
           getAnimatableBehavior(mesh)
         )
         const { x, y, z, pitch, yaw, roll } = positionsAndRotations[rank++]
@@ -629,7 +610,7 @@ async function internalReorder(
             {
               animation: behavior.rotateAnimation,
               duration: restoreDuration,
-              keys: /** @type {Vector3KeyFrame[]} */ ([
+              keys: /** @type {import('../utils').Vector3KeyFrame[]} */ ([
                 { frame: 0, values: mesh.rotation.asArray() },
                 { frame: 100, values: [pitch, yaw, roll] }
               ])
@@ -637,7 +618,7 @@ async function internalReorder(
             {
               animation: behavior.moveAnimation,
               duration: restoreDuration,
-              keys: /** @type {Vector3KeyFrame[]} */ ([
+              keys: /** @type {import('../utils').Vector3KeyFrame[]} */ ([
                 { frame: 0, values: mesh.position.asArray() },
                 { frame: 100, values: [x, y, z] }
               ])
@@ -683,7 +664,7 @@ async function internalFlipAll(
 }
 
 /**
- * @param {Mesh[]} stack - stack of meshes.
+ * @param {import('@babylonjs/core').Mesh[]} stack - stack of meshes.
  * @param {number} rank - rank of the updated mesh in the stack.
  * @param {boolean} enabled - new status applied.
  * @param {StackBehavior} behavior - current stack behavior
@@ -716,14 +697,14 @@ function setStatus(stack, rank, enabled, behavior) {
 }
 
 function setBase(
-  /** @type {Mesh} */ mesh,
+  /** @type {import('@babylonjs/core').Mesh} */ mesh,
   /** @type {?AttachedStackBehavior} */ base
 ) {
   const targetable = /** @type {?AttachedStackBehavior} */ (
     getTargetableBehavior(mesh)
   )
   if (targetable) {
-    const parent = /** @type {?Mesh} */ (mesh.parent)
+    const parent = /** @type {?import('@babylonjs/core').Mesh} */ (mesh.parent)
     if (base) {
       mesh.setParent(base.mesh)
     } else if (parent && targetable.stack.includes(parent)) {
@@ -737,8 +718,8 @@ function setBase(
 }
 
 function updateIndicator(
-  /** @type {import('@src/3d/managers').Managers} */ { indicator },
-  /** @type {Mesh} */ mesh,
+  /** @type {import('../managers').Managers} */ { indicator },
+  /** @type {import('@babylonjs/core').Mesh} */ mesh,
   /** @type {number} */ size
 ) {
   const id = `${mesh.id}.stack-size`
@@ -758,7 +739,9 @@ function invertStack(/** @type {StackBehavior} */ behavior) {
   )
 }
 
-function getFinalAltitudeAboveStack(/** @type {Mesh[]} */ stack) {
+function getFinalAltitudeAboveStack(
+  /** @type {import('@babylonjs/core').Mesh[]} */ stack
+) {
   let y = stack[0].absolutePosition.y - getDimensions(stack[0]).height * 0.5
   for (const mesh of stack) {
     y += getDimensions(mesh).height + altitudeGap

@@ -1,16 +1,4 @@
 // @ts-check
-/**
- * @typedef {import('@urql/core').Client} Client
- * @typedef {import('@urql/core').ClientOptions} ClientOptions
- * @typedef {import('@urql/core').AnyVariables} AnyVariables
- * @typedef {import('@urql/core').CombinedError} CombinedError
- * @typedef {import('graphql-ws').SubscribePayload} SubscribePayload
- */
-/**
- * @template D, V
- * @typedef {import('@urql/core').TypedDocumentNode<D, V>} TypedDocumentNode
- */
-
 import {
   cacheExchange,
   createClient,
@@ -26,7 +14,7 @@ import { makeLogger } from '../utils'
 
 const logger = makeLogger('graphql')
 
-/** @type {Client} */
+/** @type {import('@urql/core').Client} */
 let client
 
 /**
@@ -34,7 +22,7 @@ let client
  * Must be called prior to any graphql query, mutation or subscription.
  * @param {object} options - client options, including:
  * @param {string} options.graphQlUrl - url of the GraphQL endpoint.
- * @param {ClientOptions['fetch']} options.fetch - fetch implementation used to initialize the client.
+ * @param {import('@urql/core').ClientOptions['fetch']} options.fetch - fetch implementation used to initialize the client.
  * @param {?string} [options.bearer] - data used for authenticating graphQL subscriptions and queries.
  * @param {boolean} [options.subscriptionSupport=true] - whether this client has subscriptions enabled.
  */
@@ -61,7 +49,9 @@ export function initGraphQlClient({
           forwardSubscription: operation => ({
             subscribe: sink => ({
               unsubscribe: wsClient.subscribe(
-                /** @type {SubscribePayload} */ (operation),
+                /** @type {import('graphql-ws').SubscribePayload} */ (
+                  operation
+                ),
                 sink
               )
             })
@@ -92,10 +82,10 @@ export function initGraphQlClient({
 
 /**
  * Runs a graphQL mutation, throwing on errors and extracting data.
- * @template {AnyVariables} Variables, Data
- * @param {TypedDocumentNode<Record<string, Data>, Variables>} query - mutation GraphQL document.
+ * @template {import('@urql/core').AnyVariables} Variables, Data
+ * @param {import('@urql/core').TypedDocumentNode<Record<string, Data>, Variables>} query - mutation GraphQL document.
  * @param {Variables} [variables] - mutation variables, when relevant.
- * @returns {Promise<Data>} resulting data.
+ * @returns resulting data.
  * @throws {Error} when client is not initialized
  */
 export async function runMutation(query, variables) {
@@ -117,11 +107,11 @@ export async function runMutation(query, variables) {
 
 /**
  * Runs a graphQL query, throwing on errors and extracting data.
- * @template {AnyVariables} Variables, Data
- * @param {TypedDocumentNode<Record<string, Data>, Variables>} query - query GraphQL document.
+ * @template {import('@urql/core').AnyVariables} Variables, Data
+ * @param {import('@urql/core').TypedDocumentNode<Record<string, Data>, Variables>} query - query GraphQL document.
  * @param {Variables} [variables] - query variables, when relevant.
  * @param {boolean} [cache=true] - whether to cache result or not.
- * @returns {Promise<Data>} resulting data.
+ * @returns resulting data.
  * @throws {Error} when client is not initialized
  */
 export async function runQuery(query, variables, cache = true) {
@@ -149,8 +139,8 @@ export async function runQuery(query, variables, cache = true) {
 
 /**
  * Starts a subscriptions, returning an observable.
- * @template {AnyVariables} Variables, Data
- * @param {TypedDocumentNode<Record<string, Data>, Variables>} subscription - subscription GraphQL document.
+ * @template {import('@urql/core').AnyVariables} Variables, Data
+ * @param {import('@urql/core').TypedDocumentNode<Record<string, Data>, Variables>} subscription - subscription GraphQL document.
  * @param {Variables} [variables] - subscription variables, when relevant.
  * @returns {Observable<Data>} an observable emitting on received data.
  * @throws {Error} when client is not initialized
@@ -181,11 +171,13 @@ export function runSubscription(subscription, variables) {
 
 /**
  * Extract individual errors from GraphQL combined error.
- * @param {CombinedError} [combinedError] - error to analyze.
+ * @param {import('@urql/core').CombinedError} [combinedError] - error to analyze.
  * @throws {Error} when receiving network error.
  * @throws {Error} the first graphQL error when receiving some.
  */
-function processErrors(/** @type {CombinedError} */ combinedError) {
+function processErrors(
+  /** @type {import('@urql/core').CombinedError} */ combinedError
+) {
   if (combinedError?.networkError) {
     throw new Error(combinedError.networkError.message)
   }

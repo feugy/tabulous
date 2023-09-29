@@ -1,8 +1,4 @@
 // @ts-check
-/**
- * @typedef {import('../../src').Command} Command
- */
-
 import { faker } from '@faker-js/faker'
 import kebabCase from 'lodash.kebabcase'
 import stripAnsi from 'strip-ansi'
@@ -18,7 +14,7 @@ vi.mock('../../src/util/graphql-client.js', () => ({
 }))
 
 describe('Player addition command', () => {
-  /** @type {Command} */
+  /** @type {import('@src/index').Command} */
   let addPlayer
   const adminPlayerId = faker.string.uuid()
   const jwtKey = faker.string.uuid()

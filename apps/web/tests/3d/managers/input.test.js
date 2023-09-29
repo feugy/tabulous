@@ -1,19 +1,4 @@
 // @ts-check
-/**
- * @typedef {import('@babylonjs/core').ArcRotateCamera} ArcRotateCamera
- * @typedef {import('@babylonjs/core').Engine} Engine
- * @typedef {import('@babylonjs/core').Mesh} Mesh
- * @typedef {import('@babylonjs/core').Observer<?>} Observer
- * @typedef {import('@src/3d/managers/input').DragData} DragData
- * @typedef {import('@src/3d/managers/input').HoverData} HoverData
- * @typedef {import('@src/3d/managers/input').KeyData} KeyData
- * @typedef {import('@src/3d/managers/input').LongData} LongData
- * @typedef {import('@src/3d/managers/input').PinchData} PinchData
- * @typedef {import('@src/3d/managers/input').TapData} TapData
- * @typedef {import('@src/3d/managers/input').WheelData} WheelData
- * @typedef {import('@src/utils').ScreenPosition} ScreenPosition
- */
-
 import { Vector3 } from '@babylonjs/core/Maths/math.vector'
 import { Scene } from '@babylonjs/core/scene'
 import { faker } from '@faker-js/faker'
@@ -34,27 +19,27 @@ const wheel = 'wheel'
 const keyDown = 'keydown'
 
 describe('managers.Input', () => {
-  /** @type {Scene} */
+  /** @type {import('@babylonjs/core').Scene} */
   let scene
-  /** @type {Scene} */
+  /** @type {import('@babylonjs/core').Scene} */
   let handScene
   /** @type {import('@src/3d/managers').Managers} */
   let managers
-  /** @type {ArcRotateCamera} */
+  /** @type {import('@babylonjs/core').ArcRotateCamera} */
   let camera
-  /** @type {TapData[]} */
+  /** @type {import('@src/3d/managers').TapData[]} */
   let taps
-  /** @type {DragData[]} */
+  /** @type {import('@src/3d/managers').DragData[]} */
   let drags
-  /** @type {PinchData[]} */
+  /** @type {import('@src/3d/managers').PinchData[]} */
   let pinches
-  /** @type {HoverData[]} */
+  /** @type {import('@src/3d/managers').HoverData[]} */
   let hovers
-  /** @type {WheelData[]} */
+  /** @type {import('@src/3d/managers').WheelData[]} */
   let wheels
-  /** @type {LongData[]} */
+  /** @type {import('@src/3d/managers').LongData[]} */
   let longs
-  /** @type {KeyData[]} */
+  /** @type {import('@src/3d/managers').KeyData[]} */
   let keys
   /** @type {number[]} */
   let currentPointer
@@ -98,7 +83,7 @@ describe('managers.Input', () => {
   })
 
   describe('given an initialized manager', () => {
-    /** @type {Mesh[]} */
+    /** @type {import('@babylonjs/core').Mesh[]} */
     let meshes
 
     beforeEach(() => {
@@ -1874,7 +1859,7 @@ describe('managers.Input', () => {
   }
 
   function move(
-    /** @type {ScreenPosition} */ pointer,
+    /** @type {import('@src/3d/utils').ScreenPosition} */ pointer,
     /** @type {number} */ x,
     /** @type {number} */ y
   ) {
@@ -1884,12 +1869,13 @@ describe('managers.Input', () => {
   }
 
   function expectsDataWithMesh(
-    /** @type {TapData|DragData|PinchData|HoverData|WheelData|KeyData|LongData} */ actual,
+    /** @type {import('@src/3d/managers').TapData|import('@src/3d/managers').DragData|import('@src/3d/managers').PinchData|import('@src/3d/managers').HoverData|import('@src/3d/managers').WheelData|import('@src/3d/managers').KeyData|import('@src/3d/managers').LongData} */ actual,
     /** @type {?} */ expected,
     /** @type {string|undefined} */ meshId,
-    /** @type {Scene} */ expectedScene = scene
+    /** @type {import('@babylonjs/core').Scene} */ expectedScene = scene
   ) {
-    const actualWithMesh = /** @type {{ mesh?: Mesh }} */ (actual)
+    const actualWithMesh =
+      /** @type {{ mesh?: import('@babylonjs/core').Mesh }} */ (actual)
     if (meshId) {
       expect(actualWithMesh.mesh?.id).toEqual(meshId)
       expect(actualWithMesh.mesh?.getScene()?.uid).toEqual(expectedScene.uid)

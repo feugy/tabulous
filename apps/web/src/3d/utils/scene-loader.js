@@ -1,16 +1,4 @@
 // @ts-check
-/**
- * @typedef {import('@babylonjs/core').Mesh} Mesh
- * @typedef {import('@babylonjs/core').Scene} Scene
- * @typedef {import('@tabulous/server/src/graphql').AnchorableState} AnchorableState
- * @typedef {import('@tabulous/server/src/graphql').Mesh} SerializedMesh
- * @typedef {import('@tabulous/server/src/graphql').Shape} Shape
- * @typedef {import('@tabulous/server/src/graphql').StackableState} StackableState
- * @typedef {import('@src/3d/behaviors/anchorable').AnchorBehavior} AnchorBehavior
- * @typedef {import('@src/3d/behaviors/stackable').StackBehavior} StackBehavior
- * @typedef {import('@src/3d/managers').Managers} Managers
- */
-
 // mandatory side effect
 import '@babylonjs/core/Loading/loadingScreen.js'
 
@@ -28,11 +16,11 @@ import { createRoundToken } from '../meshes/round-token'
 import { createRoundedTile } from '../meshes/rounded-tile'
 import { restoreBehaviors } from './behaviors'
 
-/** @typedef {(state: Omit<SerializedMesh, 'shape'>, managers: Managers, scene: Scene) => Mesh|Promise<Mesh>} MeshCreator */
+/** @typedef {(state: Omit<import('@tabulous/types').Mesh, 'shape'>, managers: import('../managers').Managers, scene: import('@babylonjs/core').Scene) => import('@babylonjs/core').Mesh|Promise<import('@babylonjs/core').Mesh>} MeshCreator */
 
 const logger = makeLogger('scene-loader')
 
-/** @type {Map<Shape, MeshCreator>} */
+/** @type {Map<import('@tabulous/types').Shape, MeshCreator>} */
 const meshCreatorByName = new Map([
   ['box', /** @type {?} */ (createBox)],
   ['card', /** @type {?} */ (createCard)],
@@ -47,20 +35,22 @@ const supportedNames = new Set([...meshCreatorByName.keys()])
 
 /**
  * Indicates whether a mesh can be serialized and loaded
- * @param {Mesh} mesh - tested mesh.
+ * @param {import('@babylonjs/core').Mesh} mesh - tested mesh.
  * @returns whether this mesh could be serialized and loaded.
  */
 export function isSerializable(mesh) {
-  return supportedNames.has(/** @type {Shape} */ (mesh.name))
+  return supportedNames.has(
+    /** @type {import('@tabulous/types').Shape} */ (mesh.name)
+  )
 }
 
 /**
  * Serializes a scene's meshes.
- * @param {Scene} [scene] - 3D scene serialized.
- * @returns {SerializedMesh[]} list of serialized meshes.
+ * @param {import('@babylonjs/core').Scene} [scene] - 3D scene serialized.
+ * @returns {import('@tabulous/types').Mesh[]} list of serialized meshes.
  */
 export function serializeMeshes(scene) {
-  /** @type {SerializedMesh[]} */
+  /** @type {import('@tabulous/types').Mesh[]} */
   const meshes = []
   for (const mesh of scene?.meshes ?? []) {
     if (isSerializable(mesh) && !mesh.isPhantom) {
@@ -73,9 +63,9 @@ export function serializeMeshes(scene) {
 
 /**
  * Creates a meshes into the provided scene.
- * @param {SerializedMesh} state - serialized mesh state.
- * @param {Scene} scene - 3D scene used.
- * @param {Managers} managers - current managers.
+ * @param {import('@tabulous/types').Mesh} state - serialized mesh state.
+ * @param {import('@babylonjs/core').Scene} scene - 3D scene used.
+ * @param {import('../managers').Managers} managers - current managers.
  * @returns mesh created.
  */
 export async function createMeshFromState(state, scene, managers) {
@@ -95,9 +85,9 @@ export async function createMeshFromState(state, scene, managers) {
  * Loads meshes into the provided scene:
  * - either creates new mesh, or updates existing ones, based on their ids
  * - deletes existing mesh that are not found in the provided data
- * @param {Scene} scene - 3D scene used.
- * @param {SerializedMesh[]} meshes - a list of serialized meshes data.
- * @param {Managers} managers - current managers.
+ * @param {import('@babylonjs/core').Scene} scene - 3D scene used.
+ * @param {import('@tabulous/types').Mesh[]} meshes - a list of serialized meshes data.
+ * @param {import('../managers').Managers} managers - current managers.
  */
 export async function loadMeshes(scene, meshes, managers) {
   const disposables = new Set(scene.meshes)
@@ -107,9 +97,9 @@ export async function loadMeshes(scene, meshes, managers) {
     }
   }
 
-  /** @type {{stackBehavior: StackBehavior, stackable: StackableState, y: number}[]} */
+  /** @type {{stackBehavior: import('../behaviors').StackBehavior, stackable: import('@tabulous/types').StackableState, y: number}[]} */
   const stackables = []
-  /** @type {{anchorBehavior: AnchorBehavior, anchorable: AnchorableState, y: number}[]} */
+  /** @type {{anchorBehavior: import('../behaviors').AnchorBehavior, anchorable: import('@tabulous/types').AnchorableState, y: number}[]} */
   const anchorables = []
   logger.debug({ meshes }, `loads meshes`)
 
@@ -181,8 +171,8 @@ export async function loadMeshes(scene, meshes, managers) {
 }
 
 /**
- * @param {SerializedMesh} mesh - serialized mesh to trim.
- * @return {SerializedMesh} the same mesh without its anchorable and stackable behaviors.
+ * @param {import('@tabulous/types').Mesh} mesh - serialized mesh to trim.
+ * @return {import('@tabulous/types').Mesh} the same mesh without its anchorable and stackable behaviors.
  */
 function skipDelayableBehaviors({ stackable, anchorable, ...state }) {
   return {

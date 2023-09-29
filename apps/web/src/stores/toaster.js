@@ -1,14 +1,10 @@
 // @ts-check
-/**
- * @typedef {import('@src/types').Translate} Translate
- */
-
 import { Subject } from 'rxjs'
 import { _ } from 'svelte-intl'
 
 /** @type {Subject<Toast>} */
 const lastToast$ = new Subject()
-/** @type {Translate} */
+/** @type {import('@src/types').Translate} */
 let translate
 _.subscribe(value => (translate = value))
 
@@ -19,7 +15,7 @@ _.subscribe(value => (translate = value))
  *
  * @typedef {object} _ToastInfo
  * @property {?string} contentKey - i18n key used for content.
- * @property {Parameters<Translate>[1]} [args] - object argument passed to i18n formatMessage()
+ * @property {Parameters<import('@src/types').Translate>[1]} [args] - object argument passed to i18n formatMessage()
  *
  * @typedef {object} _TranslatedToastInfo
  * @property {?string} content - already translated content.

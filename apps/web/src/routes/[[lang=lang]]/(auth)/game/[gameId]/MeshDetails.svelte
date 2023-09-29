@@ -1,15 +1,10 @@
 <script>
   // @ts-check
-  /**
-   * @typedef {import('@src/3d/managers/control').MeshDetails} MeshDetails
-   * @typedef {import('@src/utils').ScreenPosition} ScreenPosition
-   */
-
   import { gameAssetsUrl, injectLocale } from '@src/utils'
   import { tick } from 'svelte'
   import { locale } from 'svelte-intl'
 
-  /** @type {?MeshDetails} displayed mesh(es). */
+  /** @type {?import('@src/3d/managers').MeshDetails} displayed mesh(es). */
   export let details = null
 
   /** @type {?HTMLDivElement} */

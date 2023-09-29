@@ -8,54 +8,47 @@ import {
   TermsSupportedMixin
 } from './mixins/index.js'
 
-/**
- * @typedef {import('@playwright/test').Page} Page
- * @typedef {import('@playwright/test').Locator} Locator
- * @typedef {import('../utils').Locale} Locale
- */
-
 export const AccountPage = mixin(
   class AccountPageConstructor {
     /**
      * Represent the account page for testing
-     * @param {Page} page - the actual page.
-     * @param {Locale} lang - current language.
+     * @param {import('@playwright/test').Page} page - the actual page.
+     * @param {import('../utils').Locale} lang - current language.
      */
     constructor(page, lang) {
       /** @type {string} */
       this.pageKind = 'account'
-      /** @type {Locale} */
+      /** @type {import('../utils').Locale} */
       this.lang = lang
-      /** @type {Page} */
+      /** @type {import('@playwright/test').Page} */
       this.page = page
-      /** @type {Locator} */
+      /** @type {import('@playwright/test').Locator} */
       this.heading = page.getByRole('heading', {
         level: 1,
         name: translate('titles.account', undefined, this.lang)
       })
-      /** @type {Locator} */
+      /** @type {import('@playwright/test').Locator} */
       this.usernameInput = page.locator(`input[name="username"]`)
-      /** @type {Locator} */
+      /** @type {import('@playwright/test').Locator} */
       this.avatarImage = page.locator(`section img`)
-      /** @type {Locator} */
+      /** @type {import('@playwright/test').Locator} */
       this.openAvatarDialogueButton = page.getByRole('button', {
         name: translate('labels.avatar', undefined, this.lang)
       })
-      /** @type {Locator} */
+      /** @type {import('@playwright/test').Locator} */
       this.avatarDialogue = page.getByRole('dialog')
-      /** @type {Locator} */
+      /** @type {import('@playwright/test').Locator} */
       this.avatarInput = this.avatarDialogue.getByRole('textbox')
-      /** @type {Locator} */
+      /** @type {import('@playwright/test').Locator} */
       this.avatarSaveButon = this.avatarDialogue.getByRole('button', {
         name: translate('actions.save', undefined, this.lang)
       })
-      /** @type {Locator} */
+      /** @type {import('@playwright/test').Locator} */
       this.isSearchableCheckbox = page.getByRole('checkbox')
     }
 
     /**
      * Navigates to the page.
-     * @returns {Promise<void>}
      */
     async goTo() {
       await this.page.goto(`/${this.lang}/account`)
@@ -64,7 +57,6 @@ export const AccountPage = mixin(
 
     /**
      * Expects catalog heading visibility.
-     * @returns {Promise<void>}
      */
     async getStarted() {
       await expect(this.heading).toBeVisible()
@@ -73,7 +65,6 @@ export const AccountPage = mixin(
     /**
      * Opens the avatar dialogue, type the provided value, and save.
      * @param {string | null} avatar - new avatar saved. Use null to clear.
-     * @returns {Promise<void>}
      */
     async saveAvatar(avatar) {
       await this.openAvatarDialogueButton.click()

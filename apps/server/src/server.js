@@ -1,22 +1,18 @@
 // @ts-check
-/**
- * @typedef {import('./services/configuration').Configuration} Configuration
- */
-
 import fastify from 'fastify'
 
-import repositories from './repositories/index.js'
+import * as repositories from './repositories/index.js'
 import { createLogContext } from './utils/index.js'
 
-/** @typedef {import('fastify').FastifyInstance & { conf: Configuration }} Server */
+/** @typedef {import('fastify').FastifyInstance & { conf: import('./services/configuration').Configuration }} Server */
 
 /**
  * Starts Tabulous server, using provided configuration.
  * Server has graphQL endpoints registered, and can serve static files.
  * Its configuration object is available as a decorator: the `conf` property.
  * It connects all repositories.
- * @param {Configuration} config - server options
- * @returns {Promise<Server>} configured and started server.
+ * @param {import('./services/configuration').Configuration} config - server options
+ * @returns configured and started server.
  */
 export async function startServer(config) {
   const app = fastify({
@@ -41,6 +37,6 @@ export async function startServer(config) {
 
   await app.listen(config.serverUrl)
   app.log.info({ res: app.server.address() }, 'started server')
-  // @ts-expect-error: Property 'conf' is missing
-  return app
+  // @ts-expect-error -- TS does not recognize fastify decorators
+  return /** @type {Server} */ (app)
 }

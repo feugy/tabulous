@@ -1,18 +1,14 @@
 // @ts-check
-/**
- * @typedef {import('@src/common').Locale} Locale
- */
-
 import { getValue } from '@src/utils'
 import { derived } from 'svelte/store'
 import { locale } from 'svelte-intl'
 
-/** @type {Locale} */
+/** @type {import('@src/common').Locale} */
 const defaultLocale = 'fr'
 /* c8 ignore start */
 const locale$ = derived(
   locale,
-  value => /** @type {Locale} */ (value) || defaultLocale
+  value => /** @type {import('@src/common').Locale} */ (value) || defaultLocale
 )
 /* c8 ignore stop */
 

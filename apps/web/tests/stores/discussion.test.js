@@ -1,11 +1,4 @@
 // @ts-check
-/**
- * @template T
- * @typedef {import('rxjs').Subject<T>} Subject
- */
-/**
- * @typedef {import('@src/stores/peer-channels').Message} Message
- */
 import * as peerChannels from '@src/stores/peer-channels'
 import { beforeAll, beforeEach, describe, expect, it, vi } from 'vitest'
 
@@ -20,7 +13,7 @@ vi.mock('@src/stores/peer-channels', () => {
 })
 
 const peerChannelsMock =
-  /** @type {typeof peerChannels & { lastMessageReceived: Subject<Message>, lastMessageSent: Subject<Message> }} */ (
+  /** @type {typeof peerChannels & { lastMessageReceived: import('rxjs').Subject<import('@src/stores').WebRTCMessage>, lastMessageSent: import('rxjs').Subject<import('@src/stores').WebRTCMessage> }} */ (
     peerChannels
   )
 

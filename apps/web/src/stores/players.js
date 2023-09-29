@@ -1,13 +1,4 @@
 // @ts-check
-/**
- * @typedef {import('@src/graphql').PlayerWithTurnCredentials} PlayerWithTurnCredentials
- * @typedef {import('@urql/core').ClientOptions} ClientOptions
- */
-/**
- * @template T
- * @typedef {import('@src/types').DeepRequired<T>} DeepRequired
- */
-
 import * as graphQL from '@src/graphql'
 
 import { goto } from '$app/navigation'
@@ -19,12 +10,12 @@ const logger = makeLogger('players')
 
 /**
  * Recovers previous session by calling server.
- * @param {ClientOptions['fetch']} fetch - the fetch implementation used to initialize GraphQL client.
+ * @param {import('@urql/core').ClientOptions['fetch']} fetch - the fetch implementation used to initialize GraphQL client.
  * @param {string} bearer - the Bearer authorization value used to recover session.
  * @returns the recovered session in case of success, or null.
  */
 export async function recoverSession(fetch, bearer) {
-  /** @type {?DeepRequired<PlayerWithTurnCredentials>} */
+  /** @type {?import('@src/graphql').AuthenticatedPlayer} */
   let session = null
   try {
     logger.info(`recovering previous session`)

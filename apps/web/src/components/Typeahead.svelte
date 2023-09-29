@@ -1,13 +1,11 @@
 <script>
   // @ts-check
-  /** @typedef {import('@src/components').LabelMenuOption} LabelMenuOption */
-
   import { tick } from 'svelte'
 
   import Input from './Input.svelte'
   import Menu from './Menu.svelte'
 
-  /** @typedef {(Record<string, ?> & string)|LabelMenuOption} MenuOption */
+  /** @typedef {(Record<string, ?> & string)|import('@src/components').LabelMenuOption} MenuOption */
 
   /** @type {MenuOption[]} options displayed in the drop down menu. */
   export let options

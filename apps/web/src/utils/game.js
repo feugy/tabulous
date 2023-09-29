@@ -1,19 +1,13 @@
 // @ts-check
-/**
- * @typedef {import('@tabulous/server/src/services/games')._PlayerPreference} NonIndexablePreferences
- * @typedef {import('@tabulous/server/src/graphql').ColorSpec} ColorSpec
- * @typedef {import('@src/graphql').GameOrGameParameters} GameOrGameParameters
- */
-
 import chroma from 'chroma-js'
 
 import { setCssVariables } from './dom'
 
 /**
  * Find game preferences of a given player.
- * @param {?GameOrGameParameters|undefined} game - game date, including preferences and players arrays.
+ * @param {?import('@src/graphql').GameOrGameParameters|undefined} game - game date, including preferences and players arrays.
  * @param {string} playerId - desired player
- * @returns {Record<string, ?> & Omit<NonIndexablePreferences, 'playerId'>} found preferences, or an empty object.
+ * @returns {Record<string, ?> & Omit<import('@tabulous/types').PlayerPreference, 'playerId'>} found preferences, or an empty object.
  */
 export function findPlayerPreferences(game, playerId) {
   // playerId is unused, and simply ommitted from returned preferences.
@@ -26,7 +20,7 @@ export function findPlayerPreferences(game, playerId) {
 
 /**
  * Returns player's color, or orange red.
- * @param {?GameOrGameParameters} game - game date, including preferences and players arrays.
+ * @param {?import('@src/graphql').GameOrGameParameters} game - game date, including preferences and players arrays.
  * @param {string} playerId - desired player
  * @returns {string} player's color.
  */
@@ -36,7 +30,7 @@ export function findPlayerColor(game, playerId) {
 
 /**
  * Builds a map of colors by player id, which can be used for highlighting meshes and actions.
- * @param {GameOrGameParameters} game - game date, including preferences and players arrays.
+ * @param {import('@src/graphql').GameOrGameParameters} game - game date, including preferences and players arrays.
  * @returns {Map<string, string>} the highlighted hexadecimal color strings by their player ids.
  */
 export function buildPlayerColors(game) {
@@ -45,8 +39,8 @@ export function buildPlayerColors(game) {
 
 /**
  * Distinguishes regular game from waiting lobbies.
- * @param {?GameOrGameParameters} [game] - tested object.
- * @returns {Boolean|null} true if this game is a lobby, false if it a game, null otherwise.
+ * @param {?import('@src/graphql').GameOrGameParameters} [game] - tested object.
+ * @returns true if this game is a lobby, false if it a game, null otherwise.
  */
 export function isLobby(game) {
   return !game ? null : !game.kind
@@ -54,9 +48,9 @@ export function isLobby(game) {
 
 /**
  * Indicates whether a player is part of a given game's guest list.
- * @param {GameOrGameParameters} [game] - game data, including players array.
+ * @param {import('@src/graphql').GameOrGameParameters} [game] - game data, including players array.
  * @param {string} [playerId] - tested player id.
- * @returns {boolean} true when this player is a guest of thie game, false otherwise
+ * @returns true when this player is a guest of thie game, false otherwise
  */
 export function isGuest(game, playerId) {
   return game?.players?.find(({ id }) => id === playerId)?.isGuest === true
@@ -64,8 +58,8 @@ export function isGuest(game, playerId) {
 
 /**
  * Apply colors specified in a game descriptor to customize UI elements
- * @param {ColorSpec} colors - color specifications
- * @returns {() => void} a function to restore colors to their previous values
+ * @param {import('@tabulous/types').ColorSpec} colors - color specifications
+ * @returns a function to restore colors to their previous values
  */
 export function applyGameColors(colors) {
   setCssVariables(document.body, {
@@ -83,7 +77,7 @@ export function applyGameColors(colors) {
 
 /**
  * @param {string|undefined} color - hex color value to decline.
- * @param {Exclude<keyof ColorSpec, 'players'>} colorName - name of that color.
+ * @param {Exclude<keyof import('@tabulous/types').ColorSpec, 'players'>} colorName - name of that color.
  * @returns {Record<string, string>} full palette for this color, from lightest to darkest.
  */
 function makeColorRange(color, colorName) {

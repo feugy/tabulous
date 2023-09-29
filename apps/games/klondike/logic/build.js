@@ -4,7 +4,7 @@ import { anchorIds } from './constants.js'
 
 const bagId = 'cards'
 
-/** @type {import('@tabulous/server/src/services/catalog').Build} */
+/** @type {import('@tabulous/types').Build} */
 export function build() {
   /**
    * 13 cards of each suit: spades, diamonds, clubs, hearts.

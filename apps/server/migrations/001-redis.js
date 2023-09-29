@@ -1,9 +1,4 @@
 // @ts-check
-/**
- * @template {{id: string}} M
- * @typedef {import('@tabulous/server/src/repositories/abstract-repository').AbstractRepository<M> } AbstractRepository
- */
-
 import { access, readFile } from 'node:fs/promises'
 import { join } from 'node:path'
 import { fileURLToPath } from 'node:url'
@@ -16,7 +11,7 @@ export async function apply(repositories) {
 
 /**
  * @template {{id: string}} M
- * @template {AbstractRepository<M>} R
+ * @template {import('@src/repositories/abstract-repository').AbstractRepository<M>} R
  * @param {R} repository
  * @returns {Promise<void>}
  */
