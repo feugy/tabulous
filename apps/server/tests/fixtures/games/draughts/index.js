@@ -1,3 +1,4 @@
+// @ts-nocheck
 export function build() {
   return {
     meshes: [{ shape: 'token', id: 'white-1' }],

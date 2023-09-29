@@ -1,3 +1,4 @@
+// @ts-nocheck
 export function build() {
   return {
     meshes: [{ shape: 'card', id: 'as-of-diamonds', texture: 'test.ktx2' }],

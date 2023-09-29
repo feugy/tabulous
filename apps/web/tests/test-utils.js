@@ -1,27 +1,4 @@
 //@ts-check
-/**
- * @typedef {import('@babylonjs/core').Engine} Engine
- * @typedef {import('@babylonjs/core').Mesh} Mesh
- * @typedef {import('@babylonjs/core').Scene} Scene
- * @typedef {import('@src/3d/behaviors/animatable').AnimateBehavior} AnimateBehavior
- * @typedef {import('@src/3d/behaviors/stackable').StackBehavior} StackBehavior
- * @typedef {import('@src/3d/behaviors/targetable').TargetBehavior} TargetBehavior
- * @typedef {import('@src/3d/managers/indicator').MeshSizeIndicator} MeshSizeIndicator
- * @typedef {import('@src/3d/managers/move').MoveDetails} MoveDetails
- * @typedef {import('@src/3d/managers/target').SingleDropZone} SingleDropZone
- * @typedef {import('@src/components').MenuOption} MenuOption
- * @typedef {import('@src/stores/graphql-client').runMutation} RunMutation
- * @typedef {import('@src/stores/graphql-client').runQuery} RunQuery
- * @typedef {import('@src/stores/graphql-client').runSubscription} RunSubscription
- * @typedef {import('@src/types').Translate} Translate
- * @typedef {import('@src/utils').ScreenPosition} ScreenPosition
- * @typedef {import('@tabulous/server/src/graphql').ActionName} ActionName
- * @typedef {import('fastify').FastifyInstance} FastifyInstance
- */
-/**
- * @template T
- * @typedef {import('rxjs').Observable<T>} Observable
- */
 
 // mandatory side effects
 import '@babylonjs/core/Animations/animatable'
@@ -65,9 +42,6 @@ import { _ } from 'svelte-intl'
 import { afterAll, afterEach, beforeAll, expect } from 'vitest'
 import { vi } from 'vitest'
 
-/** @typedef {import('vitest').Mock<Parameters<RunQuery>, ReturnType<RunQuery>>} RunQueryMock */
-/** @typedef {import('vitest').Mock<Parameters<RunMutation>, ReturnType<RunMutation>>} RunMutationMock */
-/** @typedef {import('vitest').Mock<Parameters<RunSubscription>, ReturnType<RunSubscription>>} RunSubscriptionMock */
 /**
  * @typedef {object} Initialized3DEngine
  * @property {import('@babylonjs/core').Engine} engine - rendering engine.
@@ -100,7 +74,7 @@ export function mockLogger(name) {
 
 /**
  * Translates a string using current locale.
- * @type {Translate}
+ * @type {import('@src/types').Translate}
  */
 export function translate(...args) {
   return get(_)(...args)
@@ -109,7 +83,6 @@ export function translate(...args) {
 /**
  * Sleeps for a given time
  * @param {number} [time] - time in milliseconds
- * @returns {Promise<void>}
  */
 export async function sleep(time = 0) {
   return new Promise(resolve => setTimeout(resolve, time))
@@ -117,7 +90,7 @@ export async function sleep(time = 0) {
 
 /**
  * @param {HTMLElement|HTMLElement[]} nodes - checked element(s).
- * @returns {(string|undefined)[]|string|undefined} list or single value returned
+ * @returns list or single value returned
  */
 export function extractText(nodes) {
   const texts = (Array.isArray(nodes) ? nodes : [nodes]).map(item =>
@@ -129,7 +102,7 @@ export function extractText(nodes) {
 /**
  * @param {HTMLElement|HTMLElement[]} nodes - checked element(s).
  * @param {string} attributeName - extracted attribute.
- * @returns {(string|undefined)[]|string|undefined} list or single value returned
+ * @returns list or single value returned
  */
 export function extractAttribute(nodes, attributeName) {
   const texts = (Array.isArray(nodes) ? nodes : [nodes]).map(item =>
@@ -235,8 +208,8 @@ export function initialize3dEngine({
 
 /**
  * Creates headless 3D scene and camera for testing.
- * @param {Engine} engine - host engine for the created scene and camera.
- * @returns {{ scene: Scene, camera: ArcRotateCamera }} created camera and scene.
+ * @param {import('@babylonjs/core').Engine} engine - host engine for the created scene and camera.
+ * @returns created camera and scene.
  */
 export function initialize3dScene(engine) {
   const scene = new ExtendedScene(engine)
@@ -254,7 +227,7 @@ export function initialize3dScene(engine) {
 }
 
 /**
- * @param {Scene} scene - disposed scene.
+ * @param {import('@babylonjs/core').Scene} scene - disposed scene.
  */
 export function disposeAllMeshes(scene) {
   for (const mesh of [...(scene?.meshes ?? [])]) {
@@ -271,11 +244,11 @@ export function disposeAllMeshes(scene) {
  * @param {Parameters<initialize3dEngine>} engineProps - engine properties
  */
 export function configures3dTestEngine(callback, ...engineProps) {
-  /** @type {Engine} */
+  /** @type {import('@babylonjs/core').Engine} */
   let engine
-  /** @type {Scene} */
+  /** @type {import('@babylonjs/core').Scene} */
   let scene
-  /** @type {Scene} */
+  /** @type {import('@babylonjs/core').Scene} */
   let handScene
 
   beforeAll(async () => {
@@ -303,7 +276,7 @@ export function createCylinder(...args) {
 }
 
 /**
- * @param {?Mesh} mesh - actual mesh.
+ * @param {?import('@babylonjs/core').Mesh} mesh - actual mesh.
  * @param {number[]} position - expected absolute position (x, y, z).
  * @param {string} [message] - optional error message.
  */
@@ -313,7 +286,7 @@ export function expectPosition(mesh, [x, y, z], message) {
 }
 
 /**
- * @param {?Mesh} mesh - actual mesh.
+ * @param {?import('@babylonjs/core').Mesh} mesh - actual mesh.
  * @param {number[]} dimension - expected dimensions (width, height, depth).
  */
 export function expectDimension(mesh, [width, height, depth]) {
@@ -337,8 +310,8 @@ export function expectCloseVector(actual, [x, y, z], message, precision = 1) {
 }
 
 /**
- * @param {ScreenPosition} actual - actual screen position.
- * @param {ScreenPosition} expected - expected position.
+ * @param {import('@src/3d/utils').ScreenPosition} actual - actual screen position.
+ * @param {import('@src/3d/utils').ScreenPosition} expected - expected position.
  * @param {string} [message] - optional error message.
  */
 export function expectScreenPosition(actual, { x, y }, message) {
@@ -347,8 +320,8 @@ export function expectScreenPosition(actual, { x, y }, message) {
 }
 
 /**
- * @param {Mesh} mesh - actual anchorable mesh.
- * @param {Mesh} snapped - expected snapped mesh.
+ * @param {import('@babylonjs/core').Mesh} mesh - actual anchorable mesh.
+ * @param {import('@babylonjs/core').Mesh} snapped - expected snapped mesh.
  * @param {number} [anchorRank=0] - rank of the snapped anchor, defaults to 0.
  */
 export function expectSnapped(mesh, snapped, anchorRank = 0) {
@@ -368,8 +341,8 @@ export function expectSnapped(mesh, snapped, anchorRank = 0) {
 }
 
 /**
- * @param {Mesh} mesh - actual anchorable mesh.
- * @param {Mesh} snapped - expected unsnapped mesh.
+ * @param {import('@babylonjs/core').Mesh} mesh - actual anchorable mesh.
+ * @param {import('@babylonjs/core').Mesh} snapped - expected unsnapped mesh.
  * @param {number} [anchorRank=0] - rank of the snapped anchor, defaults to 0.
  */
 export function expectUnsnapped(mesh, snapped, anchorRank = 0) {
@@ -382,7 +355,7 @@ export function expectUnsnapped(mesh, snapped, anchorRank = 0) {
 }
 
 /**
- * @param {Mesh} mesh - actual targetable mesh.
+ * @param {import('@babylonjs/core').Mesh} mesh - actual targetable mesh.
  * @param {number} [rank=0] - rank of the checked zone, defaults to 0.
  * @param {boolean} [enabled=true] - whether this zone should be enabled.
  */
@@ -392,7 +365,7 @@ export function expectZoneEnabled(mesh, rank = 0, enabled = true) {
 }
 
 /**
- * @param {Mesh} mesh - actual targetable mesh.
+ * @param {import('@babylonjs/core').Mesh} mesh - actual targetable mesh.
  * @param {boolean} [isPickable=true] - whether this mesh should be pickable.
  */
 export function expectPickable(mesh, isPickable = true) {
@@ -402,7 +375,7 @@ export function expectPickable(mesh, isPickable = true) {
 }
 
 /**
- * @param {Mesh} mesh - actual flippable mesh.
+ * @param {import('@babylonjs/core').Mesh} mesh - actual flippable mesh.
  * @param {boolean} [isFlipped=true] - whether this mesh should be pickable.
  * @param {number} [initialRotation=0] - initial rotation added to the flipped rotation.
  */
@@ -415,7 +388,7 @@ export function expectFlipped(mesh, isFlipped = true, initialRotation = 0) {
 }
 
 /**
- * @param {Mesh} mesh - actual rotable mesh.
+ * @param {import('@babylonjs/core').Mesh} mesh - actual rotable mesh.
  * @param {number} angle - expected absolute rotation angle.
  * @param {number} [unroundedAngle=angle] - initial rotation added to the flipped rotation.
  */
@@ -428,7 +401,7 @@ export function expectRotated(mesh, angle, unroundedAngle = angle) {
 }
 
 /**
- * @param {Mesh} mesh - actual mesh.
+ * @param {import('@babylonjs/core').Mesh} mesh - actual mesh.
  * @param {number} angle - expected absolute angle.
  * @param {'x'|'y'|'z'} axis - rotation axis.
  */
@@ -444,7 +417,7 @@ export function expectAbsoluteRotation(mesh, angle, axis) {
 
 /**
  * @param {import('@src/3d/managers').Managers} managers - actual managers.
- * @param {Mesh[]} meshes - list of stacked meshes, who should relate to each other as a stack.
+ * @param {import('@babylonjs/core').Mesh[]} meshes - list of stacked meshes, who should relate to each other as a stack.
  * @param {boolean} isLastMovable - whether the top-most mesh should be movable or not
  * @param {string} [baseParentId] - parent mesh id for the stack base mesh (undefined by default)
  */
@@ -462,8 +435,9 @@ export function expectStacked(
     ).toEqual(getIds(meshes))
     if (rank === 0) {
       expect(
-        /** @type {StackBehavior} */ (getTargetableBehavior(mesh)).state
-          .stackIds,
+        /** @type {import('@src/3d/behaviors').StackBehavior} */ (
+          getTargetableBehavior(mesh)
+        ).state.stackIds,
         `state stackIds of mesh #${rank}`
       ).toEqual(ids)
       expect(mesh.parent?.id).toEqual(baseParentId)
@@ -487,7 +461,7 @@ export function expectStacked(
 
 /**
  * @param {import('@src/3d/managers').Managers} managers - actual managers.
- * @param {Mesh} mesh - actual mesh.
+ * @param {import('@babylonjs/core').Mesh} mesh - actual mesh.
  * @param {number} size - the expected size indicator attached to this mesh, or 0 to expect no indicator
  */
 export function expectStackIndicator({ indicator }, mesh, size = 0) {
@@ -495,14 +469,16 @@ export function expectStackIndicator({ indicator }, mesh, size = 0) {
   expect(indicator.isManaging({ id })).toBe(size > 0)
   if (size) {
     expect(
-      /** @type {MeshSizeIndicator|undefined} */ (indicator.getById(id))?.size
+      /** @type {import('@src/3d/managers').MeshSizeIndicator|undefined} */ (
+        indicator.getById(id)
+      )?.size
     ).toEqual(size)
   }
 }
 
 /**
  * @param {import('@src/3d/managers').Managers} managers - actual managers.
- * @param {Mesh} mesh - actual mesh.
+ * @param {import('@babylonjs/core').Mesh} mesh - actual mesh.
  * @param {number} quantity - the expected quantity indicator attached to this mesh, or 1 to expect no indicator
  */
 export function expectQuantityIndicator({ indicator }, mesh, quantity = 1) {
@@ -510,15 +486,17 @@ export function expectQuantityIndicator({ indicator }, mesh, quantity = 1) {
   expect(indicator.isManaging({ id })).toBe(quantity > 1)
   if (quantity > 1) {
     expect(
-      /** @type {MeshSizeIndicator|undefined} */ (indicator.getById(id))?.size
+      /** @type {import('@src/3d/managers').MeshSizeIndicator|undefined} */ (
+        indicator.getById(id)
+      )?.size
     ).toEqual(quantity)
   }
 }
 
 /**
  * @param {import('vitest').Spy<IndicatorManager['registerFeedback']>} registerFeedbackSpy - spy for indicatorManager.registerFeedback().
- * @param {ActionName|'unlock'|'lock'} action - the expected action reported.
- * @param {...(number[]|Mesh)} meshesOrPositions - expected mesh or position (Vector3 components) for this feedback.
+ * @param {import('@tabulous/types').ActionName|'unlock'|'lock'} action - the expected action reported.
+ * @param {...(number[]|import('@babylonjs/core').Mesh)} meshesOrPositions - expected mesh or position (Vector3 components) for this feedback.
  */
 export function expectMeshFeedback(
   registerFeedbackSpy,
@@ -539,13 +517,13 @@ export function expectMeshFeedback(
   registerFeedbackSpy.mockClear()
 }
 
-function getIds(/** @type {Mesh[]} */ meshes = []) {
+function getIds(/** @type {import('@babylonjs/core').Mesh[]} */ meshes = []) {
   return meshes.map(({ id }) => id)
 }
 
 function expectOnTop(
-  /** @type {Mesh} */ meshAbove,
-  /** @type {Mesh} */ meshBelow
+  /** @type {import('@babylonjs/core').Mesh} */ meshAbove,
+  /** @type {import('@babylonjs/core').Mesh} */ meshBelow
 ) {
   expectPosition(meshAbove, [
     meshBelow.absolutePosition.x,
@@ -555,7 +533,7 @@ function expectOnTop(
 }
 
 /**
- * @param {Mesh} mesh - actual mesh
+ * @param {import('@babylonjs/core').Mesh} mesh - actual mesh
  * @param {boolean} isInteractible - whether this mesh should be interactible.
  * @param {boolean} [isMovable] - whether this mesh should be movable.
  */
@@ -580,24 +558,22 @@ export function expectInteractible(mesh, isInteractible = true, isMovable) {
 }
 
 /**
- * @param {?AnimateBehavior} [behavior] - animatable behavior.
- * @returns {Promise<void>}
+ * @param {?import('@src/3d/behaviors').AnimateBehavior} [behavior] - animatable behavior.
  */
 export async function expectAnimationEnd(behavior) {
   await new Promise(resolve => behavior?.mesh?.onAnimationEnd.addOnce(resolve))
 }
 
 /**
- * @param {Mesh[]} actual - list of actual meshes.
- * @param {Mesh[]} expected - list of expected meshes.
+ * @param {import('@babylonjs/core').Mesh[]} actual - list of actual meshes.
+ * @param {import('@babylonjs/core').Mesh[]} expected - list of expected meshes.
  */
 export function expectMeshIds(actual, expected) {
   expect(getIds(actual)).toEqual(getIds(expected))
 }
 
 /**
- * @param {Scene} scene - scene to wait for the next frame
- * @returns {Promise<void>}
+ * @param {import('@babylonjs/core').Scene} scene - scene to wait for the next frame
  */
 export async function waitNextRender(scene) {
   await new Promise(resolve =>
@@ -606,8 +582,8 @@ export async function waitNextRender(scene) {
 }
 
 /**
- * @param {import('vitest').SpyInstance<[MoveDetails], void>} moveRecorded - spy attached to moveManager.onMoveObservable.
- * @param {...Mesh} meshes - expected list of moved meshes.
+ * @param {import('vitest').SpyInstance<[import('@src/3d/managers').MoveDetails], void>} moveRecorded - spy attached to moveManager.onMoveObservable.
+ * @param {...import('@babylonjs/core').Mesh} meshes - expected list of moved meshes.
  */
 export function expectMoveRecorded(moveRecorded, ...meshes) {
   expect(moveRecorded).toHaveBeenCalledTimes(meshes.length)
@@ -620,8 +596,8 @@ export function expectMoveRecorded(moveRecorded, ...meshes) {
 }
 
 /**
- * @param {TargetBehavior} behavior - actual targetable behavior .
- * @param {Partial<SingleDropZone>} zone - expected zone.
+ * @param {import('@src/3d/behaviors').TargetBehavior} behavior - actual targetable behavior .
+ * @param {Partial<import('@src/3d/managers').SingleDropZone>} zone - expected zone.
  * @param {number} zoneRank - rank of the checked zone, defaults to 0.
  */
 export function expectZone(
@@ -639,8 +615,8 @@ export function expectZone(
 }
 
 /**
- * @param {Scene} scene - tested scene.
- * @param {...Mesh} meshes - meshes expected to be disposed.
+ * @param {import('@babylonjs/core').Scene} scene - tested scene.
+ * @param {...import('@babylonjs/core').Mesh} meshes - meshes expected to be disposed.
  */
 export function expectDisposed(scene, ...meshes) {
   for (const mesh of meshes) {
@@ -652,8 +628,8 @@ export function expectDisposed(scene, ...meshes) {
 }
 
 /**
- * @param {Scene} scene - tested scene.
- * @param {...(?Mesh|undefined)} meshes - meshes expected to be in the scene.
+ * @param {import('@babylonjs/core').Scene} scene - tested scene.
+ * @param {...(?import('@babylonjs/core').Mesh|undefined)} meshes - meshes expected to be in the scene.
  */
 export function expectNotDisposed(scene, ...meshes) {
   for (const mesh of meshes) {
@@ -670,10 +646,9 @@ export function expectNotDisposed(scene, ...meshes) {
  * Stops the server at the end of the test suite.
  * @param {object} mocks
  * @param {(body: ?) => Promise<?>|?} [mocks.handleGraphQl] - optional callback invoked with the graphql payload, that should return or resolved to the operation result.
- * @returns {Promise<void>}
  */
 export async function configureGraphQlServer(mocks = {}) {
-  /** @type {FastifyInstance} */
+  /** @type {import('fastify').FastifyInstance} */
   let server
 
   beforeAll(async () => {
@@ -709,7 +684,7 @@ export async function configureGraphQlServer(mocks = {}) {
 
 /**
  * @param {string} value - initial value for this generated id.
- * @returns {string} random id.
+ * @returns random id.
  */
 export function makeId(value) {
   return `${value}-${faker.number.int(200)}`
@@ -717,7 +692,7 @@ export function makeId(value) {
 
 /**
  * @template R
- * @param {Observable<R>} observable - observable to listen to.
+ * @param {import('rxjs').Observable<R>} observable - observable to listen to.
  * @param {number} timeout - number of milliseconds to wait for a value, defaults to 100.
  * @returns {Promise<R>} resolved the first value emited by this observable.
  */
@@ -758,8 +733,8 @@ export function waitForLayout(
 }
 
 /**
- * @param {MenuOption} option - extracted menu option.
- * @returns {string} exctracted value
+ * @param {import('@src/components').MenuOption} option - extracted menu option.
+ * @returns exctracted value
  */
 export function getMenuOptionValue(option) {
   return typeof option === 'string'

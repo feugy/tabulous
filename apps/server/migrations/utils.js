@@ -1,13 +1,8 @@
 // @ts-check
 /**
- * @template {{id: string}} M
- * @typedef {import('@tabulous/server/src/repositories/abstract-repository').AbstractRepository<M> } AbstractRepository
- */
-
-/**
  * Recursively fetches all model pages of a given repository, applying a function to each of them.
  * @template {{ id: string }} M
- * @param {AbstractRepository<M>} repository - repository of models.
+ * @param {import('@src/repositories').AbstractRepository<M>} repository - repository of models.
  * @param {(obj: M) => Promise<void>} apply - function individually applied to each model.
  * @param {{ from: number }} [params = { from: 0 }] - fetch parameters, for internal use.
  */

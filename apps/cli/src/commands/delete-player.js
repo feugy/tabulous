@@ -1,6 +1,4 @@
 // @ts-check
-/** @typedef {import('@tabulous/server/src/graphql').Player} Player */
-
 import { gql } from '@urql/core'
 import chalkTemplate from 'chalk-template'
 
@@ -17,7 +15,7 @@ import { commonOptions } from './help.js'
 
 /**
  * @typedef {object} DeletePlayerResult player deletion command result
- * @property {Player} player - deleted player.
+ * @property {import('@tabulous/types').Player} player - deleted player.
  */
 
 const deletePlayerMutation = gql`
@@ -33,7 +31,7 @@ const deletePlayerMutation = gql`
 /**
  * Triggers player deletion command
  * @param {string[]} argv - array of parsed arguments (without executable and current file).
- * @returns {Promise<DeletePlayerResult|string>} the deleted player (or help message).
+ * @returns the deleted player (or help message).
  */
 export default async function deletePlayerCommand(argv) {
   const args = parseArgv(argv, {
@@ -57,7 +55,7 @@ export default async function deletePlayerCommand(argv) {
 /**
  * Deletes an existing player account.
  * @param {DeletePlayerArgs} args - deletion arguments.
- * @returns {Promise<DeletePlayerResult>} player deletion results.
+ * @returns player deletion results.
  */
 export async function deletePlayer({ id }) {
   const { deletePlayer: player } = await getGraphQLClient().mutation(
@@ -65,10 +63,12 @@ export async function deletePlayer({ id }) {
     { id },
     signToken()
   )
-  return attachFormater({ player }, ({ player }) =>
-    player
-      ? chalkTemplate`${formatPlayer(player)} {underline deleted}`
-      : chalkTemplate`{underline no player} deleted`
+  return attachFormater(
+    { player },
+    (/** @type {DeletePlayerResult} */ { player }) =>
+      player
+        ? chalkTemplate`${formatPlayer(player)} {underline deleted}`
+        : chalkTemplate`{underline no player} deleted`
   )
 }
 

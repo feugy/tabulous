@@ -1,14 +1,4 @@
 // @ts-check
-/**
- * @typedef {import('@babylonjs/core').Axis} Axis
- * @typedef {import('@babylonjs/core').Mesh} Mesh
- * @typedef {import('@tabulous/server/src/graphql').ActionName} ActionName
- * @typedef {import('@tabulous/server/src/graphql').RandomizableState} RandomizableState
- * @typedef {import('@src/3d/utils').AnimationSpec} AnimationSpec
- * @typedef {import('@src/3d/utils').QuaternionKeyFrame} QuaternionKeyFrame
- * @typedef {import('@src/3d/utils').Vector3KeyFrame} Vector3KeyFrame
- */
-
 import { Animation } from '@babylonjs/core/Animations/animation'
 import { Quaternion } from '@babylonjs/core/Maths/math.vector'
 
@@ -25,7 +15,7 @@ import { getDimensions, isAnimationInProgress } from '../utils/mesh'
 import { AnimateBehavior } from './animatable'
 import { RandomBehaviorName } from './names'
 
-const logger = makeLogger('randomizable')
+const logger = makeLogger(RandomBehaviorName)
 const { cos, floor, PI, random, sin } = Math
 
 /**
@@ -33,28 +23,29 @@ const { cos, floor, PI, random, sin } = Math
  * @property {number} max - maximum face value (minimum is always 1).
  * @property {Map<number, Quaternion>} quaternionPerFace - map of Euler angles [x, y, z] applied when setting a given fave
  *
- * @typedef {RandomizableState & Required<Pick<RandomizableState, 'face'|'duration'|'canBeSet'>>} RequiredRandomizableState
+ * @typedef {import('@tabulous/types').RandomizableState & Required<Pick<import('@tabulous/types').RandomizableState, 'face'|'duration'|'canBeSet'>>} RequiredRandomizableState
  */
 
 export class RandomBehavior extends AnimateBehavior {
   /**
    * Creates behavior to make a mesh randomizable: it has a face vaule and this face can be set, or randomly set.
-   * @param {RandomizableState & Extras} stateWithExtra - behavior persistent state, with internal parameters provided by the mesh.
-   * @param {import('@src/3d/managers').Managers} managers - current managers.
+   * @param {import('@tabulous/types').RandomizableState} state - behavior persistent state.
+   * @param {import('../managers').Managers} managers - current managers.
+   * @param {Record<string, ?> & { max?: number; quaternionPerFace?: Map<number, Quaternion>}} extra - extras provided by the Die mesh.
    */
-  constructor(stateWithExtra, managers) {
+  constructor(state, managers, { max, quaternionPerFace }) {
     super()
     /** @internal */
     this.managers = managers
-    /** @type {RequiredRandomizableState} state - the behavior's current state (+ extras) */
-    this.state = /** @type {RequiredRandomizableState} */ (stateWithExtra)
-    if (!(stateWithExtra.quaternionPerFace instanceof Map)) {
+    /** the behavior's current state (+ extras) */
+    this.state = /** @type {RequiredRandomizableState} */ (state)
+    if (!(quaternionPerFace instanceof Map)) {
       throw new Error(`RandomBehavior needs quaternionPerFace`)
     }
-    /** @type {number} */
-    this.max = stateWithExtra.max
-    /** @internal @type {Map<number, Quaternion>} */
-    this.quaternionPerFace = stateWithExtra.quaternionPerFace
+    /** maximum number of faces */
+    this.max = max ?? 0
+    /** @internal */
+    this.quaternionPerFace = quaternionPerFace
     if (!(this.max > 1)) {
       throw new Error(
         `RandomBehavior's max should be higher than ${this.state.face ?? 1}`
@@ -70,9 +61,6 @@ export class RandomBehavior extends AnimateBehavior {
     )
   }
 
-  /**
-   * @property {string} name - this behavior's constant name.
-   */
   get name() {
     return RandomBehaviorName
   }
@@ -83,7 +71,7 @@ export class RandomBehavior extends AnimateBehavior {
    * - a `maxFace` number.
    * - a `random()` function to randomly set a new face value.
    * - a `setFace()` function to set the face to a given value.
-   * @param {Mesh} mesh - which becomes detailable.
+   * @param {import('@babylonjs/core').Mesh} mesh - which becomes detailable.
    */
   attach(mesh) {
     super.attach(mesh)
@@ -137,7 +125,7 @@ export class RandomBehavior extends AnimateBehavior {
 
   /**
    * Revert setFace and random actions. Ignores other actions
-   * @param {ActionName} action - reverted action.
+   * @param {import('@tabulous/types').ActionName} action - reverted action.
    * @param {any[]} [args] - reverted arguments.
    */
   async revert(action, args = []) {
@@ -153,7 +141,7 @@ export class RandomBehavior extends AnimateBehavior {
 
   /**
    * Updates this behavior's state and mesh to match provided data.
-   * @param {RandomizableState} state - state to update to.
+   * @param {import('@tabulous/types').RandomizableState} state - state to update to.
    */
   fromState({ face = 1, duration = 600, canBeSet = false } = {}) {
     if (!this.mesh) {
@@ -203,7 +191,7 @@ function internalRandom(
     {
       animation: rollAnimation,
       duration,
-      keys: /** @type {QuaternionKeyFrame[]} */ ([
+      keys: /** @type {import('../utils').QuaternionKeyFrame[]} */ ([
         {
           frame: 0,
           values: mesh.rotationQuaternion?.asArray()
@@ -235,7 +223,7 @@ function internalRandom(
     {
       animation: moveAnimation,
       duration,
-      keys: /** @type {Vector3KeyFrame[]} */ ([
+      keys: /** @type {import('../utils').Vector3KeyFrame[]} */ ([
         { frame: 0, values: mesh.position.asArray() },
         {
           frame: 50,
@@ -268,7 +256,7 @@ function internalSetFace(
   return animate(behavior, isLocal, 'setFace', face, duration / 3, {
     animation: rollAnimation,
     duration: duration / 3,
-    keys: /** @type {QuaternionKeyFrame[]} */ ([
+    keys: /** @type {import('../utils').QuaternionKeyFrame[]} */ ([
       {
         frame: 0,
         values: mesh.rotationQuaternion?.asArray()
@@ -289,10 +277,10 @@ function applyRotation(
 /**
  * @param {RandomBehavior} behavior - animated behavior.
  * @param {boolean} isLocal - action locality.
- * @param {ActionName} fn - function name, for logging.
+ * @param {import('@tabulous/types').ActionName} fn - function name, for logging.
  * @param {number} face - face to animate to.
  * @param {number|undefined} duration - animation duration.
- * @param  {...AnimationSpec} animations - animation spec used.
+ * @param  {...import('../utils').AnimationSpec} animations - animation spec used.
  * @returns resolves when animation is completed.
  */
 async function animate(behavior, isLocal, fn, face, duration, ...animations) {
@@ -335,7 +323,7 @@ async function animate(behavior, isLocal, fn, face, duration, ...animations) {
 
 /**
  * Builds a random quaterion on a given axis.
- * @param {Axis} axis - concerned mesh.
+ * @param {import('@babylonjs/core').Axis} axis - concerned mesh.
  * @param {number} [limit] - maximum rotation allowed.
  */
 function makeRandomRotation(axis, limit = 2 * PI) {

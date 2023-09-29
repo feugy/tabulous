@@ -9,31 +9,24 @@
 
 <script>
   // @ts-check
-  /**
-   * @typedef {import('@src/components').MenuOption} MenuOption
-   * @typedef {import('@src/components').ColorMenuOption} ColorMenuOption
-   * @typedef {import('@src/components').ComponentMenuOption} ComponentMenuOption
-   * @typedef {import('@src/components').LabelMenuOption} LabelMenuOption
-   */
-
   import { createEventDispatcher } from 'svelte'
   import { slide } from 'svelte/transition'
   import Portal from 'svelte-portal'
 
   /** @type {HTMLElement} anchor for this menu. */
   export let anchor
-  /** @type {MenuOption[]} list of menu items. */
+  /** @type {import('@src/components').MenuOption[]} list of menu items. */
   export let options
   /** @type {boolean} whether this meun is opened. */
   export let open
-  /** @type {?MenuOption} currently selected option. */
+  /** @type {?import('@src/components').MenuOption} currently selected option. */
   export let value = null
   /** @type {boolean} whether this menu should take focus on opening. */
   export let takesFocus = true
   /** @type {?HTMLUListElement} reference to the menu element. */
   export let ref = null
 
-  /** @type {import('svelte').EventDispatcher<{ select: ?MenuOption, close: void }>} */
+  /** @type {import('svelte').EventDispatcher<{ select: ?import('@src/components').MenuOption, close: void }>} */
   const dispatch = createEventDispatcher()
 
   $: if (open) {
@@ -54,7 +47,7 @@
       : isInComponent(element.parentElement)
   }
 
-  function select(/** @type {MenuOption} */ option) {
+  function select(/** @type {import('@src/components').MenuOption} */ option) {
     if (option !== value) {
       value = option
       dispatch('select', value)
@@ -116,7 +109,11 @@
       const idx = value ? options.indexOf(value) : -1
       if (
         idx >= 0 &&
-        !(/** @type {LabelMenuOption|ColorMenuOption} */ (value).disabled)
+        !(
+          /** @type {import('@src/components').LabelMenuOption|import('@src/components').ColorMenuOption} */ (
+            value
+          ).disabled
+        )
       ) {
         const focusable = /** @type {HTMLElement|undefined} */ (
           ref?.children.item(idx)
@@ -154,7 +151,7 @@
 
   function handleItemKeyDown(
     /** @type {KeyboardEvent & { currentTarget: HTMLElement }} */ evt,
-    /** @type {MenuOption} */ option
+    /** @type {import('@src/components').MenuOption} */ option
   ) {
     if (evt.key === 'Enter' || evt.key === ' ' || evt.key === 'ArrowRight') {
       handleItemClick(evt, option)
@@ -163,9 +160,12 @@
 
   function handleItemClick(
     /** @type {UIEvent & { currentTarget: HTMLElement }} */ evt,
-    /** @type {MenuOption} */ option
+    /** @type {import('@src/components').MenuOption} */ option
   ) {
-    if (/** @type {ComponentMenuOption} */ (option).Component) {
+    if (
+      /** @type {import('@src/components').ComponentMenuOption} */ (option)
+        .Component
+    ) {
       option.props.open = true
       // blur to let sub component take the focus
       const blurable = /** @type {HTMLElement|undefined} */ (

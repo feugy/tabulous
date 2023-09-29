@@ -1,15 +1,13 @@
 <script>
   // @ts-check
-  /** @typedef {import('@src/components').MenuOption} MenuOption */
-
   import { createEventDispatcher } from 'svelte'
 
   import Button from './Button.svelte'
   import Menu from './Menu.svelte'
 
-  /** @type {MenuOption[]} options displayed in the drop down menu. */
+  /** @type {import('@src/components').MenuOption[]} options displayed in the drop down menu. */
   export let options
-  /** @type {?MenuOption} currently active option. */
+  /** @type {?import('@src/components').MenuOption} currently active option. */
   export let value = null
   /** @type {boolean} whether to use the active option as button text, or fixed text. */
   export let valueAsText = true
@@ -22,7 +20,7 @@
   /** @type {boolean} whether the drop down menu should open when clicking on the button. */
   export let openOnClick = true
 
-  /** @type {import('svelte').EventDispatcher<{ click: void, select: ?MenuOption, close: void }>} */
+  /** @type {import('svelte').EventDispatcher<{ click: void, select: ?import('@src/components').MenuOption, close: void }>} */
   const dispatch = createEventDispatcher()
   /** @type {?HTMLUListElement } reference to the menu. */
   let menu

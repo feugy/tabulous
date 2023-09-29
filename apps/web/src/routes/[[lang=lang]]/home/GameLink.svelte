@@ -1,20 +1,18 @@
 <script>
   // @ts-check
-  /** @typedef {import('@src/graphql').LightGame} LightGame */
-
   import { Button } from '@src/components'
   import { gameAssetsUrl, isLobby } from '@src/utils'
   import { createEventDispatcher } from 'svelte'
   import { _, locale } from 'svelte-intl'
 
-  /** @type {LightGame} displayed game or lobby. */
+  /** @type {import('@src/graphql').LightGame} displayed game or lobby. */
   export let game
   /** @type {string} authenticated user id to determine ownership. */
   export let playerId
   /** @type {boolean} whether this link points to the curent game/lobby. */
   export let isCurrent = false
 
-  /** @type {import('svelte').EventDispatcher<{ close: LightGame, delete: LightGame, select: LightGame }>}*/
+  /** @type {import('svelte').EventDispatcher<{ close: import('@src/graphql').LightGame, delete: import('@src/graphql').LightGame, select: import('@src/graphql').LightGame }>}*/
   const dispatch = createEventDispatcher()
   const owned = game.players?.find(player => player?.isOwner)?.id === playerId
   $: isALobby = isLobby(game)

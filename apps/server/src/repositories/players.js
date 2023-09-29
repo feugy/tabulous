@@ -1,13 +1,4 @@
 // @ts-check
-/**
- * @typedef {import('ioredis').Redis} Redis
- * @typedef {import('./abstract-repository').DeleteTransactionContext<Player>} DeleteTransactionContext
- * @typedef {import('./abstract-repository').SaveTransactionContext<Player>} SaveTransactionContext
- * @typedef {import('./abstract-repository').Transaction} Transaction
- * @typedef {import('../services/players').Player} Player
- * @typedef {import('../utils/logger').Logger} Logger
- */
-
 import {
   count,
   create,
@@ -51,7 +42,7 @@ export const FriendshipEnded = 4
  * @property {number} state - state of the relationship.
  */
 
-/** @extends AbstractRepository<Player> */
+/** @extends AbstractRepository<import('@tabulous/types').Player> */
 class PlayerRepository extends AbstractRepository {
   static fields = [
     // enforce no game id to be null
@@ -81,7 +72,6 @@ class PlayerRepository extends AbstractRepository {
    * In addition to connecting to the Database, also connects to the search index.
    * @override
    * @param {{ url: string, isProduction?: boolean }} args - connection arguments.
-   * @returns {Promise<void>}
    */
   async connect(args) {
     await super.connect(args)
@@ -91,7 +81,6 @@ class PlayerRepository extends AbstractRepository {
   /**
    * In addition to disconnecting from the Database, also disconnect the search index.
    * @override
-   * @returns {Promise<void>}
    */
   async release() {
     await super.release()
@@ -100,8 +89,8 @@ class PlayerRepository extends AbstractRepository {
 
   /**
    * Builds the key of the string holding player id for a given provider id.
-   * @param {Pick<Player, 'provider'|'providerId'>} details - the desired provider details.
-   * @returns {string} the corresponding key.
+   * @param {Pick<import('@tabulous/types').Player, 'provider'|'providerId'>} details - the desired provider details.
+   * @returns the corresponding key.
    */
   _buildProviderIdKey({ provider, providerId }) {
     return `index:${this.name}:providers:${provider}:${providerId}`
@@ -111,7 +100,7 @@ class PlayerRepository extends AbstractRepository {
    * Builds the key a player's friends list.
    * @protected
    * @param {string} id - the concerned model id.
-   * @returns {string} the corresponding key.
+   * @returns the corresponding key.
    */
   _buildFriendsKey(id) {
     return `friends:${id}`
@@ -120,11 +109,10 @@ class PlayerRepository extends AbstractRepository {
   /**
    * When saving players, add their provider id references, and updates their username for autocompletion.
    * @override
-   * @param {SaveTransactionContext} context - contextual information.
-   * @returns {Promise<Transaction>}
+   * @param {import('./abstract-repository').SaveTransactionContext<import('@tabulous/types').Player>} context - contextual information.
    */
   async _enrichSaveTransaction(context) {
-    const transaction = /** @type {Transaction} */ (
+    const transaction = /** @type {import('ioredis').ChainableCommander} */ (
       super._enrichSaveTransaction(context)
     )
     const { models, existings } = context
@@ -148,10 +136,10 @@ class PlayerRepository extends AbstractRepository {
   /**
    * When deleting players, removes their provider id references and username for autocompletion.
    * @override
-   * @param {DeleteTransactionContext} context - contextual information.
+   * @param {import('./abstract-repository').DeleteTransactionContext<import('@tabulous/types').Player>} context - contextual information.
    */
   async _enrichDeleteTransaction(context) {
-    const transaction = /** @type {Transaction} */ (
+    const transaction = /** @type {import('ioredis').ChainableCommander} */ (
       super._enrichDeleteTransaction(context)
     )
     const references = /** @type {string[]} */ (
@@ -172,11 +160,9 @@ class PlayerRepository extends AbstractRepository {
     await removeFromIndex(this.searchIndex, context.models, this.logger)
     for (const player of context.models) {
       if (player) {
-        for (const id of await /** @type {Redis} */ (this.client).zrange(
-          this._buildFriendsKey(player.id),
-          0,
-          -1
-        )) {
+        for (const id of await /** @type {import('ioredis').Redis} */ (
+          this.client
+        ).zrange(this._buildFriendsKey(player.id), 0, -1)) {
           transaction.zrem(this._buildFriendsKey(id), player.id)
         }
       }
@@ -186,8 +172,8 @@ class PlayerRepository extends AbstractRepository {
 
   /**
    * Finds a player by their provider and providerId details.
-   * @param {Pick<Player, 'provider'|'providerId'>} details - the desired provider details.
-   * @returns {Promise<?Player>} the corresponding player or null.
+   * @param {Pick<import('@tabulous/types').Player, 'provider'|'providerId'>} details - the desired provider details.
+   * @returns the corresponding player or null.
    */
   async getByProviderDetails(details) {
     if (!this.client) {
@@ -205,12 +191,12 @@ class PlayerRepository extends AbstractRepository {
    * @param {number} [args.from = 0] - 0-based index of the first result
    * @param {number} [args.size = 10] - maximum number of models returned after first results.
    * @param {boolean} [args.exact = false] - for exact search (un-searchable players can be retrieved).
-   * @returns {Promise<import('./abstract-repository').Page<Player>>} a given page of matching players.
+   * @returns {Promise<import('./abstract-repository').Page<import('@tabulous/types').Player>>} a given page of matching players.
    */
   async searchByUsername({ search: term, from = 0, size = 10, exact = false }) {
     const ctx = { search, from, size, exact }
     this.logger.trace({ ctx }, 'finding players')
-    /** @type {Player[]} */
+    /** @type {import('@tabulous/types').Player[]} */
     let results = []
     let total = 0
     if (this.searchIndex) {
@@ -231,7 +217,7 @@ class PlayerRepository extends AbstractRepository {
         count = hits.length
       }
       total = count
-      results = /** @type {Player[]} */ (
+      results = /** @type {import('@tabulous/types').Player[]} */ (
         await this.getById(hits.map(({ id }) => id))
       )
     }
@@ -250,7 +236,6 @@ class PlayerRepository extends AbstractRepository {
 
   /**
    * Resets search index to match models in database
-   * @returns {Promise<void>}
    */
   async reindexModels() {
     this.logger.trace('re-indexing all models')
@@ -292,7 +277,7 @@ class PlayerRepository extends AbstractRepository {
    * @param {string} requestingId - if of the requesting player.
    * @param {string} targetedId - if of the targeted player
    * @param {number} [state = Friendship] - state of the current relationship.
-   * @returns {Promise<boolean>} true if the relationship was recorded.
+   * @returns true if the relationship was recorded.
    */
   async makeFriends(requestingId, targetedId, state = FriendshipRequested) {
     const ctx = { requestingId, targetedId, state }
@@ -303,7 +288,9 @@ class PlayerRepository extends AbstractRepository {
     ) {
       return false
     }
-    const transaction = /** @type {Redis} */ (this.client).multi()
+    const transaction = /** @type {import('ioredis').Redis} */ (
+      this.client
+    ).multi()
     const targetedKey = this._buildFriendsKey(targetedId)
     const requestingKey = this._buildFriendsKey(requestingId)
     if (state === FriendshipEnded) {
@@ -336,7 +323,7 @@ class PlayerRepository extends AbstractRepository {
   /**
    * List friendship relationships with other players.
    * @param {string} playerId - player for which friends are being fetched.
-   * @returns {Promise<Friendship[]>} list of relationships.
+   * @returns list of relationships.
    */
   async listFriendships(playerId) {
     this.logger.trace({ ctx: { playerId } }, 'listing friendships')
@@ -344,6 +331,7 @@ class PlayerRepository extends AbstractRepository {
     if (!this.client) {
       return []
     }
+    /** @type {Friendship[]} */
     const friendships = (
       await this.client.zrevrange(
         this._buildFriendsKey(playerId),
@@ -377,30 +365,31 @@ export const players = new PlayerRepository()
 
 /**
  * @param {SearchIndex} searchIndex
- * @param {Player[]} models
- * @param {Logger} logger
- * @returns {Promise<void>}
+ * @param {import('@tabulous/types').Player[]} models
+ * @param {import('pino').Logger} logger
  */
 async function insertIntoIndex(searchIndex, models, logger) {
   if (searchIndex) {
     const ctx = { insertedIds: models.map(({ id }) => id) }
     logger.trace({ ctx }, 'inserting documents into search index')
-    const inserted = await insertMultiple(searchIndex, models)
+    const inserted = await insertMultiple(
+      searchIndex,
+      /** @type {Record<string, ?>[]} */ (models)
+    )
     logger.debug({ ctx, res: inserted }, 'inserted documents into search index')
   }
 }
 
 /**
  * @param {SearchIndex} searchIndex
- * @param {(?Player)[]} models
- * @param {Logger} logger
- * @returns {Promise<void>}
+ * @param {(?import('@tabulous/types').Player)[]} models
+ * @param {import('pino').Logger} logger
  */
 async function removeFromIndex(searchIndex, models, logger) {
   if (searchIndex) {
-    const removedIds = /** @type {Player[]} */ (models.filter(Boolean)).map(
-      ({ id }) => id
-    )
+    const removedIds = /** @type {import('@tabulous/types').Player[]} */ (
+      models.filter(Boolean)
+    ).map(({ id }) => id)
     if (removedIds.length) {
       const ctx = { removedIds }
       logger.trace({ ctx }, 'removing documents from search index')

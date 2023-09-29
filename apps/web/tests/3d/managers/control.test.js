@@ -1,11 +1,4 @@
 // @ts-check
-/**
- * @typedef {import('@babylonjs/core').Mesh} Mesh
- * @typedef {import('@babylonjs/core').Scene} Scene
- * @typedef {import('@src/3d/managers/control').Action} Action
- * @typedef {import('@src/3d/managers/control').Move} Move
- */
-
 import { faker } from '@faker-js/faker'
 import { AnchorBehavior, FlipBehavior, MoveBehavior } from '@src/3d/behaviors'
 import { beforeEach, describe, expect, it, vi } from 'vitest'
@@ -13,17 +6,17 @@ import { beforeEach, describe, expect, it, vi } from 'vitest'
 import { configures3dTestEngine, createBox } from '../../test-utils'
 
 describe('ControlManager', () => {
-  /** @type {Scene} */
+  /** @type {import('@babylonjs/core').Scene} */
   let scene
-  /** @type {Scene} */
+  /** @type {import('@babylonjs/core').Scene} */
   let handScene
-  /** @type {(Action|Move)[]} */
+  /** @type {import('@src/3d/managers').ActionOrMove[]} */
   let actions
-  /** @type {Mesh} */
+  /** @type {import('@babylonjs/core').Mesh} */
   let mesh
-  /** @type {Mesh} */
+  /** @type {import('@babylonjs/core').Mesh} */
   let handMesh
-  /** @type {Mesh} */
+  /** @type {import('@babylonjs/core').Mesh} */
   let anchorable
   /** @type {import('vitest').Spy<AnchorBehavior['snap']>} */
   let snapSpy

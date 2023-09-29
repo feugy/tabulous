@@ -1,13 +1,4 @@
 // @ts-check
-/**
- * @typedef {import('@babylonjs/core').Mesh} Mesh
- * @typedef {import('@babylonjs/core').Scene} Scene
- * @typedef {import('@tabulous/server/src/graphql').ActionName} ActionName
- * @typedef {import('@tabulous/server/src/graphql').ZoomSpec} ZoomSpec
- * @typedef {import('@src/3d/managers/camera').CameraPosition} CameraPosition
- * @typedef {import('@src/3d/utils').ScreenPosition} ScreenPosition
- */
-
 import { Vector3 } from '@babylonjs/core/Maths/math.vector.js'
 import { Observable } from '@babylonjs/core/Misc/observable.js'
 
@@ -30,21 +21,21 @@ import { animateMove } from '../utils/behaviors'
  * @typedef {Action|Move} ActionOrMove
  *
  * @typedef {object} RecordedAction applied action to a given mesh:
- * @property {Mesh} mesh - modified mesh.
- * @property {ActionName} fn - name of the applied action.
+ * @property {import('@babylonjs/core').Mesh} mesh - modified mesh.
+ * @property {import('@tabulous/types').ActionName} fn - name of the applied action.
  * @property {any[]} args - argument array for this action.
  * @property {any[]} [revert] - when action can't be reverted with the same args, specific data required.
  * @property {number} [duration] - optional animation duration, in milliseconds.
  * @property {boolean} [isLocal] - indicates a local action that should not be re-recorded nor sent to peers.
  *
  * @typedef {object} RecordedMove applied action to a given mesh:
- * @property {Mesh} mesh - modified mesh.
+ * @property {import('@babylonjs/core').Mesh} mesh - modified mesh.
  * @property {number[]} pos - absolute position.
  * @property {number[]} prev - absolute position before the move.
  * @property {number} [duration] - optional animation duration, in milliseconds.
  *
  * @typedef {object} MeshDetails details of a given mesh.
- * @property {ScreenPosition} position - screen position (2D pixels) of the detailed mesh.
+ * @property {import('../utils').ScreenPosition} position - screen position (2D pixels) of the detailed mesh.
  * @property {string[]} images - list of images for this mesh (could be multiple for stacked meshes).
  */
 
@@ -56,27 +47,27 @@ export class ControlManager {
    * Clears all observers on scene disposal.
    * Invokes init() before any other function.
    * @param {object} params - parameters, including:
-   * @param {Scene} params.scene - main scene.
-   * @param {Scene} params.handScene - scene for meshes in hand.
+   * @param {import('@babylonjs/core').Scene} params.scene - main scene.
+   * @param {import('@babylonjs/core').Scene} params.handScene - scene for meshes in hand.
    */
   constructor({ scene, handScene }) {
     /** @type {Observable<ActionOrMove>} emits applied actions. */
     this.onActionObservable = new Observable()
     /** @type {Observable<?MeshDetails>} emits when displaying details of a given mesh. */
     this.onDetailedObservable = new Observable()
-    /** @type {Observable<Map<String, Mesh>>} emits the list of controlled meshes. */
+    /** @type {Observable<Map<String, import('@babylonjs/core').Mesh>>} emits the list of controlled meshes. */
     this.onControlledObservable = new Observable()
 
     /** @internal */
     this.scene = scene
     /** @internal */
     this.handScene = handScene
-    /** @internal @type {Map<string, Mesh>} */
+    /** @internal @type {Map<string, import('@babylonjs/core').Mesh>} */
     this.controlables = new Map()
     // prevents loops when applying an received action
     /** @internal @type {Set<string>} */
     this.localKeys = new Set()
-    /** @internal @type {import('@src/3d/managers').Managers} */
+    /** @internal @type {import('.').Managers} */
     this.managers
 
     this.scene.onDisposeObservable.addOnce(() => {
@@ -90,7 +81,7 @@ export class ControlManager {
    * Initializes with game data and managers
    *
    * @param {object} params - parameters, including:
-   * @param {import('@src/3d/managers').Managers} params.managers - current managers.
+   * @param {import('.').Managers} params.managers - current managers.
    */
   init({ managers }) {
     this.managers = managers
@@ -99,7 +90,7 @@ export class ControlManager {
   /**
    * Registers a new controllable mesh.
    * Does nothing if this mesh is already managed.
-   * @param {Mesh} mesh - controled mesh (needs at least an id property).
+   * @param {import('@babylonjs/core').Mesh} mesh - controled mesh (needs at least an id property).
    */
   registerControlable(mesh) {
     this.controlables.set(mesh.id, mesh)
@@ -114,7 +105,7 @@ export class ControlManager {
   /**
    * Unregisters a controlled mesh.
    * Does nothing on unmanaged mesh.
-   * @param {Mesh} mesh - controlled mesh (needs at least an id property).
+   * @param {import('@babylonjs/core').Mesh} mesh - controlled mesh (needs at least an id property).
    */
   unregisterControlable(mesh) {
     if (this.controlables.delete(mesh?.id)) {
@@ -123,7 +114,7 @@ export class ControlManager {
   }
 
   /**
-   * @param {Mesh} mesh - tested mesh
+   * @param {import('@babylonjs/core').Mesh} mesh - tested mesh
    * @returns whether this mesh is controlled or not
    */
   isManaging(mesh) {
@@ -161,8 +152,8 @@ export class ControlManager {
   /**
    * Invokes a mesh's function as if it was local (does not propagate to peer).
    * Used by cascading actions.
-   * @param {?Mesh} mesh - mesh on which the action is called.
-   * @param {ActionName} fn - incoked function name.
+   * @param {?import('@babylonjs/core').Mesh} mesh - mesh on which the action is called.
+   * @param {import('@tabulous/types').ActionName} fn - incoked function name.
    * @param  {...any} args - invokation arguments, if any.
    */
   async invokeLocal(mesh, fn, ...args) {

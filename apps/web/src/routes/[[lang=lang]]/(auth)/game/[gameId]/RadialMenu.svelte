@@ -21,10 +21,6 @@
 
 <script>
   // @ts-check
-  /**
-   * @typedef {import('@src/utils/game-interaction').MenuItem} MenuItem
-   */
-
   import { Button, QuantityButton } from '@src/components'
   import { writable } from 'svelte/store'
   import { _ } from 'svelte-intl'
@@ -34,7 +30,7 @@
    * @property {number} i - animated item index.
    */
 
-  /** @type {MenuItem[]} list of action menu items. */
+  /** @type {import('@src/utils/game-interaction').MenuItem[]} list of action menu items. */
   export let items = []
   /** @type {boolean} whether this menu is opened. */
   export let open = false
@@ -45,7 +41,9 @@
   /** @type {number} angle applied to menu items. */
   export let angleShift = Math.PI * -0.5
 
-  const actions = writable(/** @type {?MenuItem[]} */ (null))
+  const actions = writable(
+    /** @type {?import('@src/utils/game-interaction').MenuItem[]} */ (null)
+  )
   $: {
     // make sure we reset actions to trigger animations again.
     actions.set(null)

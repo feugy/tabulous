@@ -1,3 +1,4 @@
+// @ts-check
 import { faker } from '@faker-js/faker'
 import { MockAgent, setGlobalDispatcher } from 'undici'
 import { beforeAll, beforeEach, describe, expect, it, vi } from 'vitest'
@@ -7,13 +8,17 @@ vi.mock('../../src/util/configuration.js', () => ({
 }))
 
 describe('getGraphQLClient()', () => {
+  /** @type {import('vitest').MockedFunction<import('@src/util/configuration').loadConfiguration>} */
   let loadConfiguration
+  /** @type {import('@src/util/graphql-client').getGraphQLClient} */
   let getGraphQLClient
   const url = faker.internet.url({ appendSlash: false })
   const jwtKey = faker.string.uuid()
 
   beforeAll(async () => {
-    ;({ loadConfiguration } = await import('../../src/util/configuration.js'))
+    loadConfiguration = vi.mocked(
+      (await import('../../src/util/configuration.js')).loadConfiguration
+    )
     ;({ getGraphQLClient } = await import('../../src/util/graphql-client.js'))
   })
 
@@ -22,7 +27,11 @@ describe('getGraphQLClient()', () => {
   })
 
   it('builds client from configuration', () => {
-    loadConfiguration.mockReturnValue({ url, jwt: { key: jwtKey } })
+    loadConfiguration.mockReturnValue({
+      url,
+      jwt: { key: jwtKey },
+      adminUserId: ''
+    })
 
     const client = getGraphQLClient()
     expect(client).toBeDefined()
@@ -36,8 +45,11 @@ describe('getGraphQLClient()', () => {
   })
 
   describe('given a client', () => {
+    /** @type {import('@src/util').Client} */
     let client
+    /** @type {MockAgent} */
     let mockAgent
+    /** @type {ReturnType<MockAgent['get']>} */
     let networkMock
     const graphQLRequest = vi.fn()
 
@@ -61,7 +73,10 @@ describe('getGraphQLClient()', () => {
       networkMock
         .intercept({ method: 'POST', path: '/' })
         .reply(200, ({ headers, body }) => {
-          graphQLRequest({ body: JSON.parse(body), headers })
+          graphQLRequest({
+            body: JSON.parse(/** @type {string} */ (body)),
+            headers
+          })
           return { errors: [{ message: error.message }], data: null }
         })
 
@@ -88,7 +103,10 @@ describe('getGraphQLClient()', () => {
       networkMock
         .intercept({ method: 'POST', path: '/' })
         .reply(200, ({ headers, body }) => {
-          graphQLRequest({ body: JSON.parse(body), headers })
+          graphQLRequest({
+            body: JSON.parse(/** @type {string} */ (body)),
+            headers
+          })
           return { data }
         })
 
@@ -129,7 +147,10 @@ describe('getGraphQLClient()', () => {
       networkMock
         .intercept({ method: 'POST', path: '/' })
         .reply(200, ({ headers, body }) => {
-          graphQLRequest({ body: JSON.parse(body), headers })
+          graphQLRequest({
+            body: JSON.parse(/** @type {string} */ (body)),
+            headers
+          })
           return { data }
         })
 

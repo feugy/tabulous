@@ -1,23 +1,8 @@
 // @ts-check
-/**
- * @typedef {import('.').AddPlayerArgs} AddPlayerArgs
- * @typedef {import('.').Friendship} Friendship
- * @typedef {import('.').FriendshipUpdate} FriendshipUpdate
- * @typedef {import('.').ListPlayersArgs} ListPlayersArgs
- * @typedef {import('.').LogInArgs} LogInArgs
- * @typedef {import('.').Player} Player
- * @typedef {import('.').PlayerWithTurnCredentials} PlayerWithTurnCredentials
- * @typedef {import('.').SearchPlayersArgs} SearchPlayersArgs
- * @typedef {import('.').TargetedPlayerArgs} TargetedPlayerArgs
- * @typedef {import('.').UpdateCurrentPlayerArgs} UpdateCurrentPlayerArgs
- * @typedef {import('./utils').GraphQLContext} GraphQLContext
- * @typedef {import('./utils').PubSubQueue} PubSubQueue
- */
-
 import { filter } from 'rxjs'
 
 import { makeToken } from '../plugins/utils.js'
-import repositories from '../repositories/index.js'
+import * as repositories from '../repositories/index.js'
 import services from '../services/index.js'
 import { hash, makeLogger } from '../utils/index.js'
 import { isAdmin, isAuthenticated } from './utils.js'
@@ -30,10 +15,11 @@ const logger = makeLogger('players-resolver')
  * The loader only resolve once, and do not fetched once the models are available.
  * @param {string} field - field name for which the loader is defined.
  * @param {string} idField - field storing the resolved id.
- * @returns {{ loader: import('mercurius').Loader<any, any, GraphQLContext>, opts: { cache: boolean } }} built loaders
+ * @returns built loaders
  */
 function buildPlayerLoader(field, idField) {
   return {
+    /** @type {import('mercurius').Loader<any, any, import('./utils').GraphQLContext>}*/
     async loader(queries) {
       const ids = queries.reduce(
         (/** @type {string[]} */ ids, { obj }) =>
@@ -74,8 +60,8 @@ export default {
        * Requires valid authentication.
        * @param {unknown} obj - graphQL object.
        * @param {unknown} args - query arguments:
-       * @param {GraphQLContext} context - graphQL context.
-       * @returns {PlayerWithTurnCredentials} current player with turn credentials.
+       * @param {import('./utils').GraphQLContext} context - graphQL context.
+       * @returns current player with turn credentials.
        */
       (obj, args, { player, conf, token }) => {
         logger.trace(
@@ -94,9 +80,9 @@ export default {
        * Returns players (except the current one) which username contains searched text.
        * Requires valid authentication.
        * @param {unknown} obj - graphQL object.
-       * @param {SearchPlayersArgs} args - query arguments.
-       * @param {GraphQLContext} context - graphQL context.
-       * @returns {Promise<Player[]>} list (potentially empty) of matching players.
+       * @param {import('.').SearchPlayersArgs} args - query arguments.
+       * @param {import('./utils').GraphQLContext} context - graphQL context.
+       * @returns list (potentially empty) of matching players.
        */
       (obj, { search, includeCurrent }, { player }) =>
         services.searchPlayers(search, player.id, !includeCurrent)
@@ -107,8 +93,8 @@ export default {
        * Returns a page or players.
        * Requires authentication and elevated privileges.
        * @param {unknown} obj - graphQL object.
-       * @param {ListPlayersArgs} args - query arguments, including:
-       * @returns {Promise<import('../repositories/abstract-repository').Page<Player>>} extract of the player list.
+       * @param {import('.').ListPlayersArgs} args - query arguments, including:
+       * @returns extract of the player list.
        */
       (obj, args) => repositories.players.list(args)
     ),
@@ -119,12 +105,10 @@ export default {
        * Requires valid authentication.
        * @param {unknown} obj - graphQL object.
        * @param {unknown} args - query arguments.
-       * @param {GraphQLContext} context - graphQL context.
-       * @returns {Promise<Friendship[]>} list (potentially empty) of friend players.
+       * @param {import('./utils').GraphQLContext} context - graphQL context.
+       * @returns list (potentially empty) of friend players.
        */
-      (obj, args, { player }) =>
-        // @ts-expect-error: player is enriched by loaders
-        services.listFriends(player.id)
+      (obj, args, { player }) => services.listFriends(player.id)
     )
   },
 
@@ -135,8 +119,8 @@ export default {
        * The clear password provided is hashed before being stored.
        * Requires authentication and elevated privileges.
        * @param {unknown} obj - graphQL object.
-       * @param {AddPlayerArgs} args - mutation arguments.
-       * @returns {Promise<Player>} the created player.
+       * @param {import('.').AddPlayerArgs} args - mutation arguments.
+       * @returns the created player.
        */
       async (obj, { id, username, password }) =>
         services.upsertPlayer({ id, username, password: hash(password) })
@@ -146,9 +130,9 @@ export default {
      * Authenticates an user from their user id.
      * Returns a token to allow browser issueing authenticated requests.
      * @param {unknown} obj - graphQL object.
-     * @param {LogInArgs} args - mutation arguments.
-     * @param {GraphQLContext} context - graphQL context.
-     * @returns {Promise<PlayerWithTurnCredentials>} authentified player with turn credentials.
+     * @param {import('.').LogInArgs} args - mutation arguments.
+     * @param {import('./utils').GraphQLContext} context - graphQL context.
+     * @returns authentified player with turn credentials.
      */
     logIn: async (obj, { id, password }, { conf }) => {
       logger.trace('authenticates manual player')
@@ -170,8 +154,8 @@ export default {
        * Record an user accepting the terms of service.
        * @param {unknown} obj - graphQL object.
        * @param {unknown} args - mutation arguments.
-       * @param {GraphQLContext} context - graphQL context.
-       * @returns {Promise<Player>} saved player.
+       * @param {import('./utils').GraphQLContext} context - graphQL context.
+       * @returns saved player.
        */
       (obj, args, { player }) => services.acceptTerms(player)
     ),
@@ -181,13 +165,13 @@ export default {
        * Updates current player's details.
        * Requires authentication.
        * @param {unknown} obj - graphQL object.
-       * @param {UpdateCurrentPlayerArgs} args - mutation arguments.
-       * @param {GraphQLContext} context - graphQL context.
-       * @returns {Promise<Player>} the updated player.
+       * @param {import('.').UpdateCurrentPlayerArgs} args - mutation arguments.
+       * @param {import('./utils').GraphQLContext} context - graphQL context.
+       * @returns the updated player.
        */
       async (obj, { username, avatar, usernameSearchable }, { player }) => {
         logger.trace('updates current player')
-        /** @type {Partial<Player>} */
+        /** @type {Partial<import('@tabulous/types').Player>} */
         const update = { id: player.id }
         if (username !== undefined) {
           // https://en.wikipedia.org/wiki/Latin_script_in_Unicode
@@ -221,8 +205,8 @@ export default {
        * Deletes an existing player account.
        * Requires authentication and elevated privileges.
        * @param {unknown} obj - graphQL object.
-       * @param {TargetedPlayerArgs} args - mutation arguments.
-       * @returns {Promise<?Player>} deleted player account, or null.
+       * @param {import('.').TargetedPlayerArgs} args - mutation arguments.
+       * @returns deleted player account, or null.
        */
       (obj, { id }) => repositories.players.deleteById(id)
     ),
@@ -232,9 +216,9 @@ export default {
        * Sends a friend request from one player to another one.
        * Requires valid authentication.
        * @param {unknown} obj - graphQL object.
-       * @param {TargetedPlayerArgs} args - mutation arguments.
-       * @param {GraphQLContext} context - graphQL context.
-       * @returns {Promise<boolean>} true if the operation succeeds.
+       * @param {import('.').TargetedPlayerArgs} args - mutation arguments.
+       * @param {import('./utils').GraphQLContext} context - graphQL context.
+       * @returns true if the operation succeeds.
        */
       (obj, { id }, { player }) => services.requestFriendship(player, id)
     ),
@@ -244,9 +228,9 @@ export default {
        * Accepts a friend request from another player.
        * Requires valid authentication.
        * @param {unknown} obj - graphQL object.
-       * @param {TargetedPlayerArgs} args - mutation arguments.
-       * @param {GraphQLContext} context - graphQL context.
-       * @returns {Promise<boolean>} true if the operation succeeds.
+       * @param {import('.').TargetedPlayerArgs} args - mutation arguments.
+       * @param {import('./utils').GraphQLContext} context - graphQL context.
+       * @returns true if the operation succeeds.
        */
       (obj, { id }, { player }) => services.acceptFriendship(player, id)
     ),
@@ -256,9 +240,9 @@ export default {
        * Declines a friend request or ends existing friendship with another player.
        * Requires valid authentication.
        * @param {unknown} obj - graphQL object.
-       * @param {TargetedPlayerArgs} args - mutation arguments.
-       * @param {GraphQLContext} context - graphQL context.
-       * @returns {Promise<boolean>} true if the operation succeeds.
+       * @param {import('.').TargetedPlayerArgs} args - mutation arguments.
+       * @param {import('./utils').GraphQLContext} context - graphQL context.
+       * @returns true if the operation succeeds.
        */
       (obj, { id }, { player }) => services.endFriendship(player, id)
     )
@@ -272,9 +256,8 @@ export default {
          * Requires valid authentication.
          * @param {unknown} obj - graphQL object.
          * @param {object} args - subscription arguments.
-         * @param {GraphQLContext} context - graphQL context.
-         * @yields {FriendshipUpdate}
-         * @returns {PubSubQueue}
+         * @param {import('./utils').GraphQLContext} context - graphQL context.
+         * @yields {import('.').FriendshipUpdate}
          */
         async (obj, args, { player, pubsub }) => {
           const topic = `friendship-${player.id}`

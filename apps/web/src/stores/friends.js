@@ -1,11 +1,4 @@
 // @ts-check
-/**
- * @typedef {import('rxjs').Subscription} Subscription
- * @typedef {import('@src/graphql').PlayerFragment} Player
- * @typedef {import('@src/graphql').Friendship} Friendship
- * @typedef {import('@src/graphql').FriendshipUpdate} FriendshipUpdate
- */
-
 import * as graphQL from '@src/graphql'
 import { BehaviorSubject } from 'rxjs'
 
@@ -16,9 +9,9 @@ import { notify } from './notifications'
 
 const logger = makeLogger('friends')
 
-/** @type {Subscription} */
+/** @type {import('rxjs').Subscription} */
 let listFriendsSubsciprion
-/** @type {(a: Friendship, b: Friendship) => number} */
+/** @type {(a: import('@src/graphql').Friendship, b: import('@src/graphql').Friendship) => number} */
 let byUsername
 buildLocaleComparator('player.username').subscribe(
   value => (byUsername = value)
@@ -33,7 +26,9 @@ export function listFriends() {
   if (listFriendsSubsciprion) {
     listFriendsSubsciprion.unsubscribe()
   }
-  const friends$ = new BehaviorSubject(/** @type {Friendship[]} */ ([]))
+  const friends$ = new BehaviorSubject(
+    /** @type {import('@src/graphql').Friendship[]} */ ([])
+  )
   fetchFriendList(friends$)
 
   listFriendsSubsciprion = runSubscription(
@@ -45,7 +40,7 @@ export function listFriends() {
 
 /**
  * Request friendship with another player.
- * @param {Player} player - requested player.
+ * @param {import('@src/graphql').Player} player - requested player.
  */
 export async function requestFriendship(player) {
   logger.debug(`request friendship with ${player.username} (${player.id})`)
@@ -54,7 +49,7 @@ export async function requestFriendship(player) {
 
 /**
  * Accept friendship request from another player.
- * @param {Player} player - requesting player.
+ * @param {import('@src/graphql').Player} player - requesting player.
  */
 export async function acceptFriendship(player) {
   logger.debug(
@@ -65,7 +60,7 @@ export async function acceptFriendship(player) {
 
 /**
  * Decline friendship request or ends friendship with another player.
- * @param {Player} player - declined player.
+ * @param {import('@src/graphql').Player} player - declined player.
  */
 export async function endFriendship(player) {
   logger.debug(`friendship ended with ${player.username} (${player.id})`)
@@ -73,7 +68,7 @@ export async function endFriendship(player) {
 }
 
 async function fetchFriendList(
-  /** @type {BehaviorSubject<Friendship[]>} */ list$
+  /** @type {BehaviorSubject<import('@src/graphql').Friendship[]>} */ list$
 ) {
   logger.debug('fetch friends list')
   const friends = await runQuery(graphQL.listFriends, {}, false)
@@ -82,8 +77,8 @@ async function fetchFriendList(
 }
 
 function applyFriendshipUpdate(
-  /** @type {BehaviorSubject<Friendship[]>} */ list$,
-  /** @type {FriendshipUpdate} */ update
+  /** @type {BehaviorSubject<import('@src/graphql').Friendship[]>} */ list$,
+  /** @type {import('@src/graphql').FriendshipUpdate} */ update
 ) {
   logger.debug(update, 'processing friendship update')
   let notificationLabel = null
@@ -105,7 +100,7 @@ function applyFriendshipUpdate(
     list$.next(
       list$.value.map(friendship =>
         friendship.player.id === update.from.id
-          ? { player: friendship.player }
+          ? { player: friendship.player, isRequest: false, isProposal: false }
           : friendship
       )
     )

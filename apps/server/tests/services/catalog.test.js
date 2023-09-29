@@ -1,8 +1,4 @@
 // @ts-check
-/**
- * @typedef {import('../../src/services/players').Player} Player
- */
-
 import { faker } from '@faker-js/faker'
 import { join } from 'path'
 import {
@@ -15,7 +11,7 @@ import {
   it
 } from 'vitest'
 
-import repositories from '../../src/repositories/index.js'
+import * as repositories from '../../src/repositories/index.js'
 import {
   grantAccess,
   listCatalog,
@@ -24,7 +20,7 @@ import {
 import { clearDatabase, getRedisTestUrl } from '../test-utils.js'
 
 describe('Catalog service', () => {
-  const players = /** @type {Player[]} */ ([
+  const players = /** @type {import('@tabulous/types').Player[]} */ ([
     {
       id: faker.string.uuid(),
       username: faker.person.fullName(),

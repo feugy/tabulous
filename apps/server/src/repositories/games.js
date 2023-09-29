@@ -1,18 +1,11 @@
 // @ts-check
-/**
- * @typedef {import('../services/games').GameData} Game
- * @typedef {import('./abstract-repository').SaveTransactionContext<Game>} SaveTransactionContext
- * @typedef {import('./abstract-repository').DeleteTransactionContext<Game>} DeleteTransactionContext
- * @typedef {SaveTransactionContext['transaction']} Transaction
- */
-
 import {
   AbstractRepository,
   deserializeArray,
   deserializeNumber
 } from './abstract-repository.js'
 
-/** @extends AbstractRepository<Game> */
+/** @extends AbstractRepository<import('@tabulous/types').GameData> */
 class GameRepository extends AbstractRepository {
   static fields = [
     { name: 'created', deserialize: deserializeNumber },
@@ -33,7 +26,7 @@ class GameRepository extends AbstractRepository {
    * Fetches game from a Redis Hash.
    * @override
    * @param {string} key - the Redis key.
-   * @returns {Promise<?Game>} the corresponding model.
+   * @returns the corresponding model.
    */
   async _fetchModel(key) {
     const data = await super._fetchModel(key)
@@ -47,7 +40,7 @@ class GameRepository extends AbstractRepository {
   /**
    * Saves player as Redis Hash.
    * @override
-   * @param {import('./abstract-repository').SaveModelContext<Game>} context - the save operation context.
+   * @param {import('./abstract-repository').SaveModelContext<import('@tabulous/types').GameData>} context - the save operation context.
    */
   _saveModel({ transaction, model, key }) {
     const { id, created, playerIds, guestIds, ownerId, ...otherFields } = model
@@ -64,7 +57,7 @@ class GameRepository extends AbstractRepository {
   /**
    * Builds the key of the set holding all game ids of a given player.
    * @param {string} playerId - the concerned player id.
-   * @returns {string} the corresponding key.
+   * @returns the corresponding key.
    */
   _buildPlayerKey(playerId) {
     return `index:${this.name}:players:${playerId}`
@@ -73,10 +66,10 @@ class GameRepository extends AbstractRepository {
   /**
    * When saving games, updates guests' and players' respecive player sets of games.
    * @override
-   * @param {SaveTransactionContext} context - contextual information.
+   * @param {import('./abstract-repository').SaveTransactionContext<import('@tabulous/types').GameData>} context - contextual information.
    */
   _enrichSaveTransaction(context) {
-    const transaction = /** @type {Transaction} */ (
+    const transaction = /** @type {import('ioredis').ChainableCommander} */ (
       super._enrichSaveTransaction(context)
     )
     removeGamesFromPlayerSets.call(this, transaction, context.existings)
@@ -97,10 +90,10 @@ class GameRepository extends AbstractRepository {
   /**
    * When deleting games, removes them from player sets of games.
    * @override
-   * @param {DeleteTransactionContext} context - contextual information.
+   * @param {import('./abstract-repository').DeleteTransactionContext<import('@tabulous/types').GameData>} context - contextual information.
    */
   _enrichDeleteTransaction(context) {
-    const transaction = /** @type {Transaction} */ (
+    const transaction = /** @type {import('ioredis').ChainableCommander} */ (
       super._enrichDeleteTransaction(context)
     )
     removeGamesFromPlayerSets.call(this, transaction, context.models)
@@ -110,7 +103,7 @@ class GameRepository extends AbstractRepository {
   /**
    * Lists all games of a given player.
    * @param {string} playerId - id of the player for which games are returned.
-   * @returns {Promise<Game[]>} this player's games.
+   * @returns this player's games.
    */
   async listByPlayerId(playerId) {
     const ctx = { playerId }
@@ -119,9 +112,9 @@ class GameRepository extends AbstractRepository {
       return []
     }
     const ids = await this.client.smembers(this._buildPlayerKey(playerId))
-    const games = /** @type {Game[]} */ (await this.getById(ids.sort())).filter(
-      Boolean
-    )
+    const games = /** @type {import('@tabulous/types').GameData[]} */ (
+      await this.getById(ids.sort())
+    ).filter(Boolean)
     this.logger.debug(
       { ctx, res: games.map(({ kind, id }) => ({ id, kind })) },
       'listed games by player'
@@ -132,8 +125,8 @@ class GameRepository extends AbstractRepository {
 
 /**
  * @this {GameRepository}
- * @param {DeleteTransactionContext['transaction']} transaction
- * @param {DeleteTransactionContext['models']} models
+ * @param {import('./abstract-repository').DeleteTransactionContext<import('@tabulous/types').GameData>['transaction']} transaction
+ * @param {import('./abstract-repository').DeleteTransactionContext<import('@tabulous/types').GameData>['models']} models
  */
 function removeGamesFromPlayerSets(transaction, models) {
   for (const game of models) {

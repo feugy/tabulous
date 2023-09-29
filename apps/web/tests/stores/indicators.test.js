@@ -1,21 +1,4 @@
 // @ts-check
-/**
- * @typedef {import('@babylonjs/core').Engine} Engine
- * @typedef {import('@babylonjs/core').Scene} Scene
- * @typedef {import('@babylonjs/core').Mesh} Mesh
- * @typedef {import('@src/3d/managers/indicator').Indicator} Indicator
- * @typedef {import('@src/3d/managers/indicator').FeedbackIndicator} FeedbackIndicator
- * @typedef {import('@src/3d/managers/indicator').ManagedFeedback} ManagedFeedback
- * @typedef {import('@src/3d/managers/indicator').ManagedIndicator} ManagedIndicator
- * @typedef {import('@src/3d/managers/indicator').ManagedPointer} ManagedPointer
- * @typedef {import('@src/utils/game-interaction').ActionMenuProps} ActionMenuProps
- * @typedef {import('@src/stores/game-manager').Player} Player
- */
-/**
- * @template T
- * @typedef {import('rxjs').BehaviorSubject<T>} BehaviorSubject
- */
-
 import { faker } from '@faker-js/faker'
 import {
   AnchorBehaviorName,
@@ -47,7 +30,9 @@ import { beforeAll, beforeEach, describe, expect, it, vi } from 'vitest'
 
 vi.mock('@src/stores/game-engine', async () => {
   const { BehaviorSubject } = await import('rxjs')
-  const indicators = new BehaviorSubject(/** @type {Indicator[]} */ ([]))
+  const indicators = new BehaviorSubject(
+    /** @type {import('@src/3d/managers').Indicator[]} */ ([])
+  )
   const selectedMeshes = new BehaviorSubject(new Set())
   return {
     indicators,
@@ -62,13 +47,13 @@ vi.mock('@src/stores/game-manager', async () => {
 })
 
 describe('Indicators store', () => {
-  /** @type {Engine} */
+  /** @type {import('@babylonjs/core').Engine} */
   let engine
-  /** @type {Scene} */
+  /** @type {import('@babylonjs/core').Scene} */
   let scene
-  /** @type {Mesh[]} */
+  /** @type {import('@babylonjs/core').Mesh[]} */
   let cards
-  /** @type {Player[]} */
+  /** @type {import('@src/stores').PlayerWithPref[]} */
   let players
   /** @type {import('@src/3d/managers').Managers} */
   let managers
@@ -78,12 +63,14 @@ describe('Indicators store', () => {
   const renderHeight = 1024
   const canvas = document.createElement('canvas')
   const hand = document.createElement('div')
-  const actionMenuProps = /** @type {BehaviorSubject<?ActionMenuProps>} */ (
-    actualActionMenuProps
-  )
-  const gamePlayerById = /** @type {BehaviorSubject<Map<string, Player>>} */ (
-    actualGamePlayerById
-  )
+  const actionMenuProps =
+    /** @type {import('rxjs').BehaviorSubject<?import('@src/utils/game-interaction').ActionMenuProps>} */ (
+      actualActionMenuProps
+    )
+  const gamePlayerById =
+    /** @type {import('rxjs').BehaviorSubject<Map<string, import('@src/stores').PlayerWithPref>>} */ (
+      actualGamePlayerById
+    )
 
   configures3dTestEngine(
     created => {
@@ -120,14 +107,14 @@ describe('Indicators store', () => {
       ]
 
       managers.indicator.onChangeObservable.add(
-        /** @type {BehaviorSubject<Indicator[]>} */ (indicators).next.bind(
+        /** @type {import('rxjs').BehaviorSubject<import('@src/3d/managers').Indicator[]>} */ (
           indicators
-        )
+        ).next.bind(indicators)
       )
       managers.selection.onSelectionObservable.add(
-        /** @type {BehaviorSubject<Set<Mesh>>} */ (selectedMeshes).next.bind(
+        /** @type {import('rxjs').BehaviorSubject<Set<import('@babylonjs/core').Mesh>>} */ (
           selectedMeshes
-        )
+        ).next.bind(selectedMeshes)
       )
     },
     { renderWidth, renderHeight }
@@ -252,7 +239,7 @@ describe('Indicators store', () => {
     })
 
     it('has feedback', async () => {
-      /** @type {FeedbackIndicator} */
+      /** @type {import('@src/3d/managers').FeedbackIndicator} */
       const indicator = { position: [1, 0, -1], action: 'flip' }
       managers.indicator.registerFeedback(indicator)
       await waitNextRender(scene)
@@ -304,7 +291,7 @@ describe('Indicators store', () => {
       })
 
       it('has no feedback', async () => {
-        /** @type {FeedbackIndicator} */
+        /** @type {import('@src/3d/managers').FeedbackIndicator} */
         const indicator = { position: [1, 0, -1], action: 'pop' }
         managers.indicator.registerFeedback(indicator)
         await waitNextRender(scene)
@@ -340,7 +327,9 @@ describe('Indicators store', () => {
           ?.fromState({ stackIds: ['card5'] })
         expectIndicators()
         actionMenuProps.next(
-          /** @type {ActionMenuProps} */ ({ interactedMesh: card5 })
+          /** @type {import('@src/utils/game-interaction').ActionMenuProps} */ ({
+            interactedMesh: card5
+          })
         )
         expectIndicators([
           {
@@ -358,7 +347,9 @@ describe('Indicators store', () => {
           ?.fromState({ stackIds: ['card2', 'card4'] })
         expectIndicators()
         actionMenuProps.next(
-          /** @type {ActionMenuProps} */ ({ interactedMesh: card3 })
+          /** @type {import('@src/utils/game-interaction').ActionMenuProps} */ ({
+            interactedMesh: card3
+          })
         )
         expectIndicators()
       })
@@ -386,7 +377,9 @@ describe('Indicators store', () => {
           }
         ])
         actionMenuProps.next(
-          /** @type {ActionMenuProps} */ ({ interactedMesh: card4 })
+          /** @type {import('@src/utils/game-interaction').ActionMenuProps} */ ({
+            interactedMesh: card4
+          })
         )
         expectIndicators([
           {
@@ -427,7 +420,7 @@ describe('Indicators store', () => {
       })
 
       it('has feedback', async () => {
-        /** @type {FeedbackIndicator} */
+        /** @type {import('@src/3d/managers').FeedbackIndicator} */
         const indicator = { position: [1, 0, -1], action: 'draw' }
         managers.indicator.registerFeedback(indicator)
         await waitNextRender(scene)
@@ -435,7 +428,7 @@ describe('Indicators store', () => {
       })
 
       it('retains feedback for 3 seconds', async () => {
-        /** @type {FeedbackIndicator} */
+        /** @type {import('@src/3d/managers').FeedbackIndicator} */
         const indicator = { position: [1, 0, -1], action: 'rotate' }
         managers.indicator.registerFeedback(indicator)
         await waitNextRender(scene)
@@ -605,20 +598,20 @@ describe('Indicators store', () => {
   })
 
   function expectIndicators(
-    /** @type {Partial<Record<String, ?> & Indicator>[]} */ expected = []
+    /** @type {Partial<Record<String, ?> & import('@src/3d/managers').Indicator>[]} */ expected = []
   ) {
     expectObjectOnScreen(get(visibleIndicators$), expected)
   }
 
   function expectFeedbacks(
-    /** @type {Partial<Record<String, ?> & Indicator>[]} */ expected = []
+    /** @type {Partial<Record<String, ?> & import('@src/3d/managers').Indicator>[]} */ expected = []
   ) {
     expectObjectOnScreen(get(visibleFeedbacks$), expected)
   }
 
   function expectObjectOnScreen(
-    /** @type {Indicator[]} */ actuals,
-    /** @type {Partial<Record<String, ?> & Indicator>[]} */ expected = []
+    /** @type {import('@src/3d/managers').Indicator[]} */ actuals,
+    /** @type {Partial<Record<String, ?> & import('@src/3d/managers').Indicator>[]} */ expected = []
   ) {
     expect(actuals).toHaveLength(expected.length)
     for (const [
@@ -626,7 +619,9 @@ describe('Indicators store', () => {
       { screenPosition, id, mesh, ...otherProps }
     ] of expected.entries()) {
       const { mesh: actualMesh, ...actual } =
-        /** @type {Indicator & {mesh?: Mesh}} */ (actuals[rank])
+        /** @type {import('@src/3d/managers').Indicator & {mesh?: import('@babylonjs/core').Mesh}} */ (
+          actuals[rank]
+        )
       expect(actual, `indicator #${rank}`).toHaveProperty('id', id)
       expect(actual, `indicator #${rank}`).toEqual(
         expect.objectContaining(otherProps)

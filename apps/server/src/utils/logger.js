@@ -1,16 +1,11 @@
 // @ts-check
-/**
- * @typedef {import('pino').Logger} Logger
- * @typedef {import('pino').LevelWithSilent} Level
- */
-
 import { AsyncLocalStorage } from 'node:async_hooks'
 
 import pino from 'pino'
 
 /** @typedef {Record<string, unknown>} LogContext */
 
-/** @type {Map<string, Logger>} */
+/** @type {Map<string, import('pino').Logger>} */
 const loggers = new Map()
 
 /** @type {AsyncLocalStorage<LogContext>} */
@@ -18,7 +13,7 @@ const logContext = new AsyncLocalStorage()
 
 /**
  * Initial level values for loggers
- * @type {Record<string, Level>}
+ * @type {Record<string, import('pino').LevelWithSilent>}
  */
 export const currentLevels = {
   'auth-plugin': 'warn',
@@ -61,7 +56,7 @@ export function addToLogContext(object) {
  * A loggers will automatically include data from the curret log context.
  * @param {string} [name = 'server'] - retrieved logger's name.
  * @param {LogContext} [initialObject] - optional contextual object attached to this logger.
- * @returns {Logger} the built (or cached) logger.
+ * @returns the built (or cached) logger.
  */
 export function makeLogger(name = 'server', initialObject) {
   if (!loggers.has(name)) {
@@ -81,14 +76,13 @@ export function makeLogger(name = 'server', initialObject) {
       })
     )
   }
-  // @ts-expect-error: Type 'Logger | undefined' is not assignable to type 'Logger'
-  return loggers.get(name)
+  return /** @type {import('pino').Logger} */ (loggers.get(name))
 }
 
 /**
  * Configures loggers' log level.
  * Will ignore unknown loggers and unsupported levels
- * @param {Record<string, Level>} levels - a record which property names are logger names and values are new level value.
+ * @param {Record<string, import('pino').LevelWithSilent>} levels - a record which property names are logger names and values are new level value.
  */
 export function configureLoggers(levels) {
   for (const name in levels) {

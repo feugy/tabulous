@@ -13,8 +13,8 @@ import { applyInitialTransform, setExtras } from '../utils/mesh'
  * Tiles are boxes, so their position is their center.
  * A tile's texture must have 2 faces, back then front, aligned horizontally.
  * By default tiles have a width and depth of 3 with a border radius of 0.4.
- * @param {Omit<import('@src/3d/utils/behaviors').SerializedMesh, 'shape'>} params - token parameters.
- * @param {import('@src/3d/managers').Managers} managers - current managers.
+ * @param {Omit<import('@tabulous/types').Mesh, 'shape'>} params - token parameters.
+ * @param {import('../managers').Managers} managers - current managers.
  * @param {import('@babylonjs/core').Scene} scene - scene for the created mesh.
  * @returns the created tile mesh.
  */
@@ -78,7 +78,7 @@ export function createRoundedTile(
   setExtras(mesh, {
     metadata: {
       serialize: () => ({
-        shape: /** @type {'roundedTile'} */ (mesh.name),
+        shape: /** @type {import('@tabulous/types').Shape} */ (mesh.name),
         id,
         x: mesh.absolutePosition.x,
         y: mesh.absolutePosition.y,
@@ -102,7 +102,7 @@ export function createRoundedTile(
 }
 
 /**
- * @param {Required<Pick<import('@src/3d/utils/behaviors').SerializedMesh, 'borderRadius'|'width'|'height'|'depth'> & { faceUV: Vector4 }>} cornerParams - corner parameters
+ * @param {Required<Pick<import('@tabulous/types').Mesh, 'borderRadius'|'width'|'height'|'depth'> & { faceUV: Vector4 }>} cornerParams - corner parameters
  * @param {boolean} isTop  - whether if this corner is on the top or the bottom.
  * @param {boolean} isLeft - whether if this corner is on the left or the right.
  * @returns Constructive Solid Geometry built for this corner.

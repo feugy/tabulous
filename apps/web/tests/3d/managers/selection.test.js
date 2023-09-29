@@ -1,9 +1,4 @@
 // @ts-check
-/**
- * @typedef {import('@babylonjs/core').Mesh} Mesh
- * @typedef {import('@babylonjs/core').Scene} Scene
- */
-
 import { Vector3 } from '@babylonjs/core/Maths/math.vector'
 import { faker } from '@faker-js/faker'
 import { AnchorBehavior } from '@src/3d/behaviors'
@@ -16,9 +11,9 @@ import {
 } from '../../test-utils'
 
 describe('managers.Selection', () => {
-  /** @type {Scene} */
+  /** @type {import('@babylonjs/core').Scene} */
   let scene
-  /** @type {Scene} */
+  /** @type {import('@babylonjs/core').Scene} */
   let handScene
   /** @type {import('@src/3d/managers').Managers} */
   let managers
@@ -197,7 +192,7 @@ describe('managers.Selection', () => {
     })
 
     describe('apply()', () => {
-      /** @type {Mesh[]} */
+      /** @type {import('@babylonjs/core').Mesh[]} */
       let meshes
 
       beforeEach(() => {
@@ -282,7 +277,7 @@ describe('managers.Selection', () => {
     })
 
     describe('given some selected meshes', () => {
-      /** @type {Mesh[]} */
+      /** @type {import('@babylonjs/core').Mesh[]} */
       let meshes
 
       beforeEach(() => {
@@ -377,7 +372,7 @@ describe('managers.Selection', () => {
     })
 
     describe('given some meshes selected by peer', () => {
-      /** @type {Mesh[]} */
+      /** @type {import('@babylonjs/core').Mesh[]} */
       let meshes
 
       beforeEach(() => {
@@ -447,7 +442,7 @@ describe('managers.Selection', () => {
     })
 
     describe('given some meshes', () => {
-      /** @type {Mesh[]} */
+      /** @type {import('@babylonjs/core').Mesh[]} */
       let meshes
 
       beforeEach(() => {
@@ -564,7 +559,7 @@ describe('managers.Selection', () => {
   })
 
   function expectSelection(
-    /** @type {Mesh[]} */ expectedMeshes,
+    /** @type {import('@babylonjs/core').Mesh[]} */ expectedMeshes,
     /** @type {?string|undefined} */ color
   ) {
     expect([...managers.selection.meshes].map(({ id }) => id)).toEqual(
@@ -577,7 +572,7 @@ describe('managers.Selection', () => {
 })
 
 function expectSelected(
-  /** @type {Mesh} */ mesh,
+  /** @type {import('@babylonjs/core').Mesh} */ mesh,
   /** @type {?string|undefined} */ color,
   isSelected = true,
   /** @type {string|undefined} */ message = undefined

@@ -14,8 +14,8 @@ import type {
   JoinGameArgs,
   KickArgs,
   LogInArgs,
-  Player,
-  PlayerWithTurnCredentials as FullPlayerWithTurnCredentials,
+  Player as FullPlayer,
+  PlayerWithTurnCredentials,
   PromoteGameArgs,
   ReceiveGameUpdatesArgs,
   SaveGameArgs,
@@ -24,17 +24,19 @@ import type {
   Signal,
   TargetedPlayerArgs,
   UpdateCurrentPlayerArgs
-} from '@tabulous/server/src/graphql'
+} from '@tabulous/server/graphql'
 import type { TypedDocumentNode } from '@urql/core'
 
 declare module '@src/graphql' {
   // catalog.graphql
-  type CatalogItem = Omit<FullCatalogItem, 'maxAge'>
+  type CatalogItem = FullCatalogItem
+
   const listCatalog: TypedDocumentNode<{
     listCatalog: CatalogItem[]
   }>
 
   // games.graphql
+  type AuthenticatedPlayer = DeepRequired<PlayerWithTurnCredentials>
   type LightPlayer = Pick<
     GamePlayer,
     'id' | 'username' | 'avatar' | 'currentGameId' | 'isGuest' | 'isOwner'
@@ -100,16 +102,16 @@ declare module '@src/graphql' {
   >
 
   // players.graphql
-  type PlayerFragment = Pick<Player, 'id' | 'username' | 'avatar'>
-  type PlayerWithSearchable = PlayerFragment &
-    Pick<Player, 'usernameSearchable'>
-  type PlayerWithTurnCredentials = FullPlayerWithTurnCredentials
-  type FullPlayer = Player
-  type Friendship = { player: PlayerFragment } & Pick<
+  type Player = Pick<FullPlayer, 'id' | 'username' | 'avatar'>
+  type PlayerWithSearchable = Pick<
+    FullPlayer,
+    'id' | 'username' | 'avatar' | 'usernameSearchable'
+  >
+  type Friendship = { player: Player } & Pick<
     FullFriendship,
     'isProposal' | 'isRequest'
   >
-  type FriendshipUpdate = { from: PlayerFragment } & Pick<
+  type FriendshipUpdate = { from: Player } & Pick<
     FullFriendshipUpdate,
     'accepted' | 'declined' | 'proposed' | 'requested'
   >
@@ -126,13 +128,10 @@ declare module '@src/graphql' {
     TargetedPlayerArgs
   >
   const getCurrentPlayer: TypedDocumentNode<{
-    getCurrentPlayer: DeepRequired<PlayerWithTurnCredentials>
+    getCurrentPlayer: AuthenticatedPlayer
   }>
   const listFriends: TypedDocumentNode<{ listFriends: Friendship[] }>
-  const logIn: TypedDocumentNode<
-    { logIn: DeepRequired<PlayerWithTurnCredentials> },
-    LogInArgs
-  >
+  const logIn: TypedDocumentNode<{ logIn: AuthenticatedPlayer }, LogInArgs>
   const receiveFriendshipUpdates: TypedDocumentNode<{
     receiveFriendshipUpdates: FriendshipUpdate
   }>
@@ -141,7 +140,7 @@ declare module '@src/graphql' {
     TargetedPlayerArgs
   >
   const searchPlayers: TypedDocumentNode<
-    { searchPlayers: PlayerFragment[] },
+    { searchPlayers: Player[] },
     Pick<SearchPlayersArgs, 'search'>
   >
   const setUsernameSearchability: TypedDocumentNode<

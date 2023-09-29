@@ -1,12 +1,7 @@
 // @ts-check
-/**
- * @typedef {import('@tabulous/server/src/graphql').Anchor} Anchor
- * @typedef {import('@tabulous/server/src/graphql').Mesh} Mesh
- */
-
 import { counts, faceUVs, sizes } from '../constants.js'
 
-/** @returns {Mesh} */
+/** @returns {import('@tabulous/types').Mesh} */
 export function buildBoard() {
   return {
     shape: 'roundedTile',
@@ -20,7 +15,7 @@ export function buildBoard() {
 }
 
 function buildPawnAnchors() {
-  /** @type {Anchor[]} */
+  /** @type {import('@tabulous/types').Anchor[]} */
   const anchors = []
   const spacing = {
     x: sizes.board.width / counts.columns,

@@ -1,9 +1,4 @@
 // @ts-check
-/**
- * @template T
- * @typedef {import('rxjs').BehaviorSubject<T>} BehaviorSubject
- */
-
 import { faker } from '@faker-js/faker'
 import FPSViewer from '@src/routes/[[lang=lang]]/(auth)/game/[gameId]/FPSViewer.svelte'
 import { fps as actualFps } from '@src/stores/game-engine'
@@ -26,7 +21,7 @@ vi.mock('@src/stores/game-engine', async () => {
   }
 })
 
-const fps = /** @type {BehaviorSubject<string>} */ (actualFps)
+const fps = /** @type {import('rxjs').BehaviorSubject<string>} */ (actualFps)
 
 describe('FPSViewer connected component', () => {
   beforeEach(() => {

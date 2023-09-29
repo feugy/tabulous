@@ -1,11 +1,4 @@
 // @ts-check
-/**
- * @typedef {import('@babylonjs/core').Mesh} Mesh
- * @typedef {import('@babylonjs/core').Scene} Scene
- * @typedef {import('@src/3d/behaviors').MoveBehavior} MoveBehavior
- * @typedef {import('@src/3d/utils').BehaviorNames} BehaviorNames
- */
-
 import { faker } from '@faker-js/faker'
 import {
   LockBehavior,
@@ -23,7 +16,7 @@ describe('LockBehavior', () => {
 
   /** @type {import('vitest').Spy<import('@src/3d/managers').IndicatorManager['registerFeedback']>} */
   let registerFeedbackSpy
-  /** @type {Scene} */
+  /** @type {import('@babylonjs/core').Scene} */
   let scene
   /** @type {import('@src/3d/managers').Managers} */
   let managers
@@ -108,7 +101,7 @@ describe('LockBehavior', () => {
   })
 
   describe('given attached to mesh with no behavior', () => {
-    /** @type {Mesh} */
+    /** @type {import('@babylonjs/core').Mesh} */
     let mesh
     /** @type {LockBehavior} */
     let behavior
@@ -199,11 +192,11 @@ describe('LockBehavior', () => {
         )
     }
   ])('given attached to $title', ({ buildMesh, companionName }) => {
-    /** @type {Mesh} */
+    /** @type {import('@babylonjs/core').Mesh} */
     let mesh
     /** @type {LockBehavior} */
     let behavior
-    /** @type {MoveBehavior} */
+    /** @type {import('@src/3d/behaviors').MoveBehavior} */
     let companion
 
     beforeEach(() => {
@@ -246,7 +239,7 @@ describe('LockBehavior', () => {
   })
 
   describe('given attached to a movable and stackable mesh', () => {
-    /** @type {Mesh[]} */
+    /** @type {import('@babylonjs/core').Mesh[]} */
     let meshes
 
     beforeEach(() => {
@@ -338,10 +331,12 @@ describe('LockBehavior', () => {
   })
 })
 
-function getMovable(/** @type {Mesh} */ mesh) {
-  return /** @type {MoveBehavior} */ (mesh.getBehaviorByName(MoveBehaviorName))
+function getMovable(/** @type {import('@babylonjs/core').Mesh} */ mesh) {
+  return /** @type {import('@src/3d/behaviors').MoveBehavior} */ (
+    mesh.getBehaviorByName(MoveBehaviorName)
+  )
 }
 
-function getLockable(/** @type {Mesh} */ mesh) {
+function getLockable(/** @type {import('@babylonjs/core').Mesh} */ mesh) {
   return /** @type {LockBehavior} */ (mesh.getBehaviorByName(LockBehaviorName))
 }

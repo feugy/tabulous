@@ -1,10 +1,4 @@
 // @ts-check
-/** @typedef {import('@src/common').Locale} Locale */
-/**
- * @template T
- * @typedef {import('rxjs').BehaviorSubject<T>} BehaviorSubject
- */
-
 import { initLocale } from '@src/common'
 import AcceptTermsPage from '@src/routes/[[lang=lang]]/accept-terms/+page.svelte'
 import { fireEvent, render, screen } from '@testing-library/svelte'
@@ -19,11 +13,11 @@ vi.mock('$app/stores', () => {
   return { page: new BehaviorSubject(undefined) }
 })
 
-/** @type {BehaviorSubject<{ url: URL, route: Object, params: { lang: Locale|undefined }}>} */
+/** @type {import('rxjs').BehaviorSubject<{ url: URL, route: Object, params: { lang: import('@src/common').Locale|undefined }}>} */
 const page = /** @type {?} */ (stores.page)
 
 describe.each(
-  /** @type {{ title: String, lang: Locale|undefined, urlRoot: string }[]} */ ([
+  /** @type {{ title: String, lang: import('@src/common').Locale|undefined, urlRoot: string }[]} */ ([
     { title: '/', lang: undefined, urlRoot: '' },
     { title: '/en', lang: 'en', urlRoot: '/en' }
   ])

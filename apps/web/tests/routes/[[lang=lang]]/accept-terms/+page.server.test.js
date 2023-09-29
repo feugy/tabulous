@@ -1,9 +1,4 @@
 // @ts-check
-/**
- * @typedef {import('@src/graphql').PlayerWithTurnCredentials} PlayerWithTurnCredentials
- * @typedef {import('vitest').Mock<?, ?>} Mock
- */
-
 import { faker } from '@faker-js/faker'
 import { actions } from '@src/routes/[[lang=lang]]/accept-terms/+page.server'
 import {
@@ -17,7 +12,7 @@ vi.mock('@src/stores/graphql-client', () => ({
   runMutation: vi.fn()
 }))
 
-const runMutation = /** @type {Mock} */ (originalRunMutation)
+const runMutation = vi.mocked(originalRunMutation)
 
 describe.each([
   { title: '/', lang: undefined, urlRoot: '' },

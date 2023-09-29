@@ -1,23 +1,7 @@
 // @ts-check
 /**
- * @typedef {import('@babylonjs/core').Engine} Engine
- * @typedef {import('@babylonjs/core').Mesh} Mesh
- * @typedef {import('@babylonjs/core').Scene} Scene
- * @typedef {import('@src/3d/utils').ScreenPosition} ScreenPosition
- * @typedef {import('@src/utils/game-interaction').ActionMenuProps} ActionMenuProps
- * @typedef {import('@src/utils/game-interaction').MenuItem} MenuItem
- * @typedef {import('@src/types').MeshMetadata} MeshMetadata
- * @typedef {import('@tabulous/server/src/graphql').ActionName} ActionName
- * @typedef {import('@tabulous/server/src/graphql').Mesh} SerializedMesh
- * @typedef {import('rxjs').Subscription} Subscription
- */
-/**
- * @template {any[]} P, R
- * @typedef {import('vitest').Mock<P, R>} Mock
- */
-/**
  * @template {Record<string, ?>} T
- * @typedef {{[K in keyof T]: T[K] extends () => any ? Mock<Parameters<T[K]>, ReturnType<T[K]>> : T[K]}} MockedObject
+ * @typedef {{[K in keyof T]: T[K] extends () => any ? import('vitest').FunctionMock<T[K]> : T[K]}} MockedObject
  */
 
 import { Vector3 } from '@babylonjs/core/Maths/math.vector'
@@ -51,7 +35,7 @@ import { configures3dTestEngine, createBox, sleep } from '../test-utils'
 
 vi.mock('@src/3d/managers/camera')
 
-/** @typedef {Mesh & { metadata: Record<string, ?> & MockedObject<Required<MeshMetadata> & { canPush: Mock<[Mesh], boolean>, canIncrement: Mock<[Mesh], boolean>}>  }} MockedMesh */
+/** @typedef {import('@babylonjs/core').Mesh & { metadata: Record<string, ?> & MockedObject<Required<import('@src/types').MeshMetadata> & { canPush: import('vitest').Mock<[import('@babylonjs/core').Mesh], boolean>, canIncrement: import('vitest').Mock<[import('@babylonjs/core').Mesh], boolean>}>  }} MockedMesh */
 
 /** @type {typeof import('@src/3d/behaviors/movable').MoveBehavior} */
 let MoveBehavior
@@ -73,18 +57,18 @@ const {
 } = actionNames
 
 describe('Game interaction model', () => {
-  /** @type {Engine} */
+  /** @type {import('@babylonjs/core').Engine} */
   let engine
-  /** @type {Scene} */
+  /** @type {import('@babylonjs/core').Scene} */
   let scene
-  /** @type {Subscription[]} */
+  /** @type {import('rxjs').Subscription[]} */
   let subscriptions
   /** @type {MockedMesh[]} */
   let meshes
   /** @type {import('@src/3d/managers').Managers} */
   let managers
   const actionMenuProps$ = new BehaviorSubject(
-    /** @type {?ActionMenuProps} */ (null)
+    /** @type {?import('@src/utils/game-interaction').ActionMenuProps} */ (null)
   )
   const hoverDelay = 100
 
@@ -95,19 +79,20 @@ describe('Game interaction model', () => {
       [buttonIds.button1, [flip]],
       [buttonIds.button2, [rotate]]
     ])
-    engine.actionNamesByKey = /** @type {Map<string, ActionName[]>} */ (
-      new Map([
-        ['f', [flip]],
-        ['r', [rotate]],
-        ['l', [toggleLock]],
-        ['d', [draw, play]],
-        ['s', [reorder]],
-        ['g', [push, increment]],
-        ['u', [pop, decrement]],
-        ['v', [detail]],
-        ['k', ['unknown']]
-      ])
-    )
+    engine.actionNamesByKey =
+      /** @type {Map<string, import('@tabulous/types').ActionName[]>} */ (
+        new Map([
+          ['f', [flip]],
+          ['r', [rotate]],
+          ['l', [toggleLock]],
+          ['d', [draw, play]],
+          ['s', [reorder]],
+          ['g', [push, increment]],
+          ['u', [pop, decrement]],
+          ['v', [detail]],
+          ['k', ['unknown']]
+        ])
+      )
   })
 
   beforeAll(async () => {
@@ -190,7 +175,9 @@ describe('Game interaction model', () => {
       expect(menuProps).toHaveProperty('items')
       expect(menuProps).toHaveProperty('open', true)
       expect(menuProps).toHaveProperty('meshes', [mesh])
-      const { x, y } = /** @type {ScreenPosition} */ (getPosition(mesh))
+      const { x, y } = /** @type {import('@src/3d/utils').ScreenPosition} */ (
+        getPosition(mesh)
+      )
       expect(menuProps).toHaveProperty('x', x)
       expect(menuProps).toHaveProperty('y', y)
       meshes[2].metadata.pop.mockResolvedValueOnce([])
@@ -336,9 +323,10 @@ describe('Game interaction model', () => {
       expect(menuProps).toHaveProperty('x', x)
       expect(menuProps).toHaveProperty('y', y)
 
-      const item = /** @type {MenuItem} */ (
-        menuProps?.items.find(item => item.icon === icon)
-      )
+      const item =
+        /** @type {import('@src/utils/game-interaction').MenuItem} */ (
+          menuProps?.items.find(item => item.icon === icon)
+        )
       await item.onClick(/** @type {?} */ ({ detail: { quantity: 2 } }))
       expectMeshActions(mesh6, action)
       expectMeshActions(mesh5, action)
@@ -366,9 +354,10 @@ describe('Game interaction model', () => {
       const action = decrement
       const quantity = 3
       mesh.metadata.decrement.mockResolvedValueOnce(null)
-      const item = /** @type {MenuItem} */ (
-        menuProps?.items.find(item => item.icon === icon)
-      )
+      const item =
+        /** @type {import('@src/utils/game-interaction').MenuItem} */ (
+          menuProps?.items.find(item => item.icon === icon)
+        )
       await item.onClick(/** @type {?} */ ({ detail: { quantity } }))
       expect(mesh.metadata[action]).toHaveBeenCalledWith(quantity, true)
     })
@@ -1649,7 +1638,7 @@ describe('Game interaction model', () => {
       })
 
       it.each(
-        /** @type {{ key: string, action: ActionName, stackAction: ActionName }[]} */ ([
+        /** @type {{ key: string, action: import('@tabulous/types').ActionName, stackAction: import('@tabulous/types').ActionName }[]} */ ([
           { key: 'f', action: flip, stackAction: 'flipAll' },
           { key: 'r', action: rotate, stackAction: rotate }
         ])
@@ -1671,7 +1660,7 @@ describe('Game interaction model', () => {
       })
 
       it.each(
-        /** @type {{ key: string, action: ActionName, stackAction: ActionName }[]} */ ([
+        /** @type {{ key: string, action: import('@tabulous/types').ActionName, stackAction: import('@tabulous/types').ActionName }[]} */ ([
           { key: 'f', action: flip, stackAction: 'flipAll' },
           { key: 'r', action: rotate, stackAction: rotate }
         ])
@@ -1693,7 +1682,7 @@ describe('Game interaction model', () => {
       })
 
       it.each(
-        /** @type {{ key: string, action: ActionName }[]} */ ([
+        /** @type {{ key: string, action: import('@tabulous/types').ActionName }[]} */ ([
           { key: 'l', action: toggleLock },
           { key: 'd', action: draw },
           { key: 'd', action: play }
@@ -1817,7 +1806,7 @@ describe('Game interaction model', () => {
     it('pans camera on right click drag', () => {
       managers.selection.select(meshes[0])
       const panMock =
-        /** @type {Mock<Parameters<import('@src/3d/managers').CameraManager['pan']>, Promise<void>>} */ (
+        /** @type {import('vitest').FunctionMock<import('@src/3d/managers').CameraManager['pan']>} */ (
           managers.camera.pan
         )
       panMock.mockResolvedValue()
@@ -2277,8 +2266,8 @@ describe('Game interaction model', () => {
 })
 
 function expectMeshActions(
-  /** @type {Mesh} */ mesh,
-  /** @type {ActionName[]} */ ...actionNames
+  /** @type {import('@babylonjs/core').Mesh} */ mesh,
+  /** @type {import('@tabulous/types').ActionName[]} */ ...actionNames
 ) {
   for (const name in mesh.metadata) {
     const action = mesh.metadata[name]
@@ -2287,7 +2276,11 @@ function expectMeshActions(
       name !== 'canPush' &&
       name !== 'canIncrement'
     ) {
-      if (actionNames.includes(/** @type {ActionName} */ (name))) {
+      if (
+        actionNames.includes(
+          /** @type {import('@tabulous/types').ActionName} */ (name)
+        )
+      ) {
         expect(action, `${name} on ${mesh.id}`).toHaveBeenCalled()
       } else {
         expect(action, `${name} on ${mesh.id}`).not.toHaveBeenCalled()
@@ -2329,12 +2322,15 @@ function makeKeyEvent(
 }
 
 async function expectActionItems(
-  /** @type {?ActionMenuProps}} */ menuProps,
+  /** @type {?import('@src/utils/game-interaction').ActionMenuProps}} */ menuProps,
   /** @type {MockedMesh} */ mesh,
-  /** @type {({ functionName: string } & Partial<Omit<MenuItem, 'onClick'> & { triggeredMesh: MockedMesh, calls: any[][], clickArg?: { quantity: number }}>)[]} */ items
+  /** @type {({ functionName: string } & Partial<Omit<import('@src/utils/game-interaction').MenuItem, 'onClick'> & { triggeredMesh: MockedMesh, calls: any[][], clickArg?: { quantity: number }}>)[]} */ items
 ) {
   expect(menuProps?.items).toHaveLength(items.length)
-  const actual = /** @type {ActionMenuProps} */ (menuProps)
+  const actual =
+    /** @type {import('@src/utils/game-interaction').ActionMenuProps} */ (
+      menuProps
+    )
   for (const [
     rank,
     {
@@ -2365,7 +2361,7 @@ async function expectActionItems(
         }
       ])
     )
-    const item = /** @type {MenuItem} */ (
+    const item = /** @type {import('@src/utils/game-interaction').MenuItem} */ (
       actual.items.find(item => item.icon === icon)
     )
     await item.onClick(
@@ -2386,6 +2382,8 @@ async function expectActionItems(
   }
 }
 
-function getPosition(/** @type {Mesh} */ mesh) {
-  return /** @type {ScreenPosition} */ (getMeshScreenPosition(mesh))
+function getPosition(/** @type {import('@babylonjs/core').Mesh} */ mesh) {
+  return /** @type {import('@src/3d/utils').ScreenPosition} */ (
+    getMeshScreenPosition(mesh)
+  )
 }

@@ -1,19 +1,4 @@
 // @ts-check
-/**
- * @typedef {import('@babylonjs/core').Mesh} Mesh
- * @typedef {import('@tabulous/server/src/graphql').ActionName} ActionName
- * @typedef {import('@tabulous/server/src/graphql').QuantifiableState} QuantifiableState
- * @typedef {import('@tabulous/server/src/graphql').Mesh} SerializedMesh
- * @typedef {import('@src/3d/behaviors/targetable').DropZone} DropZone
- * @typedef {import('@src/3d/behaviors/targetable').SingleDropZone} SingleDropZone
- * @typedef {import('@src/3d/behaviors/targetable').DropDetails} DropDetails
- * @typedef {import('@src/3d/managers/move').PreMoveDetails} PreMoveDetails
- */
-/**
- * @template T
- * @typedef {import('@babylonjs/core').Observer<T>} Observer
- */
-
 import { Vector3 } from '@babylonjs/core/Maths/math.vector'
 
 import { makeLogger } from '../../utils/logger'
@@ -28,9 +13,9 @@ import { createMeshFromState } from '../utils/scene-loader'
 import { MoveBehaviorName, QuantityBehaviorName } from './names'
 import { TargetBehavior } from './targetable'
 
-/** @typedef {QuantifiableState & Required<Pick<QuantifiableState, 'duration'|'quantity'|'extent'>>} RequiredQuantifiableState */
+/** @typedef {import('@tabulous/types').QuantifiableState & Required<Pick<import('@tabulous/types').QuantifiableState, 'duration'|'quantity'|'extent'>>} RequiredQuantifiableState */
 
-const logger = makeLogger('quantifiable')
+const logger = makeLogger(QuantityBehaviorName)
 
 export class QuantityBehavior extends TargetBehavior {
   /**
@@ -38,24 +23,21 @@ export class QuantityBehavior extends TargetBehavior {
    * and targetable (one can drop other quantifiable meshs).
    * Dropped meshes are destroyed while quantity is incremented.
    * Poped meshes are created on the fly, except when the quantity is 1.
-   * @param {QuantifiableState} state - behavior state.
-   * @param {import('@src/3d/managers').Managers} managers - current managers.
+   * @param {import('@tabulous/types').QuantifiableState} state - behavior state.
+   * @param {import('../managers').Managers} managers - current managers.
    */
   constructor(state, managers) {
     super({}, managers)
-    /** @type {RequiredQuantifiableState} state - the behavior's current state. */
+    /** the behavior's current state. */
     this.state = /** @type {RequiredQuantifiableState} */ (state)
-    /** @protected @type {?Observer<PreMoveDetails>} */
+    /** @protected @type {?import('@babylonjs/core').Observer<import('../managers').PreMoveDetails>} */
     this.preMoveObserver = null
-    /** @protected @type {?Observer<DropDetails>} */
+    /** @protected @type {?import('@babylonjs/core').Observer<import('../managers').DropDetails>} */
     this.dropObserver = null
-    /** @protected @type {DropZone}} */
+    /** @protected @type {import('../managers').DropZone}} */
     this.dropZone
   }
 
-  /**
-   * @property {string} name - this behavior's constant name.
-   */
   get name() {
     return QuantityBehaviorName
   }
@@ -68,7 +50,7 @@ export class QuantityBehavior extends TargetBehavior {
    * - a `canIncrement()` function to determin whether a mesh could increment the quantity.
    * It binds to its drop observable to increment when dropping meshes.
    * It binds to the drag manager drag observable to decrement (unless quantity is 1).
-   * @param {Mesh} mesh - which becomes detailable.
+   * @param {import('@babylonjs/core').Mesh} mesh - which becomes detailable.
    */
   attach(mesh) {
     super.attach(mesh)
@@ -112,7 +94,7 @@ export class QuantityBehavior extends TargetBehavior {
 
   /**
    * Determines whether a movable mesh can increment the current one.
-   * @param {Mesh} mesh - tested (movable) mesh.
+   * @param {import('@babylonjs/core').Mesh} mesh - tested (movable) mesh.
    * @returns true if this mesh can increment.
    */
   canIncrement(mesh) {
@@ -153,7 +135,7 @@ export class QuantityBehavior extends TargetBehavior {
    */
   async decrement(count = 1, withMove = false) {
     const { mesh, state } = this
-    /** @type {?Mesh} */
+    /** @type {?import('@babylonjs/core').Mesh} */
     let created = null
     if (!mesh || state.quantity === 1) return created
     const createdId = makeId(mesh)
@@ -172,12 +154,12 @@ export class QuantityBehavior extends TargetBehavior {
     state.quantity -= quantity
 
     const serialized =
-      /** @type {SerializedMesh & { quantifiable: RequiredQuantifiableState }} */ (
+      /** @type {import('@tabulous/types').Mesh & { quantifiable: RequiredQuantifiableState }} */ (
         mesh.metadata.serialize()
       )
     serialized.quantifiable.quantity = quantity
     serialized.id = createdId
-    created = /** @type {Mesh} */ (
+    created = /** @type {import('@babylonjs/core').Mesh} */ (
       await createMeshFromState(serialized, mesh.getScene(), this.managers)
     )
 
@@ -205,7 +187,7 @@ export class QuantityBehavior extends TargetBehavior {
 
   /**
    * Revert increment and decrement actions. Ignores other actions
-   * @param {ActionName} action - reverted action.
+   * @param {import('@tabulous/types').ActionName} action - reverted action.
    * @param {any[]} [args] - reverted arguments.
    */
   async revert(action, args = []) {
@@ -220,28 +202,34 @@ export class QuantityBehavior extends TargetBehavior {
       } = this
       const scene = mesh.getScene()
       await Promise.all(
-        states.map(async (/** @type {SerializedMesh} */ state) => {
-          const count = state.quantifiable?.quantity ?? 1
-          this.managers.control.record({
-            mesh,
-            fn: actionNames.decrement,
-            args: [count, withMove],
-            duration,
-            revert: [state.id, withMove],
-            isLocal: true
-          })
-          this.state.quantity -= count
-          const created = await createMeshFromState(state, scene, this.managers)
-          if (withMove) {
-            created.setAbsolutePosition(mesh.absolutePosition)
-            await animateMove(
-              created,
-              Vector3.FromArray([state.x ?? 0, state.y ?? 0, state.z ?? 0]),
-              null,
-              duration
+        states.map(
+          async (/** @type {import('@tabulous/types').Mesh} */ state) => {
+            const count = state.quantifiable?.quantity ?? 1
+            this.managers.control.record({
+              mesh,
+              fn: actionNames.decrement,
+              args: [count, withMove],
+              duration,
+              revert: [state.id, withMove],
+              isLocal: true
+            })
+            this.state.quantity -= count
+            const created = await createMeshFromState(
+              state,
+              scene,
+              this.managers
             )
+            if (withMove) {
+              created.setAbsolutePosition(mesh.absolutePosition)
+              await animateMove(
+                created,
+                Vector3.FromArray([state.x ?? 0, state.y ?? 0, state.z ?? 0]),
+                null,
+                duration
+              )
+            }
           }
-        })
+        )
       )
       updateIndicator(this.managers, mesh, this.state.quantity)
     } else if (action === actionNames.decrement) {
@@ -251,7 +239,7 @@ export class QuantityBehavior extends TargetBehavior {
 
   /**
    * Updates this behavior's state and mesh to match provided data.
-   * @param {QuantifiableState} state - state to update to.
+   * @param {import('@tabulous/types').QuantifiableState} state - state to update to.
    */
   fromState({
     quantity = 1,
@@ -267,7 +255,9 @@ export class QuantityBehavior extends TargetBehavior {
     updateIndicator(this.managers, this.mesh, quantity)
     // dispose previous drop zone
     if (this.dropZone) {
-      this.removeZone(/** @type {SingleDropZone} */ (this.dropZone))
+      this.removeZone(
+        /** @type {import('../managers').SingleDropZone} */ (this.dropZone)
+      )
     }
     this.dropZone = this.addZone(
       buildTargetMesh(`quantifiable-zone-${this.mesh.id}`, this.mesh),
@@ -285,7 +275,7 @@ async function internalIncrement(
   /** @type {boolean} */ immediate,
   isLocal = false
 ) {
-  const meshes = /** @type {Mesh[]} */ (
+  const meshes = /** @type {import('@babylonjs/core').Mesh[]} */ (
     meshIds?.map(id => mesh?.getScene().getMeshById(id)).filter(Boolean)
   )
   if (!meshes.length || !mesh) return
@@ -317,13 +307,13 @@ async function internalIncrement(
   }
 }
 
-function getQuantity(/** @type {Mesh} */ mesh) {
+function getQuantity(/** @type {import('@babylonjs/core').Mesh} */ mesh) {
   return mesh.metadata?.quantity ?? 1
 }
 
 function updateIndicator(
-  /** @type {import('@src/3d/managers').Managers} */ { indicator },
-  /** @type {Mesh} */ mesh,
+  /** @type {import('../managers').Managers} */ { indicator },
+  /** @type {import('@babylonjs/core').Mesh} */ mesh,
   /** @type {number} */ size
 ) {
   const id = `${mesh.id}.quantity`
@@ -334,6 +324,6 @@ function updateIndicator(
   }
 }
 
-function makeId(/** @type {Mesh} */ mesh) {
+function makeId(/** @type {import('@babylonjs/core').Mesh} */ mesh) {
   return `${mesh.id}-${crypto.randomUUID()}`
 }

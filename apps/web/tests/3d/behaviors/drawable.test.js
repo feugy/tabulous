@@ -1,9 +1,4 @@
 // @ts-check
-/**
- * @typedef {import('@babylonjs/core').Mesh} Mesh
- * @typedef {import('@babylonjs/core').Scene} Scene
- */
-
 import { faker } from '@faker-js/faker'
 import { DrawBehavior, DrawBehaviorName } from '@src/3d/behaviors'
 import { createCard } from '@src/3d/meshes'
@@ -21,9 +16,9 @@ import {
   waitForLayout
 } from '../../test-utils'
 
-/** @type {Scene} */
+/** @type {import('@babylonjs/core').Scene} */
 let scene
-/** @type {Scene} */
+/** @type {import('@babylonjs/core').Scene} */
 let handScene
 /** @type {import('@src/3d/managers').Managers} */
 let managers
@@ -98,11 +93,11 @@ describe('DrawBehavior', () => {
   })
 
   describe('given attached to a mesh', () => {
-    /** @type {Mesh} */
+    /** @type {import('@babylonjs/core').Mesh} */
     let mesh
     /** @type {DrawBehavior} */
     let behavior
-    /** @type {Mesh} */
+    /** @type {import('@babylonjs/core').Mesh} */
     let handMesh
 
     beforeEach(async () => {
@@ -214,7 +209,9 @@ describe('DrawBehavior', () => {
     it(`plays to the table`, async () => {
       mesh.dispose()
       handMesh.metadata.play?.()
-      const created = /** @type {Mesh} */ (scene.getMeshById(handMesh.id))
+      const created = /** @type {import('@babylonjs/core').Mesh} */ (
+        scene.getMeshById(handMesh.id)
+      )
       const state = created.metadata.serialize()
       const createdBehavior = created.getBehaviorByName(DrawBehaviorName)
       await Promise.all([
@@ -237,7 +234,9 @@ describe('DrawBehavior', () => {
 
     it(`stacks when playing to the table`, async () => {
       handMesh.metadata.play?.()
-      const created = /** @type {Mesh} */ (scene.getMeshById(handMesh.id))
+      const created = /** @type {import('@babylonjs/core').Mesh} */ (
+        scene.getMeshById(handMesh.id)
+      )
       const position = created.absolutePosition.asArray()
       const state = created.metadata.serialize()
       const createdBehavior = created.getBehaviorByName(DrawBehaviorName)
@@ -286,7 +285,9 @@ describe('DrawBehavior', () => {
       const state = handMesh.metadata.serialize()
       handMesh.metadata.play?.()
       expectDisposed(handScene, handMesh)
-      const created = /** @type {Mesh} */ (scene.getMeshById(handMesh.id))
+      const created = /** @type {import('@babylonjs/core').Mesh} */ (
+        scene.getMeshById(handMesh.id)
+      )
       const position = created.absolutePosition.asArray()
       const createdBehavior = created.getBehaviorByName(DrawBehaviorName)
       await Promise.all([

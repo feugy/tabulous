@@ -4,39 +4,33 @@ import { expect } from '@playwright/test'
 import { translate } from '../utils/index.js'
 import { AsideMixin, mixin, TermsSupportedMixin } from './mixins/index.js'
 
-/**
- * @typedef {import('@playwright/test').Page} Page
- * @typedef {import('@playwright/test').Locator} Locator
- * @typedef {import('../utils').Locale} Locale
- */
-
 export const GamePage = mixin(
   class GamePageConstructor {
     /**
      * Represent the game page for testing
-     * @param {Page} page - the actual page.
-     * @param {Locale} lang - current language.
+     * @param {import('@playwright/test').Page} page - the actual page.
+     * @param {import('../utils').Locale} lang - current language.
      */
     constructor(page, lang) {
       /** @type {string} */
       this.pageKind = 'game'
-      /** @type {Locale} */
+      /** @type {import('../utils').Locale} */
       this.lang = lang
-      /** @type {Page} */
+      /** @type {import('@playwright/test').Page} */
       this.page = page
-      /** @type {Locator} */
+      /** @type {import('@playwright/test').Locator} */
       this.menuButton = page.getByRole('combobox', { name: 'menu' })
-      /** @type {Locator} */
+      /** @type {import('@playwright/test').Locator} */
       this.defaultCameraButton = page.getByRole('button', {
         name: 'videocam'
       })
-      /** @type {Locator} */
+      /** @type {import('@playwright/test').Locator} */
       this.inviteMenuItem = page.getByRole('menuitem', {
         name: `connect_without_contact ${
           (translate('actions.invite-player'), undefined, this.lang)
         }`
       })
-      /** @type {Locator} */
+      /** @type {import('@playwright/test').Locator} */
       this.parametersDialogue = page.getByRole('dialog').filter({
         hasText: translate('titles.game-parameters', undefined, this.lang)
       })
@@ -45,7 +39,6 @@ export const GamePage = mixin(
     /**
      * Navigates to the page.
      * @param {string} gameId - browsed game iddentifier.
-     * @returns {Promise<void>}
      */
     async goTo(gameId) {
       await this.page.goto(`/${this.lang}/game/${gameId}`)

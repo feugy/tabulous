@@ -1,8 +1,4 @@
 // @ts-check
-/**
- * @typedef {import('fastify').FastifyInstance} FastifyInstance
- */
-
 import { faker } from '@faker-js/faker'
 import fastify from 'fastify'
 import {
@@ -23,7 +19,7 @@ import { makeLogger } from '../../src/utils/index.js'
 import { mockMethods } from '../test-utils.js'
 
 describe('graphql plugin', () => {
-  /** @type {FastifyInstance} */
+  /** @type {import('fastify').FastifyInstance} */
   let server
   /** @type {ReturnType<typeof mockMethods>} */
   let restoreServices

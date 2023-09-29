@@ -1,19 +1,14 @@
 // @ts-check
-/** @typedef {import('./constants').Side} Side */
-
-import {
-  buildCameraPosition,
-  findAvailableValues
-} from '@tabulous/server/src/utils/index.js'
+import { buildCameraPosition, findAvailableValues } from '@tabulous/game-utils'
 
 import { blackId, cameraPositions, whiteId } from './constants.js'
 
 /**
  * @typedef {object} Parameters
- * @property {Side} side - player and pieces color;
+ * @property {import('./constants').Side} side - player and pieces color;
  */
 
-/** @type {import('@tabulous/server/src/services/catalog').AskForParameters<Parameters>} */
+/** @type {import('@tabulous/types').AskForParameters<Parameters>} */
 export function askForParameters({ game: { preferences } }) {
   const sides = findAvailableValues(preferences, 'side', [whiteId, blackId])
   return sides.length <= 1
@@ -33,11 +28,11 @@ export function askForParameters({ game: { preferences } }) {
       }
 }
 
-/** @type {import('@tabulous/server/src/services/catalog').AddPlayer<Parameters>} */
+/** @type {import('@tabulous/types').AddPlayer<Parameters>} */
 export function addPlayer(game, player, parameters) {
   const { cameras, preferences } = game
   // use selected preferences, or look for the first player color, and choose the other one.
-  const side = /** @type {Side} */ (
+  const side = /** @type {import('./constants').Side} */ (
     preferences.length === 2
       ? preferences[0].side === whiteId
         ? blackId

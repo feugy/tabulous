@@ -1,9 +1,4 @@
 // @ts-check
-/**
- * @typedef {import('@tabulous/server/src/graphql').Anchor} Anchor
- * @typedef {import('@tabulous/server/src/graphql').Mesh} Mesh
- */
-
 import {
   anchorIds,
   counts,
@@ -14,7 +9,7 @@ import {
   suits
 } from '../constants.js'
 
-/** @returns {Mesh} */
+/** @returns {import('@tabulous/types').Mesh} */
 export function buildBoard() {
   return {
     shape: 'card',
@@ -35,7 +30,7 @@ export function buildBoard() {
 }
 
 function buildGoalAnchors() {
-  /** @type {Anchor[]} */
+  /** @type {import('@tabulous/types').Anchor[]} */
   const anchors = []
   for (const [column, suit] of suits.entries()) {
     anchors.push({
@@ -50,7 +45,7 @@ function buildGoalAnchors() {
 }
 
 function buildColumnAnchors() {
-  /** @type {Anchor[]} */
+  /** @type {import('@tabulous/types').Anchor[]} */
   const anchors = []
   for (let column = 0; column < counts.columns; column++) {
     anchors.push({

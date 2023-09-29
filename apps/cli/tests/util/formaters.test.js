@@ -1,3 +1,4 @@
+// @ts-check
 import { faker } from '@faker-js/faker'
 import stripAnsi from 'strip-ansi'
 import { describe, expect, it } from 'vitest'
@@ -28,7 +29,7 @@ describe('formatGame()', () => {
 })
 
 describe('formatDate()', () => {
-  function pad(number) {
+  function pad(/** @type {number} */ number) {
     return number < 10 ? `0${number}` : number.toString()
   }
   it('handles no date', () => {
@@ -52,16 +53,16 @@ describe('formatPlayer()', () => {
     const id = faker.string.uuid()
     const email = faker.internet.email()
     const username = faker.person.fullName()
-    expect(stripAnsi(formatPlayer({ username, email, id }))).toEqual(
-      `${username} ${email} (${id})`
-    )
+    expect(
+      stripAnsi(formatPlayer({ username, email, id, currentGameId: null }))
+    ).toEqual(`${username} ${email} (${id})`)
   })
 
   it('handles no email', () => {
     const id = faker.string.uuid()
     const username = faker.person.fullName()
-    expect(stripAnsi(formatPlayer({ username, id }))).toEqual(
-      `${username} no email (${id})`
-    )
+    expect(
+      stripAnsi(formatPlayer({ username, id, currentGameId: null }))
+    ).toEqual(`${username} no email (${id})`)
   })
 })

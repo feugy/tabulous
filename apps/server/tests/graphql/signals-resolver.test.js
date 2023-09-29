@@ -1,9 +1,4 @@
 // @ts-check
-/**
- * @typedef {import('fastify').FastifyInstance} FastifyInstance
- * @typedef {import('../../src/services/players').Player} Player
- */
-
 import { setTimeout } from 'node:timers/promises'
 
 import { faker } from '@faker-js/faker'
@@ -33,7 +28,7 @@ import {
 import { clearDatabase, getRedisTestUrl } from '../test-utils.js'
 
 describe('given a started server', () => {
-  /** @type {FastifyInstance} */
+  /** @type {import('fastify').FastifyInstance} */
   let server
   /** @type {import('ws')} */
   let ws

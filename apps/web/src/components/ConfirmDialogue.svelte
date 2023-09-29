@@ -1,6 +1,5 @@
 <script>
   // @ts-check
-
   import { createEventDispatcher } from 'svelte'
   import { _ } from 'svelte-intl'
 

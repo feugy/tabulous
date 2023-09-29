@@ -2,8 +2,8 @@
 import '@poppanator/sveltekit-svg/dist/svg'
 
 import type { Locale } from '@src/common'
-import type { PlayerWithTurnCredentials } from '@src/graphql'
 import type { DeepRequired } from '@src/types'
+import type { PlayerWithTurnCredentials } from '@tabulous/server/graphql'
 
 // for information about these interfaces
 // See https://kit.svelte.dev/docs/types#app

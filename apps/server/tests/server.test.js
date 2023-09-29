@@ -1,9 +1,4 @@
 // @ts-check
-/**
- * @typedef {import('../src/server').Server} Server
- * @typedef {import('../src/services/configuration').Configuration} Configuration
- */
-
 // mandatory side effect for vi to load auth plugin
 import '../src/plugins/utils.js'
 
@@ -21,11 +16,11 @@ import {
   vi
 } from 'vitest'
 
-import repositories from '../src/repositories/index.js'
+import * as repositories from '../src/repositories/index.js'
 import { startServer } from '../src/server.js'
 
 describe('startServer()', () => {
-  /** @type {Server}} */
+  /** @type {import('@src/server').Server}} */
   let app
   /** @type {number} */
   let port
@@ -101,7 +96,7 @@ describe('startServer()', () => {
   })
 
   it('decorates app with configuration property', async () => {
-    /** @type {Configuration} */
+    /** @type {import('@src/services/configuration').Configuration} */
     const conf = {
       isProduction: true,
       serverUrl: { host: undefined, port },

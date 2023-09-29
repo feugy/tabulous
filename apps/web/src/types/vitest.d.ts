@@ -3,6 +3,7 @@ import type { AbstractMesh } from '@babylonjs/core'
 import type {
   Assertion,
   AsymmetricMatchersContaining,
+  Mock,
   SpyInstance
 } from 'vitest'
 
@@ -15,4 +16,5 @@ declare module 'vitest' {
   interface Assertion<T = ?> extends CustomMatchers<T> {}
   interface AsymmetricMatchersContaining extends CustomMatchers {}
   type Spy<T extends Function> = SpyInstance<Parameters<T>, ReturnType<T>>
+  type FunctionMock<T extends Function> = Mock<Parameters<T>, ReturnType<T>>
 }

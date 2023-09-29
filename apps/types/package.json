@@ -1,0 +1,12 @@
+{
+  "name": "@tabulous/types",
+  "version": "0.0.1",
+  "description": "Common types like game data and descriptors",
+  "type": "module",
+  "scripts": {
+    "typecheck": "tsc -p jsconfig.json --noEmit"
+  },
+  "devDependencies": {
+    "ajv": "^8.12.0"
+  }
+}

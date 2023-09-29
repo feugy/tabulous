@@ -2,63 +2,57 @@
 import { translate } from '../../utils/index.js'
 import { expect } from '../../utils/index.js'
 
-/**
- * @typedef {import('@playwright/test').Page} Page
- * @typedef {import('@playwright/test').Locator} Locator
- * @typedef {import('../../utils').Locale} Locale
- */
-
 export class AsideMixin {
   /**
-   * @param {Page} page - the actual page.
-   * @param {Locale} lang - current language.
+   * @param {import('@playwright/test').Page} page - the actual page.
+   * @param {import('../../utils').Locale} lang - current language.
    */
   constructor(page, lang) {
-    /** @type {Locale} */
+    /** @type {import('../../utils').Locale} */
     this.lang = lang
-    /** @type {Page} */
+    /** @type {import('@playwright/test').Page} */
     this.page = page
-    /** @type {Locator} */
+    /** @type {import('@playwright/test').Locator} */
     this.playerAvatars = this.page.getByTestId('player-avatar')
-    /** @type {Locator} */
+    /** @type {import('@playwright/test').Locator} */
     this.friendsTab = this.page.getByRole('tab', { name: 'people_alt F2' })
-    /** @type {Locator} */
+    /** @type {import('@playwright/test').Locator} */
     this.friendsSection = page.locator('[aria-roledescription="friend-list"]')
-    /** @type {Locator} */
+    /** @type {import('@playwright/test').Locator} */
     this.friendItems = this.friendsSection.getByRole('listitem')
-    /** @type {Locator} */
+    /** @type {import('@playwright/test').Locator} */
     this.friendSearchInput = this.friendsSection.getByRole('textbox')
-    /** @type {Locator} */
+    /** @type {import('@playwright/test').Locator} */
     this.isSearchableCheckbox = page.getByRole('checkbox')
-    /** @type {Locator} */
+    /** @type {import('@playwright/test').Locator} */
     this.playersSection = page.locator('[aria-roledescription="player-list"]')
-    /** @type {Locator} */
+    /** @type {import('@playwright/test').Locator} */
     this.openInviteDialogueButton = this.playersSection.getByRole('button', {
       name: /^gamepad /
     })
-    /** @type {Locator} */
+    /** @type {import('@playwright/test').Locator} */
     this.playerItems = this.playersSection.getByRole('listitem')
-    /** @type {Locator} */
+    /** @type {import('@playwright/test').Locator} */
     this.inviteDialogue = page.getByRole('dialog').filter({
       has: this.page.getByText(
         translate('actions.invite', undefined, this.lang)
       )
     })
-    /** @type {Locator} */
+    /** @type {import('@playwright/test').Locator} */
     this.possiblePlayerItems = this.inviteDialogue.getByRole('option')
-    /** @type {Locator} */
+    /** @type {import('@playwright/test').Locator} */
     this.inviteButton = this.inviteDialogue.getByRole('button').filter({
       has: this.page.getByText(
         translate('actions.invite', undefined, this.lang)
       )
     })
-    /** @type {Locator} */
+    /** @type {import('@playwright/test').Locator} */
     this.endFriendshipDialogue = page.getByRole('dialog').filter({
       has: this.page.getByText(
         translate('titles.end-friendship', undefined, this.lang)
       )
     })
-    /** @type {Locator} */
+    /** @type {import('@playwright/test').Locator} */
     this.requestFriendshipButton = this.friendsSection.getByRole('button', {
       name: 'person_add_alt_1'
     })
@@ -66,8 +60,7 @@ export class AsideMixin {
 
   /**
    * Expects several friends. It tests request/proposal state.
-   * @param {import('@tabulous/server/src/graphql').Friendship[]} friends - expected friends objects.
-   * @returns {Promise<void>}
+   * @param {Partial<import('@src/graphql').Friendship>[]} friends - expected friends objects.
    */
   async expectFriends(friends) {
     for (const [i, friendItem] of [
@@ -78,7 +71,7 @@ export class AsideMixin {
         ? translate('labels.friendship-requested', player, this.lang)
         : isProposal
         ? translate('labels.friendship-proposed', player, this.lang)
-        : player.username
+        : player?.username
       expect(
         await friendItem.locator('span').first().textContent(),
         `friend rank #${1 + +i}`
@@ -88,8 +81,7 @@ export class AsideMixin {
 
   /**
    * Expects several players/attendees.
-   * @param {import('@tabulous/server/src/graphql').Player[]} players - expected players objects.
-   * @returns {Promise<void>}
+   * @param {import('@src/graphql').Player[]} players - expected players objects.
    */
   async expectPlayers(players) {
     for (const [i, playerItem] of [
@@ -105,8 +97,8 @@ export class AsideMixin {
 
   /**
    * Checks whether a given tab is active or not.
-   * @param {Locator} tab - tested tab.
-   * @returns {Promise<boolean>} true if this tab is already active.
+   * @param {import('@playwright/test').Locator} tab - tested tab.
+   * @returns true if this tab is already active.
    */
   async isTabActive(tab) {
     return (await tab.getAttribute('aria-expanded')) === 'true'
@@ -114,8 +106,7 @@ export class AsideMixin {
 
   /**
    * Clicks on a tab until it expands and become active.
-   * @param {Locator} tab - the tab to open.
-   * @returns {Promise<void>}
+   * @param {import('@playwright/test').Locator} tab - the tab to open.
    */
   async openTab(tab) {
     while (!(await this.isTabActive(tab))) {
@@ -128,7 +119,6 @@ export class AsideMixin {
    * It assumes the friends tab to be available.
    * Final check is disabled on the game page, which changes tab on player invite.
    * @param {string} guestUsername - name of the invited friend.
-   * @returns {Promise<void>}
    */
   async invite(guestUsername) {
     await expect(
@@ -151,7 +141,6 @@ export class AsideMixin {
    * Request friendship with another players by searching them in the friends pane.
    * It assumes the pane to be visible.
    * @param {string} playerName - playerName of the requested friend.
-   * @returns {Promise<void>}
    */
   async requestFriendship(playerName) {
     await expect(
@@ -168,7 +157,6 @@ export class AsideMixin {
    * Find a game by its username, click on its deletion button, displaying the confirmation dialogue.
    * It assumes the pane to be visible.
    * @param {string} username - username of the removed friend.
-   * @returns {Promise<void>}
    */
   async removeFriend(username) {
     const friend = this.friendItems.filter({ hasText: username })
@@ -186,7 +174,6 @@ export class AsideMixin {
    * Tries to kick a player from the current lobby/game.
    * It assumes the pane to be visible.
    * @param {string} username - username of the kicked player.
-   * @returns {Promise<void>}
    */
   async kick(username) {
     const player = this.playerItems.filter({ hasText: username })

@@ -1,14 +1,4 @@
 // @ts-check
-/**
- * @typedef {import('rxjs').Subscription} Subscription
- * @typedef {import('../../src/services/players').Player} Player
- * @typedef {import('../../src/services/games').GameData} GameData
- * @typedef {import('../../src/services/games').GameListUpdate} GameListUpdate
- * @typedef {import('../../src/services/games').CameraPosition} CameraPosition
- * @typedef {import('../../src/services/games').PlayerAction} PlayerAction
- * @typedef {import('../../src/services/games').PlayerMove} PlayerMove
- */
-
 import { faker } from '@faker-js/faker'
 import { join } from 'path'
 import { setTimeout } from 'timers/promises'
@@ -23,7 +13,7 @@ import {
   vi
 } from 'vitest'
 
-import repositories from '../../src/repositories/index.js'
+import * as repositories from '../../src/repositories/index.js'
 import { grantAccess, revokeAccess } from '../../src/services/catalog.js'
 import {
   countOwnGames,
@@ -42,26 +32,26 @@ import { clearDatabase, getRedisTestUrl } from '../test-utils.js'
 
 describe('given a subscription to game lists and an initialized repository', () => {
   const redisUrl = getRedisTestUrl()
-  /** @type {GameListUpdate[]} */
+  /** @type {import('@src/services/games').GameListUpdate[]} */
   const updates = []
-  /** @type {Player} */
+  /** @type {import('@tabulous/types').Player} */
   const player = { id: 'player', username: '', currentGameId: null }
-  /** @type {Player} */
+  /** @type {import('@tabulous/types').Player} */
   const peer = { id: 'peer-1', username: '', currentGameId: null }
-  /** @type {Player} */
+  /** @type {import('@tabulous/types').Player} */
   const peer2 = {
     id: 'peer-2',
     username: '',
     currentGameId: null,
     isAdmin: true
   }
-  /** @type {GameData[]} */
+  /** @type {import('@tabulous/types').GameData[]} */
   const games = []
-  /** @type {GameData} */
+  /** @type {import('@tabulous/types').GameData} */
   let game
-  /** @type {GameData} */
+  /** @type {import('@tabulous/types').GameData} */
   let lobby
-  /** @type {Subscription} */
+  /** @type {import('rxjs').Subscription} */
   let subscription
 
   beforeAll(async () => {
@@ -388,8 +378,12 @@ describe('given a subscription to game lists and an initialized repository', () 
 
     describe('given joined owner', () => {
       beforeEach(async () => {
-        game = /** @type {GameData} */ (await joinGame(game.id, player))
-        lobby = /** @type {GameData} */ (await joinGame(lobby.id, player))
+        game = /** @type {import('@tabulous/types').GameData} */ (
+          await joinGame(game.id, player)
+        )
+        lobby = /** @type {import('@tabulous/types').GameData} */ (
+          await joinGame(lobby.id, player)
+        )
         await setTimeout(50)
         updates.splice(0)
       })
@@ -432,14 +426,15 @@ describe('given a subscription to game lists and an initialized repository', () 
         })
 
         it('throws when the maximum number of players was reached', async () => {
-          const grantedPlayer = /** @type {Player} */ (
-            await grantAccess(player.id, 'splendor')
-          )
+          const grantedPlayer =
+            /** @type {import('@tabulous/types').Player} */ (
+              await grantAccess(player.id, 'splendor')
+            )
           await deleteGame(game.id, grantedPlayer)
-          game = /** @type {GameData} */ (
+          game = /** @type {import('@tabulous/types').GameData} */ (
             await createGame('splendor', grantedPlayer)
           ) // it has 4 seats
-          game = /** @type {GameData} */ (
+          game = /** @type {import('@tabulous/types').GameData} */ (
             await joinGame(game.id, grantedPlayer)
           )
           const guests = await repositories.players.save([
@@ -761,16 +756,17 @@ describe('given a subscription to game lists and an initialized repository', () 
         })
 
         it('can save cameras', async () => {
-          const cameras = /** @type {CameraPosition[]} */ ([
-            {
-              playerId: player.id,
-              index: 0,
-              target: [0, 0, 0],
-              alpha: Math.PI,
-              beta: 0,
-              elevation: 10
-            }
-          ])
+          const cameras =
+            /** @type {import('@tabulous/types').CameraPosition[]} */ ([
+              {
+                playerId: player.id,
+                index: 0,
+                target: [0, 0, 0],
+                alpha: Math.PI,
+                beta: 0,
+                elevation: 10
+              }
+            ])
           expect(await saveGame({ id: game.id, cameras }, player.id)).toEqual({
             ...game,
             cameras,
@@ -779,21 +775,22 @@ describe('given a subscription to game lists and an initialized repository', () 
         })
 
         it('can save history', async () => {
-          const history = /** @type {(PlayerMove|PlayerAction)[]} */ ([
-            {
-              time: Date.now() - 5000,
-              playerId: player.id,
-              meshId: 'box1',
-              fn: 'flip',
-              argsStr: '[]'
-            },
-            {
-              time: Date.now() - 3000,
-              playerId: player.id,
-              meshId: 'box1',
-              pos: [0, 0, 3]
-            }
-          ])
+          const history =
+            /** @type {(import('@tabulous/types').HistoryRecord)[]} */ ([
+              {
+                time: Date.now() - 5000,
+                playerId: player.id,
+                meshId: 'box1',
+                fn: 'flip',
+                argsStr: '[]'
+              },
+              {
+                time: Date.now() - 3000,
+                playerId: player.id,
+                meshId: 'box1',
+                pos: [0, 0, 3]
+              }
+            ])
           expect(await saveGame({ id: game.id, history }, player.id)).toEqual({
             ...game,
             history
@@ -907,7 +904,7 @@ describe('given a subscription to game lists and an initialized repository', () 
             guestIds: [peer.id]
           })
 
-          const loaded = /** @type {GameData} */ (
+          const loaded = /** @type {import('@tabulous/types').GameData} */ (
             await joinGame(game.id, player)
           )
           expect(loaded.playerIds).toEqual([player.id])
@@ -969,9 +966,13 @@ describe('given a subscription to game lists and an initialized repository', () 
       describe('given another player', () => {
         beforeEach(async () => {
           await invite(game.id, [peer.id], player.id)
-          game = /** @type {GameData} */ (await joinGame(game.id, peer))
+          game = /** @type {import('@tabulous/types').GameData} */ (
+            await joinGame(game.id, peer)
+          )
           await invite(lobby.id, [peer.id], player.id)
-          lobby = /** @type {GameData} */ (await joinGame(lobby.id, peer))
+          lobby = /** @type {import('@tabulous/types').GameData} */ (
+            await joinGame(lobby.id, peer)
+          )
           await setTimeout(50)
           updates.splice(0)
         })
@@ -1070,7 +1071,9 @@ describe('given a subscription to game lists and an initialized repository', () 
 
           it('allows non-owner to kick lobby players', async () => {
             await invite(lobby.id, [peer2.id], player.id)
-            lobby = /** @type {GameData} */ (await joinGame(lobby.id, peer2))
+            lobby = /** @type {import('@tabulous/types').GameData} */ (
+              await joinGame(lobby.id, peer2)
+            )
             await setTimeout(50)
             updates.splice(0)
 
@@ -1120,7 +1123,9 @@ describe('given a subscription to game lists and an initialized repository', () 
       })
 
       describe('listGames()', () => {
-        const getId = (/** @type {GameData} */ { id }) => id
+        const getId = (
+          /** @type {import('@tabulous/types').GameData} */ { id }
+        ) => id
 
         beforeEach(async () => {
           games.push(game)
@@ -1209,11 +1214,19 @@ describe('given a subscription to game lists and an initialized repository', () 
           const game1 = await createGame('belote', player)
           await joinGame(game1.id, player)
           await invite(game1.id, [peer.id], player.id)
-          games.push(/** @type {GameData} */ (await joinGame(game1.id, peer)))
+          games.push(
+            /** @type {import('@tabulous/types').GameData} */ (
+              await joinGame(game1.id, peer)
+            )
+          )
           const game2 = await createGame('belote', peer2)
           await joinGame(game2.id, peer2)
           await invite(game2.id, [player.id], peer2.id)
-          games.push(/** @type {GameData} */ (await joinGame(game2.id, player)))
+          games.push(
+            /** @type {import('@tabulous/types').GameData} */ (
+              await joinGame(game2.id, player)
+            )
+          )
 
           await setTimeout(50)
           updates.splice(0, updates.length)
@@ -1239,11 +1252,19 @@ describe('given a subscription to game lists and an initialized repository', () 
           const game1 = await createGame('belote', player)
           await joinGame(game1.id, player)
           await invite(game1.id, [peer.id], player.id)
-          games.push(/** @type {GameData} */ (await joinGame(game1.id, peer)))
+          games.push(
+            /** @type {import('@tabulous/types').GameData} */ (
+              await joinGame(game1.id, peer)
+            )
+          )
           const game2 = await createGame('belote', player)
           await joinGame(game2.id, player)
           await invite(game2.id, [peer.id], player.id)
-          games.push(/** @type {GameData} */ (await joinGame(game2.id, peer)))
+          games.push(
+            /** @type {import('@tabulous/types').GameData} */ (
+              await joinGame(game2.id, peer)
+            )
+          )
 
           await setTimeout(50)
           updates.splice(0, updates.length)

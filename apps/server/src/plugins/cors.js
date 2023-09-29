@@ -2,7 +2,7 @@
 import corsPlugin from '@fastify/cors'
 
 /**
- * @typedef {object} CorsOptions CORS plugin options, including:
+ * @typedef {object} Options CORS plugin options, including:
  * @property {string} allowedOrigins - regular expression for allowed domains for CORS.
  */
 
@@ -10,7 +10,7 @@ import corsPlugin from '@fastify/cors'
  * Registers endpoints to handle CORS requests.
  * @async
  * @param {import('fastify').FastifyInstance} app - a fastify application.
- * @param {CorsOptions} opts - plugin's options.
+ * @param {Options} opts - plugin's options.
  */
 export default async function registerCors(app, opts) {
   const origin = new RegExp(opts.allowedOrigins)

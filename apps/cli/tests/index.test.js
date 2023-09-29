@@ -1,3 +1,4 @@
+// @ts-check
 import { inspect } from 'util'
 import { beforeAll, describe, expect, it, vi } from 'vitest'
 
@@ -23,6 +24,7 @@ vi.mock('../src/commands/grant.js', () => ({
 
 describe('Tabulous CLI', () => {
   const output = mockConsole()
+  /** @type {import('@src/index').default} */
   let cli
 
   beforeAll(async () => {
@@ -49,6 +51,7 @@ describe('Tabulous CLI', () => {
     const error = new Error('no username provided')
     const commandHelpMessage = 'command custom help message'
     mockCatalog.mockRejectedValue(error)
+    // @ts-expect-error -- TS does not like attaching properties to mocks
     mockCatalog.help = vi.fn().mockReturnValueOnce(commandHelpMessage)
     await cli(['catalog'])
     expect(output.stdout).toContain(`error: ${error.message}`)

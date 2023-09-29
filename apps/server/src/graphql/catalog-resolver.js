@@ -1,12 +1,4 @@
 // @ts-check
-/**
- * @typedef {import('.').CatalogItem} CatalogItem
- * @typedef {import('.').GrantAccessArgs} GrantAccessArgs
- * @typedef {import('.').RevokeAccessArgs} RevokeAccessArgs
- * @typedef {import('./utils').GraphQLAnonymousContext} GraphQLAnonymousContext
- * @typedef {import('./utils').GraphQLContext} GraphQLContext
- */
-
 import services from '../services/index.js'
 import { isAdmin } from './utils.js'
 
@@ -17,8 +9,8 @@ export default {
      * Requires valid authentication.
      * @param {unknown} obj - graphQL object.
      * @param {unknown} args - query arguments.
-     * @param {GraphQLAnonymousContext} context - graphQL context.
-     * @returns {Promise<CatalogItem[]>} list of catalog items.
+     * @param {import('@src/plugins/graphql').GraphQLContext} context - graphQL context.
+     * @returns list of catalog items.
      */
     listCatalog: (obj, args, { player }) => services.listCatalog(player)
   },
@@ -29,8 +21,8 @@ export default {
        * Grants another player access to a given catalog item.
        * Requires authentication and elevated privileges.
        * @param {unknown} obj - graphQL object.
-       * @param {GrantAccessArgs} args - query arguments.
-       * @returns {Promise<boolean>} true if access was granted.
+       * @param {import('.').GrantAccessArgs} args - query arguments.
+       * @returns true if access was granted.
        */
       async (obj, { playerId, itemName }) => {
         return (await services.grantAccess(playerId, itemName)) !== null
@@ -43,8 +35,8 @@ export default {
        * Requires authentication and elevated privileges.
        * @async
        * @param {unknown} obj - graphQL object.
-       * @param {RevokeAccessArgs} args - query arguments.
-       * @returns {Promise<boolean>} true if access was revoked.
+       * @param {import('.').RevokeAccessArgs} args - query arguments.
+       * @returns true if access was revoked.
        */
       async (obj, { playerId, itemName }) => {
         return (await services.revokeAccess(playerId, itemName)) !== null

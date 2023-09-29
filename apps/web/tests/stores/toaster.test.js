@@ -1,8 +1,4 @@
 // @ts-check
-/**
- * @typedef {import('rxjs').Subscription} Subscription
- */
-
 import { lastToast, toastError, toastInfo } from '@src/stores/toaster'
 import { translate } from '@tests/test-utils.js'
 import {
@@ -17,7 +13,7 @@ import {
 
 describe('Toaster store', () => {
   const messageReceived = vi.fn()
-  /** @type {Subscription} */
+  /** @type {import('rxjs').Subscription} */
   let subscription
 
   beforeAll(() => {

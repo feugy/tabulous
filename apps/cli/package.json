@@ -13,7 +13,6 @@
     "typecheck": "tsc -p jsconfig.json --noEmit"
   },
   "dependencies": {
-    "@tabulous/cli": "workspace:^",
     "@urql/core": "^4.1.2",
     "add": "^2.0.6",
     "ajv": "^8.12.0",
@@ -29,6 +28,7 @@
     "undici": "^5.24.0"
   },
   "devDependencies": {
+    "@tabulous/types": "workspace:*",
     "strip-ansi": "^7.1.0"
   }
 }

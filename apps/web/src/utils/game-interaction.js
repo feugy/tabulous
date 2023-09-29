@@ -1,21 +1,4 @@
 // @ts-check
-/**
- * @typedef {import('@babylonjs/core').Engine} Engine
- * @typedef {import('@babylonjs/core').Mesh} Mesh
- * @typedef {import('rxjs').Subscription} Subscription
- * @typedef {import('@src/3d/managers/control').MeshDetails} MeshDetails
- * @typedef {import('@src/3d/managers/input').TapData} TapData
- * @typedef {import('@src/3d/managers/input').DragData} DragData
- * @typedef {import('@src/3d/managers/input').PinchData} PinchData
- * @typedef {import('@src/3d/managers/input').HoverData} HoverData
- * @typedef {import('@src/3d/managers/input').KeyData} KeyData
- * @typedef {import('@src/3d/managers/input').WheelData} WheelData
- * @typedef {import('@src/3d/utils').ScreenPosition} ScreenPosition
- * @typedef {import('@src/types').BabylonToRxMapping} BabylonToRxMapping
- * @typedef {import('@src/types').MeshActions} MeshActions
- * @typedef {import('@tabulous/server/src/graphql').ActionName} ActionName
- */
-
 import { filter, Subject } from 'rxjs'
 
 import { actionNames, buttonIds } from '../3d/utils/actions'
@@ -29,23 +12,23 @@ import { normalize } from './math'
 
 /**
  * @typedef {object} ActionMenuProps RadialMenu properties for the action menu
- * @property {Mesh[]} meshes - list of mesh for which menu is displayed.
+ * @property {import('@babylonjs/core').Mesh[]} meshes - list of mesh for which menu is displayed.
  * @property {boolean} open - whether the menu is opened or not.
  * @property {number} x - horizontal screen coordinate.
  * @property {number} y - vertical screen coordinate.
  * @property {MenuItem[]} items - array of menu items (button properties)
- * @property {Mesh} interactedMesh - mesh who received the interaction.
+ * @property {import('@babylonjs/core').Mesh} interactedMesh - mesh who received the interaction.
  */
 
 /**
  * @typedef {object} ActionDescriptor
- * @property {(mesh: Mesh, params: ActionParams) => boolean} support - indicates whether this action is supported.
- * @property {(mesh: Mesh, params: ActionParams) => MenuItem } build - builds the menu item.
+ * @property {(mesh: import('@babylonjs/core').Mesh, params: ActionParams) => boolean} support - indicates whether this action is supported.
+ * @property {(mesh: import('@babylonjs/core').Mesh, params: ActionParams) => MenuItem } build - builds the menu item.
  */
 
 /**
  * @typedef {object} ActionParams
- * @property {Mesh[]} selectedMeshes - all meshes currently selected.
+ * @property {import('@babylonjs/core').Mesh[]} selectedMeshes - all meshes currently selected.
  * @property {boolean} fromHand - whether the action was triggered on the hand scene.
  * @property {boolean} isSingleStackSelected - whether the current selection are all meshes of the same stack.
  */
@@ -102,43 +85,43 @@ const {
 /**
  * Attach to game engine's input manager observables to implement game interaction model.
  * @param {object} params - parameters, including:
- * @param {Engine} params.engine - current 3D engine.
+ * @param {import('@babylonjs/core').Engine} params.engine - current 3D engine.
  * @param {number} params.hoverDelay - number of milliseconds the cursor should stay above a mesh to trigger details.
  * @param {Subject<?ActionMenuProps>} params.actionMenuProps$ - subject emitting when action menu should be displayed and hidden.
- * @returns {Subscription[]} an array of observable subscriptions
+ * @returns {import('rxjs').Subscription[]} an array of observable subscriptions
  */
 export function attachInputs({ engine, hoverDelay, actionMenuProps$ }) {
-  /** @type {?ScreenPosition} */
+  /** @type {?import('@src/3d/utils').ScreenPosition} */
   let selectionPosition = null
-  /** @type {?ScreenPosition} */
+  /** @type {?import('@src/3d/utils').ScreenPosition} */
   let panPosition = null
-  /** @type {?ScreenPosition} */
+  /** @type {?import('@src/3d/utils').ScreenPosition} */
   let rotatePosition = null
   let isPanInProgress = false
   const { selection } = engine.managers
   const { camera, control, input, move, replay } = engine.managers
   buildMenuActionByName(engine.managers)
 
-  /** @type {Subject<TapData>} */
+  /** @type {Subject<import('@src/3d/managers').TapData>} */
   const taps$ = new Subject()
-  /** @type {Subject<DragData>} */
+  /** @type {Subject<import('@src/3d/managers').DragData>} */
   const drags$ = new Subject()
-  /** @type {Subject<WheelData>} */
+  /** @type {Subject<import('@src/3d/managers').WheelData>} */
   const wheels$ = new Subject()
-  /** @type {Subject<PinchData>} */
+  /** @type {Subject<import('@src/3d/managers').PinchData>} */
   const pinchs$ = new Subject()
-  /** @type {Subject<KeyData>} */
+  /** @type {Subject<import('@src/3d/managers').KeyData>} */
   const keys$ = new Subject()
-  /** @type {Subject<HoverData>} */
+  /** @type {Subject<import('@src/3d/managers').HoverData>} */
   const hovers$ = new Subject()
-  /** @type {Subject<MeshDetails>} */
+  /** @type {Subject<import('@src/3d/managers').MeshDetails>} */
   const details$ = new Subject()
   /** @type {Subject<import('@src/3d/managers').ActionOrMove>} */
   const behaviorAction$ = new Subject()
   /** @type {Subject<number>} */
   const replayRank$ = new Subject()
 
-  /** @type {BabylonToRxMapping[]} */
+  /** @type {import('@src/types').BabylonToRxMapping[]} */
   const mappings = [
     {
       observable: input.onTapObservable,
@@ -216,7 +199,7 @@ export function attachInputs({ engine, hoverDelay, actionMenuProps$ }) {
     }
   }
 
-  return /** @type {Subscription[]} */ (
+  return /** @type {import('rxjs').Subscription[]} */ (
     [
       /**
        * On mesh hover:
@@ -469,9 +452,10 @@ export function attachInputs({ engine, hoverDelay, actionMenuProps$ }) {
               : [selection.meshes.values().next().value]
             for (const mesh of actualMeshes) {
               applyMatchingAction({
-                actionNames: /** @type {ActionName[]} */ (
-                  engine.actionNamesByKey.get(key)
-                ),
+                actionNames:
+                  /** @type {import('@tabulous/types').ActionName[]} */ (
+                    engine.actionNamesByKey.get(key)
+                  ),
                 selection,
                 mesh
               })
@@ -566,7 +550,7 @@ export function attachInputs({ engine, hoverDelay, actionMenuProps$ }) {
           ) {
             const mesh = engine.scenes.reduce(
               (mesh, scene) => mesh || scene.getMeshById(actionOrMove.meshId),
-              /** @type {?Mesh} */ (null)
+              /** @type {?import('@babylonjs/core').Mesh} */ (null)
             )
             setTimeout(() => {
               const stack = mesh?.metadata?.stack
@@ -622,10 +606,10 @@ function pointerKind(
 
 /**
  * Triggers a given action against a given mesh, regardless of the current selection
- * @param {Mesh} mesh - related mesh.
- * @param {ActionName} actionName - name of the triggered action.
- * @param {Parameters<MeshActions[ActionName]>} parameters - optional arguments for the triggered action.
- * @return {ReturnType<MeshActions[ActionName]>} triggered action result, if any
+ * @param {import('@babylonjs/core').Mesh} mesh - related mesh.
+ * @param {import('@tabulous/types').ActionName} actionName - name of the triggered action.
+ * @param {Parameters<import('@src/types').MeshActions[import('@tabulous/types').ActionName]>} parameters - optional arguments for the triggered action.
+ * @return {ReturnType<import('@src/types').MeshActions[import('@tabulous/types').ActionName]>} triggered action result, if any
  */
 export function triggerAction(mesh, actionName, ...parameters) {
   if (mesh?.metadata) {
@@ -652,7 +636,7 @@ export function triggerAction(mesh, actionName, ...parameters) {
  * @param {object} params - parameters, including:
  * @param {import('@src/3d/managers').SelectionManager} params.selection - selection manager
  * @param {?import('@babylonjs/core').Mesh} [params.mesh] - related mesh.
- * @param {import('@tabulous/server/src/graphql').ActionName} params.actionName - name of the triggered action.
+ * @param {import('@tabulous/types').ActionName} params.actionName - name of the triggered action.
  * @param {number} [params.quantity] - number of meshes of a given stack which will apply this action
  */
 export function triggerActionOnSelection({
@@ -701,7 +685,11 @@ export function triggerActionOnSelection({
             actionName === flip ? flipAll : actionName
           )
         } else if (mesh.metadata.stack && mesh !== last && meshes.size === 1) {
-          triggerAction(/** @type {Mesh} */ (last), actionName, quantity)
+          triggerAction(
+            /** @type {import('@babylonjs/core').Mesh} */ (last),
+            actionName,
+            quantity
+          )
         } else {
           triggerAction(mesh, actionName, quantity)
         }
@@ -715,7 +703,7 @@ export function triggerActionOnSelection({
  * If this mesh is part of the current selection, only display relevant actions for the entire selection.
  * Otherwise, returns relevant actions for this single mesh.
  * @param {object} params - parameters, including:
- * @param {?Mesh} [params.mesh] - interacted mesh.
+ * @param {?import('@babylonjs/core').Mesh} [params.mesh] - interacted mesh.
  * @param {import('@src/3d/managers').SelectionManager} params.selection - selection manager
  * @param {boolean} [params.fromHand] - true when the clicked mesh lies in player's hand/
  * @returns {?ActionMenuProps} hash of properties for RadialMenu (x, y, open, items)
@@ -741,7 +729,7 @@ export function computeMenuProps({ mesh, selection, fromHand = false }) {
   }
 }
 
-/** @type {Map<ActionName, ActionDescriptor>} */
+/** @type {Map<import('@tabulous/types').ActionName, ActionDescriptor>} */
 let menuActionByName = new Map()
 
 /**
@@ -843,9 +831,11 @@ export function buildMenuActionByName({ selection }) {
           badge: 'shortcuts.pop',
           onClick: async event =>
             selection.select(
-              /** @type {Mesh} */ (
+              /** @type {import('@babylonjs/core').Mesh} */ (
                 await triggerAction(
-                  /** @type {Mesh} */ (mesh.metadata.stack?.[0]),
+                  /** @type {import('@babylonjs/core').Mesh} */ (
+                    mesh.metadata.stack?.[0]
+                  ),
                   pop,
                   getQuantity(event),
                   true
@@ -867,7 +857,7 @@ export function buildMenuActionByName({ selection }) {
           badge: 'shortcuts.pop',
           onClick: async event =>
             selection.select(
-              /** @type {Mesh} */ (
+              /** @type {import('@babylonjs/core').Mesh} */ (
                 await triggerAction(mesh, decrement, getQuantity(event), true)
               )
             ),
@@ -982,7 +972,7 @@ export function buildMenuActionByName({ selection }) {
 
 /**
  * @param {object} params - parameters, including:
- * @param {ActionName[]} params.actionNames - An array of action names.
+ * @param {import('@tabulous/types').ActionName[]} params.actionNames - An array of action names.
  * @param {import('@src/3d/managers').SelectionManager} params.selection - The selection manager.
  * @param {import('@babylonjs/core').Mesh} params.mesh - The mesh to apply the action to.
  * @param {boolean} [params.fromHand=false] - Indicates whether the action is applied from the hand.
@@ -1018,20 +1008,20 @@ function buildSupportParams({ mesh, selection, fromHand }) {
   }
 }
 
-function getBaseMeshes(/** @type {Mesh[]} */ meshes) {
+function getBaseMeshes(/** @type {import('@babylonjs/core').Mesh[]} */ meshes) {
   return new Set(meshes.map(mesh => mesh?.metadata?.stack?.[0] ?? mesh))
 }
 
 function isValidShuffleAction(
-  /** @type {ActionName} */ actionName,
-  /** @type {Mesh} */ mesh
+  /** @type {import('@tabulous/types').ActionName} */ actionName,
+  /** @type {import('@babylonjs/core').Mesh} */ mesh
 ) {
   return actionName === reorder && (mesh.metadata?.stack?.length ?? 0) > 1
 }
 
 function isSingleStackSelected(
-  /** @type {Mesh} */ mesh,
-  /** @type {Mesh[]} */ selected
+  /** @type {import('@babylonjs/core').Mesh} */ mesh,
+  /** @type {import('@babylonjs/core').Mesh[]} */ selected
 ) {
   const base = mesh.metadata?.stack?.[0]
   return (
@@ -1041,8 +1031,8 @@ function isSingleStackSelected(
 }
 
 function isRotatingEntireStack(
-  /** @type {Mesh} */ baseMesh,
-  /** @type {ActionName} */ actionName,
+  /** @type {import('@babylonjs/core').Mesh} */ baseMesh,
+  /** @type {import('@tabulous/types').ActionName} */ actionName,
   /** @type {number} */ quantity
 ) {
   return (
@@ -1051,7 +1041,7 @@ function isRotatingEntireStack(
 }
 
 function canStackAll(
-  /** @type {Mesh} */ mesh,
+  /** @type {import('@babylonjs/core').Mesh} */ mesh,
   /** @type {ActionParams} */ { selectedMeshes, fromHand }
 ) {
   if (fromHand || selectedMeshes.some(({ metadata }) => !metadata.stack)) {
@@ -1067,7 +1057,7 @@ function canStackAll(
 }
 
 function canIncrement(
-  /** @type {Mesh} */ mesh,
+  /** @type {import('@babylonjs/core').Mesh} */ mesh,
   /** @type {ActionParams} */ { selectedMeshes }
 ) {
   for (const other of selectedMeshes) {
@@ -1079,23 +1069,24 @@ function canIncrement(
 }
 
 function canAllDo(
-  /** @type {ActionName | 'playable' | 'drawable'} */ action,
-  /** @type {Mesh[]} */ meshes
+  /** @type {import('@tabulous/types').ActionName | 'playable' | 'drawable'} */ action,
+  /** @type {import('@babylonjs/core').Mesh[]} */ meshes
 ) {
   return meshes.every(mesh => Boolean(mesh.metadata?.[action]))
 }
 
 function computesStackSize(
-  /** @type {Mesh} */ mesh,
+  /** @type {import('@babylonjs/core').Mesh} */ mesh,
   /** @type {ActionParams} */ { selectedMeshes }
 ) {
   return selectedMeshes.length === 1 && (mesh.metadata?.stack?.length ?? 0) > 1
-    ? /** @type {Mesh[]} */ (mesh.metadata.stack).length
+    ? /** @type {import('@babylonjs/core').Mesh[]} */ (mesh.metadata.stack)
+        .length
     : undefined
 }
 
 function computesQuantity(
-  /** @type {Mesh} */ mesh,
+  /** @type {import('@babylonjs/core').Mesh} */ mesh,
   /** @type {ActionParams} */ { selectedMeshes }
 ) {
   return selectedMeshes.length === 1 && (mesh.metadata?.quantity ?? 0) > 1
@@ -1104,7 +1095,7 @@ function computesQuantity(
 }
 
 function computeMaxFace(
-  /** @type {Mesh} */ mesh,
+  /** @type {import('@babylonjs/core').Mesh} */ mesh,
   /** @type {ActionParams} */ { selectedMeshes }
 ) {
   return selectedMeshes.reduce(
@@ -1113,16 +1104,16 @@ function computeMaxFace(
   )
 }
 
-function shuffleStack(/** @type {Mesh} */ mesh) {
+function shuffleStack(/** @type {import('@babylonjs/core').Mesh} */ mesh) {
   const ids = mesh.metadata.stack?.map(({ id }) => id)
-  return /** @type {Mesh[]} */ (mesh.metadata.stack)[0].metadata.reorder?.(
-    shuffle(ids)
-  )
+  return /** @type {import('@babylonjs/core').Mesh[]} */ (
+    mesh.metadata.stack
+  )[0].metadata.reorder?.(shuffle(ids))
 }
 
 async function stackAll(
-  /** @type {Mesh} */ mesh,
-  /** @type {Mesh[]} */ selectedMeshes
+  /** @type {import('@babylonjs/core').Mesh} */ mesh,
+  /** @type {import('@babylonjs/core').Mesh[]} */ selectedMeshes
 ) {
   for (const base of getBaseMeshes(selectedMeshes)) {
     if (mesh.metadata.stack?.[0] !== base) {
@@ -1132,8 +1123,8 @@ async function stackAll(
 }
 
 async function incrementMesh(
-  /** @type {Mesh} */ mesh,
-  /** @type {Mesh[]} */ selectedMeshes
+  /** @type {import('@babylonjs/core').Mesh} */ mesh,
+  /** @type {import('@babylonjs/core').Mesh[]} */ selectedMeshes
 ) {
   const ids = []
   for (const { id } of selectedMeshes) {

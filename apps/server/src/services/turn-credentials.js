@@ -2,15 +2,9 @@
 import { createHmac } from 'node:crypto'
 
 /**
- * @typedef {object} TurnCredentials used to connect to the turn server
- * @property {string} username - unix timestamp representing the expiry date.
- * @property {string} credentials - required to connect.
- */
-
-/**
  * Generates valid credentials for using the turn server.
  * @param {string} secret - secret configured in coTurn server as `static-auth-secret`.
- * @returns {TurnCredentials} credentials for using the turn server.
+ * @returns {import('@tabulous/types').TurnCredentials} credentials for using the turn server.
  */
 export function generateTurnCredentials(secret) {
   // credits to https://medium.com/@helderjbe/setting-up-a-turn-server-with-node-production-ready-8f4a4c36e64d
@@ -21,11 +15,6 @@ export function generateTurnCredentials(secret) {
   }
 }
 
-/**
- * @param {string} secret
- * @param {string} value
- * @returns {string}
- */
-function hash(secret, value) {
+function hash(/** @type {string} */ secret, /** @type {string} */ value) {
   return createHmac('sha1', secret).update(value).digest('base64')
 }

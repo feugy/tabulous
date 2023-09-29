@@ -1,25 +1,5 @@
 <script>
   // @ts-check
-  /**
-   * @typedef {import('@babylonjs/core').Engine} Engine
-   * @typedef {import('@src/graphql').Friendship} Friendship
-   * @typedef {import('@src/graphql').GameOrGameParameters} GameOrGameParameters
-   * @typedef {import('@src/graphql').PlayerWithSearchable} PlayerWithSearchable
-   * @typedef {import('@src/graphql').PlayerWithTurnCredentials} PlayerWithTurnCredentials
-   * @typedef {Partial<import('@tabulous/server/src/services/catalog').Schema<?>>} Schema
-   * @typedef {import('@src/types').JSONValue} JSONValue
-   * @typedef {import('@src/utils').SizeObserver} SizeObserver
-   * @typedef {import('rxjs').Subscription} Subscription
-   */
-  /**
-   * @template T
-   * @typedef {import('@src/types').DeepRequired<T>} DeepRequired
-   */
-  /**
-   * @template T
-   * @typedef {import('rxjs').Observable<T>} Observable
-   */
-
   import { Aside } from '@src/components'
   import {
     connected,
@@ -72,10 +52,11 @@
   /** @type {import('./$types').PageData} */
   export let data
 
-  /** @type {DeepRequired<PlayerWithTurnCredentials>} */
-  const session = /** @type {?} */ (data.session)
+  const session = /** @type {import('@src/graphql').AuthenticatedPlayer} */ (
+    data.session
+  )
   const longTapDelay = 500
-  /** @type {Engine} */
+  /** @type {import('@babylonjs/core').Engine} */
   let engine
   /** @type {?HTMLCanvasElement} */
   let canvas
@@ -83,13 +64,13 @@
   let interaction
   /** @type {?HTMLDivElement} */
   let hand
-  /** @type {SizeObserver}*/
+  /** @type {import('@src/utils').SizeObserver}*/
   let dimensionObserver
-  /** @type {Subscription} */
+  /** @type {import('rxjs').Subscription} */
   let dimensionSubscription
-  /** @type {?{ schema: Schema }} */
+  /** @type {?import('@tabulous/types').GameParameters<?>} */
   let gameParameters = null
-  /** @type {Observable<Friendship[]>} */
+  /** @type {import('rxjs').Observable<import('@src/graphql').Friendship[]>} */
   let friends
   /** @type {?() => void} */
   let restoreColors = null
@@ -137,7 +118,9 @@
     engine?.dispose()
   })
 
-  async function askForGame(/** @type {JSONValue|undefined} */ parameters) {
+  async function askForGame(
+    /** @type {import('@src/types').JSONValue|undefined} */ parameters
+  ) {
     gameParameters = null
     try {
       isJoining = true
@@ -155,9 +138,10 @@
       }
       restoreColors = applyGameColors(result.colors ?? {})
       if (result && 'schemaString' in result && result.schemaString) {
-        gameParameters = {
-          schema: JSON.parse(result.schemaString)
-        }
+        gameParameters =
+          /** @type {import('@tabulous/types').GameParameters<?>} */ ({
+            schema: JSON.parse(result.schemaString)
+          })
       }
       if (isLobby(result)) {
         goto(`/${$locale}/home`)

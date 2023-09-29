@@ -1,10 +1,4 @@
 // @ts-check
-/**
- * @typedef {import('@babylonjs/core').Mesh} Mesh
- * @typedef {import('@tabulous/server/src/graphql').DetailableState} DetailableState
- * @typedef {import('../utils').ScreenPosition} ScreenPosition
- */
-
 import {
   attachFunctions,
   attachProperty,
@@ -16,21 +10,18 @@ import { DetailBehaviorName, StackBehaviorName } from './names'
 export class DetailBehavior {
   /**
    * Creates behavior to get details of a mesh.
-   * @param {DetailableState} state - behavior state.
-   * @param {import('@src/3d/managers').Managers} managers - current managers.
+   * @param {import('@tabulous/types').DetailableState} state - behavior state.
+   * @param {import('../managers').Managers} managers - current managers.
    */
   constructor(state, managers) {
     /** @internal */
     this.managers = managers
-    /** @type {?Mesh} mesh - the related mesh. */
+    /** @type {?import('@babylonjs/core').Mesh} mesh - the related mesh. */
     this.mesh = null
-    /**  @type {DetailableState} state - the behavior's current state. */
+    /**  @type {import('@tabulous/types').DetailableState} state - the behavior's current state. */
     this.state = state
   }
 
-  /**
-   * @property {string} name - this behavior's constant name.
-   */
   get name() {
     return DetailBehaviorName
   }
@@ -46,7 +37,7 @@ export class DetailBehavior {
    * - `frontImage` property.
    * - `backImage` property.
    * - the `detail()` method.
-   * @param {Mesh} mesh - which becomes detailable.
+   * @param {import('@babylonjs/core').Mesh} mesh - which becomes detailable.
    */
   attach(mesh) {
     this.mesh = mesh
@@ -67,7 +58,7 @@ export class DetailBehavior {
     if (!this.mesh) return
     const stackable = this.mesh.getBehaviorByName(StackBehaviorName)
     this.managers.control.onDetailedObservable.notifyObservers({
-      position: /** @type {ScreenPosition} */ (
+      position: /** @type {import('../utils').ScreenPosition} */ (
         getMeshScreenPosition(this.mesh)
       ),
       images: /** @type {string[]} */ (
@@ -81,7 +72,7 @@ export class DetailBehavior {
 
   /**
    * Updates this behavior's state and mesh to match provided data.
-   * @param {DetailableState} state - state to update to.
+   * @param {import('@tabulous/types').DetailableState} state - state to update to.
    */
   fromState({ frontImage = '', backImage }) {
     if (!this.mesh) {

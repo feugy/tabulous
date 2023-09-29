@@ -1,10 +1,4 @@
 // @ts-check
-/**
- * @typedef {import('@babylonjs/core').Scene} Scene
- * @typedef {import('@babylonjs/core').Mesh} Mesh
- * @typedef {import('@babylonjs/core').PBRSpecularGlossinessMaterial} Material
- */
-
 import { Color3 } from '@babylonjs/core/Maths/math.color'
 import { faker } from '@faker-js/faker'
 import { createPrism } from '@src/3d/meshes'
@@ -12,7 +6,7 @@ import { beforeEach, describe, expect, it } from 'vitest'
 
 import { configures3dTestEngine, expectPosition } from '../../test-utils'
 
-/** @type {Scene} */
+/** @type {import('@babylonjs/core').Scene} */
 let scene
 /** @type {import('@src/3d/managers').Managers} */
 let managers
@@ -46,9 +40,10 @@ describe('createPrism()', () => {
     expect(boundingBox.extendSize.x * 2).toEqual(3)
     expect(boundingBox.extendSize.y * 2).toEqual(1)
     expect(mesh.isPickable).toBe(false)
-    expect(/** @type {Material} */ (mesh.material).diffuseColor).toEqual(
-      Color3.FromHexString(color).toLinearSpace()
-    )
+    expect(
+      /** @type {import('@babylonjs/core').StandardMaterial} */ (mesh.material)
+        .diffuseColor
+    ).toEqual(Color3.FromHexString(color).toLinearSpace())
   })
 
   it('creates a prism with initial transformation', async () => {
@@ -69,7 +64,7 @@ describe('createPrism()', () => {
   })
 
   describe('given a prism with initial position, edges number, dimension, images and behaviors', () => {
-    /** @type {Mesh} */
+    /** @type {import('@babylonjs/core').Mesh} */
     let mesh
 
     const width = faker.number.int({ min: 3, max: 5 })

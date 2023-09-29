@@ -1,3 +1,4 @@
+// @ts-check
 export * from './boards.js'
 export * from './dice.js'
 export * from './marks.js'

@@ -12,7 +12,7 @@ RequiredString.required = requiredSymbol
  * @template {arg.Spec} T
  * @param {string[]} argv - array of parsed arguments (without executable and current file).
  * @param {T} spec - parser specification.
- * @returns {any} parsed command line arguments.
+ * @returns parsed command line arguments.
  */
 export function parseArgv(argv = [], spec) {
   const parsed = arg(spec, { permissive: true, argv })
@@ -38,7 +38,7 @@ export function parseArgv(argv = [], spec) {
  * Removes the first command from parsed arguments.
  * @param {string[]} argv - array of parsed arguments.
  * @param {string} command - removed command
- * @returns {string[]} the parsed arguments without stripped command.
+ * @returns the parsed arguments without stripped command.
  */
 export function shiftCommand(argv, command) {
   return argv.filter(arg => camelCase(arg) !== command)

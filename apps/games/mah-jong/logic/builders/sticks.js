@@ -1,10 +1,8 @@
 // @ts-check
-/** @typedef {import('@tabulous/server/src/graphql').Mesh} Mesh */
-
 import { kinds } from '../constants.js'
 
 export function buildSticks(/** @type {number} */ playerRank) {
-  /** @type {Mesh[]} */
+  /** @type {import('@tabulous/types').Mesh[]} */
   const sticks = []
   const { x, z, angle, offset } =
     playerRank === 0

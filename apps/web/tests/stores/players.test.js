@@ -1,14 +1,4 @@
 // @ts-check
-/**
- * @typedef {import('@src/graphql').Friendship} Friendship
- * @typedef {import('../test-utils').RunQueryMock} RunQueryMock
- * @typedef {import('../test-utils').RunMutationMock} RunMutationMock
- */
-/**
- * @template T
- * @typedef {import('rxjs').Observable<T>} Observable
- */
-
 import { faker } from '@faker-js/faker'
 import * as graphQL from '@src/graphql'
 import {
@@ -31,8 +21,8 @@ import { goto } from '$app/navigation'
 
 vi.mock('@src/stores/graphql-client')
 
-const runQueryMock = /** @type {RunQueryMock} */ (runQuery)
-const runMutationMock = /** @type {RunMutationMock} */ (runMutation)
+const runQueryMock = vi.mocked(runQuery)
+const runMutationMock = vi.mocked(runMutation)
 
 const id = faker.string.uuid()
 const username = faker.person.firstName()

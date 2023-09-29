@@ -1,9 +1,4 @@
 // @ts-check
-/**
- * @typedef {import('fastify').FastifyInstance} FastifyInstance
- * @typedef {import('../../src/services/players').Player} Player
- */
-
 import { faker } from '@faker-js/faker'
 import fastify from 'fastify'
 import {
@@ -27,7 +22,7 @@ import {
 import { clearDatabase, getRedisTestUrl } from '../test-utils.js'
 
 describe('given a started server', () => {
-  /** @type {FastifyInstance} */
+  /** @type {import('fastify').FastifyInstance} */
   let server
   /** @type {import('ws')} */
   let ws
@@ -38,7 +33,7 @@ describe('given a started server', () => {
       realServices
     )
   const pubsubUrl = getRedisTestUrl()
-  /** @type {Player} */
+  /** @type {import('@tabulous/types').Player} */
   const player = {
     isAdmin: true,
     id: faker.string.uuid(),

@@ -1,10 +1,5 @@
 <script>
   // @ts-check
-  /**
-   * @typedef {import('@src/components').LabelMenuOption} LabelMenuOption
-   * @typedef {import('@src/3d/managers/camera').CameraPosition} CameraPosition
-   */
-
   import { Dropdown } from '@src/components'
   import { isFullscreen, toggleFullscreen } from '@src/stores'
   import {
@@ -35,10 +30,10 @@
     placement: 'top',
     inverted: true
   })
-  /** @type {?LabelMenuOption|undefined} */
+  /** @type {?import('@src/components').LabelMenuOption|undefined} */
   let value = null
 
-  /** @type {LabelMenuOption[]} */
+  /** @type {import('@src/components').LabelMenuOption[]} */
   $: options = [
     { icon: 'home', label: $_('actions.quit-game'), id: homeAction },
     {

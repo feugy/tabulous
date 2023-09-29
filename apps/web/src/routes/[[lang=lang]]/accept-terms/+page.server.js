@@ -1,10 +1,4 @@
 // @ts-check
-/** @typedef {import('@src/graphql').PlayerWithTurnCredentials} PlayerWithTurnCredentials */
-/**
- * @template T
- * @typedef {import('@src/types').DeepRequired<T>} DeepRequired
- */
-
 import { initGraphQlClient } from '@src/stores/graphql-client'
 import { acceptTerms } from '@src/stores/players'
 import { graphQlUrl } from '@src/utils/env'
@@ -47,7 +41,7 @@ export const actions = {
     })
     if (locals.session) {
       locals.session.player =
-        /** @type {DeepRequired<PlayerWithTurnCredentials>['player']} */ (
+        /** @type {import('@src/graphql').AuthenticatedPlayer['player']} */ (
           await acceptTerms()
         )
     }

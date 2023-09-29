@@ -1,12 +1,4 @@
 // @ts-check
-/**
- * @typedef {import('@babylonjs/core').Mesh} Mesh
- * @typedef {import('@babylonjs/core').Observer<?>} Observer
- * @typedef {import('@babylonjs/core').Scene} Scene
- * @typedef {import('@src/3d/managers').RecordedAction} RecordedAction
- * @typedef {import('@tabulous/server/src/graphql').Anchor} Anchor
- */
-
 import { Vector3 } from '@babylonjs/core/Maths/math.vector'
 import { faker } from '@faker-js/faker'
 import {
@@ -56,13 +48,13 @@ describe('AnchorBehavior', () => {
 
   const actionRecorded = vi.fn()
   const moveRecorded = vi.fn()
-  /** @type {Scene} */
+  /** @type {import('@babylonjs/core').Scene} */
   let scene
   /** @type {import('@src/3d/managers').Managers} */
   let managers
   /** @type {import('vitest').Spy<import('@src/3d/managers').IndicatorManager['registerFeedback']>} */
   let registerFeedbackSpy
-  /** @type {?Observer} */
+  /** @type {?import('@babylonjs/core').Observer<?>} */
   let moveObserver
 
   beforeAll(() => {
@@ -141,9 +133,9 @@ describe('AnchorBehavior', () => {
   })
 
   describe('given attached to a mesh with zones', () => {
-    /** @type {Mesh} */
+    /** @type {import('@babylonjs/core').Mesh} */
     let mesh
-    /** @type {Mesh[]} */
+    /** @type {import('@babylonjs/core').Mesh[]} */
     let meshes
     /** @type {AnchorBehavior} */
     let behavior
@@ -781,9 +773,10 @@ describe('AnchorBehavior', () => {
       expectSnapped(mesh, snapped, 0)
       expectFlipped(snapped, false)
       expectRotated(snapped, -angle)
-      const { revert } = /** @type {Required<RecordedAction>} */ (
-        actionRecorded.mock.calls[0][0]
-      )
+      const { revert } =
+        /** @type {Required<import('@src/3d/managers').RecordedAction>} */ (
+          actionRecorded.mock.calls[0][0]
+        )
       actionRecorded.mockClear()
       registerFeedbackSpy.mockClear()
 
@@ -1088,9 +1081,10 @@ describe('AnchorBehavior', () => {
       const position = snapped.absolutePosition.asArray()
       expectUnsnapped(mesh, snapped, 0)
       expect(behavior.getSnappedIds()).toEqual([])
-      const { revert } = /** @type {Required<RecordedAction>} */ (
-        actionRecorded.mock.calls[0][0]
-      )
+      const { revert } =
+        /** @type {Required<import('@src/3d/managers').RecordedAction>} */ (
+          actionRecorded.mock.calls[0][0]
+        )
       actionRecorded.mockClear()
       registerFeedbackSpy.mockClear()
 
@@ -1233,7 +1227,7 @@ describe('AnchorBehavior', () => {
 
     /**
      * @param {number} rank - actual anchor rank.
-     * @param {Partial<Anchor>} anchor - expected anchor
+     * @param {Partial<import('@tabulous/types').Anchor>} anchor - expected anchor
      * @param {boolean} [isEnabled] - whether this anchor's zone should be enabled, defaults to true.
      * @param {string[]} [kinds] - zone expected kinds, defaults to none.
      * @param {number} [priority] - zone expected priority, defaults to 0.
@@ -1261,7 +1255,7 @@ describe('AnchorBehavior', () => {
 
 function makeStack(
   /** @type {import('@src/3d/managers').Managers} */ managers,
-  /** @type {Mesh} */ mesh
+  /** @type {import('@babylonjs/core').Mesh} */ mesh
 ) {
   const stacked = createBox('stacked-box1', {})
   stacked.addBehavior(new AnimateBehavior(), true)

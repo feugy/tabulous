@@ -67,12 +67,10 @@ class GoogleAuthProvider extends OAuth2Provider {
 
 export const googleAuth = new GoogleAuthProvider('google')
 
-/**
- * @param {string} code
- * @param {GoogleAuthProvider} provider
- * @returns {Promise<GoogleUser>}
- */
-async function fetchUserData(code, { id, secret, redirect }) {
+async function fetchUserData(
+  /** @type {string} */ code,
+  /** @type {GoogleAuthProvider} */ { id, secret, redirect }
+) {
   const body = new FormData()
   body.append('code', code)
   body.append('client_id', id)
@@ -86,21 +84,21 @@ async function fetchUserData(code, { id, secret, redirect }) {
   if (!response.ok) {
     throw new Error('forbidden')
   }
-  return decodeJwt(
-    /** @type {{ id_token: string }} */ (await response.json()).id_token
+  return /** @type {GoogleUser} */ (
+    decodeJwt(
+      /** @type {{ id_token: string }} */ (await response.json()).id_token
+    )
   )
 }
 
-/**
- * @param {GoogleUser} user
- * @returns {Partial<import('../players').Player>}>
- */
-function mapToUserDetails({
-  sub: providerId,
-  given_name: username,
-  picture: avatar,
-  email,
-  name
-}) {
+function mapToUserDetails(
+  /** @type {GoogleUser} */ {
+    sub: providerId,
+    given_name: username,
+    picture: avatar,
+    email,
+    name
+  }
+) {
   return { username, avatar, email, providerId, fullName: name || username }
 }

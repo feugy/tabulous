@@ -1,6 +1,4 @@
 // @ts-check
-/** @typedef {import('@src/common').Locale} Locale */
-
 import { redirect } from '@sveltejs/kit'
 
 const termsUrl = '/accept-terms'
@@ -21,5 +19,10 @@ export function load({ url, locals, params: { lang }, depends }) {
     )
   }
   depends('data:session')
-  return { bearer, session, timeZone, lang: /** @type {Locale} */ (lang) }
+  return {
+    bearer,
+    session,
+    timeZone,
+    lang: /** @type {import('@src/common').Locale} */ (lang)
+  }
 }

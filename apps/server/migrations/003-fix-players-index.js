@@ -1,5 +1,4 @@
 // @ts-check
-
 /** @type {import('.').Apply} */
 export async function apply({ players }, redis) {
   console.log('delete undefined provider index')

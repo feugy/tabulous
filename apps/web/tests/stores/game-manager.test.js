@@ -1,36 +1,4 @@
 // @ts-check
-/**
- * @typedef {import('@babylonjs/core').Engine} Engine
- * @typedef {import('@src/3d/managers/camera').CameraPosition} CameraPosition
- * @typedef {import('@src/3d/managers/control').Action} Action
- * @typedef {import('@src/3d/managers/control').Move} Move
- * @typedef {import('@src/3d/engine').PlayerSelection} PlayerSelection
- * @typedef {import('@src/graphql').Game} Game
- * @typedef {import('@src/stores/game-manager').GameWithSelections} GameWithSelections
- * @typedef {import('@src/stores/game-manager').Player} Player
- * @typedef {import('@src/stores/peer-channels').Message} PeerMessage
- * @typedef {import('@tabulous/server/src/graphql').Hand} Hand
- * @typedef {import('@tabulous/server/src/graphql').Mesh} Mesh
- * @typedef {import('@tabulous/server/src/graphql').Message} Message
- * @typedef {import('@tabulous/server/src/graphql').TurnCredentials} TurnCredentials
- * @typedef {import('rxjs').Subscription} Subscription
- * @typedef {import('../test-utils').RunQueryMock} RunQueryMock
- * @typedef {import('../test-utils').RunMutationMock} RunMutationMock
- * @typedef {import('../test-utils').RunSubscriptionMock} RunSubscriptionMock
- */
-/**
- * @template T
- * @typedef {import('rxjs').BehaviorSubject<T>} BehaviorSubject
- */
-/**
- * @template T
- * @typedef {import('vitest').MockedObject<T>} MockedObject
- */
-/**
- * @template {any[]} P, R
- * @typedef {import('vitest').Mock<P, R>} Mock
- */
-
 import { Observable } from '@babylonjs/core/Misc/observable'
 import { faker } from '@faker-js/faker'
 import * as graphQL from '@src/graphql'
@@ -125,45 +93,48 @@ vi.mock('@src/stores/peer-channels', () => {
 })
 vi.mock('@src/3d/utils')
 
-const serializeThread = /** @type {Mock<[], Message[]>} */ (
-  actualSerializeThread
-)
-const connectWith =
-  /** @type {Mock<[string, TurnCredentials], Promise<?>>}  */ (
-    actualConnectWith
-  )
-const lastConnectedId = /** @type {BehaviorSubject<string>} */ (
+const serializeThread = vi.mocked(actualSerializeThread)
+const connectWith = vi.mocked(actualConnectWith)
+const send = vi.mocked(actualSend)
+const runQuery = vi.mocked(actualRunQuery)
+const runMutation = vi.mocked(actualRunMutation)
+const runSubscription = vi.mocked(actualRunSubscription)
+const loadCameraSaves = vi.mocked(actualLoadCameraSaves)
+const lastConnectedId = /** @type {import('rxjs').BehaviorSubject<string>} */ (
   actualLastConnectedId
 )
-const lastDisconnectedId = /** @type {BehaviorSubject<string>} */ (
-  actualLastDisconnectedId
-)
-const lastMessageReceived = /** @type {Subject<PeerMessage>} */ (
-  actualLastMessageReceived
-)
-const lastMessageSent = /** @type {Subject<PeerMessage>} */ (
-  actualLastMessageSent
-)
-const send = /** @type {Mock<[object, ?string|undefined], void>} */ (actualSend)
-const runQuery = /** @type {RunQueryMock} */ (actualRunQuery)
-const runMutation = /** @type {RunMutationMock} */ (actualRunMutation)
-const runSubscription = /** @type {RunSubscriptionMock} */ (
-  actualRunSubscription
-)
-const action = /** @type {BehaviorSubject<Action|Move>} */ (actualAction)
-const engine$ = /** @type {BehaviorSubject<?Engine>} */ (actualEngine)
-const handMeshes$ = /** @type {BehaviorSubject<any[]>} */ (actualHandMeshes)
-const cameraSaves = /** @type {BehaviorSubject<CameraPosition[]>} */ (
-  actualCameraSaves
-)
-const loadCameraSaves =
-  /** @type {Mock<Parameters<import('@src/3d/managers').CameraManager['loadSaves']>, Promise<void>>} */ (
-    actualLoadCameraSaves
+const lastDisconnectedId =
+  /** @type {import('rxjs').BehaviorSubject<string>} */ (
+    actualLastDisconnectedId
   )
-const remoteSelection = /** @type {Subject<PlayerSelection>} */ (
-  actualRemoteSelection
+const lastMessageReceived =
+  /** @type {Subject<import('@src/stores').WebRTCMessage>} */ (
+    actualLastMessageReceived
+  )
+const lastMessageSent =
+  /** @type {Subject<import('@src/stores').WebRTCMessage>} */ (
+    actualLastMessageSent
+  )
+const action =
+  /** @type {import('rxjs').BehaviorSubject<import('@src/3d/managers').ActionOrMove>} */ (
+    actualAction
+  )
+const engine$ =
+  /** @type {import('rxjs').BehaviorSubject<?import('@babylonjs/core').Engine>} */ (
+    actualEngine
+  )
+const handMeshes$ = /** @type {import('rxjs').BehaviorSubject<any[]>} */ (
+  actualHandMeshes
 )
-const selectedMeshes = /** @type {BehaviorSubject<Set<?>>} */ (
+const cameraSaves =
+  /** @type {import('rxjs').BehaviorSubject<import('@src/3d/managers').CameraPosition[]>} */ (
+    actualCameraSaves
+  )
+const remoteSelection =
+  /** @type {Subject<import('@src/3d').PlayerSelection>} */ (
+    actualRemoteSelection
+  )
+const selectedMeshes = /** @type {import('rxjs').BehaviorSubject<Set<?>>} */ (
   actualSelectedMeshes
 )
 
@@ -172,10 +143,10 @@ const playerColorReceived = vi.fn()
 const toastReceived = vi.fn()
 const promotionReceived = vi.fn()
 const deletionReceived = vi.fn()
-/** @type {TurnCredentials} */
+/** @type {import('@tabulous/types').TurnCredentials} */
 const turnCredentials = { username: 'turn', credentials: 'foo' }
 
-/** @type {MockedObject<Engine>} */
+/** @type {import('vitest').MockedObject<import('@babylonjs/core').Engine>} */
 const engine = /** @type {?} */ ({
   scenes: [],
   load: vi.fn().mockResolvedValue(undefined),
@@ -184,24 +155,24 @@ const engine = /** @type {?} */ ({
   onBeforeDisposeObservable: new Observable()
 })
 const gameUpdates$ = new Subject()
-/** @type {Subscription[]} */
+/** @type {import('rxjs').Subscription[]} */
 let subscriptions
 
-const player = /** @type {Player} */ ({
+const player = /** @type {import('@src/graphql').LightPlayer} */ ({
   id: 'player',
   username: 'player',
   isGuest: false
 })
-const partner1 = /** @type {Player} */ ({
+const partner1 = /** @type {import('@src/graphql').LightPlayer} */ ({
   id: 'partner1',
   username: 'partner 1'
 })
-const partner2 = /** @type {Player} */ ({
+const partner2 = /** @type {import('@src/graphql').LightPlayer} */ ({
   id: 'partner2',
   username: 'partner 2',
   isGuest: false
 })
-const partner3 = /** @type {Player} */ ({
+const partner3 = /** @type {import('@src/graphql').LightPlayer} */ ({
   id: 'partner3',
   username: 'partner 3'
 })
@@ -511,8 +482,10 @@ describe('given a mocked game engine', () => {
 
     it('loads game data into the game engine', async () => {
       const gameId = faker.string.uuid()
-      const meshes = /** @type {Mesh[]} */ ([{ id: 'mesh1' }])
-      const hands = /** @type {Hand[]} */ ([
+      const meshes = /** @type {import('@tabulous/types').Mesh[]} */ ([
+        { id: 'mesh1' }
+      ])
+      const hands = /** @type {import('@tabulous/types').Hand[]} */ ([
         { playerId: 'anotherPlayerId', meshes: [{ id: 'mesh2' }] },
         { playerId: player.id, meshes: [{ id: 'mesh3' }] }
       ])
@@ -521,7 +494,7 @@ describe('given a mocked game engine', () => {
         { playerId: 'anotherPlayerId', color: '#ffffff' },
         { playerId: player.id, color }
       ]
-      /** @type {Game} */
+      /** @type {import('@src/graphql').Game} */
       const game = /** @type {?} */ ({
         id: gameId,
         kind: 'belote',
@@ -613,8 +586,10 @@ describe('given a mocked game engine', () => {
 
     it('loads camera positions upon game loading', async () => {
       const gameId = faker.string.uuid()
-      const meshes = /** @type {Mesh[]} */ ([{ id: 'mesh1' }])
-      const hands = /** @type {Hand[]} */ ([
+      const meshes = /** @type {import('@tabulous/types').Mesh[]} */ ([
+        { id: 'mesh1' }
+      ])
+      const hands = /** @type {import('@tabulous/types').Hand[]} */ ([
         { playerId: player.id, meshes: [] }
       ])
       const cameras = [
@@ -622,7 +597,7 @@ describe('given a mocked game engine', () => {
         { playerId: partner1.id, index: 0 },
         { playerId: player.id, index: 0 }
       ]
-      /** @type {Game} */
+      /** @type {import('@src/graphql').Game} */
       const game = /** @type {?} */ ({
         id: gameId,
         kind: 'belote',
@@ -673,8 +648,10 @@ describe('given a mocked game engine', () => {
 
     it('loads message thread upon game loading', async () => {
       const gameId = faker.string.uuid()
-      const meshes = /** @type {Mesh[]} */ ([{ id: 'mesh1' }])
-      const hands = /** @type {Hand[]} */ ([
+      const meshes = /** @type {import('@tabulous/types').Mesh[]} */ ([
+        { id: 'mesh1' }
+      ])
+      const hands = /** @type {import('@tabulous/types').Hand[]} */ ([
         { playerId: player.id, meshes: [] }
       ])
       const messages = [
@@ -724,7 +701,9 @@ describe('given a mocked game engine', () => {
 
     it('loads game data without player hand', async () => {
       const gameId = faker.string.uuid()
-      const meshes = /** @type {Mesh[]} */ ([{ id: 'mesh2' }])
+      const meshes = /** @type {import('@tabulous/types').Mesh[]} */ ([
+        { id: 'mesh2' }
+      ])
       const game = {
         id: gameId,
         kind: 'belote',
@@ -811,12 +790,12 @@ describe('given a mocked game engine', () => {
     })
 
     describe('with a loaded game', () => {
-      const meshes = /** @type {Mesh[]} */ ([
+      const meshes = /** @type {import('@tabulous/types').Mesh[]} */ ([
         { id: 'mesh1' },
         { id: 'mesh2' },
         { id: 'mesh3' }
       ])
-      /** @type {Game} */
+      /** @type {import('@src/graphql').Game} */
       const game = /** @type {?} */ ({
         id: faker.string.uuid(),
         kind: 'belote',
@@ -1343,13 +1322,13 @@ describe('given a mocked game engine', () => {
     })
 
     describe('with online players', () => {
-      const meshes = /** @type {Mesh[]} */ ([
+      const meshes = /** @type {import('@tabulous/types').Mesh[]} */ ([
         { id: 'mesh1' },
         { id: 'mesh2' },
         { id: 'mesh3' }
       ])
       const id = faker.string.uuid()
-      /** @type {Game} */
+      /** @type {import('@src/graphql').Game} */
       const game = {
         id,
         kind: 'belote',
@@ -1364,11 +1343,15 @@ describe('given a mocked game engine', () => {
         hands: [
           {
             playerId: 'anotherPlayerId',
-            meshes: /** @type {Mesh[]} */ ([{ id: 'mesh2' }])
+            meshes: /** @type {import('@tabulous/types').Mesh[]} */ ([
+              { id: 'mesh2' }
+            ])
           },
           {
             playerId: player.id,
-            meshes: /** @type {Mesh[]} */ ([{ id: 'mesh3' }])
+            meshes: /** @type {import('@tabulous/types').Mesh[]} */ ([
+              { id: 'mesh3' }
+            ])
           }
         ],
         cameras: /** @type {?} */ ([
@@ -1438,6 +1421,7 @@ describe('given a mocked game engine', () => {
               data: { type: 'game-sync', ...game },
               playerId: partner1.id
             })
+            return undefined
           })
           await joinGame({
             gameId: game.id,
@@ -1583,6 +1567,7 @@ describe('given a mocked game engine', () => {
               data: { type: 'game-sync', ...game },
               playerId: player.id
             })
+            return undefined
           })
           await joinGame({
             gameId: game.id,
@@ -1597,7 +1582,9 @@ describe('given a mocked game engine', () => {
         it('takes host role when being the first online', async () => {
           serializeThread.mockReturnValueOnce([])
           engine.serialize.mockReturnValueOnce({
-            meshes: /** @type {Mesh[]} */ (game.meshes),
+            meshes: /** @type {import('@tabulous/types').Mesh[]} */ (
+              game.meshes
+            ),
             handMeshes: [],
             history: []
           })
@@ -1887,7 +1874,11 @@ describe('receiveGameListUpdates()', () => {
 })
 
 async function connectPeerAndExpectGameSync(
-  /** @type {GameWithSelections} */ { cameras, selections, ...gameData },
+  /** @type {import('@src/stores').GameWithSelections} */ {
+    cameras,
+    selections,
+    ...gameData
+  },
   /** @type {string} */ playerId
 ) {
   send.mockReset()
@@ -1907,7 +1898,7 @@ async function connectPeerAndExpectGameSync(
   expect(send).toHaveBeenCalledOnce()
 }
 
-function prepareGame(/** @type {Partial<Game>} */ game) {
+function prepareGame(/** @type {Partial<import('@src/graphql').Game>} */ game) {
   engine.onDisposeObservable.notifyObservers(engine)
   runSubscription.mockReset()
   runSubscription.mockImplementation(subscription =>

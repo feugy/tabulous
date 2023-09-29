@@ -1,10 +1,5 @@
 <script>
   // @ts-check
-  /**
-   * @typedef {import('@tabulous/server/src/graphql').ActionSpec} ActionSpec
-   * @typedef {import('@tabulous/server/src/graphql').ActionName} ActionName
-   */
-
   import { buttonIds } from '@src/3d/utils/actions'
   import { isTouchScreen } from '@src/utils'
   import { _ } from 'svelte-intl'
@@ -15,9 +10,9 @@
   import HelpKey from './HelpKey.svelte'
   import Skeleton from './Skeleton.svelte'
 
-  /** @type {Map<keyof ActionSpec, ActionName[]>} map of action names by a given button. */
+  /** @type {Map<keyof import('@tabulous/types').ActionSpec, import('@tabulous/types').ActionName[]>} map of action names by a given button. */
   export let actionNamesByButton = new Map()
-  /** @type {Map<string, ActionName[]>} map of action names by a given shorcut. */
+  /** @type {Map<string, import('@tabulous/types').ActionName[]>} map of action names by a given shorcut. */
   export let actionNamesByKey = new Map()
 
   const isTouch = isTouchScreen()
@@ -28,7 +23,9 @@
   $: button1Actions = actionNamesByButton?.get(buttonIds.button1)
   $: button2Actions = actionNamesByButton?.get(buttonIds.button2)
 
-  function mapToLabels(/** @type {ActionName[]} */ actions) {
+  function mapToLabels(
+    /** @type {import('@tabulous/types').ActionName[]} */ actions
+  ) {
     return actions.map(action => $_(`labels.help-${action}`)).join('<br/>')
   }
 </script>

@@ -1,20 +1,13 @@
 <script>
   // @ts-check
-  /**
-   * @typedef {import('@tabulous/server/src/graphql').ActionName} ActionName
-   * @typedef {import('@src/stores/game-manager').Player} Player
-   * @typedef {import('@src/stores/indicators').VisibleIndicator} VisibleIndicator
-   * @typedef {import('@src/stores/indicators').VisibleFeedback} VisibleFeedback
-   */
-
   import { actionNames } from '@src/3d/utils/actions'
   import { Label, PlayerThumbnail } from '@src/components'
 
   import Feedback from './Feedback.svelte'
 
-  /** @type {VisibleIndicator[]}*/
+  /** @type {import('@src/stores/indicators').VisibleIndicator[]}*/
   export let items = []
-  /** @type {VisibleFeedback[]}*/
+  /** @type {import('@src/stores/indicators').VisibleFeedback[]}*/
   export let feedbacks = []
 
   $: hashedItems = items.map(item => ({
@@ -23,14 +16,14 @@
   }))
 
   function computeLabel(
-    /** @type {Player|undefined} */ player,
+    /** @type {import('@src/stores').PlayerWithPref|undefined} */ player,
     /** @type {number|undefined} */ size
   ) {
     return player?.username ?? size?.toString() ?? ''
   }
 
   function computeFeedback(
-    /** @type {ActionName | 'unlock' | 'lock'} */ action
+    /** @type {import('@tabulous/types').ActionName | 'unlock' | 'lock'} */ action
   ) {
     return action === actionNames.push
       ? 'layers'

@@ -1,11 +1,4 @@
 // @ts-check
-/**
- * @typedef {import('@babylonjs/core').Scene} Scene
- * @typedef {import('@babylonjs/core').Mesh} Mesh
- * @typedef {import('@babylonjs/core').ShadowGenerator} ShadowGenerator
- * @typedef {import('@src/graphql').Game} Game
- */
-
 // mandatory side effect
 import '@babylonjs/core/Lights/Shadows/shadowGeneratorSceneComponent.js'
 
@@ -43,8 +36,8 @@ export class MaterialManager {
    * - allows using the same texture in between hand and main scene
    * - automatically clears cache scene disposal.
    * @param {object} params - parameters, including:
-   * @param {Scene} params.scene - main scene.
-   * @param {Scene} [params.handScene] - scene for meshes in hand.
+   * @param {import('@babylonjs/core').Scene} params.scene - main scene.
+   * @param {import('@babylonjs/core').Scene} [params.handScene] - scene for meshes in hand.
    * @param {string} [params.gameAssetsUrl] - base url hosting the game textures.
    * @param {string} [params.locale] - locale used to download the game textures.
    * @param {boolean} [params.isWebGL1] - true if the rendering engine only supports WebGL1.
@@ -74,7 +67,7 @@ export class MaterialManager {
 
   /**
    * Initializes with game data.
-   * @param {Game} game - loaded game data.
+   * @param {import('@src/graphql').Game} game - loaded game data.
    */
   init(game) {
     if (!this.disabled) {
@@ -85,7 +78,7 @@ export class MaterialManager {
   /**
    * Creates a material from provided texture and attaches it to a mesh.
    * Configures mesh to receive shadows and to have an overlay color.
-   * @param {Mesh} mesh - related mesh.
+   * @param {import('@babylonjs/core').Mesh} mesh - related mesh.
    * @param {string} texture - texture url or hexadecimal string color.
    */
   configure(mesh, texture) {
@@ -102,7 +95,7 @@ export class MaterialManager {
    * Creates or reuse an existing material, on a given scene.
    * It is not attached to any mesh
    * @param {string} texture - texture url or hexadecimal string color.
-   * @param {Scene} scene - scene used.
+   * @param {import('@babylonjs/core').Scene} scene - scene used.
    * @returns the build (or cached) material.
    */
   buildOnDemand(texture, scene) {
@@ -139,7 +132,7 @@ export class MaterialManager {
 
 /**
  * @param {MaterialManager} manager - manager instance.
- * @param {Scene} scene - concerned scene.
+ * @param {import('@babylonjs/core').Scene} scene - concerned scene.
  * @returns map of cached materials for this scene.
  */
 function getMaterialCache(manager, scene) {
@@ -150,7 +143,7 @@ function getMaterialCache(manager, scene) {
 
 function preloadMaterials(
   /** @type {MaterialManager} */ manager,
-  /** @type {Game} */ game
+  /** @type {import('@src/graphql').Game} */ game
 ) {
   for (const { texture } of [
     ...(game.meshes ?? []),
@@ -163,7 +156,7 @@ function preloadMaterials(
 /**
  * @param {MaterialManager} manager - manager instance.
  * @param {string} url - material texture url or color code.
- * @param {Scene} usedScene - concerned scene.
+ * @param {import('@babylonjs/core').Scene} usedScene - concerned scene.
  * @returns built material.
  */
 function buildMaterials(manager, url, usedScene) {
@@ -186,7 +179,7 @@ function buildMaterials(manager, url, usedScene) {
  * @param {Map<string, PBRSpecularGlossinessMaterial>} materialByUrl cached material for this scene
  * @param {MaterialManager} manager - manager instance.
  * @param {string} url - material texture url or color code.
- * @param {Scene} scene - concerned scene.
+ * @param {import('@babylonjs/core').Scene} scene - concerned scene.
  * @returns built material.
  */
 function buildMaterial(
@@ -249,9 +242,10 @@ function adaptTextureUrl(base, texture, locale, isWebGL1) {
 function attachMaterialError(material) {
   material.onError = (effect, errors) => {
     if (errors?.includes('FRAGMENT SHADER')) {
-      const shadowGenerator = /** @type {ShadowGenerator} */ (
-        material.getScene().lights[0].getShadowGenerator()
-      )
+      const shadowGenerator =
+        /** @type {import('@babylonjs/core').ShadowGenerator} */ (
+          material.getScene().lights[0].getShadowGenerator()
+        )
       shadowGenerator.usePercentageCloserFiltering = false
       shadowGenerator.useContactHardeningShadow = false
     }

@@ -1,15 +1,4 @@
 // @ts-check
-/**
- * @typedef {import('@src/graphql').Friendship} Friendship
- * @typedef {import('../test-utils').RunQueryMock} RunQueryMock
- * @typedef {import('../test-utils').RunMutationMock} RunMutationMock
- * @typedef {import('../test-utils').RunSubscriptionMock} RunSubscriptionMock
- */
-/**
- * @template T
- * @typedef {import('rxjs').Observable<T>} Observable
- */
-
 import { faker } from '@faker-js/faker'
 import * as graphQL from '@src/graphql'
 import {
@@ -32,9 +21,9 @@ import { beforeEach, describe, expect, it, vi } from 'vitest'
 vi.mock('@src/stores/graphql-client')
 vi.mock('@src/stores/notifications')
 
-const runQueryMock = /** @type {RunQueryMock} */ (runQuery)
-const runMutationMock = /** @type {RunMutationMock} */ (runMutation)
-const runSubscriptionMock = /** @type {RunSubscriptionMock} */ (runSubscription)
+const runQueryMock = vi.mocked(runQuery)
+const runMutationMock = vi.mocked(runMutation)
+const runSubscriptionMock = vi.mocked(runSubscription)
 
 const player = {
   id: faker.string.uuid(),
@@ -104,7 +93,7 @@ describe('listFriends()', () => {
   })
 
   describe('given a list of friends', () => {
-    /** @type {Observable<Friendship[]>} */
+    /** @type {import('rxjs').Observable<import('@src/graphql').Friendship[]>} */
     let list$
     const updates = new Subject()
 
@@ -121,7 +110,7 @@ describe('listFriends()', () => {
       expect(await waitForObservable(list$)).toEqual([
         friendships[1],
         friendships[0],
-        { player },
+        { player, isRequest: false, isProposal: false },
         friendships[4],
         friendships[3]
       ])

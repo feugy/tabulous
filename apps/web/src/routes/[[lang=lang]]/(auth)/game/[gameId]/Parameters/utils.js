@@ -1,27 +1,21 @@
 // @ts-check
-/**
- * @typedef {import('@src/types').JSONValue} JSONValue
- * @typedef {Partial<import('@tabulous/server/src/services/catalog').Schema<?>>} Schema
- * @typedef {import('svelte').ComponentType} ComponentType
- */
-
 import Choice from './Choice.svelte'
 
 /**
  * @typedef {object} Field
  * @property {string} name - field name.
  * @property {string} property - data property in values.
- * @property {JSONValue} values - validated values.
- * @property {ComponentType} component - Svelte component used for rendering.
+ * @property {import('@src/types').JSONValue} values - validated values.
+ * @property {import('svelte').ComponentType} component - Svelte component used for rendering.
  */
 
-/** @typedef {Schema & { value: JSONValue }} Violation schema violations. */
+/** @typedef {Partial<import('@tabulous/types').Schema<?>> & { value: import('@src/types').JSONValue }} Violation schema violations. */
 
 /**
  * Builds Svelte components to collect and validate data described in a JSON Schema.
  * Also uses provided values for conditional validations.
- * @param {Record<string, JSONValue>} values - validated data.
- * @param {Schema} schema - JSON Schema describing expected data.
+ * @param {Record<string, import('@src/types').JSONValue>} values - validated data.
+ * @param {Partial<import('@tabulous/types').Schema<?>>} schema - JSON Schema describing expected data.
  * @param {boolean} [nested] - for internal use
  * @returns {Field[]} a list of field to be rendered.
  * @see https://ajv.js.org/json-schema.html
@@ -34,9 +28,14 @@ export function buildComponents(values, schema, nested = false) {
       components.push({ name, property, values, component: Choice })
     }
   }
-  findViolations(values, schema, values, (/** @type {Schema} */ condition) => {
-    components.push(...buildComponents(values, condition, true))
-  })
+  findViolations(
+    values,
+    schema,
+    values,
+    (/** @type {Partial<import('@tabulous/types').Schema<?>>} */ condition) => {
+      components.push(...buildComponents(values, condition, true))
+    }
+  )
   if (!nested) {
     // at the very end, trim out undesired properties
     const allowedProperties = components.map(({ name }) => name)
@@ -52,10 +51,10 @@ export function buildComponents(values, schema, nested = false) {
 
 /**
  * Validates provided values against the schema.
- * @param {JSONValue} value - validated value.
- * @param {Schema} schema - JSON schema.
- * @param {JSONValue} context - contextual data where to look for references.
- * @param {(schema: Schema) => void} [enrichProps] optional callback invoked when processing conditional schema.
+ * @param {import('@src/types').JSONValue} value - validated value.
+ * @param {Partial<import('@tabulous/types').Schema<?>>} schema - JSON schema.
+ * @param {import('@src/types').JSONValue} context - contextual data where to look for references.
+ * @param {(schema: Partial<import('@tabulous/types').Schema<?>>) => void} [enrichProps] optional callback invoked when processing conditional schema.
  * Invoked with the then or else schema clause.
  * @returns {Violation[]} a list of schema violations.
  */
@@ -282,7 +281,7 @@ export function findViolations(value, schema, context = {}, enrichProps) {
   if (
     !!oneOf &&
     oneOf.filter(
-      (/** @type {Schema} */ condition) =>
+      (/** @type {Partial<import('@tabulous/types').Schema<?>>} */ condition) =>
         findViolations(value, condition, context, enrichProps).length === 0
     ).length !== 1
   ) {
@@ -291,7 +290,7 @@ export function findViolations(value, schema, context = {}, enrichProps) {
   if (
     !!anyOf &&
     anyOf.every(
-      (/** @type {Schema} */ condition) =>
+      (/** @type {Partial<import('@tabulous/types').Schema<?>>} */ condition) =>
         findViolations(value, condition, context, enrichProps).length !== 0
     )
   ) {
@@ -300,7 +299,7 @@ export function findViolations(value, schema, context = {}, enrichProps) {
   if (
     !!allOf &&
     allOf.some(
-      (/** @type {Schema} */ condition) =>
+      (/** @type {Partial<import('@tabulous/types').Schema<?>>} */ condition) =>
         findViolations(value, condition, context, enrichProps).length !== 0
     )
   ) {
@@ -331,9 +330,9 @@ export function findViolations(value, schema, context = {}, enrichProps) {
 }
 
 /**
- * @param {Schema|JSONValue} condition - Schema describing the path to searched data.
- * @param {JSONValue} [context] - Contextual data where to find the data.
- * @returns {JSONValue} the desired data.
+ * @param {Partial<import('@tabulous/types').Schema<?>>|import('@src/types').JSONValue} condition - Schema describing the path to searched data.
+ * @param {import('@src/types').JSONValue} [context] - Contextual data where to find the data.
+ * @returns {import('@src/types').JSONValue} the desired data.
  */
 function resolveData(condition, context = {}) {
   if (typeof condition !== 'object' || !('$data' in condition)) {
@@ -354,8 +353,8 @@ function resolveData(condition, context = {}) {
 }
 
 /**
- * @param {JSONValue} a - first value to compare.
- * @param {JSONValue} b - second value to compare.
+ * @param {import('@src/types').JSONValue} a - first value to compare.
+ * @param {import('@src/types').JSONValue} b - second value to compare.
  * @returns {boolean} whether these values are deeply equal.
  */
 function equals(a, b) {

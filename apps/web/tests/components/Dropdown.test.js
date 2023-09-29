@@ -1,6 +1,4 @@
 // @ts-check
-/** @typedef {import('@src/components').MenuOption} MenuOption */
-
 import Dropdown from '@src/components/Dropdown.svelte'
 import { sleep } from '@src/utils'
 import { fireEvent, render, screen } from '@testing-library/svelte'
@@ -29,7 +27,7 @@ describe('Dropdown component', () => {
   }
 
   describe.each(
-    /** @type {{title: string, options: MenuOption[], invalid: MenuOption }[]} */ ([
+    /** @type {{title: string, options: import('@src/components').MenuOption[], invalid: import('@src/components').MenuOption }[]} */ ([
       {
         title: 'textual',
         options: ['Salut !', 'Hello!', 'Hallo !'],

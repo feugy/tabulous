@@ -1,9 +1,4 @@
 // @ts-check
-/**
- * @typedef {import('@babylonjs/core').Scene} Scene
- * @typedef {import('@tabulous/server/src/graphql').TableSpec} TableSpec
- */
-
 // mandatory side effect
 import '@babylonjs/core/Lights/Shadows/shadowGeneratorSceneComponent.js'
 
@@ -27,8 +22,8 @@ import { TableId } from './table.js'
  * Creates directional light for the hand scene
  * Note: all meshes created before this light will not project any shadow.
  * @param {object} params - parameters, including:
- * @param {Scene} params.scene - main scene.
- * @param {Scene} params.handScene - hand scene.
+ * @param {import('@babylonjs/core').Scene} params.scene - main scene.
+ * @param {import('@babylonjs/core').Scene} params.handScene - hand scene.
  * @returns {LightResult} an object containing created light and shadowGenerator.
  */
 export function createLights({ scene, handScene }) {
@@ -52,14 +47,18 @@ export function createLights({ scene, handScene }) {
   return { light, ambientLight, handLight, shadowGenerator }
 }
 
-function makeDirectionalLight(/** @type {Scene} */ scene) {
+function makeDirectionalLight(
+  /** @type {import('@babylonjs/core').Scene} */ scene
+) {
   const light = new DirectionalLight('sun', new Vector3(0, -1, 0), scene)
   light.position = new Vector3(0, 20, 0)
   light.intensity = 1
   return light
 }
 
-function makeAmbientLight(/** @type {Scene} */ scene) {
+function makeAmbientLight(
+  /** @type {import('@babylonjs/core').Scene} */ scene
+) {
   const light = new HemisphericLight('ambient', new Vector3(0, 1, 0), scene)
   light.intensity = 0.8
   return light

@@ -1,9 +1,4 @@
 // @ts-check
-/**
- * @typedef {import('rxjs').Subscription} Subscription
- * @typedef {import('../../src/services/players').Player} Player
- */
-
 import { faker } from '@faker-js/faker'
 import { vi } from 'vitest'
 import {
@@ -16,7 +11,7 @@ import {
   it
 } from 'vitest'
 
-import repositories from '../../src/repositories/index.js'
+import * as repositories from '../../src/repositories/index.js'
 import {
   acceptFriendship,
   acceptTerms,
@@ -203,7 +198,7 @@ describe('given initialized repository', () => {
         avatar: faker.internet.avatar(),
         isAdmin: true
       })
-      /** @type {Partial<Player>} */
+      /** @type {Partial<import('@tabulous/types').Player>} */
       let update = {
         id: original.id,
         avatar: faker.internet.avatar(),
@@ -248,7 +243,7 @@ describe('given initialized repository', () => {
   })
 
   describe('given some players', () => {
-    let players = /** @type {Player[]} */ ([
+    let players = /** @type {import('@tabulous/types').Player[]} */ ([
       {
         id: `adam-${faker.number.int(100)}`,
         username: 'Adam Destine',
@@ -281,7 +276,7 @@ describe('given initialized repository', () => {
       }
     ])
 
-    /** @type {Subscription} */
+    /** @type {import('rxjs').Subscription} */
     let subscription
     const friendshipUpdateReceived = vi.fn()
 

@@ -1,11 +1,4 @@
 // @ts-check
-/**
- * @typedef {import('@tabulous/server/src/graphql').ActionName} ActionName
- * @typedef {import('@tabulous/server/src/graphql').ButtonName} ButtonName
- * @typedef {import('@tabulous/server/src/graphql').Mesh} SerializedMesh
- * @typedef {import('@src/types').Translate} Translate
- */
-
 // Keep this file free from @babylon (in)direct imports, to allow Svelte component referencing them
 // Otherwise this would bloat production chunks with Babylonjs (1.6Mb uncompressed)
 import {
@@ -22,9 +15,8 @@ import {
 /**
  * Action names defined in beheviors, attached to mesh metadata,
  * and that can be used in actionNamesByKey map.
- * @type {Record<string, ActionName>}
  */
-export const actionNames = {
+export const actionNames = /** @type {const} */ ({
   decrement: 'decrement',
   detail: 'detail',
   draw: 'draw',
@@ -41,11 +33,11 @@ export const actionNames = {
   snap: 'snap',
   toggleLock: 'toggleLock',
   unsnap: 'unsnap'
-}
+})
 
 /**
  * button ids triggered in game-interaction and used in actionNamesByButton map
- * @type {Record<string, ButtonName>}
+ * @type {Record<string, import('@tabulous/server/graphql').ButtonName>}
  */
 export const buttonIds = {
   button1: 'button1',
@@ -54,12 +46,12 @@ export const buttonIds = {
 
 /**
  * Parse game data to build a map of supported action names by their shortcuts.
- * @param {SerializedMesh[]} meshes - serialized meshes to be analyzed.
- * @param {Translate} translate - translation
+ * @param {import('@tabulous/types').Mesh[]} meshes - serialized meshes to be analyzed.
+ * @param {import('@src/types').Translate} translate - translation
  * @returns map of supported action names by shortcut.
  */
 export function buildActionNamesByKey(meshes, translate) {
-  /** @type {Map<string, ActionName[]>} */
+  /** @type {Map<string, import('@tabulous/types').ActionName[]>} */
   const actionNamesByKey = new Map()
   let hasStackable = false
   let hasQuantifiable = false
@@ -101,7 +93,7 @@ export function buildActionNamesByKey(meshes, translate) {
   if (hasStackable || hasQuantifiable) {
     actionNamesByKey.set(
       translate('shortcuts.push'),
-      /** @type {ActionName[]} */ (
+      /** @type {import('@tabulous/types').ActionName[]} */ (
         [
           hasStackable ? actionNames.push : undefined,
           hasQuantifiable ? actionNames.increment : undefined
@@ -110,7 +102,7 @@ export function buildActionNamesByKey(meshes, translate) {
     )
     actionNamesByKey.set(
       translate('shortcuts.pop'),
-      /** @type {ActionName[]} */ (
+      /** @type {import('@tabulous/types').ActionName[]} */ (
         [
           hasStackable ? actionNames.pop : undefined,
           hasQuantifiable ? actionNames.decrement : undefined

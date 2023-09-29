@@ -3,40 +3,34 @@ import { expect } from '@playwright/test'
 
 import { translate } from '../utils/index.js'
 
-/**
- * @typedef {import('@playwright/test').Page} Page
- * @typedef {import('@playwright/test').Locator} Locator
- * @typedef {import('../utils').Locale} Locale
- */
-
 export class LoginPage {
   /**
    * Represent the login page for testing.
-   * @param {Page} page - the actual page.
-   * @param {Locale} lang - current language.
+   * @param {import('@playwright/test').Page} page - the actual page.
+   * @param {import('../utils').Locale} lang - current language.
    */
   constructor(page, lang) {
     /** @type {string} */
     this.pageKind = 'login'
-    /** @type {Locale} */
+    /** @type {import('../utils').Locale} */
     this.lang = lang
-    /** @type {Page} */
+    /** @type {import('@playwright/test').Page} */
     this.page = page
-    /** @type {Locator} */
+    /** @type {import('@playwright/test').Locator} */
     this.githubButton = page.getByRole('button', {
       name: translate('actions.log-in-github', undefined, this.lang)
     })
-    /** @type {Locator} */
+    /** @type {import('@playwright/test').Locator} */
     this.googleButton = page.getByRole('button', {
       name: translate('actions.log-in-google', undefined, this.lang)
     })
-    /** @type {Locator} */
+    /** @type {import('@playwright/test').Locator} */
     this.passwordDetails = page.locator('details')
-    /** @type {Locator} */
+    /** @type {import('@playwright/test').Locator} */
     this.usernameInput = page.getByRole('textbox').first()
-    /** @type {Locator} */
+    /** @type {import('@playwright/test').Locator} */
     this.passwordInput = page.getByRole('textbox').nth(1)
-    /** @type {Locator} */
+    /** @type {import('@playwright/test').Locator} */
     this.passwordButton = page.getByRole('button', {
       name: translate('actions.log-in', undefined, this.lang)
     })

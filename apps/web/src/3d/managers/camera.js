@@ -1,12 +1,4 @@
 // @ts-check
-/**
- * @typedef {import('@babylonjs/core').Animatable} Animatable
- * @typedef {import('@babylonjs/core').Scene} Scene
- * @typedef {import('@tabulous/server/src/graphql').CameraPosition} RawCameraPosition
- * @typedef {import('@tabulous/server/src/graphql').ZoomSpec} ZoomSpec
- * @typedef {import('@src/3d/utils').ScreenPosition} ScreenPosition
- */
-
 import { Animation } from '@babylonjs/core/Animations/animation.js'
 import { ArcRotateCamera } from '@babylonjs/core/Cameras/arcRotateCamera.js'
 import { TargetCamera } from '@babylonjs/core/Cameras/targetCamera.js'
@@ -16,7 +8,7 @@ import { Observable } from '@babylonjs/core/Misc/observable.js'
 import { makeLogger } from '../../utils/logger'
 import { isPositionAboveTable, screenToGround } from '../utils/vector'
 
-/** @typedef {Omit<RawCameraPosition, 'playerId'|'id'|'index'>} CameraPosition */
+/** @typedef {Omit<import('@tabulous/types').CameraPosition, 'playerId'|'id'|'index'>} CameraPosition */
 
 export class CameraManager {
   /**
@@ -34,8 +26,8 @@ export class CameraManager {
    * @param {number} [params.minY] - minimum camera altitude, in 3D coordinate
    * @param {number} [params.maxY] - maximum camera altitude, in 3D coordinate
    * @param {number} [params.minAngle] - minimum camera angle (with x/z plane), in radian
-   * @param {Scene} [params.scene] - main scene.
-   * @param {Scene} [params.handScene] - hand scene.
+   * @param {import('@babylonjs/core').Scene} [params.scene] - main scene.
+   * @param {import('@babylonjs/core').Scene} [params.handScene] - hand scene.
    */
   constructor({
     y = 35,
@@ -92,7 +84,7 @@ export class CameraManager {
 
   /**
    * Adjust the main camera zoom range (when relevant), and the fixed hand zoom (when relevant).
-   * @param {ZoomSpec} [zoomSpec] - zoom specification
+   * @param {import('@tabulous/types').ZoomSpec} [zoomSpec] - zoom specification
    * @throws {Error} when called prior to initialization.
    */
   adjustZoomLevels({ min, max, hand } = {}) {
@@ -112,8 +104,8 @@ export class CameraManager {
    * Applies a given movement to the camera on x/z plane, with animation.
    * Coordinates outside the table will be ignored.
    * Ends with the animation.
-   * @param {ScreenPosition} movementStart - movement starting point, in screen coordinate.
-   * @param {ScreenPosition} movementEnd -movement ending point, in screen coordinate.
+   * @param {import('../utils').ScreenPosition} movementStart - movement starting point, in screen coordinate.
+   * @param {import('../utils').ScreenPosition} movementEnd -movement ending point, in screen coordinate.
    * @param {number} [duration=300] - animation duration, in ms.
    */
   async pan(movementStart, movementEnd, duration = 300) {
@@ -246,7 +238,7 @@ const pan = /** @type {Animation & {targetProperty: 'lockedTarget'}} */ (
   )
 )
 
-/** @type {?Animatable} */
+/** @type {?import('@babylonjs/core').Animatable} */
 let currentAnimation = null
 
 async function animate(

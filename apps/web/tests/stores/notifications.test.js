@@ -3,20 +3,21 @@ import { notify } from '@src/stores/notifications'
 import { translate } from '@tests/test-utils.js'
 import { beforeAll, beforeEach, describe, expect, it, vi } from 'vitest'
 
-/** @typedef {typeof Notification & { permission: string } & import('vitest').Mock<?, ?>} NotificationMock */
-
 describe('Notification store notify()', () => {
   const requestPermission = vi.fn()
   const focus = vi.spyOn(window, 'focus')
 
-  /** @type {NotificationMock} */
+  /** @type {typeof Notification & { permission: string } & import('vitest').Mock<?, ?>} */
   let NotificationMock
 
   beforeAll(() => {
     // @ts-expect-error not mocking the whole class
     window.Notification = vi.fn()
     Notification.requestPermission = requestPermission
-    NotificationMock = /** @type {NotificationMock} */ (Notification)
+    NotificationMock =
+      /** @type {typeof Notification & { permission: string } & import('vitest').Mock<?, ?>} */ (
+        Notification
+      )
   })
 
   beforeEach(() => {

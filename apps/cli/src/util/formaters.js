@@ -1,9 +1,4 @@
 // @ts-check
-/**
- * @typedef {import('@tabulous/server/src/graphql').Game} Game
- * @typedef {import('@tabulous/server/src/graphql').Player} Player
- */
-
 import chalkTemplate from 'chalk-template'
 
 const symbol = Symbol('formaters')
@@ -23,7 +18,7 @@ export function printWithFormaters(object) {
  * Invokes formaters of an object.
  * @template {Record<string|symbol, any>} T
  * @param {T} object - printed object.
- * @returns {(T|string)[]} list of outputs, either strings or raw objects.
+ * @returns list of outputs, either strings or raw objects.
  */
 export function applyFormaters(object) {
   /** @type {(T|string)[]} */
@@ -44,7 +39,7 @@ export function applyFormaters(object) {
  * @param {T} object - object to add this formater to.
  * @param {(obj: T) => string} formater - added formater function.
  * @param {boolean} [first=false] - whether to add this formater first or last.
- * @returns {T} the mutated object.
+ * @returns the mutated object.
  */
 export function attachFormater(object, formater, first = false) {
   let formaters = object[symbol]
@@ -59,8 +54,8 @@ export function attachFormater(object, formater, first = false) {
 
 /**
  * Formater for game objects.
- * @param {Game} game - game to format.
- * @returns {string} formatted game.
+ * @param {import('@tabulous/server/graphql').Game} game - game to format.
+ * @returns formatted game.
  */
 export function formatGame({ id, created, kind }) {
   return chalkTemplate`${kind ? `${kind} game` : `🛋️ lobby`} {dim ${formatDate(
@@ -70,8 +65,8 @@ export function formatGame({ id, created, kind }) {
 
 /**
  * Formater for player objects.
- * @param {Player} player - player to format.
- * @return {string} formatted player.
+ * @param {import('@tabulous/types').Player} player - player to format.
+ * @return formatted player.
  */
 export function formatPlayer({ id, username, email }) {
   return chalkTemplate`{bold ${username}} {dim ${email || 'no email'}} (${id})`
@@ -84,8 +79,8 @@ const timeAndDate = new Intl.DateTimeFormat('en-gb', {
 
 /**
  * Formater for timestamps.
- * @param {number} timestamp - timestamp to format.
- * @returns {string} localized date and time.
+ * @param {number} [timestamp] - timestamp to format.
+ * @returns localized date and time.
  */
 export function formatDate(timestamp) {
   return !timestamp ? 'unknown' : timeAndDate.format(timestamp)

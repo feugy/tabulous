@@ -1,10 +1,4 @@
 // @ts-check
-/**
- * @typedef {import('@babylonjs/core').Mesh} Mesh
- * @typedef {import('@tabulous/server/src/graphql').ActionName} ActionName
- * @typedef {import('@tabulous/server/src/graphql').FlippableState} FlippableState
- */
-
 import { makeLogger } from '../../utils/logger'
 import { actionNames } from '../utils/actions'
 import {
@@ -19,7 +13,7 @@ import { getDimensions, isAnimationInProgress } from '../utils/mesh'
 import { AnimateBehavior } from './animatable'
 import { FlipBehaviorName } from './names'
 
-/** @typedef {FlippableState & Required<Pick<FlippableState, 'duration'>>} RequiredFlippableState */
+/** @typedef {import('@tabulous/types').FlippableState & Required<Pick<import('@tabulous/types').FlippableState, 'duration'>>} RequiredFlippableState */
 
 const Tolerance = 0.000001
 
@@ -28,20 +22,17 @@ const logger = makeLogger(FlipBehaviorName)
 export class FlipBehavior extends AnimateBehavior {
   /**
    * Creates behavior to make a mesh flippable with animation.
-   * @param {FlippableState} state - behavior state.
-   * @param {import('@src/3d/managers').Managers} managers - current managers.
+   * @param {import('@tabulous/types').FlippableState} state - behavior state.
+   * @param {import('../managers').Managers} managers - current managers.
    */
   constructor(state, managers) {
     super()
     /** @internal */
     this.managers = managers
-    /** @type {RequiredFlippableState} state - the behavior's current state. */
+    /** the behavior's current state. */
     this.state = /** @type {RequiredFlippableState} */ (state)
   }
 
-  /**
-   * @property {string} name - this behavior's constant name.
-   */
   get name() {
     return FlipBehaviorName
   }
@@ -53,7 +44,7 @@ export class FlipBehavior extends AnimateBehavior {
    * It initializes its rotation according to the flip status.
    *
    * It observes other actions so it could flip this mesh when snapped to an anchor which requires it.
-   * @param {Mesh} mesh - which becomes detailable.
+   * @param {import('@babylonjs/core').Mesh} mesh - which becomes detailable.
    */
   attach(mesh) {
     super.attach(mesh)
@@ -74,7 +65,7 @@ export class FlipBehavior extends AnimateBehavior {
 
   /**
    * Revert flip actions. Ignores other actions
-   * @param {ActionName} action - reverted action.
+   * @param {import('@tabulous/types').ActionName} action - reverted action.
    */
   async revert(action) {
     if (action === actionNames.flip && this.mesh) {
@@ -84,7 +75,7 @@ export class FlipBehavior extends AnimateBehavior {
 
   /**
    * Updates this behavior's state and mesh to match provided data.
-   * @param {FlippableState} state - state to update to.
+   * @param {import('@tabulous/types').FlippableState} state - state to update to.
    */
   fromState({ isFlipped = false, duration = 500 } = {}) {
     if (!this.mesh) {

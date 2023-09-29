@@ -1,14 +1,4 @@
 // @ts-check
-/**
- * @typedef {import('@babylonjs/core').ArcRotateCamera} ArcRotateCamera
- * @typedef {import('@babylonjs/core').Engine} Engine
- * @typedef {import('@babylonjs/core').Mesh} Mesh
- * @typedef {import('@babylonjs/core').Observer<?>} Observer
- * @typedef {import('@babylonjs/core').Scene} Scene
- * @typedef {import('@src/3d/behaviors').DrawBehavior} DrawBehavior
- * @typedef {import('@tabulous/server/src/graphql').Mesh} SerializableMesh
- */
-
 import { Vector3 } from '@babylonjs/core/Maths/math.vector'
 import { faker } from '@faker-js/faker'
 import { DrawBehaviorName, RotateBehaviorName } from '@src/3d/behaviors'
@@ -41,15 +31,15 @@ import {
 } from '../../test-utils'
 
 describe('HandManager', () => {
-  /** @type {Engine} */
+  /** @type {import('@babylonjs/core').Engine} */
   let engine
-  /** @type {Scene} */
+  /** @type {import('@babylonjs/core').Scene} */
   let scene
-  /** @type {ArcRotateCamera} */
+  /** @type {import('@babylonjs/core').ArcRotateCamera} */
   let camera
-  /** @type {Scene} */
+  /** @type {import('@babylonjs/core').Scene} */
   let handScene
-  /** @type {?Observer} */
+  /** @type {?import('@babylonjs/core').Observer<?>} */
   let actionObserver
   /** @type {Vector3} */
   let savedCameraPosition
@@ -217,7 +207,10 @@ describe('HandManager', () => {
         { id: 'box2', shape: 'box', texture: '', x: 0, y: 0, z: 0 },
         { id: 'box3', shape: 'box', texture: '', x: -5, y: 0, z: -2 }
       ].map(state =>
-        createMesh(/** @type {SerializableMesh} */ (state), handScene)
+        createMesh(
+          /** @type {import('@tabulous/types').Mesh} */ (state),
+          handScene
+        )
       )
       manager.init({ managers, playerId })
       await waitForLayout(manager)
@@ -231,11 +224,11 @@ describe('HandManager', () => {
   })
 
   describe('given an initialized manager', () => {
-    /** @type {Mesh[]} */
+    /** @type {import('@babylonjs/core').Mesh[]} */
     let cards
-    /** @type {?Observer} */
+    /** @type {?import('@babylonjs/core').Observer<?>} */
     let changeObserver
-    /** @type {?Observer} */
+    /** @type {?import('@babylonjs/core').Observer<?>} */
     let draggableToHandObserver
     const changeReceived = vi.fn()
     const draggableToHandReceived = vi.fn()
@@ -255,7 +248,9 @@ describe('HandManager', () => {
         { id: 'box2', x: 0, y: 0, z: 0 },
         { id: 'box3', x: -5, y: 0, z: -10 },
         { id: 'box4', x: 5, y: 5, z: 5 }
-      ].map(state => createMesh(/** @type {SerializableMesh} */ (state), scene))
+      ].map(state =>
+        createMesh(/** @type {import('@tabulous/types').Mesh} */ (state), scene)
+      )
     })
 
     afterEach(async () => {
@@ -534,7 +529,7 @@ describe('HandManager', () => {
     })
 
     describe('given some meshs in hand', () => {
-      /** @type {Mesh[]} */
+      /** @type {import('@babylonjs/core').Mesh[]} */
       let handCards
 
       beforeEach(async () => {
@@ -1510,7 +1505,7 @@ describe('HandManager', () => {
       })
 
       describe('given a player drop zone', () => {
-        /** @type {Mesh} */
+        /** @type {import('@babylonjs/core').Mesh} */
         let dropZone
         let anchorDuration = 50
 
@@ -1855,8 +1850,8 @@ describe('HandManager', () => {
   }
 
   function createMesh(
-    /** @type {Partial<SerializableMesh> & Pick<SerializableMesh, 'id'>} */ state,
-    /** @type {Scene} */ scene
+    /** @type {Partial<import('@tabulous/types').Mesh> & Pick<import('@tabulous/types').Mesh, 'id'>} */ state,
+    /** @type {import('@babylonjs/core').Scene} */ scene
   ) {
     return createCard(
       {
@@ -1875,7 +1870,9 @@ describe('HandManager', () => {
     )
   }
 
-  function getPositions(/** @type {Mesh[]} */ meshes) {
+  function getPositions(
+    /** @type {import('@babylonjs/core').Mesh[]} */ meshes
+  ) {
     return meshes
       .map(
         ({ absolutePosition, id }) =>
@@ -1891,12 +1888,15 @@ describe('HandManager', () => {
     return actionRecorded.mock.calls[position][0].args[0]
   }
 
-  function getMeshById(/** @type {Scene} */ scene, /** @type {string} */ id) {
-    return /** @type {Mesh} */ (scene.getMeshById(id))
+  function getMeshById(
+    /** @type {import('@babylonjs/core').Scene} */ scene,
+    /** @type {string} */ id
+  ) {
+    return /** @type {import('@babylonjs/core').Mesh} */ (scene.getMeshById(id))
   }
 
-  function getDrawBehavior(/** @type {Mesh} */ mesh) {
-    return /** @type {DrawBehavior} */ (
+  function getDrawBehavior(/** @type {import('@babylonjs/core').Mesh} */ mesh) {
+    return /** @type {import('@src/3d/behaviors').DrawBehavior} */ (
       mesh.getBehaviorByName(DrawBehaviorName)
     )
   }

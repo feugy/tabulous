@@ -1,16 +1,12 @@
 <script>
   // @ts-check
-  /**
-   * @typedef {import('@src/graphql').PlayerFragment} PlayerFragment
-   * @typedef {import('@src/utils').ScreenPosition} ScreenPosition
-   */
   import { abbreviate } from '../utils'
 
-  /** @type {PlayerFragment & { color?: string }} displayed player. */
+  /** @type {import('@src/graphql').Player & { color?: string }} displayed player. */
   export let player = { id: '', username: '' }
   /** @type {number} size for this thumbnail. */
   export let dimension = 60
-  /** @type {?ScreenPosition} optional screen position, relative to the absolute parent. */
+  /** @type {?import('@src/3d/utils').ScreenPosition} optional screen position, relative to the absolute parent. */
   export let screenPosition = null
 
   $: isShort = dimension < 60

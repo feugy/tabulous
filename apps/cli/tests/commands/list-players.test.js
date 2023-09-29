@@ -1,9 +1,4 @@
 // @ts-check
-/**
- * @typedef {import('../../src').Command} Command
- * @typedef {import('@tabulous/server/src/graphql').Player} Player
- */
-
 import { faker } from '@faker-js/faker'
 import stripAnsi from 'strip-ansi'
 import { beforeAll, beforeEach, describe, expect, it, vi } from 'vitest'
@@ -20,7 +15,7 @@ vi.mock('../../src/util/graphql-client.js', () => ({
 }))
 
 describe('List players command', () => {
-  /** @type {Command} */
+  /** @type {import('@src/index').Command} */
   let listPlayers
   const adminUserId = faker.string.uuid()
   const jwtKey = faker.string.uuid()
@@ -47,7 +42,7 @@ describe('List players command', () => {
   })
 
   describe('given some players', () => {
-    /** @type {Player[]} */
+    /** @type {import('@tabulous/types').Player[]} */
     const players = Array.from({ length: 34 }, (_, i) => ({
       id: `id-${i + 1}`,
       username: faker.person.firstName(),

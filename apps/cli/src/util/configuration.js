@@ -27,7 +27,7 @@ const validate = new Ajv({ allErrors: true }).compile({
  * - JWT_KEY: key used to sign JWT sent to the client.
  * - ADMIN_USER_ID: user id used to run elevated graphQL queries.
  *
- * @returns {Configuration} the loaded configuration.
+ * @returns the loaded configuration.
  * @throws {Error} when the provided environment variables do not match expected values.
  */
 export function loadConfiguration() {

@@ -1,8 +1,4 @@
 // @ts-check
-/**
- * @typedef {import('@babylonjs/core').Mesh} Mesh
- */
-
 import { Vector3 } from '@babylonjs/core/Maths/math.vector'
 import { faker } from '@faker-js/faker'
 import {
@@ -25,7 +21,7 @@ import {
 configures3dTestEngine()
 
 describe('sortByElevation() 3D utility', () => {
-  /** @type {Mesh[]} */
+  /** @type {import('@babylonjs/core').Mesh[]} */
   let boxes = []
 
   beforeEach(() => {
@@ -234,7 +230,7 @@ describe('isAbove() 3D utility', () => {
       results: [true, true]
     }
   ])(`given $title`, ({ buildMeshes, results }) => {
-    /** @type {Mesh[]} */
+    /** @type {import('@babylonjs/core').Mesh[]} */
     let meshes
     beforeEach(() => {
       meshes = buildMeshes()
@@ -294,7 +290,7 @@ describe('getCenterAltitudeAbove() 3D utility', () => {
 
 // TODO rotations
 function setPosition(
-  /** @type {{ x: number, z: number, y: number, mesh: Mesh }[]} */ meshesAndPositions
+  /** @type {{ x: number, z: number, y: number, mesh: import('@babylonjs/core').Mesh }[]} */ meshesAndPositions
 ) {
   for (const { x, y, z, mesh } of meshesAndPositions) {
     mesh.setAbsolutePosition(new Vector3(x, y, z))

@@ -1,6 +1,4 @@
 // @ts-check
-/** @typedef {import('@tabulous/server/src/graphql').Player} Player */
-
 import { gql } from '@urql/core'
 import chalkTemplate from 'chalk-template'
 
@@ -18,7 +16,7 @@ import { commonOptions } from './help.js'
 /**
  * Triggers player list command.
  * @param {string[]} argv - array of parsed arguments (without executable and current file).
- * @returns {Promise<Player[]|string>} list of players or help message.
+ * @returns list of players or help message.
  */
 export default async function listPlayersCommand(argv) {
   const args = parseArgv(argv, commonArgSpec)
@@ -30,7 +28,7 @@ export default async function listPlayersCommand(argv) {
 
 /**
  * Fetches all pages of the player list
- * @returns {Promise<Player[]>} list of players.
+ * @returns list of players.
  */
 export async function listPlayers() {
   let from = 0
@@ -50,11 +48,10 @@ export async function listPlayers() {
   return attachFormater(players, formatPlayers)
 }
 
-/**
- * @param {number} from
- * @param {number} size
- */
-function makeListPlayersQuery(from, size) {
+function makeListPlayersQuery(
+  /** @type {number} */ from,
+  /** @type {number} */ size
+) {
   return gql`
     query listGamesQuery {
       listPlayers(from: ${from.toString()}, size: ${size.toString()}) {
@@ -71,11 +68,9 @@ function makeListPlayersQuery(from, size) {
   `
 }
 
-/**
- * @param {Player[]} players
- * @returns {string} - formatted result
- */
-function formatPlayers(players) {
+function formatPlayers(
+  /** @type {import('@tabulous/types').Player[]} */ players
+) {
   return players.map(player => `- ${formatPlayer(player)}`).join('\n')
 }
 

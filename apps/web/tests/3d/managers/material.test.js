@@ -1,11 +1,4 @@
 // @ts-check
-/**
- * @typedef {import('@babylonjs/core').Engine} Engine
- * @typedef {import('@babylonjs/core').Mesh} Mesh
- * @typedef {import('@babylonjs/core').PBRSpecularGlossinessMaterial} Material
- * @typedef {import('@babylonjs/core').Scene} Scene
- */
-
 import { DirectionalLight } from '@babylonjs/core/Lights/directionalLight'
 import { ShadowGenerator } from '@babylonjs/core/Lights/Shadows/shadowGenerator'
 import { PBRSpecularGlossinessMaterial } from '@babylonjs/core/Materials/PBR/pbrSpecularGlossinessMaterial'
@@ -16,8 +9,6 @@ import { MaterialManager } from '@src/3d/managers'
 import { beforeAll, beforeEach, describe, expect, it, vi } from 'vitest'
 
 import { configures3dTestEngine, createBox } from '../../test-utils'
-
-/** @typedef {Material & { diffuseTexture: Texture }} MaterialWithTexture */
 
 const MaterialConstructor = vi.fn()
 
@@ -40,9 +31,9 @@ vi.mock(
 )
 
 describe('MaterialManager', () => {
-  /** @type {Scene} */
+  /** @type {import('@babylonjs/core').Scene} */
   let scene
-  /** @type {Scene} */
+  /** @type {import('@babylonjs/core').Scene} */
   let handScene
   /** @type {import('@src/3d/managers').Managers} */
   let managers
@@ -150,9 +141,9 @@ describe('MaterialManager', () => {
     const ktx2 = '/some/path/to/texture.ktx2'
     const webp = '/some/path/to/texture.gl1.webp'
 
-    /** @type {Mesh} */
+    /** @type {import('@babylonjs/core').Mesh} */
     let box
-    /** @type {Mesh} */
+    /** @type {import('@babylonjs/core').Mesh} */
     let handBox
 
     beforeEach(() => {
@@ -201,7 +192,9 @@ describe('MaterialManager', () => {
         expect(managers.material.isManaging(texture)).toBe(true)
         managers.material.configure(handBox, color)
         expect(managers.material.isManaging(color)).toBe(true)
-        const material = /** @type {Material} */ (box.material)
+        const material = /** @type {PBRSpecularGlossinessMaterial} */ (
+          box.material
+        )
         material.onDisposeObservable.addOnce(disposeBoxMaterial)
         material.diffuseTexture?.onDisposeObservable.addOnce(disposeBoxTexture)
         handBox.material?.onDisposeObservable.addOnce(disposeHandBoxMaterial)
@@ -218,7 +211,9 @@ describe('MaterialManager', () => {
     describe('configure()', () => {
       it('creates a material with a color', () => {
         managers.material.configure(box, '#0066ff66')
-        const material = /** @type {Material} */ (box.material)
+        const material = /** @type {PBRSpecularGlossinessMaterial} */ (
+          box.material
+        )
         expect(material).toBeInstanceOf(PBRSpecularGlossinessMaterial)
         expect(material.diffuseColor.asArray()).toEqual([
           0, 0.1332085131842997, 1
@@ -230,7 +225,9 @@ describe('MaterialManager', () => {
       it('creates a material with a texture', () => {
         const texture = faker.internet.url()
         managers.material.configure(box, texture)
-        const material = /** @type {Material} */ (box.material)
+        const material = /** @type {PBRSpecularGlossinessMaterial} */ (
+          box.material
+        )
         expect(material).toBeInstanceOf(PBRSpecularGlossinessMaterial)
         expect(material.diffuseTexture).toBeInstanceOf(Texture)
       })
@@ -238,7 +235,9 @@ describe('MaterialManager', () => {
       it('reuses existing color material on the same scene', () => {
         const color = '#0066ff66'
         managers.material.configure(box, color)
-        const material = /** @type {Material} */ (box.material)
+        const material = /** @type {PBRSpecularGlossinessMaterial} */ (
+          box.material
+        )
         expect(material).toBeInstanceOf(PBRSpecularGlossinessMaterial)
         expect(material.diffuseColor?.asArray()).toEqual([
           0, 0.1332085131842997, 1
@@ -260,7 +259,8 @@ describe('MaterialManager', () => {
         managers.material.configure(box, texture)
         expect(box.material).toBeInstanceOf(PBRSpecularGlossinessMaterial)
         expect(
-          /** @type {Material} */ (box.material).diffuseTexture
+          /** @type {PBRSpecularGlossinessMaterial} */ (box.material)
+            .diffuseTexture
         ).toBeInstanceOf(Texture)
 
         const box2 = createBox('box2', {}, box.getScene())
@@ -271,11 +271,8 @@ describe('MaterialManager', () => {
         managers.material.configure(handBox, texture)
         expect(handBox.material).toBeInstanceOf(PBRSpecularGlossinessMaterial)
         expect(handBox.material === box.material).toBe(false)
-        expect(
-          /** @type {MaterialWithTexture} */ (handBox.material).diffuseTexture
-            .url
-        ).toEqual(
-          /** @type {MaterialWithTexture} */ (box.material).diffuseTexture.url
+        expect(/** @type {?} */ (handBox.material).diffuseTexture.url).toEqual(
+          /** @type {?} */ (box.material).diffuseTexture.url
         )
       })
 
@@ -303,9 +300,7 @@ describe('MaterialManager', () => {
           isWebGL1: true
         })
         manager.configure(box, /** @type {string} */ (original ?? result))
-        expect(
-          /** @type {MaterialWithTexture} */ (box.material).diffuseTexture.url
-        ).toEqual(
+        expect(/** @type {?} */ (box.material).diffuseTexture.url).toEqual(
           typeof result === 'string' ? `${gameAssetsUrl}${result}` : result
         )
       })
@@ -329,16 +324,14 @@ describe('MaterialManager', () => {
             box,
             /** @type {string} */ (original ?? result)
           )
-          expect(
-            /** @type {MaterialWithTexture} */ (box.material).diffuseTexture.url
-          ).toEqual(
+          expect(/** @type {?} */ (box.material).diffuseTexture.url).toEqual(
             typeof result === 'string' ? `${gameAssetsUrl}${result}` : result
           )
         })
       })
 
       describe('given a texture material', () => {
-        /** @type {Material} */
+        /** @type {PBRSpecularGlossinessMaterial} */
         let material
         /** @type {ShadowGenerator} */
         let shadowGenerator
@@ -353,7 +346,7 @@ describe('MaterialManager', () => {
           shadowGenerator._filter = ShadowGenerator.FILTER_PCF
           expect(shadowGenerator.usePercentageCloserFiltering).toBe(true)
           managers.material.configure(box, ktx2)
-          material = /** @type {Material} */ (box.material)
+          material = /** @type {PBRSpecularGlossinessMaterial} */ (box.material)
         })
 
         it('disables shadow generator on material shader error', () => {
@@ -423,7 +416,7 @@ describe('MaterialManager', () => {
   })
 
   describe('given an initialized manager with no hand scene', () => {
-    /** @type {Mesh} */
+    /** @type {import('@babylonjs/core').Mesh} */
     let box
 
     beforeEach(() => {
@@ -458,7 +451,9 @@ describe('MaterialManager', () => {
         const color = '#ff6600ff'
         managers.material.configure(box, texture)
         expect(managers.material.isManaging(texture)).toBe(true)
-        const material = /** @type {Material} */ (box.material)
+        const material = /** @type {PBRSpecularGlossinessMaterial} */ (
+          box.material
+        )
         material.onDisposeObservable.addOnce(disposeBoxMaterial)
         material.diffuseTexture?.onDisposeObservable.addOnce(disposeBoxTexture)
 
@@ -473,7 +468,9 @@ describe('MaterialManager', () => {
     describe('configure()', () => {
       it('creates a material with a color', () => {
         managers.material.configure(box, '#0066ff66')
-        const material = /** @type {Material} */ (box.material)
+        const material = /** @type {PBRSpecularGlossinessMaterial} */ (
+          box.material
+        )
         expect(material).toBeInstanceOf(PBRSpecularGlossinessMaterial)
         expect(material.diffuseColor?.asArray()).toEqual([
           0, 0.1332085131842997, 1
@@ -485,7 +482,9 @@ describe('MaterialManager', () => {
       it('creates a material with a texture', () => {
         const texture = faker.internet.url()
         managers.material.configure(box, texture)
-        const material = /** @type {Material} */ (box.material)
+        const material = /** @type {PBRSpecularGlossinessMaterial} */ (
+          box.material
+        )
         expect(material).toBeInstanceOf(PBRSpecularGlossinessMaterial)
         expect(material.diffuseTexture).toBeInstanceOf(Texture)
       })
@@ -493,7 +492,9 @@ describe('MaterialManager', () => {
       it('reuses existing color material', () => {
         const color = '#0066ff99'
         managers.material.configure(box, color)
-        const material = /** @type {Material} */ (box.material)
+        const material = /** @type {PBRSpecularGlossinessMaterial} */ (
+          box.material
+        )
         expect(material).toBeInstanceOf(PBRSpecularGlossinessMaterial)
         expect(material.diffuseColor?.asArray()).toEqual([
           0, 0.1332085131842997, 1
@@ -510,7 +511,9 @@ describe('MaterialManager', () => {
       it('reuses existing texture material', () => {
         const texture = faker.internet.url()
         managers.material.configure(box, texture)
-        const material = /** @type {Material} */ (box.material)
+        const material = /** @type {PBRSpecularGlossinessMaterial} */ (
+          box.material
+        )
         expect(material).toBeInstanceOf(PBRSpecularGlossinessMaterial)
         expect(material.diffuseTexture).toBeInstanceOf(Texture)
 
@@ -523,7 +526,7 @@ describe('MaterialManager', () => {
   })
 
   describe('given a disabled manager', () => {
-    /** @type {Mesh} */
+    /** @type {import('@babylonjs/core').Mesh} */
     let box
     /** @type {MaterialManager} */
     let manager

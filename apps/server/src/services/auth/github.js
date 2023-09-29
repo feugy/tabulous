@@ -63,13 +63,11 @@ class GithubAuthProvider extends OAuth2Provider {
 
 export const githubAuth = new GithubAuthProvider('github')
 
-/**
- * @param {string} id
- * @param {string} secret
- * @param {string} code
- * @returns {Promise<string>}
- */
-async function fetchToken(id, secret, code) {
+async function fetchToken(
+  /** @type {string} */ id,
+  /** @type {string} */ secret,
+  /** @type {string} */ code
+) {
   const response = await fetch(urls.token, {
     method: 'POST',
     headers: {
@@ -89,11 +87,7 @@ async function fetchToken(id, secret, code) {
     .access_token
 }
 
-/**
- * @param {string} token
- * @returns {Promise<GithubUser>}
- */
-async function fetchUser(token) {
+async function fetchUser(/** @type {string} */ token) {
   const response = await fetch(urls.user, {
     headers: {
       Accept: 'application/json',
@@ -103,19 +97,17 @@ async function fetchUser(token) {
   if (!response.ok) {
     throw new Error('forbidden')
   }
-  return response.json()
+  return /** @type {Promise<GithubUser>} */ (response.json())
 }
 
-/**
- * @param {GithubUser} user
- * @returns {Partial<import('../players').Player>}>
- */
-function mapToUserDetails({
-  id: providerId,
-  login: username,
-  avatar_url: avatar,
-  email,
-  name
-}) {
+function mapToUserDetails(
+  /** @type {GithubUser} */ {
+    id: providerId,
+    login: username,
+    avatar_url: avatar,
+    email,
+    name
+  }
+) {
   return { username, avatar, email, providerId, fullName: name || username }
 }

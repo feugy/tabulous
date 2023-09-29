@@ -1,12 +1,4 @@
 // @ts-check
-/**
- * @typedef {import('@babylonjs/core').Mesh} Mesh
- * @typedef {import('@babylonjs/core').Scene} Scene
- * @typedef {import('@src/3d/behaviors/movable').MoveBehavior} MoveBehavior
- * @typedef {import('@src/3d/managers/target').DropZone} DropZone
- * @typedef {import('@src/3d/utils').ScreenPosition} ScreenPosition
- */
-
 import { BoundingInfo } from '@babylonjs/core/Culling/boundingInfo.js'
 import { Vector3 } from '@babylonjs/core/Maths/math.vector.js'
 import { Observable } from '@babylonjs/core/Misc/observable.js'
@@ -22,12 +14,12 @@ const logger = makeLogger('move')
 
 /**
  * @typedef {object} MoveDetails
- * @property {Mesh} mesh - moved mesh.
+ * @property {import('@babylonjs/core').Mesh} mesh - moved mesh.
  */
 
 /**
  * @typedef {object} PreMoveDetails
- * @property {Mesh[]} meshes - meshes that are about to be moved.
+ * @property {import('@babylonjs/core').Mesh[]} meshes - meshes that are about to be moved.
  */
 
 export class MoveManager {
@@ -41,7 +33,7 @@ export class MoveManager {
    * Prior to move operation, the onPreMoveObservable allows to add or remove meshes to the list.
    * Invokes init() before any other function.
    * @param {object} params - parameters, including:
-   * @param {Scene} params.scene - scene attached to.
+   * @param {import('@babylonjs/core').Scene} params.scene - scene attached to.
    * @param {number} [params.elevation=0.5] - elevation applied to meshes while dragging them.
    */
   constructor({ scene, elevation = 0.5 }) {
@@ -57,18 +49,18 @@ export class MoveManager {
     this.scene = scene
     /** @internal @type {Set<string>} managed mesh ids. */
     this.meshIds = new Set()
-    /** @internal @type {Map<string, MoveBehavior>} managed behaviors by their mesh id. */
+    /** @internal @type {Map<string, import('../behaviors').MoveBehavior>} managed behaviors by their mesh id. */
     this.behaviorByMeshId = new Map()
-    /** @internal @type {Set<Mesh>} set of meshes to re-select after moving them. */
+    /** @internal @type {Set<import('@babylonjs/core').Mesh>} set of meshes to re-select after moving them. */
     this.autoSelect = new Set()
-    /** @internal @type {import('@src/3d/managers').Managers} */
+    /** @internal @type {import('.').Managers} */
     this.managers
   }
 
   /**
    * Initializes with other managers.
    * @param {object} params - parameters, including:
-   * @param {import('@src/3d/managers').Managers} params.managers - current managers.
+   * @param {import('.').Managers} params.managers - current managers.
    */
   init({ managers }) {
     this.managers = managers
@@ -78,8 +70,8 @@ export class MoveManager {
    * Start moving a managed mesh, recording its position.
    * If it is part of the active selection, moves the entire selection.
    * Does nothing on unmanaged meshes or mesh with disabled behavior.
-   * @param {Mesh} mesh - to be moved.
-   * @param {ScreenPosition} event - mouse or touch event containing the screen position.
+   * @param {import('@babylonjs/core').Mesh} mesh - to be moved.
+   * @param {import('../utils').ScreenPosition} event - mouse or touch event containing the screen position.
    */
   start(mesh, event) {
     if (!this.isManaging(mesh) || isDisabled(this, mesh)) {
@@ -93,11 +85,13 @@ export class MoveManager {
           mesh => this.isManaging(mesh) && mesh.getScene() === sceneUsed
         )
       : [mesh]
-    /** @type {Mesh[]} */
+    /** @type {import('@babylonjs/core').Mesh[]} */
     let moved = []
     for (const mesh of meshes) {
       if (
-        !meshes.includes(/** @type {Mesh} */ (mesh.parent)) &&
+        !meshes.includes(
+          /** @type {import('@babylonjs/core').Mesh} */ (mesh.parent)
+        ) &&
         !isDisabled(this, mesh)
       ) {
         moved.push(mesh)
@@ -106,7 +100,7 @@ export class MoveManager {
 
     let lastPosition = screenToGround(sceneUsed, event)
 
-    /** @type {Set<DropZone>} */
+    /** @type {Set<import('.').DropZone>} */
     let zones = new Set()
     this.inProgress = true
     const actionObserver = this.managers.control.onActionObservable.add(
@@ -133,7 +127,9 @@ export class MoveManager {
       }
     )
 
-    const deselectAuto = (/** @type {(?Mesh)[]} */ meshes) => {
+    const deselectAuto = (
+      /** @type {(?import('@babylonjs/core').Mesh)[]} */ meshes
+    ) => {
       for (const mesh of meshes) {
         if (mesh && this.autoSelect.has(mesh)) {
           this.managers.selection.unselect(mesh)
@@ -142,7 +138,9 @@ export class MoveManager {
       }
     }
 
-    const startMoving = (/** @type {Mesh} */ mesh) => {
+    const startMoving = (
+      /** @type {import('@babylonjs/core').Mesh} */ mesh
+    ) => {
       if (!this.managers.selection.meshes.has(mesh)) {
         this.autoSelect.add(mesh)
         this.managers.selection.select(mesh)
@@ -158,7 +156,9 @@ export class MoveManager {
     }
 
     // dynamically assign continue function to keep moved, zones and lastPosition in scope
-    this.continue = (/** @type {ScreenPosition} */ event) => {
+    this.continue = (
+      /** @type {import('../utils').ScreenPosition} */ event
+    ) => {
       if (moved.length === 0) return
       for (const zone of zones) {
         this.managers.target.clear(zone)
@@ -188,8 +188,9 @@ export class MoveManager {
           mesh.setAbsolutePosition(mesh.absolutePosition.addInPlace(move))
           const zone = this.managers.target.findDropZone(
             mesh,
-            /** @type {MoveBehavior} */ (this.behaviorByMeshId.get(mesh.id))
-              .state.kind
+            /** @type {import('../behaviors').MoveBehavior} */ (
+              this.behaviorByMeshId.get(mesh.id)
+            ).state.kind
           )
           if (zone) {
             zones.add(zone)
@@ -213,12 +214,14 @@ export class MoveManager {
     this.getActiveZones = () => [...zones]
 
     // dynamically assign exclude function to keep moved in scope
-    this.isMoving = (/** @type {?Mesh} */ mesh) => {
+    this.isMoving = (/** @type {?import('@babylonjs/core').Mesh} */ mesh) => {
       return moved.some(({ id }) => id === mesh?.id)
     }
 
     // dynamically assign exclude function to keep moved in scope
-    this.exclude = (/** @type {(?Mesh)[]} */ ...meshes) => {
+    this.exclude = (
+      /** @type {(?import('@babylonjs/core').Mesh)[]} */ ...meshes
+    ) => {
       moved = moved.filter(({ id }) =>
         meshes.every(excluded => excluded?.id !== id)
       )
@@ -226,7 +229,9 @@ export class MoveManager {
     }
 
     // dynamically assign include function to keep moved in scope
-    this.include = (/** @type {(?Mesh)[]} */ ...meshes) => {
+    this.include = (
+      /** @type {(?import('@babylonjs/core').Mesh)[]} */ ...meshes
+    ) => {
       for (const mesh of meshes) {
         if (
           mesh &&
@@ -257,7 +262,7 @@ export class MoveManager {
 
       deselectAuto(moved)
       // trigger drop operation on all identified drop zones
-      /** @type {Mesh[]} */
+      /** @type {import('@babylonjs/core').Mesh[]} */
       const dropped = []
       for (const zone of zones) {
         const meshes = this.managers.target.dropOn(zone)
@@ -281,7 +286,9 @@ export class MoveManager {
           const { x, y, z } = mesh.absolutePosition
           const {
             state: { snapDistance, duration }
-          } = /** @type {MoveBehavior} */ (this.behaviorByMeshId.get(mesh.id))
+          } = /** @type {import('../behaviors').MoveBehavior} */ (
+            this.behaviorByMeshId.get(mesh.id)
+          )
           const absolutePosition = new Vector3(
             Math.round(x / snapDistance) * snapDistance,
             y,
@@ -320,7 +327,7 @@ export class MoveManager {
    * Updates the last position and identifies potential targets.
    * Stops the operation when the pointer leaves the table.
    * Does nothing if the operation was not started, or stopped.
-   * @param {ScreenPosition} event - mouse or touch event containing the screen position.
+   * @param {import('../utils').ScreenPosition} event - mouse or touch event containing the screen position.
    */
   // eslint-disable-next-line no-unused-vars
   continue(event) {}
@@ -328,7 +335,7 @@ export class MoveManager {
   /**
    * Removes some of the moved meshes.
    * They will stay with their current position.
-   * @param {...?Mesh} meshes - excluded meshes.
+   * @param {...?import('@babylonjs/core').Mesh} meshes - excluded meshes.
    */
   // eslint-disable-next-line no-unused-vars
   exclude(...meshes) {}
@@ -336,7 +343,7 @@ export class MoveManager {
   /**
    * Adds some meshes to the moving selection.
    * Does nothing if no operation is in progress.
-   * @param {...?Mesh} meshes - included meshes.
+   * @param {...?import('@babylonjs/core').Mesh} meshes - included meshes.
    */
   // eslint-disable-next-line no-unused-vars
   include(...meshes) {}
@@ -350,14 +357,14 @@ export class MoveManager {
 
   /**
    * Returns all drop zones actives while moving meshes
-   * @returns {(DropZone)[]} an array (possibly empty) of active zones
+   * @returns {(import('.').DropZone)[]} an array (possibly empty) of active zones
    */
   getActiveZones() {
     return []
   }
 
   /**
-   * @param {?Mesh} mesh - tested mesh
+   * @param {?import('@babylonjs/core').Mesh} mesh - tested mesh
    * @returns whether this mesh is being moved
    */
   // eslint-disable-next-line no-unused-vars
@@ -368,7 +375,7 @@ export class MoveManager {
   /**
    * Registers a new MoveBehavior, making it possible to move its mesh.
    * Does nothing if this behavior is already managed.
-   * @param {?MoveBehavior} behavior - movable behavior
+   * @param {?import('../behaviors').MoveBehavior} behavior - movable behavior
    */
   registerMovable(behavior) {
     if (behavior?.mesh?.id) {
@@ -380,7 +387,7 @@ export class MoveManager {
   /**
    * Unregisters an existing MoveBehavior.
    * Does nothing on unmanaged behaviors.
-   * @param {?MoveBehavior} behavior - movable behavior
+   * @param {?import('../behaviors').MoveBehavior} behavior - movable behavior
    */
   unregisterMovable(behavior) {
     if (
@@ -394,7 +401,7 @@ export class MoveManager {
   }
 
   /**
-   * @param {?Mesh} [mesh] - tested mesh
+   * @param {?import('@babylonjs/core').Mesh} [mesh] - tested mesh
    * @returns whether this mesh is controlled or not
    */
   isManaging(mesh) {
@@ -403,7 +410,7 @@ export class MoveManager {
 
   /**
    * Notify listerners of moving meshes
-   * @param {...Mesh} meshes - moving meshes
+   * @param {...import('@babylonjs/core').Mesh} meshes - moving meshes
    */
   notifyMove(...meshes) {
     for (const mesh of meshes) {
@@ -413,7 +420,7 @@ export class MoveManager {
 }
 
 /**
- * @param {Mesh[]} moved - moved meshes.
+ * @param {import('@babylonjs/core').Mesh[]} moved - moved meshes.
  * @returns bounding box info for this group of meshes.
  */
 function computeMovedExtend(moved) {
@@ -439,9 +446,9 @@ function computeMovedExtend(moved) {
 }
 
 /**
- * @param {Scene} scene - scene used for moving meshes .
- * @param {import('@src/3d/managers').Managers} managers - other managers.
- * @param {Mesh[]} moved - moved meshes.
+ * @param {import('@babylonjs/core').Scene} scene - scene used for moving meshes .
+ * @param {import('.').Managers} managers - other managers.
+ * @param {import('@babylonjs/core').Mesh[]} moved - moved meshes.
  * @param {Vector3} min - moved mesh bounding box minimum.
  * @returns list of possibly colliding bounding boxes.
  */
@@ -502,7 +509,7 @@ function elevateWhenColliding(boundingBoxes, min, max) {
 
 /**
  * @param {MoveManager} manager - manager instance.
- * @param {Mesh} mesh - tested mesh.
+ * @param {import('@babylonjs/core').Mesh} mesh - tested mesh.
  * @returnswhether this mesh could be moved.
  */
 function isDisabled({ behaviorByMeshId, managers }, mesh) {

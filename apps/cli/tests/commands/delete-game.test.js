@@ -1,9 +1,4 @@
 // @ts-check
-/**
- * @typedef {import('../../src').Command} Command
- * @typedef {import('../../src/commands/show-player').Game} Game
- */
-
 import { faker } from '@faker-js/faker'
 import stripAnsi from 'strip-ansi'
 import { beforeAll, beforeEach, describe, expect, it, vi } from 'vitest'
@@ -18,7 +13,7 @@ vi.mock('../../src/util/graphql-client.js', () => ({
 }))
 
 describe('Game deletion command', () => {
-  /** @type {Command} */
+  /** @type {import('@src/index').Command} */
   let deleteGame
   const adminPlayerId = faker.string.uuid()
   const jwtKey = faker.string.uuid()
@@ -52,7 +47,11 @@ describe('Game deletion command', () => {
     const id = faker.string.uuid()
     const kind = faker.lorem.word()
     const created = Date.now()
-    const game = /** @type {Game} */ ({ id, kind, created })
+    const game = /** @type {import('@tabulous/server/graphql').Game} */ ({
+      id,
+      kind,
+      created
+    })
     mockQuery.mockResolvedValueOnce({ deleteGame: game })
     const result = await deleteGame([id])
     expect(result).toMatchObject({ game })
@@ -70,7 +69,10 @@ describe('Game deletion command', () => {
   it('handles deleted lobby', async () => {
     const id = faker.string.uuid()
     const created = Date.now()
-    const lobby = /** @type {Game} */ ({ id, created })
+    const lobby = /** @type {import('@tabulous/server/graphql').Game} */ ({
+      id,
+      created
+    })
     mockQuery.mockResolvedValueOnce({ deleteGame: lobby })
     const result = await deleteGame([id])
     expect(result).toMatchObject({ game: lobby })

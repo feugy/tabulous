@@ -12,8 +12,8 @@ OBJFileLoader.UV_SCALING = new Vector2(-1, 1)
 /**
  * Creates a custom mesh by importing .obj file.
  * It must contain the file parameter.
- * @param {Omit<import('@src/3d/utils/behaviors').SerializedMesh, 'shape'> & Required<Pick<import('@src/3d/utils/behaviors').SerializedMesh, 'file'>>} params - custom mesh parameters.
- * @param {import('@src/3d/managers').Managers} managers - current managers.
+ * @param {Omit<import('@tabulous/types').Mesh, 'shape'> & Required<Pick<import('@tabulous/types').Mesh, 'file'>>} params - custom mesh parameters.
+ * @param {import('../managers').Managers} managers - current managers.
  * @param {import('@babylonjs/core').Scene} scene - scene for the created mesh.
  * @returns the created custom mesh.
  */

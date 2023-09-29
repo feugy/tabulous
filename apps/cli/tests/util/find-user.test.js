@@ -1,3 +1,4 @@
+// @ts-check
 import { faker } from '@faker-js/faker'
 import { beforeAll, beforeEach, describe, expect, it, vi } from 'vitest'
 
@@ -11,6 +12,7 @@ vi.mock('../../src/util/graphql-client.js', () => ({
 }))
 
 describe('getGraphQLClient()', () => {
+  /** @type {import('@src/util/find-user').findUser} */
   let findUser
   const adminUserId = faker.string.uuid()
   const jwtKey = faker.string.uuid()

@@ -1,8 +1,4 @@
 // @ts-check
-/**
- * @typedef {import('../test-utils').RunQueryMock} RunQueryMock
- */
-
 import * as graphQL from '@src/graphql'
 import { listCatalog } from '@src/stores/catalog'
 import { runQuery } from '@src/stores/graphql-client'
@@ -11,7 +7,7 @@ import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
 
 vi.mock('@src/stores/graphql-client')
 
-const runQueryMock = /** @type {RunQueryMock} */ (runQuery)
+const runQueryMock = vi.mocked(runQuery)
 
 describe('listCatalog()', () => {
   const catalog = [

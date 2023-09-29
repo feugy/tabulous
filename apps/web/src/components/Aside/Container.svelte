@@ -1,16 +1,5 @@
 <script>
   // @ts-check
-  /**
-   * @typedef {import('@babylonjs/core').Engine} Engine
-   * @typedef {import('@src/components').SectionTab} SectionTab
-   * @typedef {import('@src/graphql').Friendship} Friendship
-   * @typedef {import('@src/graphql').Game} Game
-   * @typedef {import('@src/graphql').GameOrGameParameters} GameOrGameParameters
-   * @typedef {import('@src/graphql').PlayerWithSearchable} PlayerWithSearchable
-   * @typedef {import('@src/stores').Connected} Connected
-   * @typedef {import('@src/stores/game-manager').Player} Player
-   */
-
   import { isLobby as checkIfLobby } from '@src/utils'
   import { beforeUpdate } from 'svelte'
   import { _ } from 'svelte-intl'
@@ -19,25 +8,25 @@
   import AvatarGrid from './AvatarGrid.svelte'
   import VideoCommands from './VideoCommands.svelte'
 
-  /** @type {PlayerWithSearchable} authenticated player. */
+  /** @type {import('@src/graphql').PlayerWithSearchable} authenticated player. */
   export let user
-  /** @type {Map<string, Player>} map of game/lobby players by their ids. */
+  /** @type {Map<string, import('@src/stores').PlayerWithPref>} map of game/lobby players by their ids. */
   export let playerById
-  /** @type {Connected[]} currently connected active players. */
+  /** @type {import('@src/stores').Connected[]} currently connected active players. */
   export let connected
-  /** @type {Engine['actionNamesByButton']} engine action names by mouse button. */
+  /** @type {import('@babylonjs/core').Engine['actionNamesByButton']} engine action names by mouse button. */
   export let actionNamesByButton = new Map()
-  /** @type {Engine['actionNamesByKey']} engine action names by hotkeys. */
+  /** @type {import('@babylonjs/core').Engine['actionNamesByKey']} engine action names by hotkeys. */
   export let actionNamesByKey = new Map()
-  /** @type {?GameOrGameParameters} game data */
+  /** @type {?import('@src/graphql').GameOrGameParameters} game data */
   export let game = null
-  /** @type {Game['messages']} list of messages. */
+  /** @type {import('@src/graphql').Game['messages']} list of messages. */
   export let thread = undefined
-  /** @type {Game['history']} action history. */
+  /** @type {import('@src/graphql').Game['history']} action history. */
   export let history = undefined
   /** @type {number} rank in the game history. */
   export let replayRank = 0
-  /** @type {Friendship[]} list of all friendships. */
+  /** @type {import('@src/graphql').Friendship[]} list of all friendships. */
   export let friends = []
 
   const helpId = 'help'
@@ -47,7 +36,7 @@
 
   /** @type {number} currently expanded tab. */
   let tab
-  /** @type {SectionTab[]} */
+  /** @type {import('@src/components').SectionTab[]} */
   let tabs = []
   let hasPeers = false
   let previousConnectedLength = 0
@@ -98,7 +87,9 @@
     tab = currentTab
   }
 
-  function makeTabsKey(/** @type {SectionTab[]} */ tabs) {
+  function makeTabsKey(
+    /** @type {import('@src/components').SectionTab[]} */ tabs
+  ) {
     return tabs.map(({ id }) => id).join('-')
   }
 </script>

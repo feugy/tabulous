@@ -1,9 +1,4 @@
 // @ts-check
-/**
- * @typedef {import('@src/graphql').LightPlayer} Player
- * @typedef {import('rxjs').BehaviorSubject<?>} BehaviorSubject
- */
-
 import { Aside } from '@src/components'
 import { stream$ as actualStream$ } from '@src/stores/stream'
 import { fireEvent, render, screen, waitFor } from '@testing-library/svelte'
@@ -26,7 +21,7 @@ vi.mock('@src/stores/stream', () => {
   }
 })
 
-const stream$ = /** @type {BehaviorSubject} */ (actualStream$)
+const stream$ = /** @type {import('rxjs').BehaviorSubject<?>} */ (actualStream$)
 
 const helpButtonText = 'help F1'
 const friendsButtonText = 'people_alt F2'
@@ -339,6 +334,6 @@ describe('Aside component', () => {
   })
 })
 
-function toMap(/** @type {Player[]} */ players) {
+function toMap(/** @type {import('@src/graphql').Player[]} */ players) {
   return new Map(players.map(player => [player.id, player]))
 }

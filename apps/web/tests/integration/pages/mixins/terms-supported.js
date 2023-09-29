@@ -1,29 +1,23 @@
 // @ts-check
 import { expect, translate } from '../../utils/index.js'
 
-/**
- * @typedef {import('@playwright/test').Page} Page
- * @typedef {import('@playwright/test').Locator} Locator
- * @typedef {import('../../utils').Locale} Locale
- */
-
 export class TermsSupportedMixin {
   /**
-   * @param {Page} page - the actual page.
-   * @param {Locale} lang - current language.
+   * @param {import('@playwright/test').Page} page - the actual page.
+   * @param {import('../../utils').Locale} lang - current language.
    */
   constructor(page, lang) {
-    /** @type {Locale} */
+    /** @type {import('../../utils').Locale} */
     this.lang = lang
-    /** @type {Page} */
+    /** @type {import('@playwright/test').Page} */
     this.page = page
-    /** @type {Locator} */
+    /** @type {import('@playwright/test').Locator} */
     this.scrollable = page.getByTestId('scrollable-terms')
-    /** @type {Locator} */
+    /** @type {import('@playwright/test').Locator} */
     this.acceptTermsCheckbox = page.locator('[type=checkbox][id=accept]')
-    /** @type {Locator} */
+    /** @type {import('@playwright/test').Locator} */
     this.oldEnoughCheckbox = page.locator('[type=checkbox][id=age]')
-    /** @type {Locator} */
+    /** @type {import('@playwright/test').Locator} */
     this.submitTermsButton = page.getByRole('button', {
       name: translate('actions.log-in', undefined, this.lang)
     })
@@ -31,7 +25,7 @@ export class TermsSupportedMixin {
 
   /**
    * Checks redirection to the accept terms page.
-   * @param {Locator} missingElement - locator of an element that would have been visible when there is no redirection.
+   * @param {import('@playwright/test').Locator} missingElement - locator of an element that would have been visible when there is no redirection.
    * @param {string} originalUrl - url when there is no redirection.
    */
   async expectRedirectedToTerms(missingElement, originalUrl) {

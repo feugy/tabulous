@@ -1,6 +1,4 @@
 // @ts-check
-/** @typedef {import('@tabulous/server/src/graphql').LoggerLevel} LoggerLevel */
-
 import { gql } from '@urql/core'
 import chalkTemplate from 'chalk-template'
 
@@ -25,7 +23,7 @@ const configureLoggersMutation = gql`
 /**
  * Triggers logger configuration command
  * @param {string[]} argv - array of parsed arguments (without executable and current file).
- * @returns {Promise<LoggerLevel[]|string>} the configured loggers (or help message).
+ * @returns the configured loggers (or help message).
  */
 export default async function configureLoggerCommand(argv) {
   const args = parseArgv(argv, {
@@ -44,7 +42,7 @@ export default async function configureLoggerCommand(argv) {
 
 /**
  * @param {string} input - input string containing levels.
- * @returns {LoggerLevel[]} parsed logger levels.
+ * @returns parsed logger levels.
  * @throws {Error} when the input string is not compliant.
  */
 function parseLevels(input) {
@@ -53,7 +51,7 @@ function parseLevels(input) {
     if (!name || !level) {
       throw new Error(`misformated levels: "${input}"`)
     }
-    return { name, level: /** @type {LoggerLevel['level']} */ (level) }
+    return { name, level }
   })
 }
 
@@ -65,8 +63,8 @@ function parseLevels(input) {
 
 /**
  * Configures logger levels.
- * @param {{ levels: LoggerLevel[] }} args - configuration arguments.
- * @returns {Promise<LoggerLevel[]>} the configured loggers.
+ * @param {{ levels: { name: string, level: string}[] }} args - configuration arguments.
+ * @returns the configured loggers.
  */
 export async function configureLevels({ levels }) {
   const { configureLoggerLevels: results } = await getGraphQLClient().mutation(
@@ -77,11 +75,7 @@ export async function configureLevels({ levels }) {
   return attachFormater(results, formatLogger)
 }
 
-/**
- * @param {LoggerLevel[]} levels
- * @returns {string} formatted results
- */
-function formatLogger(levels) {
+function formatLogger(/** @type {{ name: string, level: string }[]} */ levels) {
   return levels.map(({ name, level }) => `- ${name}: ${level}`).join('\n')
 }
 

@@ -1,9 +1,4 @@
 // @ts-check
-/**
- * @typedef {import('@babylonjs/core').PBRSpecularGlossinessMaterial} Material
- * @typedef {import('@babylonjs/core').Scene} Scene
- */
-
 import { faker } from '@faker-js/faker'
 import { createTable } from '@src/3d/utils'
 import { describe, expect, it } from 'vitest'
@@ -11,7 +6,7 @@ import { describe, expect, it } from 'vitest'
 import { configures3dTestEngine } from '../../test-utils'
 
 describe('createTable() 3D utility', () => {
-  /** @type {Scene} */
+  /** @type {import('@babylonjs/core').Scene} */
   let scene
   /** @type {import('@src/3d/managers').Managers} */
   let managers
@@ -31,7 +26,8 @@ describe('createTable() 3D utility', () => {
     expect(boundingBox.extendSize.x * 2).toEqual(width)
     expect(boundingBox.extendSize.z * 2).toEqual(height)
     expect(
-      /** @type {Material} */ (table.material).diffuseTexture?.name
+      /** @type {import('@babylonjs/core').StandardMaterial} */ (table.material)
+        .diffuseTexture?.name
     ).toEqual('https://localhost:3000' + texture)
     expect(table.isPickable).toBe(false)
     expect(table.absolutePosition.x).toEqual(0)
@@ -43,11 +39,16 @@ describe('createTable() 3D utility', () => {
     const texture = `${faker.internet.color().toUpperCase()}FF`
     const table = createTable({ texture }, managers, scene)
     expect(
-      /** @type {Material} */ (table.material).diffuseColor
+      /** @type {import('@babylonjs/core').StandardMaterial} */ (
+        table.material
+      ).diffuseColor
         ?.toGammaSpace()
         .toHexString()
     ).toEqual(texture.slice(0, -2))
-    expect(/** @type {Material} */ (table.material).diffuseTexture).toBeNull()
+    expect(
+      /** @type {import('@babylonjs/core').StandardMaterial} */ (table.material)
+        .diffuseTexture
+    ).toBeNull()
   })
 
   it('creates a table mesh with default values', () => {

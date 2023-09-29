@@ -9,8 +9,8 @@ import { applyInitialTransform, setExtras } from '../utils/mesh'
  * Creates a prism, with a given number of base edge (starting at 3).
  * A prism's texture must have edges + 2 faces, starting with back and ending with front, aligned horizontally.
  * By default, prisms have 6 edges and a width of 3.
- * @param {Omit<import('@src/3d/utils/behaviors').SerializedMesh, 'shape'>} params - prism parameters.
- * @param {import('@src/3d/managers').Managers} managers - current managers.
+ * @param {Omit<import('@tabulous/types').Mesh, 'shape'>} params - prism parameters.
+ * @param {import('../managers').Managers} managers - current managers.
  * @param {import('@babylonjs/core').Scene} scene - scene for the created mesh.
  * @returns the created prism mesh.
  */
@@ -55,7 +55,7 @@ export function createPrism(
     isCylindric: true,
     metadata: {
       serialize: () => ({
-        shape: /** @type {'prism'} */ (mesh.name),
+        shape: /** @type {import('@tabulous/types').Shape} */ (mesh.name),
         id,
         x: mesh.absolutePosition.x,
         y: mesh.absolutePosition.y,

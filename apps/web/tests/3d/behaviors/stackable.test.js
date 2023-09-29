@@ -1,10 +1,4 @@
 // @ts-check
-/**
- * @typedef {import('@babylonjs/core').Mesh} Mesh
- * @typedef {import('@babylonjs/core').Observer<?>} Observer
- * @typedef {import('@babylonjs/core').Scene} Scene
- */
-
 import { Vector3 } from '@babylonjs/core/Maths/math.vector'
 import { faker } from '@faker-js/faker'
 import {
@@ -61,7 +55,7 @@ describe('StackBehavior', () => {
   let managers
   /** @type {import('vitest').Spy<import('@src/3d/managers').IndicatorManager['registerFeedback']>} */
   let registerFeedbackSpy
-  /** @type {?Observer} */
+  /** @type {?import('@babylonjs/core').Observer<?>} */
   let moveObserver
 
   beforeAll(() => {
@@ -148,13 +142,13 @@ describe('StackBehavior', () => {
   })
 
   describe('given attached to a mesh', () => {
-    /** @type {Mesh} */
+    /** @type {import('@babylonjs/core').Mesh} */
     let mesh
-    /** @type {Mesh} */
+    /** @type {import('@babylonjs/core').Mesh} */
     let box1
-    /** @type {Mesh} */
+    /** @type {import('@babylonjs/core').Mesh} */
     let box2
-    /** @type {Mesh} */
+    /** @type {import('@babylonjs/core').Mesh} */
     let box3
     /** @type {StackBehavior} */
     let behavior

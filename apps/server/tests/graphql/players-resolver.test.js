@@ -1,10 +1,4 @@
 // @ts-check
-/**
- * @typedef {import('fastify').FastifyInstance} FastifyInstance
- * @typedef {import('../../src/services/players').Player} Player
- * @typedef {import('../../src/services/players').FriendshipUpdate} FriendshipUpdate
- */
-
 import { faker } from '@faker-js/faker'
 import { createVerifier } from 'fast-jwt'
 import fastify from 'fastify'
@@ -21,7 +15,7 @@ import {
 } from 'vitest'
 
 import graphQL from '../../src/plugins/graphql.js'
-import realRepositories from '../../src/repositories/index.js'
+import * as realRepositories from '../../src/repositories/index.js'
 import realServices from '../../src/services/index.js'
 import { hash, makeLogger } from '../../src/utils/index.js'
 import {
@@ -34,14 +28,14 @@ import {
 } from '../test-utils.js'
 
 describe('given a started server', () => {
-  /** @type {FastifyInstance} */
+  /** @type {import('fastify').FastifyInstance} */
   let server
   /** @type {import('ws')} */
   let ws
   /** @type {ReturnType<typeof mockMethods>} */
   let restoreServices
   const services =
-    /** @type {import('vitest').Mocked<typeof realServices> & {friendshipUpdates: Subject<FriendshipUpdate>}} */ (
+    /** @type {import('vitest').Mocked<typeof realServices> & {friendshipUpdates: Subject<import('@tabulous/types').FriendshipUpdate>}} */ (
       realServices
     )
   const repository =
@@ -68,7 +62,7 @@ describe('given a started server', () => {
       from: 0,
       results: []
     }))
-    /** @type {Subject<FriendshipUpdate>} */
+    /** @type {Subject<import('@tabulous/types').FriendshipUpdate>} */
     services.friendshipUpdates = new Subject()
   })
 
@@ -216,7 +210,7 @@ describe('given a started server', () => {
       })
 
       it.each(
-        /** @type {{ title: string; user: ?Player, password: string }[]} */ ([
+        /** @type {{ title: string; user: ?import('@tabulous/types').Player, password: string }[]} */ ([
           { title: 'unfound account', user: null, password },
           {
             title: 'account with no password',
@@ -739,7 +733,8 @@ describe('given a started server', () => {
         services.getPlayerById.mockResolvedValueOnce(player)
         services.isUsernameUsed.mockResolvedValueOnce(false)
         services.upsertPlayer.mockImplementation(
-          async player => /** @type {Player} */ (player)
+          async player =>
+            /** @type {import('@tabulous/types').Player} */ (player)
         )
         const response = await server.inject({
           method: 'POST',
@@ -942,7 +937,8 @@ describe('given a started server', () => {
         services.getPlayerById.mockResolvedValueOnce(player)
         services.isUsernameUsed.mockResolvedValueOnce(false)
         services.upsertPlayer.mockImplementation(
-          async player => /** @type {Player} */ (player)
+          async player =>
+            /** @type {import('@tabulous/types').Player} */ (player)
         )
         const response = await server.inject({
           method: 'POST',

@@ -1,8 +1,4 @@
 // @ts-check
-/**
- * @typedef {import('../services/catalog').GameDescriptor} CatalogItem
- */
-
 import { readdir } from 'node:fs/promises'
 import { pathToFileURL } from 'node:url'
 
@@ -15,9 +11,9 @@ class CatalogItemRepository {
    */
   constructor() {
     this.name = 'catalog'
-    /** @type {CatalogItem[]} */
+    /** @type {import('@tabulous/types').GameDescriptor[]} */
     this.models = []
-    /** @type {Map<string, CatalogItem>} */
+    /** @type {Map<string, import('@tabulous/types').GameDescriptor>} */
     this.modelsByName = new Map()
     this.logger = makeLogger(`${this.name}-repository`, {
       ctx: { name: this.name }
@@ -29,7 +25,6 @@ class CatalogItemRepository {
    * It reads all available descriptors.
    * @param {object} args - connection arguments:
    * @param {string} args.path - folder path containing game descriptors.
-   * @returns {Promise<void>}
    * @throws {Error} when provided path is not a readable folder.
    */
   async connect({ path }) {
@@ -92,7 +87,7 @@ class CatalogItemRepository {
   /**
    * Lists all catalog items.
    * It complies with Page convention, but always returns all the available items.
-   * @returns {Promise<import('./abstract-repository').Page<CatalogItem>>} a given page of catalog items.
+   * @returns {Promise<import('./abstract-repository').Page<import('@tabulous/types').GameDescriptor>>} a given page of catalog items.
    */
   async list() {
     this.logger.trace('listing models')
@@ -106,20 +101,17 @@ class CatalogItemRepository {
 
   /**
    * @overload
-   * @param {string} id
-   * @returns {Promise<?CatalogItem>}
+   * Get a single model by their id.
+   * @param {string} id - desired id.
+   * @returns {Promise<?import('@tabulous/types').GameDescriptor>} matching model, or null.
    */
   /**
    * @overload
-   * @param {string[]} id
-   * @returns {Promise<(?CatalogItem)[]>}
+   * Get a several models by their ids.
+   * @param {string[]} id - desired ids.
+   * @returns {Promise<(?import('@tabulous/types').GameDescriptor)[]>} matching models, or nulls.
    */
-  /**
-   * Get a single or several model by their id.
-   * @param {string|string[]} id - desired id(s).
-   * @returns {Promise<?CatalogItem|(?CatalogItem)[]>} matching model(s), or null(s).
-   */
-  async getById(id) {
+  async getById(/** @type {string|string[]} */ id) {
     const ids = Array.isArray(id) ? id : [id]
     const results = []
     for (const id of ids) {

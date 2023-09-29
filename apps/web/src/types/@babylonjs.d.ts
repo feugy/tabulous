@@ -14,7 +14,7 @@ import type {
   StackBehavior,
   TargetBehavior
 } from '@src/3d/behaviors'
-import type { ActionOrMove, Managers } from '@src/3d/managers'
+import type { ActionOrMove, HistoryRecord, Managers } from '@src/3d/managers'
 import type { Behavior } from '@src/3d/utils'
 import type { Game } from '@src/graphql'
 import type { GameWithSelections } from '@src/stores'
@@ -22,10 +22,9 @@ import type { MeshMetadata } from '@src/types'
 import type {
   ActionName,
   ButtonName,
-  HistoryRecord,
   Mesh as SerializedMesh,
   PlayerPreference
-} from '@tabulous/server/src/graphql'
+} from '@tabulous/types'
 
 interface LoadPlayerData {
   /** current player id (to determine their hand)). */

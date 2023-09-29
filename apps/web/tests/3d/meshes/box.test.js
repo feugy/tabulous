@@ -1,10 +1,4 @@
 // @ts-check
-/**
- * @typedef {import('@babylonjs/core').Scene} Scene
- * @typedef {import('@babylonjs/core').Mesh} Mesh
- * @typedef {import('@babylonjs/core').PBRSpecularGlossinessMaterial} Material
- */
-
 import { Color3 } from '@babylonjs/core/Maths/math.color'
 import { faker } from '@faker-js/faker'
 import { createBox } from '@src/3d/meshes'
@@ -16,7 +10,7 @@ import {
   expectPosition
 } from '../../test-utils'
 
-/** @type {Scene} */
+/** @type {import('@babylonjs/core').Scene} */
 let scene
 /** @type {import('@src/3d/managers').Managers} */
 let managers
@@ -45,9 +39,10 @@ describe('createBox()', () => {
     expect(mesh.name).toEqual('box')
     expectDimension(mesh, [1, 1, 1])
     expect(mesh.isPickable).toBe(false)
-    expect(/** @type {Material} */ (mesh.material).diffuseColor).toEqual(
-      Color3.FromHexString(color).toLinearSpace()
-    )
+    expect(
+      /** @type {import('@babylonjs/core').StandardMaterial} */ (mesh.material)
+        .diffuseColor
+    ).toEqual(Color3.FromHexString(color).toLinearSpace())
   })
 
   it('creates a box with initial transformation', async () => {
@@ -68,7 +63,7 @@ describe('createBox()', () => {
   })
 
   describe('given a box with initial position, dimension, images and behaviors', () => {
-    /** @type {Mesh} */
+    /** @type {import('@babylonjs/core').Mesh} */
     let mesh
 
     const width = faker.number.int(999)

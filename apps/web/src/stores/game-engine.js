@@ -1,25 +1,4 @@
 // @ts-check
-/**
- * @typedef {import('@babylonjs/core').Engine} Engine
- * @typedef {import('@babylonjs/core').Mesh} Mesh
- * @typedef {import('@babylonjs/core').Observable<?>} BabylonObservable
- * @typedef {import('@babylonjs/core').Observer<?>} BabylonObserver
- * @typedef {import('@tabulous/server/src/graphql').HistoryRecord} HistoryRecord
- * @typedef {import('@tabulous/server/src/graphql').Player} Player
- * @typedef {import('@src/3d/managers/camera').CameraPosition} CameraPosition
- * @typedef {import('@src/3d/managers/control').MeshDetails} MeshDetails
- * @typedef {import('@src/3d/managers/hand').HandChange} HandChange
- * @typedef {import('@src/3d/managers/indicator').Indicator} Indicator
- * @typedef {import('@src/3d/managers/input').LongData} LongData
- * @typedef {import('@src/3d').PlayerSelection} PlayerSelection
- * @typedef {import('@src/common').Locale} Locale
- * @typedef {import('@src/graphql').FriendshipUpdate} FriendshipUpdate
- * @typedef {import('@src/types').BabylonToRxMapping} BabylonToRxMapping
- * @typedef {import('@src/utils/game-interaction').ActionMenuProps} ActionMenuProps
- */
-
-import { createEngine } from '@src/3d'
-import { attachInputs } from '@src/utils/game-interaction'
 import {
   auditTime,
   BehaviorSubject,
@@ -32,6 +11,8 @@ import {
 import { get } from 'svelte/store'
 import { locale, translate } from 'svelte-intl'
 
+import { createEngine } from '../3d'
+import { attachInputs } from '../utils/game-interaction'
 import {
   connected,
   lastDisconnectedId,
@@ -39,34 +20,40 @@ import {
   send
 } from './peer-channels'
 
-const engine$ = new BehaviorSubject(/** @type {?Engine} */ (null))
+const engine$ = new BehaviorSubject(
+  /** @type {?import('@babylonjs/core').Engine} */ (null)
+)
 const fps$ = new BehaviorSubject('0')
 /** @type {Subject<import('@src/3d/managers').ActionOrMove>} */
 const localAction$ = new Subject()
 /** @type {Subject<import('@src/3d/managers').ActionOrMove & { peerId: string }>} */
 const remoteAction$ = new Subject()
-/** @type {Subject<PlayerSelection>} */
+/** @type {Subject<import('@src/3d').PlayerSelection>} */
 const remoteSelection$ = new Subject()
 /** @type {Subject<number[]>} */
 const pointer$ = new Subject()
-/** @type {Subject<MeshDetails>} */
+/** @type {Subject<import('@src/3d/managers').MeshDetails>} */
 const meshDetails$ = new Subject()
-/** @type {Subject<?ActionMenuProps>} */
+/** @type {Subject<?import('@src/utils/game-interaction').ActionMenuProps>} */
 const actionMenuProps$ = new Subject()
-/** @type {Subject<CameraPosition[]>} */
+/** @type {Subject<import('@src/3d/managers').CameraPosition[]>} */
 const cameraSaves$ = new Subject()
-/** @type {Subject<CameraPosition>} */
+/** @type {Subject<import('@src/3d/managers').CameraPosition>} */
 const currentCamera$ = new Subject()
-/** @type {Subject<HandChange>} */
+/** @type {Subject<import('@src/3d/managers').HandChange>} */
 const handSaves$ = new Subject()
-const indicators$ = new BehaviorSubject(/** @type {Indicator[]} */ ([]))
+const indicators$ = new BehaviorSubject(
+  /** @type {import('@src/3d/managers').Indicator[]} */ ([])
+)
 const selectedMeshes$ = new BehaviorSubject(
-  /** @type {Set<Mesh>} */ (new Set())
+  /** @type {Set<import('@babylonjs/core').Mesh>} */ (new Set())
 )
 const highlightHand$ = new BehaviorSubject(false)
 /** @type {Subject<boolean>} */
 const engineLoading$ = new Subject()
-const history$ = new BehaviorSubject(/** @type {HistoryRecord[]} */ ([]))
+const history$ = new BehaviorSubject(
+  /** @type {import('@tabulous/types').HistoryRecord[]} */ ([])
+)
 const replayRank$ = new BehaviorSubject(0)
 
 /**
@@ -124,7 +111,7 @@ export const cameraSaves = cameraSaves$.asObservable()
 
 /**
  * Emits when a long tap/drag/pinch... input was detected.
- * @type {Subject<LongData>}
+ * @type {Subject<import('../3d/managers').LongData>}
  */
 export const longInputs = new Subject()
 
@@ -186,12 +173,12 @@ export const replayRank = replayRank$.asObservable()
  * Clears all subscriptions on engine disposal.
  *
  * @param {Omit<Parameters<createEngine>[0], 'locale'|'longTapDelay'|'translate'|'Engine'> & EngineParams} params - engine creation parameters.
- * @return {Engine} the created engine.
+ * @return {import('@babylonjs/core').Engine} the created engine.
  */
 export function initEngine({ pointerThrottle, longTapDelay, ...engineProps }) {
   const engine = createEngine({
     longTapDelay,
-    locale: /** @type {Locale} */ (get(locale)),
+    locale: /** @type {import('@src/common').Locale} */ (get(locale)),
     translate: get(translate),
     ...engineProps
   })
@@ -203,7 +190,7 @@ export function initEngine({ pointerThrottle, longTapDelay, ...engineProps }) {
   cameraSaves$.next(engine.managers.camera.saves)
   currentCamera$.next(engine.managers.camera.saves[0])
 
-  /** @type {BabylonToRxMapping[]} */
+  /** @type {import('@src/types').BabylonToRxMapping[]} */
   const mappings = [
     {
       observable: engine.managers.control.onActionObservable,
@@ -365,22 +352,22 @@ function applyRemoteSelection(
   remoteSelection$.next({ selectedIds, playerId })
 }
 
-/** @type {import('@src/3d/managers').CameraManager['save']} */
+/** @type {import('../3d/managers').CameraManager['save']} */
 export function saveCamera(...args) {
   engine$.value?.managers.camera.save(...args)
 }
 
-/** @type {import('@src/3d/managers').CameraManager['restore']} */
+/** @type {import('../3d/managers').CameraManager['restore']} */
 export async function restoreCamera(...args) {
   await engine$.value?.managers.camera.restore(...args)
 }
 
-/** @type {import('@src/3d/managers').CameraManager['loadSaves']} */
+/** @type {import('../3d/managers').CameraManager['loadSaves']} */
 export async function loadCameraSaves(...args) {
   await engine$.value?.managers.camera.loadSaves(...args)
 }
 
-/** @type {import('@src/3d/managers').ReplayManager['replayHistory']} */
+/** @type {import('../3d/managers').ReplayManager['replayHistory']} */
 export async function replayHistory(...args) {
   await engine$.value?.managers.replay.replayHistory(...args)
 }

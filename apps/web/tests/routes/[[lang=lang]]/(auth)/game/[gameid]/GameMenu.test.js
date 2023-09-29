@@ -1,13 +1,4 @@
 // @ts-check
-/**
- * @template T
- * @typedef {import('rxjs').BehaviorSubject<T>} BehaviorSubject
- */
-/**
- * @template {any[]}  P, R
- * @typedef {import('vitest').Mock<P, R>} Mock
- */
-
 import GameMenu from '@src/routes/[[lang=lang]]/(auth)/game/[gameId]/GameMenu.svelte'
 import * as stores from '@src/stores'
 import * as indicators from '@src/stores/indicators'
@@ -34,14 +25,15 @@ vi.mock('@src/stores/indicators', () => {
   }
 })
 
-const isFullscreen = /** @type {BehaviorSubject<boolean>} */ (
+const isFullscreen = /** @type {import('rxjs').BehaviorSubject<boolean>} */ (
   stores.isFullscreen
 )
-const areIndicatorsVisible = /** @type {BehaviorSubject<boolean>} */ (
-  indicators.areIndicatorsVisible
-)
-const toggleFullscreen = /** @type {Mock<?, ?>} */ (stores.toggleFullscreen)
-const toggleIndicators = /** @type {Mock<?, ?>} */ (indicators.toggleIndicators)
+const areIndicatorsVisible =
+  /** @type {import('rxjs').BehaviorSubject<boolean>} */ (
+    indicators.areIndicatorsVisible
+  )
+const toggleFullscreen = vi.mocked(stores.toggleFullscreen)
+const toggleIndicators = vi.mocked(indicators.toggleIndicators)
 
 describe('GameMenu connected component', () => {
   beforeEach(() => {

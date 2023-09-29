@@ -1,10 +1,5 @@
 <script>
   // @ts-check
-  /**
-   * @typedef {Partial<import('@tabulous/server/src/services/catalog').Schema<?>>} Schema
-   * @typedef {import('@src/types').JSONValue} JSONValue
-   */
-
   import { Button, Pane } from '@src/components'
   import { createEventDispatcher } from 'svelte'
   import { fly } from 'svelte/transition'
@@ -12,14 +7,14 @@
 
   import { buildComponents } from './utils'
 
-  /** @type {Schema} enforced JSON Schema object */
+  /** @type {import('@tabulous/types').Schema<?>} enforced JSON Schema object */
   export let schema
 
-  /** @type {JSONValue} */
+  /** @type {import('@src/types').JSONValue} */
   let values = {}
   $: components = buildComponents(values, schema)
 
-  /** @type {import('svelte').EventDispatcher<{ submit: JSONValue }>} */
+  /** @type {import('svelte').EventDispatcher<{ submit: import('@src/types').JSONValue }>} */
   const dispatch = createEventDispatcher()
   const duration = 300
 

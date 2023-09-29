@@ -47,7 +47,7 @@ import { get } from 'svelte/store'
  * @property {boolean} playing - whether this player is currently playing.
  * @property {boolean} isHost - whether this player is hosting the current game.
  *
- * @typedef {import('@src/graphql').LightPlayer & ReturnType<typeof findPlayerPreferences> & _Player} Player
+ * @typedef {import('@src/graphql').LightPlayer & ReturnType<typeof findPlayerPreferences> & _Player} PlayerWithPref
  */
 
 /** @typedef {import('@src/graphql').Game & { selections?: import('@src/3d/engine').PlayerSelection[] }} GameWithSelections */
@@ -56,7 +56,7 @@ import { get } from 'svelte/store'
  * @typedef {object} JoinGameArgs
  * @property {string} gameId - the loaded game id.
  * @property {import('@src/graphql').LightPlayer} player - the current authenticated user.
- * @property {import('@tabulous/server/src/graphql').TurnCredentials} turnCredentials - credentials used to log onto the TURN server.
+ * @property {import('@tabulous/types').TurnCredentials} turnCredentials - credentials used to log onto the TURN server.
  * @property {import('@src/types').JSONValue} [parameters] - user chosen parameters, if any.
  * @property {(game: ?import('@src/graphql').Game) => void} [onDeletion] - optional callback invoked when current game is deleted on server side.
  * @property {(game: import('@src/graphql').Game) => void} [onPromotion] - optional callback invoked when current lobby is promoted to full game.
@@ -82,13 +82,13 @@ const currentGameSubscriptions = []
 /** @type {?import('rxjs').Subscription} */
 let listGamesSubscription = null
 let delayOnLoad = () => {}
-/** @type {Map<string, Player>} */
+/** @type {Map<string, PlayerWithPref>} */
 let playerById = new Map()
 // cameras for all players
-/** @type {import('@tabulous/server/src/graphql').CameraPosition[]} */
+/** @type {import('@tabulous/types').CameraPosition[]} */
 let cameras = []
 // hands for all players
-/** @type {import('@tabulous/server/src/graphql').Hand[]} */
+/** @type {import('@tabulous/types').Hand[]} */
 let hands = []
 // active selections for all players
 /** @type {import('@src/3d/engine').PlayerSelection[]} */
@@ -365,7 +365,7 @@ export async function joinGame({
  * Leaves current game, trigering a last save when current player is the host.
  * Shuts down peer channels.
  * Does nothing without any current game.
- * @param {Pick<Player, 'id'>} player - the current player details.
+ * @param {Pick<PlayerWithPref, 'id'>} player - the current player details.
  */
 export async function leaveGame({ id: currentPlayerId }) {
   const game = currentGame$.value
@@ -435,7 +435,7 @@ async function load(
 }
 
 function mergeCameras(
-  /** @type {{ playerId: string, cameras: import('@src/3d/managers/camera').CameraPosition[] }} */ {
+  /** @type {{ playerId: string, cameras: import('@src/3d/managers').CameraPosition[] }} */ {
     playerId,
     cameras: playerCameras
   }
@@ -458,7 +458,7 @@ function saveCameras(/** @type {string} */ gameId) {
 }
 
 function mergeHands(
-  /** @type {{ playerId: String, meshes?: import('@tabulous/server/src/graphql').Mesh[] }} */ {
+  /** @type {{ playerId: String, meshes?: import('@tabulous/types').Mesh[] }} */ {
     playerId,
     meshes = []
   }
@@ -543,7 +543,7 @@ function takeHostRole(
       )
     ).subscribe(
       (
-        /** @type {{ data: { playerId: string, meshes?: import('@tabulous/server/src/graphql').Mesh[]} }} */ {
+        /** @type {{ data: { playerId: string, meshes?: import('@tabulous/types').Mesh[]} }} */ {
           data
         }
       ) => {
@@ -728,7 +728,7 @@ function handlePeerDisconnection(/** @type {JoinGameContext} */ params) {
 
 function shareCameras(/** @type {string} */ currentPlayerId) {
   return function (
-    /** @type {import('@src/3d/managers/camera').CameraPosition[]} */ cameras
+    /** @type {import('@src/3d/managers').CameraPosition[]} */ cameras
   ) {
     logger.info({ cameras }, `sharing camera saves with peers`)
     send({ type: 'saveCameras', cameras, playerId: currentPlayerId })
@@ -737,7 +737,7 @@ function shareCameras(/** @type {string} */ currentPlayerId) {
 
 function shareHand(/** @type {string} */ currentPlayerId) {
   return function (
-    /** @type {import('@tabulous/server/src/graphql').Mesh[]|undefined} */ meshes
+    /** @type {import('@tabulous/types').Mesh[]|undefined} */ meshes
   ) {
     logger.info({ meshes }, `sharing hand with peers`)
     send({ type: 'saveHand', meshes, playerId: currentPlayerId })

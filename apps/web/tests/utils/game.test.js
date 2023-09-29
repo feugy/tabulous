@@ -1,8 +1,4 @@
 // @ts-check
-/**
- * @typedef {import('@tabulous/server/src/graphql').Game} Game
- */
-
 import { faker } from '@faker-js/faker'
 import {
   applyGameColors,
@@ -15,7 +11,7 @@ import {
 import { beforeEach, describe, expect, it } from 'vitest'
 
 describe('Game utils', () => {
-  /** @type {Game & Required<Pick<Game, 'preferences'>>} */
+  /** @type {import('@src/graphql').Game & Required<Pick<import('@src/graphql').Game, 'preferences'>>} */
   const game = {
     id: '',
     created: Date.now(),

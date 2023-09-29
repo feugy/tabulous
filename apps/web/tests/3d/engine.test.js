@@ -1,11 +1,4 @@
 // @ts-check
-/**
- * @typedef {import('@babylonjs/core').Engine} Engine
- * @typedef {import('@babylonjs/core').Observer<?>} Observer
- * @typedef {import('@babylonjs/core').Mesh} Mesh
- * @typedef {import('@tabulous/server/src/graphql').Mesh} SerializedMesh
- */
-
 import { NullEngine } from '@babylonjs/core/Engines/nullEngine'
 import { Color4 } from '@babylonjs/core/Maths/math.color'
 import { Logger } from '@babylonjs/core/Misc/logger'
@@ -18,7 +11,7 @@ import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
 import { expectAnimationEnd } from '../test-utils'
 
 describe('createEngine()', () => {
-  /** @type {Engine} */
+  /** @type {import('@babylonjs/core').Engine} */
   let engine
   const playerId = faker.string.uuid()
   const peerId1 = faker.string.uuid()
@@ -59,7 +52,7 @@ describe('createEngine()', () => {
     { title: 'real engine', canvas, makeEngine: () => new NullEngine() },
     { title: 'simulation engine' }
   ])('given a $title', ({ canvas, makeEngine }) => {
-    /** @type {?Observer} */
+    /** @type {?import('@babylonjs/core').Observer<?>} */
     let loadingObserver
     const colorByPlayerId = new Map([[playerId, '#f0f']])
     const receiveLoading = vi.fn()
@@ -103,7 +96,7 @@ describe('createEngine()', () => {
         { playerId, selectedIds: ['1', '2'] },
         { playerId: peerId1, selectedIds: ['3'] }
       ]
-      /** @type {SerializedMesh} */
+      /** @type {import('@tabulous/types').Mesh} */
       const mesh = {
         shape: 'card',
         depth: 0.2,
@@ -186,7 +179,7 @@ describe('createEngine()', () => {
         { playerId, selectedIds: ['1', '2'] },
         { playerId: peerId1, selectedIds: ['3'] }
       ]
-      /** @type {SerializedMesh} */
+      /** @type {import('@tabulous/types').Mesh} */
       const mesh = {
         shape: 'card',
         depth: 0.2,
@@ -296,7 +289,7 @@ describe('createEngine()', () => {
 
     describe('given some loaded meshes', () => {
       const duration = 200
-      /** @type {Engine} */
+      /** @type {import('@babylonjs/core').Engine} */
       let simulation
       /** @type {import('vitest').Spy<import('@src/3d/managers').ControlManager['apply']>} */
       let apply
@@ -361,7 +354,9 @@ describe('createEngine()', () => {
 
       it('removes drawn mesh from main scene', async () => {
         const [, scene] = engine.scenes
-        const drawn = /** @type {Mesh} */ (scene.getMeshById('card2'))
+        const drawn = /** @type {import('@babylonjs/core').Mesh} */ (
+          scene.getMeshById('card2')
+        )
         drawn.metadata.draw?.()
         await expectAnimationEnd(drawn.getBehaviorByName(DrawBehaviorName))
         expect(scene.getMeshById(drawn.id)).toBeNull()
@@ -752,6 +747,8 @@ describe('createEngine()', () => {
   })
 })
 
-function getIds(/** @type {SerializedMesh[]|undefined} */ meshes) {
+function getIds(
+  /** @type {import('@tabulous/types').Mesh[]|undefined} */ meshes
+) {
   return meshes?.map(({ id }) => id) ?? []
 }

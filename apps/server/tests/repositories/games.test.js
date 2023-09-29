@@ -1,8 +1,4 @@
 // @ts-check
-/**
- * @typedef {import('../../src/services/games').Game} Game
- */
-
 import { faker } from '@faker-js/faker'
 import { afterEach, beforeEach, describe, expect, it } from 'vitest'
 
@@ -15,12 +11,12 @@ describe('given a connected repository and several games', () => {
   const playerId2 = '2'
   const playerId3 = '3'
 
-  /** @type {Game[]} */
+  /** @type {import('@tabulous/types').Game[]} */
   let models = []
 
   beforeEach(async () => {
     await games.connect({ url: redisUrl })
-    models = /** @type {Game[]} */ ([
+    models = /** @type {import('@tabulous/types').Game[]} */ ([
       {
         id: 'model-0',
         ownerId: playerId1,
@@ -193,11 +189,6 @@ describe('given a connected repository and several games', () => {
   })
 })
 
-/**
- *
- * @param {Game[]} results
- * @returns {Game[]}
- */
-function sortResults(results) {
+function sortResults(/** @type {import('@tabulous/types').Game[]} */ results) {
   return results.sort((a, b) => (a.id < b.id ? -1 : 1))
 }

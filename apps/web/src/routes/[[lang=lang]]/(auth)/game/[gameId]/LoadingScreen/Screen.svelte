@@ -1,10 +1,5 @@
 <script>
   // @ts-check
-  /**
-   * @typedef {import('@tabulous/server/src/graphql').ActionSpec} ActionSpec
-   * @typedef {import('@tabulous/server/src/graphql').ActionName} ActionName
-   */
-
   import { buttonIds } from '@src/3d/utils/actions'
   import { HelpButton1, HelpButton2, HelpButton3 } from '@src/components'
   import { fade } from 'svelte/transition'
@@ -16,13 +11,15 @@
   /** @type {boolean} whether the loading screen is visible; */
   export let visible = false
 
-  /** @type {Map<keyof ActionSpec, ActionName[]>} map of action names by a given button. */
+  /** @type {Map<keyof import('@tabulous/types').ActionSpec, import('@tabulous/types').ActionName[]>} map of action names by a given button. */
   export let actionNamesByButton = new Map()
 
   $: button1Actions = actionNamesByButton?.get(buttonIds.button1)
   $: button2Actions = actionNamesByButton?.get(buttonIds.button2)
 
-  function mapToLabels(/** @type {ActionName[]} */ actions) {
+  function mapToLabels(
+    /** @type {import('@tabulous/types').ActionName[]} */ actions
+  ) {
     return actions.map(action => $_(`tooltips.${action}`)).join('<br/>')
   }
 </script>
