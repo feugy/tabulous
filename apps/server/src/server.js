@@ -26,8 +26,14 @@ export async function startServer(config) {
   })
 
   app.decorate('conf', config)
-  await repositories.players.connect(config.data)
-  await repositories.games.connect(config.data)
+  await repositories.players.connect({
+    ...config.data,
+    isProduction: config.isProduction
+  })
+  await repositories.games.connect({
+    ...config.data,
+    isProduction: config.isProduction
+  })
   await repositories.catalogItems.connect(config.games)
 
   app.register(import('./plugins/cors.js'), config.plugins.cors)
