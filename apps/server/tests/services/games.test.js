@@ -291,7 +291,10 @@ describe('given a subscription to game lists and an initialized repository', () 
           preferences: [{ playerId: player.id, color: expect.any(String) }]
         }
         const joinedGame = await joinGame(game.id, player, null)
-        expect(joinedGame).toEqual(expectedGame)
+        expect(joinedGame).toEqual({
+          ...expectedGame,
+          engineScript: expect.any(String)
+        })
         expect(joinedGame?.preferences[0].color).toMatch(
           new RegExp(game?.colors?.players?.join('|') ?? '')
         )
@@ -347,8 +350,10 @@ describe('given a subscription to game lists and an initialized repository', () 
           hands: [{ playerId: player.id, meshes: [] }],
           preferences: [{ playerId: player.id, color: expect.any(String) }],
           zoomSpec: { min: 5, max: 50 },
-          colors: { players: ['red', 'green', 'blue'] }
+          colors: { players: ['red', 'green', 'blue'] },
+          engineScript: expect.any(String)
         })
+        delete joinedGame?.engineScript
         await setTimeout(50)
         expect(updates).toEqual([
           { playerId: player.id, games: expect.arrayContaining([joinedGame]) }
@@ -381,6 +386,7 @@ describe('given a subscription to game lists and an initialized repository', () 
         game = /** @type {import('@tabulous/types').GameData} */ (
           await joinGame(game.id, player)
         )
+        delete game?.engineScript
         lobby = /** @type {import('@tabulous/types').GameData} */ (
           await joinGame(lobby.id, player)
         )
@@ -390,7 +396,10 @@ describe('given a subscription to game lists and an initialized repository', () 
 
       describe('joinGame()', () => {
         it('returns owned game', async () => {
-          expect(await joinGame(game.id, player)).toEqual(game)
+          expect(await joinGame(game.id, player)).toEqual({
+            ...game,
+            engineScript: expect.any(String)
+          })
         })
 
         it(`adds guest id to game's player id and preference lists, and trigger list updates`, async () => {
@@ -411,8 +420,10 @@ describe('given a subscription to game lists and an initialized repository', () 
             preferences: [
               { playerId: player.id, color: expect.any(String) },
               { playerId: peer.id, color: expect.any(String) }
-            ]
+            ],
+            engineScript: expect.any(String)
           })
+          delete updated?.engineScript
           await setTimeout(50)
           expect(updates).toEqual(
             expect.arrayContaining([
@@ -527,12 +538,14 @@ describe('given a subscription to game lists and an initialized repository', () 
             playerIds: [],
             zoomSpec: game.zoomSpec,
             preferences: [],
-            colors: { players: ['red', 'green', 'blue'] }
+            colors: { players: ['red', 'green', 'blue'] },
+            engineScript: expect.any(String)
           }
           expect(
             await promoteGame(lobby.id, /** @type {string} */ (kind), player)
           ).toEqual(expectedGame)
           await setTimeout(50)
+          delete expectedGame.engineScript
           expect(updates).toEqual([
             {
               playerId: player.id,
@@ -550,12 +563,14 @@ describe('given a subscription to game lists and an initialized repository', () 
             availableSeats: 2,
             guestIds: [player.id],
             playerIds: [],
-            preferences: []
+            preferences: [],
+            engineScript: expect.any(String)
           }
           expect(await promoteGame(lobby.id, kind, player)).toEqual(
             expectedGame
           )
           await setTimeout(50)
+          delete expectedGame.engineScript
           expect(updates).toEqual([
             {
               playerId: player.id,
@@ -578,12 +593,15 @@ describe('given a subscription to game lists and an initialized repository', () 
             playerIds: [],
             zoomSpec: game.zoomSpec,
             preferences: [],
-            colors: { players: ['red', 'green', 'blue'] }
+            colors: { players: ['red', 'green', 'blue'] },
+            engineScript: expect.any(String)
           }
           expect(
             await promoteGame(lobby.id, /** @type {string} */ (kind), player)
           ).toEqual(expectedGame)
+
           await setTimeout(50)
+          delete expectedGame.engineScript
           expect(updates).toEqual(
             expect.arrayContaining([
               { playerId: peer.id, games: [expectedGame] },
@@ -611,12 +629,14 @@ describe('given a subscription to game lists and an initialized repository', () 
             playerIds: [],
             zoomSpec: game.zoomSpec,
             preferences: [],
-            colors: { players: ['red', 'green', 'blue'] }
+            colors: { players: ['red', 'green', 'blue'] },
+            engineScript: expect.any(String)
           }
           expect(
             await promoteGame(lobby.id, /** @type {string} */ (kind), peer2)
           ).toEqual(expectedGame)
           await setTimeout(50)
+          delete expectedGame.engineScript
           expect(updates).toEqual(
             expect.arrayContaining([
               { playerId: peer2.id, games: [expectedGame] },
@@ -667,12 +687,14 @@ describe('given a subscription to game lists and an initialized repository', () 
             playerIds: [],
             zoomSpec: game.zoomSpec,
             preferences: [],
-            colors: { players: ['red', 'green', 'blue'] }
+            colors: { players: ['red', 'green', 'blue'] },
+            engineScript: expect.any(String)
           }
           expect(await promoteGame(lobby.id, kind, player)).toEqual(
             expectedGame
           )
           await setTimeout(50)
+          delete expectedGame.engineScript
           expect(updates).toEqual([
             {
               playerId: player.id,
@@ -852,6 +874,7 @@ describe('given a subscription to game lists and an initialized repository', () 
           })
           await setTimeout(50)
           updates.splice(0)
+          delete updatedGame?.engineScript
 
           expect(await invite(game.id, [peer.id], player.id)).toEqual(
             updatedGame
@@ -969,6 +992,7 @@ describe('given a subscription to game lists and an initialized repository', () 
           game = /** @type {import('@tabulous/types').GameData} */ (
             await joinGame(game.id, peer)
           )
+          delete game.engineScript
           await invite(lobby.id, [peer.id], player.id)
           lobby = /** @type {import('@tabulous/types').GameData} */ (
             await joinGame(lobby.id, peer)
@@ -1219,6 +1243,7 @@ describe('given a subscription to game lists and an initialized repository', () 
               await joinGame(game1.id, peer)
             )
           )
+          delete games[games.length - 1]?.engineScript
           const game2 = await createGame('belote', peer2)
           await joinGame(game2.id, peer2)
           await invite(game2.id, [player.id], peer2.id)
@@ -1227,6 +1252,7 @@ describe('given a subscription to game lists and an initialized repository', () 
               await joinGame(game2.id, player)
             )
           )
+          delete games[games.length - 1]?.engineScript
 
           await setTimeout(50)
           updates.splice(0, updates.length)
@@ -1257,6 +1283,7 @@ describe('given a subscription to game lists and an initialized repository', () 
               await joinGame(game1.id, peer)
             )
           )
+          delete games[games.length - 1]?.engineScript
           const game2 = await createGame('belote', player)
           await joinGame(game2.id, player)
           await invite(game2.id, [peer.id], player.id)
@@ -1265,6 +1292,7 @@ describe('given a subscription to game lists and an initialized repository', () 
               await joinGame(game2.id, peer)
             )
           )
+          delete games[games.length - 1]?.engineScript
 
           await setTimeout(50)
           updates.splice(0, updates.length)
@@ -1350,7 +1378,8 @@ describe('given a subscription to game lists and an initialized repository', () 
           availableSeats: 1,
           guestIds: [],
           playerIds: [player.id],
-          preferences: [{ playerId: player.id, color, side }]
+          preferences: [{ playerId: player.id, color, side }],
+          engineScript: expect.any(String)
         })
       })
     })

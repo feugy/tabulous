@@ -19,6 +19,7 @@ type Game {
   game properties
   """
   kind: String
+  engineScript: String
   locales: ItemLocales
   meshes: [Mesh]
   cameras: [CameraPosition]

@@ -45,6 +45,7 @@ export type Game = Pick<
   | 'id'
   | 'created'
   | 'kind'
+  | 'engineScript'
   | 'rulesBookPageCount'
   | 'zoomSpec'
   | 'tableSpec'
