@@ -184,7 +184,7 @@ describe('initEngine()', () => {
       })
 
       it('sends scene actions to peers', () => {
-        /** @type {import('@src/3d/managers').Action} */
+        /** @type {import('@tabulous/types').Action} */
         const data = {
           fn: 'pop',
           args: [],
@@ -200,7 +200,7 @@ describe('initEngine()', () => {
       })
 
       it('does not send local actions to peers', () => {
-        /** @type {import('@src/3d/managers').Action} */
+        /** @type {import('@tabulous/types').Action} */
         const data = {
           fn: 'pop',
           args: [],
@@ -216,7 +216,7 @@ describe('initEngine()', () => {
       })
 
       it('does not send hand actions to peers', () => {
-        /** @type {import('@src/3d/managers').Action} */
+        /** @type {import('@tabulous/types').Action} */
         const data = {
           fn: 'pop',
           args: [],

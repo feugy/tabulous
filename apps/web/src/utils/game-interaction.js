@@ -116,7 +116,7 @@ export function attachInputs({ engine, hoverDelay, actionMenuProps$ }) {
   const hovers$ = new Subject()
   /** @type {Subject<import('@src/3d/managers').MeshDetails>} */
   const details$ = new Subject()
-  /** @type {Subject<import('@src/3d/managers').ActionOrMove>} */
+  /** @type {Subject<import('@tabulous/types').ActionOrMove>} */
   const behaviorAction$ = new Subject()
   /** @type {Subject<number>} */
   const replayRank$ = new Subject()

@@ -34,7 +34,7 @@ import {
 describe('managers.Move', () => {
   const centerX = 1024
   const centerY = 512
-  /** @type {import('vitest').Mock<[import('@src/3d/managers').ActionOrMove], void>} */
+  /** @type {import('vitest').Mock<[import('@tabulous/types').ActionOrMove], void>} */
   const actionRecorded = vi.fn()
   /** @type {import('vitest').Mock<[import('@src/3d/managers').MoveDetails], void>} */
   const moveRecorded = vi.fn()
@@ -564,7 +564,7 @@ describe('managers.Move', () => {
       )
       expectCloseVector(
         Vector3.FromArray(
-          /** @type {import('@src/3d/managers').Move} */ (
+          /** @type {import('@tabulous/types').Move} */ (
             actionRecorded.mock.calls[2][0]
           ).pos
         ),

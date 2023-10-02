@@ -404,7 +404,7 @@ describe('createEngine()', () => {
       })
 
       it('applies remote action', async () => {
-        /** @type {import('@src/3d/managers').Action} */
+        /** @type {import('@tabulous/types').Action} */
         const action = {
           fn: 'flip',
           meshId: 'card3',
@@ -441,7 +441,7 @@ describe('createEngine()', () => {
         })
 
         it('does not apply remote action', async () => {
-          /** @type {import('@src/3d/managers').Action} */
+          /** @type {import('@tabulous/types').Action} */
           const action = {
             fn: 'flip',
             meshId: 'card3',
@@ -463,7 +463,7 @@ describe('createEngine()', () => {
       if (canvas) {
         it('updates simulation on remote action', async () => {
           const state = engine.serialize()
-          /** @type {import('@src/3d/managers').Action} */
+          /** @type {import('@tabulous/types').Action} */
           const action = {
             fn: 'flip',
             meshId: 'card3',
@@ -515,7 +515,7 @@ describe('createEngine()', () => {
 
         it('updates simulation on local action', async () => {
           const state = engine.serialize()
-          /** @type {import('@src/3d/managers').Action} */
+          /** @type {import('@tabulous/types').Action} */
           const action = {
             fn: 'flip',
             meshId: 'card3',
@@ -636,7 +636,7 @@ describe('createEngine()', () => {
 
           it('updates simulation on remote action', async () => {
             const state = engine.serialize()
-            /** @type {import('@src/3d/managers').Action} */
+            /** @type {import('@tabulous/types').Action} */
             const action = {
               fn: 'flip',
               meshId: 'card3',

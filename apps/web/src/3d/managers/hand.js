@@ -156,8 +156,9 @@ export class HandManager {
       },
       {
         observable: this.managers.control.onActionObservable,
-        handle: (/** @type {import('.').ActionOrMove} */ action) =>
-          handleAction(this, action)
+        handle: (
+          /** @type {import('@tabulous/types').ActionOrMove} */ action
+        ) => handleAction(this, action)
       },
       {
         observable: this.managers.input.onDragObservable,
@@ -373,7 +374,7 @@ export class HandManager {
 
 /**
  * @param {HandManager} manager - manager instance.
- * @param {import('.').ActionOrMove} action - applied action.
+ * @param {import('@tabulous/types').ActionOrMove} action - applied action.
  */
 function handleAction(manager, action) {
   if (

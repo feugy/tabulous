@@ -10,7 +10,7 @@ describe('ControlManager', () => {
   let scene
   /** @type {import('@babylonjs/core').Scene} */
   let handScene
-  /** @type {import('@src/3d/managers').ActionOrMove[]} */
+  /** @type {import('@tabulous/types').ActionOrMove[]} */
   let actions
   /** @type {import('@babylonjs/core').Mesh} */
   let mesh

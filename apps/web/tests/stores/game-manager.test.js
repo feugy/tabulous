@@ -116,7 +116,7 @@ const lastMessageSent =
     actualLastMessageSent
   )
 const action =
-  /** @type {import('rxjs').BehaviorSubject<import('@src/3d/managers').ActionOrMove>} */ (
+  /** @type {import('rxjs').BehaviorSubject<import('@tabulous/types').ActionOrMove>} */ (
     actualAction
   )
 const engine$ =

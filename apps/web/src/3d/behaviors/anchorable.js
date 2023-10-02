@@ -34,7 +34,7 @@ export class AnchorBehavior extends TargetBehavior {
     this.dropObserver = null
     /** @protected @type {?import('@babylonjs/core').Observer<import('../managers').MoveDetails>} */
     this.moveObserver = null
-    /** @protected @type {?import('@babylonjs/core').Observer<import('../managers').ActionOrMove>}} */
+    /** @protected @type {?import('@babylonjs/core').Observer<import('@tabulous/types').ActionOrMove>}} */
     this.actionObserver = null
     /** @internal @type {Map<string, import('../managers').SingleDropZone>} */
     this.zoneBySnappedId = new Map()
