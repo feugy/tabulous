@@ -108,6 +108,7 @@ fragment mesh on Mesh {
 fragment fullGame on Game {
   id
   kind
+  engineScript
   players {
     ...lightPlayer
   }

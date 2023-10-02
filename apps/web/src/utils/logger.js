@@ -38,6 +38,7 @@ const levels = {
   randomizable: 'warn',
   replay: 'warn',
   rotable: 'warn',
+  rule: 'warn',
   selection: 'warn',
   'scene-loader': 'warn',
   stackable: 'warn',

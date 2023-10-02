@@ -10,6 +10,7 @@
  * @property {import('@src/3d/managers/material').MaterialManager} material
  * @property {import('@src/3d/managers/move').MoveManager} move
  * @property {import('@src/3d/managers/replay').ReplayManager} replay
+ * @property {import('@src/3d/managers/rule').RuleManager} rule
  * @property {import('@src/3d/managers/selection').SelectionManager} selection
  * @property {import('@src/3d/managers/target').TargetManager} target
  */
@@ -22,5 +23,6 @@ export * from './input'
 export * from './material'
 export * from './move'
 export * from './replay'
+export * from './rule'
 export * from './selection'
 export * from './target'

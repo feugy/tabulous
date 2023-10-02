@@ -10,7 +10,7 @@ import {
   expectMeshIds
 } from '../../test-utils'
 
-describe('managers.Selection', () => {
+describe('SelectionManager', () => {
   /** @type {import('@babylonjs/core').Scene} */
   let scene
   /** @type {import('@babylonjs/core').Scene} */

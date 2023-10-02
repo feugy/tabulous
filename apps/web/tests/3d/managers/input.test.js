@@ -18,7 +18,7 @@ const pointerMove = 'pointermove'
 const wheel = 'wheel'
 const keyDown = 'keydown'
 
-describe('managers.Input', () => {
+describe('InputManager', () => {
   /** @type {import('@babylonjs/core').Scene} */
   let scene
   /** @type {import('@babylonjs/core').Scene} */

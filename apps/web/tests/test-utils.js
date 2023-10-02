@@ -10,6 +10,7 @@ import { Quaternion, Vector3 } from '@babylonjs/core/Maths/math.vector'
 import { CreateBox } from '@babylonjs/core/Meshes/Builders/boxBuilder'
 import { CreateCylinder } from '@babylonjs/core/Meshes/Builders/cylinderBuilder'
 import { Logger } from '@babylonjs/core/Misc/logger'
+import { Observable } from '@babylonjs/core/Misc/observable'
 import { faker } from '@faker-js/faker'
 import cors from '@fastify/cors'
 import {
@@ -28,6 +29,7 @@ import {
   MaterialManager,
   MoveManager,
   ReplayManager,
+  RuleManager,
   SelectionManager,
   TargetManager
 } from '@src/3d/managers'
@@ -140,6 +142,7 @@ export function initialize3dEngine({
     handScene.render()
   })
   engine.inputElement = document.body
+  engine.onLoadingObservable = new Observable()
   engine.simulation = isSimulation ? null : engine
 
   const scene = main.scene
@@ -181,7 +184,8 @@ export function initialize3dEngine({
     replay: new ReplayManager({
       engine,
       moveDuration: globalThis.use3dSimulation ? 0 : 200
-    })
+    }),
+    rule: new RuleManager({ engine })
   }
   const playerId = faker.person.fullName()
   const color = '#ff0000'

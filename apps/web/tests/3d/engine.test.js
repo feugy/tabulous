@@ -287,6 +287,42 @@ describe('createEngine()', () => {
       )
     })
 
+    it('configures rule engine on initial load', async () => {
+      const engineScript = `"use strict";var engine={computeScore:()=>({'${playerId}':{total:10}})}`
+      const players = [
+        { id: playerId, username: 'Jane', currentGameId: '' },
+        { id: peerId1, username: 'John', isOwner: true, currentGameId: '' },
+        { id: peerId2, username: 'Jack', isGuest: true, currentGameId: '' }
+      ]
+      await engine.load(
+        {
+          id: '',
+          created: Date.now(),
+          meshes: [],
+          hands: [],
+          selections: [],
+          players,
+          engineScript
+        },
+        { playerId, colorByPlayerId, preferences: { playerId } },
+        true
+      )
+      expect(receiveLoading).toHaveBeenCalledWith(true, expect.anything())
+      if (canvas) {
+        expect(engine.managers.rule.ruleEngine).not.toBeNull()
+        expect(
+          engine.managers.rule.ruleEngine?.computeScore(
+            null,
+            { meshes: [], handMeshes: [], history: [] },
+            []
+          )
+        ).toEqual({ [playerId]: { total: 10 } })
+      } else {
+        expect(engine.managers.rule.ruleEngine).toBeNull()
+      }
+      expect(engine.managers.rule.players).toEqual(players.slice(0, 2))
+    })
+
     describe('given some loaded meshes', () => {
       const duration = 200
       /** @type {import('@babylonjs/core').Engine} */
@@ -365,15 +401,26 @@ describe('createEngine()', () => {
         expect(getIds(game.handMeshes)).toEqual(['card2'])
       })
 
-      it('updates color on subsequent loads', async () => {
+      it('updates color and players on subsequent loads', async () => {
         const newColor = '#123456'
         const newPlayerId = faker.string.uuid()
         const updatedColorByPlayerId = new Map([
           ...colorByPlayerId.entries(),
           [newPlayerId, newColor]
         ])
+        const players = [
+          { id: playerId, username: 'Jane', currentGameId: '' },
+          { id: peerId1, username: 'John', isOwner: true, currentGameId: '' },
+          { id: peerId2, username: 'Jack', isGuest: true, currentGameId: '' }
+        ]
         await engine.load(
-          { id: '', created: Date.now(), ...engine.serialize(), hands: [] },
+          {
+            id: '',
+            created: Date.now(),
+            ...engine.serialize(),
+            players,
+            hands: []
+          },
           {
             playerId,
             colorByPlayerId: updatedColorByPlayerId,
@@ -383,6 +430,7 @@ describe('createEngine()', () => {
         expect(
           engine.managers.selection.colorByPlayerId.get(newPlayerId)
         ).toEqual(Color4.FromHexString(newColor))
+        expect(engine.managers.rule.players).toEqual(players.slice(0, 2))
       })
 
       it('has action names mapped by button and shortcut', () => {

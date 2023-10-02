@@ -6,7 +6,7 @@ import { beforeEach, describe, expect, it, vi } from 'vitest'
 
 import { configures3dTestEngine } from '../../test-utils'
 
-describe('managers.Control', () => {
+describe('ReplayManager', () => {
   /** @type {import('@babylonjs/core').Engine} */
   let engine
   /** @type {import('@babylonjs/core').Scene} */

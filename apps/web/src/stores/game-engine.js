@@ -24,9 +24,9 @@ const engine$ = new BehaviorSubject(
   /** @type {?import('@babylonjs/core').Engine} */ (null)
 )
 const fps$ = new BehaviorSubject('0')
-/** @type {Subject<import('@src/3d/managers').ActionOrMove>} */
+/** @type {Subject<import('@tabulous/types').ActionOrMove>} */
 const localAction$ = new Subject()
-/** @type {Subject<import('@src/3d/managers').ActionOrMove & { peerId: string }>} */
+/** @type {Subject<import('@tabulous/types').ActionOrMove & { peerId: string }>} */
 const remoteAction$ = new Subject()
 /** @type {Subject<import('@src/3d').PlayerSelection>} */
 const remoteSelection$ = new Subject()
@@ -55,6 +55,9 @@ const history$ = new BehaviorSubject(
   /** @type {import('@tabulous/types').HistoryRecord[]} */ ([])
 )
 const replayRank$ = new BehaviorSubject(0)
+const scores$ = new BehaviorSubject(
+  /** @type {import('@tabulous/types').Scores} */ ({})
+)
 
 /**
  * Emits 3D engine when available.
@@ -156,6 +159,11 @@ export const history = history$.asObservable()
 export const replayRank = replayRank$.asObservable()
 
 /**
+ * Stores and emits player scores.
+ */
+export const scores = scores$.asObservable()
+
+/**
  * @typedef {object} EngineParams
  * @property {number} pointerThrottle - number of milliseconds during which pointer will be ignored before being shared with peers.
  * @property {number} longTapDelay - number of milliseconds to hold pointer down before it is considered as long.
@@ -255,6 +263,11 @@ export function initEngine({ pointerThrottle, longTapDelay, ...engineProps }) {
     {
       observable: engine.managers.replay.onReplayRankObservable,
       subject: replayRank$,
+      observer: null
+    },
+    {
+      observable: engine.managers.rule.onScoreUpdateObservable,
+      subject: scores$,
       observer: null
     }
   ]

@@ -19,6 +19,7 @@ import type { Behavior } from '@src/3d/utils'
 import type { Game } from '@src/graphql'
 import type { GameWithSelections } from '@src/stores'
 import type { MeshMetadata } from '@src/types'
+import type { EngineState } from '@tabulous/types'
 import type {
   ActionName,
   ButtonName,
@@ -70,11 +71,7 @@ declare module '@babylonjs/core' {
     /**
      * serializes all meshes rendered in the game engines.
      */
-    serialize(): {
-      meshes: SerializedMesh[]
-      handMeshes: SerializedMesh[]
-      history: HistoryRecord[]
-    }
+    serialize(): EngineState
     /**
      * Applies a remote mesh selection from a peer player, unless replaying history.
      * @param selectedIds - selected mesh ids.

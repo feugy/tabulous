@@ -74,6 +74,7 @@ describe('initEngine()', () => {
   const receiveRemoteSelection = vi.fn()
   const receiveHistory = vi.fn()
   const receiveReplayRank = vi.fn()
+  const receiveScores = vi.fn()
   const sendToPeer = /** @type {import('vitest').FunctionMock<send>} */ (send)
   const lastMessageReceived =
     /** @type {import('rxjs').Subject<import('@src/stores').WebRTCMessage>} */ (
@@ -113,7 +114,8 @@ describe('initEngine()', () => {
       gameEngine.selectedMeshes.subscribe({ next: receiveSelection }),
       gameEngine.remoteSelection.subscribe({ next: receiveRemoteSelection }),
       gameEngine.history.subscribe({ next: receiveHistory }),
-      gameEngine.replayRank.subscribe({ next: receiveReplayRank })
+      gameEngine.replayRank.subscribe({ next: receiveReplayRank }),
+      gameEngine.scores.subscribe({ next: receiveScores })
     ]
   })
 
@@ -394,6 +396,14 @@ describe('initEngine()', () => {
         managers.hand.onDraggableToHandObservable.notifyObservers(highlight)
         expect(receiveHighlightHand).toHaveBeenCalledWith(highlight)
         expect(receiveHighlightHand).toHaveBeenCalledOnce()
+      })
+
+      it('proxies scores events', () => {
+        /** @type {import('@tabulous/types').Scores} */
+        const scores = { playerId1: { total: 10 } }
+        managers.rule.onScoreUpdateObservable.notifyObservers(scores)
+        expect(receiveScores).toHaveBeenCalledWith(scores)
+        expect(receiveScores).toHaveBeenCalledOnce()
       })
 
       it('prunes peer pointers on connection', () => {

@@ -31,7 +31,7 @@ import {
   sleep
 } from '../../test-utils'
 
-describe('managers.Move', () => {
+describe('MoveManager', () => {
   const centerX = 1024
   const centerY = 512
   /** @type {import('vitest').Mock<[import('@tabulous/types').ActionOrMove], void>} */
