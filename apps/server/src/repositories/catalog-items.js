@@ -1,6 +1,8 @@
 // @ts-check
-import { readdir } from 'node:fs/promises'
+import { readdir, readFile, stat } from 'node:fs/promises'
 import { pathToFileURL } from 'node:url'
+
+import { build } from 'esbuild'
 
 import { makeLogger } from '../utils/index.js'
 
@@ -15,6 +17,8 @@ class CatalogItemRepository {
     this.models = []
     /** @type {Map<string, import('@tabulous/types').GameDescriptor>} */
     this.modelsByName = new Map()
+    /** @private @type {string} */
+    this.root = ''
     this.logger = makeLogger(`${this.name}-repository`, {
       ctx: { name: this.name }
     })
@@ -28,8 +32,8 @@ class CatalogItemRepository {
    * @throws {Error} when provided path is not a readable folder.
    */
   async connect({ path }) {
-    const root = pathToFileURL(path).pathname
-    const ctx = { root }
+    this.root = pathToFileURL(path).pathname
+    const ctx = { root: this.root }
     this.logger.trace({ ctx }, 'initializing repository')
     let entries
     this.models = []
@@ -45,27 +49,47 @@ class CatalogItemRepository {
     }
     for (const entry of entries) {
       if (entry.isDirectory() || entry.isSymbolicLink()) {
-        const descriptor = `${root}/${entry.name}/index.js`
+        const { name } = entry
+        const descriptor = `${this.root}/${name}/index.js`
+        const rules = `${this.root}/${name}/engine.min.js`
+
         try {
-          const { name } = entry
+          /** @type {import('@tabulous/types').GameDescriptor} */
           const item = {
             name,
             ...(await import(descriptor))
           }
+
+          this.logger.debug(
+            { ctx, gameName: name },
+            `bundling rule engine for ${name}`
+          )
+          const buildResult = await build({
+            entryPoints: [descriptor],
+            bundle: true,
+            minify: true,
+            globalName: 'engine',
+            sourcemap: 'inline',
+            outfile: rules
+          })
+          if (buildResult.errors.length) {
+            throw new Error(
+              `can not bundle rule engine: ${buildResult.errors
+                .map(({ text }) => text)
+                .join('\n')}`
+            )
+          }
+
           this.models.push(item)
           this.modelsByName.set(name, item)
         } catch (err) {
-          /* c8 ignore start */
           // ignore folders with no index.js or invalid symbolic links
-          // Since recently (https://github.com/vitest-dev/vitest/commit/58ee8e9b6300fd6899072e34feb766805be1593c),
-          // it can not be tested under vitest because an uncatchable rejection will be thrown
           if (
             err instanceof Error &&
             !err.message.includes(`Cannot find module '${descriptor}'`)
           ) {
             throw new Error(`Failed to load game ${entry.name}: ${err.message}`)
           }
-          /* c8 ignore stop */
         }
       }
     }
@@ -136,6 +160,21 @@ class CatalogItemRepository {
    */
   async deleteById() {
     throw new Error(`Catalog items can not be deleted`)
+  }
+
+  /**
+   * Reads the content of the rule engine file of a given catalog item.
+   * @param {string|undefined} name - name of the catalog item.
+   * @returns content of the engine script, if any.
+   */
+  async getEngineScript(name) {
+    if (name) {
+      const rules = `${this.root}/${name}/engine.min.js`
+      const engineScript = await stat(rules)
+        .then(() => readFile(rules, 'utf-8'))
+        .catch(() => undefined)
+      return engineScript
+    }
   }
 }
 

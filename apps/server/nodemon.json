@@ -1,4 +1,10 @@
 {
-  "ignore": ["data/*", "catalog/en", "images/en", "textures/en"],
+  "ignore": [
+    "data/*",
+    "catalog/en",
+    "images/en",
+    "textures/en",
+    "engine.min.js"
+  ],
   "watch": ["src", "../games"]
 }

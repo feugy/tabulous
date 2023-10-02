@@ -1,4 +1,5 @@
 // @ts-check
+import { readdir, rm, stat } from 'node:fs/promises'
 import { join } from 'node:path'
 
 import { faker } from '@faker-js/faker'
@@ -41,8 +42,20 @@ describe('Catalog Items repository', () => {
   ]
 
   const fixtures = join('tests', 'fixtures', 'games')
+  const unbuildable = join('tests', 'fixtures', 'unbuildable-games')
 
-  afterEach(() => catalogItems.release())
+  async function rmEngines(/** @type {string} */ folder) {
+    for (const file of await readdir(folder)) {
+      await rm(join(folder, file, 'engine.min.js'), { force: true })
+    }
+  }
+
+  afterEach(async () => {
+    // delete engine.min.js files inside fictures folder
+    await rmEngines(fixtures)
+    await rmEngines(unbuildable)
+    await catalogItems.release()
+  })
 
   describe('connect()', () => {
     it('throws an error on unreadable folder', async () => {
@@ -51,15 +64,9 @@ describe('Catalog Items repository', () => {
       ).rejects.toThrow('Failed to connect Catalog Items repository')
     })
 
-    it('throws an error on unreadable folder', async () => {
-      await expect(
-        catalogItems.connect({ path: faker.system.filePath() })
-      ).rejects.toThrow('Failed to connect Catalog Items repository')
-    })
-
     // Since recently (https://github.com/vitest-dev/vitest/commit/58ee8e9b6300fd6899072e34feb766805be1593c),
     // it can not be tested under vitest because an uncatchable rejection will be thrown
-    it.skip('throws an invalid game descriptor', async () => {
+    it('throws an invalid game descriptor', async () => {
       await expect(
         catalogItems.connect({
           path: join('tests', 'fixtures', 'broken-games')
@@ -67,14 +74,42 @@ describe('Catalog Items repository', () => {
       ).rejects.toThrow(`Failed to load game broken`)
     })
 
-    it.skip('handles an folder without game descriptors', async () => {
-      await catalogItems.connect({ path: join('tests', 'fixtures') })
+    it('handles an folder without game descriptors', async () => {
+      await catalogItems.connect({ path: join('tests', 'graphql') })
       expect(await catalogItems.list()).toEqual({
         total: 0,
         from: 0,
         size: Number.POSITIVE_INFINITY,
         results: []
       })
+    })
+
+    it('builds rule engines', async () => {
+      await catalogItems.connect({ path: fixtures })
+      const engines = []
+      for (const file of await readdir(fixtures)) {
+        if (
+          await stat(join(fixtures, file, 'engine.min.js'))
+            .then(() => true)
+            .catch(() => false)
+        ) {
+          engines.push(file)
+        }
+      }
+      expect(engines).toEqual([
+        '6-takes',
+        'belote',
+        'draughts',
+        'klondike',
+        'splendor'
+      ])
+    })
+
+    it('throws on un-buildable rule engines', async () => {
+      await expect(catalogItems.connect({ path: unbuildable })).rejects.toThrow(
+        `Failed to load game import: Build failed with 1 error:
+tests/fixtures/unbuildable-games/import/index.js:2:9: ERROR: Could not resolve "does-not-exist"`
+      )
     })
   })
 
@@ -118,6 +153,26 @@ describe('Catalog Items repository', () => {
               items[1].name
             ])
           ).toEqual([null, items[2], null, items[1]])
+        })
+      })
+
+      describe('getEngineScript()', () => {
+        it('returns a script content by id', async () => {
+          expect(
+            (await catalogItems.getEngineScript('klondike'))?.split('\n')[0]
+          ).toEqual(
+            `"use strict";var engine=(()=>{var o=Object.defineProperty;var d=Object.getOwnPropertyDescriptor;var r=Object.getOwnPropertyNames;var i=Object.prototype.hasOwnProperty;var u=(t,e)=>{for(var n in e)o(t,n,{get:e[n],enumerable:!0})},p=(t,e,n,a)=>{if(e&&typeof e=="object"||typeof e=="function")for(let s of r(e))!i.call(t,s)&&s!==n&&o(t,s,{get:()=>e[s],enumerable:!(a=d(e,s))||a.enumerable});return t};var x=t=>p(o({},"__esModule",{value:!0}),t);var c={};u(c,{build:()=>b});function b(){return{meshes:[{shape:"card",id:"one-of-diamonds",texture:"test.ktx2"}],bags:new Map,slots:[]}}return x(c);})();`
+          )
+        })
+
+        it('returns undefined on unknown id', async () => {
+          expect(
+            await catalogItems.getEngineScript(faker.string.uuid())
+          ).toBeUndefined()
+        })
+
+        it('returns undefined on missing id', async () => {
+          expect(await catalogItems.getEngineScript(undefined)).toBeUndefined()
         })
       })
 
