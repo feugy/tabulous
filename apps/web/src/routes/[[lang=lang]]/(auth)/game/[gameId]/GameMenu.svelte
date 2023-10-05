@@ -105,7 +105,7 @@
     }
 
     &::after {
-      @apply absolute inset-y-0 w-12 -z-1 bg-$base-darker;
+      @apply absolute inset-y-0 w-16 -z-1 bg-$base-darker;
       left: calc(100% - var(--corner-overlap) - 1px);
       content: '';
       clip-path: var(--corner);

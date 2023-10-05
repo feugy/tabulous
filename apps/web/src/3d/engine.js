@@ -162,7 +162,7 @@ function initEngineAnScenes(
 
   engine.load = async (
     gameData,
-    { playerId, preferences, colorByPlayerId },
+    { playerId, preference, colorByPlayerId },
     initial
   ) => {
     const game = removeNulls(gameData)
@@ -200,13 +200,14 @@ function initEngineAnScenes(
       managers.hand.init({
         managers,
         playerId,
-        angleOnPlay: preferences?.angle
+        angleOnPlay: preference?.angle
       })
 
       if (!isSimulation) {
         await managers.rule.init({
           managers: managers,
-          engineScript: game.engineScript
+          engineScript: game.engineScript,
+          ...gameData
         })
         managers.input.init({ managers })
         createLights({ scene, handScene })
@@ -222,7 +223,7 @@ function initEngineAnScenes(
     }
     managers.selection.init({ managers, playerId, colorByPlayerId })
     await managers.customShape.init(game)
-    managers.rule.updatePlayers(game.players)
+    managers.rule.update(gameData)
 
     await loadMeshes(scene, game.meshes ?? [], managers)
     if (managers.hand.enabled) {

@@ -25,11 +25,11 @@ import { toastInfo } from '@src/stores/toaster'
 import {
   buildPlayerColors,
   findPlayerColor,
-  findPlayerPreferences,
   isLobby,
   makeLogger,
   sleep
 } from '@src/utils'
+import { findPlayerPreferences } from '@tabulous/game-utils'
 import {
   BehaviorSubject,
   combineLatest,
@@ -125,7 +125,7 @@ export const gamePlayerById = merge(hostId$, playingIds$, currentGame$).pipe(
       for (const player of game.players ?? []) {
         playerById.set(player.id, {
           ...player,
-          ...findPlayerPreferences(game, player.id),
+          ...findPlayerPreferences(game.preferences, player.id),
           playing: playingIds$.value.includes(player.id),
           isHost: isCurrentHost(player.id)
         })
@@ -426,7 +426,7 @@ async function load(
       /** @type {import('@src/graphql').Game} */ (game),
       {
         playerId,
-        preferences: findPlayerPreferences(game, playerId),
+        preference: findPlayerPreferences(game.preferences, playerId),
         colorByPlayerId: buildPlayerColors(game)
       },
       firstLoad
@@ -775,5 +775,5 @@ function isCurrentHost(/** @type {string} */ playerId) {
 function isGameParameter(
   /** @type {import('@src/graphql').GameOrGameParameters} */ game
 ) {
-  return 'schemaString' in game && Boolean(game.schemaString)
+  return 'schema' in game && Boolean(game.schema)
 }

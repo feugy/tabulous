@@ -136,11 +136,7 @@ fragment fullGame on Game {
       ...mesh
     }
   }
-  preferences {
-    playerId
-    color
-    angle
-  }
+  preferencesString
   rulesBookPageCount
   zoomSpec {
     min
@@ -208,11 +204,7 @@ fragment gameData on GameOrParameters {
     players {
       ...lightPlayer
     }
-    preferences {
-      playerId
-      color
-      angle
-    }
+    preferencesString
     rulesBookPageCount
     availableSeats
     colors {

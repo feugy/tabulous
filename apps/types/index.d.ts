@@ -194,7 +194,8 @@ declare module '.' {
   export type ComputeScore = (
     action: ?Action,
     state: EngineState,
-    players: Pick<Player, 'id' | 'username' | 'avatar'>[]
+    players: Pick<Player, 'id' | 'username' | 'avatar'>[],
+    preferences: PlayerPreference[]
   ) => Promise<Scores | undefined> | Scores | undefined
 
   /**

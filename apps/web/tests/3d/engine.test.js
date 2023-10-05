@@ -111,7 +111,7 @@ describe('createEngine()', () => {
       const applySelection = vi.spyOn(engine.managers.selection, 'apply')
       await engine.load(
         { id: '', created: Date.now(), meshes: [mesh], hands: [], selections },
-        { playerId, colorByPlayerId, preferences: { playerId } },
+        { playerId, colorByPlayerId, preference: { playerId } },
         false
       )
       engine.scenes[1].onDataLoadedObservable.notifyObservers(engine.scenes[1])
@@ -147,7 +147,7 @@ describe('createEngine()', () => {
           meshes: [{ id, texture, shape: 'card' }],
           hands: []
         },
-        { playerId, colorByPlayerId, preferences: { playerId } },
+        { playerId, colorByPlayerId, preference: { playerId } },
         false
       )
       expect(engine.serialize()).toEqual({
@@ -195,7 +195,7 @@ describe('createEngine()', () => {
       const applySelection = vi.spyOn(engine.managers.selection, 'apply')
       await engine.load(
         { id: '', created: Date.now(), meshes: [mesh], hands: [], selections },
-        { playerId, colorByPlayerId, preferences: { playerId } },
+        { playerId, colorByPlayerId, preference: { playerId } },
         true
       )
       expect(engine.isLoading).toBe(true)
@@ -237,7 +237,7 @@ describe('createEngine()', () => {
         {
           playerId,
           colorByPlayerId,
-          preferences: { playerId, angle: angleOnPlay }
+          preference: { playerId, angle: angleOnPlay }
         },
         true
       )
@@ -275,7 +275,7 @@ describe('createEngine()', () => {
           hands: [],
           actions: { button1: ['rotate', 'pop'], button2: ['random'] }
         },
-        { playerId, colorByPlayerId, preferences: { playerId } },
+        { playerId, colorByPlayerId, preference: { playerId } },
         true
       )
 
@@ -294,6 +294,10 @@ describe('createEngine()', () => {
         { id: peerId1, username: 'John', isOwner: true, currentGameId: '' },
         { id: peerId2, username: 'Jack', isGuest: true, currentGameId: '' }
       ]
+      const preferences = [
+        { playerId, color: 'red' },
+        { playerId: peerId1, color: 'blue' }
+      ]
       await engine.load(
         {
           id: '',
@@ -302,9 +306,10 @@ describe('createEngine()', () => {
           hands: [],
           selections: [],
           players,
+          preferences,
           engineScript
         },
-        { playerId, colorByPlayerId, preferences: { playerId } },
+        { playerId, colorByPlayerId, preference: { playerId } },
         true
       )
       expect(receiveLoading).toHaveBeenCalledWith(true, expect.anything())
@@ -314,6 +319,7 @@ describe('createEngine()', () => {
           engine.managers.rule.ruleEngine?.computeScore(
             null,
             { meshes: [], handMeshes: [], history: [] },
+            [],
             []
           )
         ).toEqual({ [playerId]: { total: 10 } })
@@ -321,6 +327,7 @@ describe('createEngine()', () => {
         expect(engine.managers.rule.ruleEngine).toBeNull()
       }
       expect(engine.managers.rule.players).toEqual(players.slice(0, 2))
+      expect(engine.managers.rule.preferences).toEqual(preferences)
     })
 
     describe('given some loaded meshes', () => {
@@ -370,7 +377,7 @@ describe('createEngine()', () => {
             ],
             hands: []
           },
-          { playerId, colorByPlayerId, preferences: { playerId } },
+          { playerId, colorByPlayerId, preference: { playerId } },
           true
         )
         engine.start()
@@ -401,7 +408,7 @@ describe('createEngine()', () => {
         expect(getIds(game.handMeshes)).toEqual(['card2'])
       })
 
-      it('updates color and players on subsequent loads', async () => {
+      it('updates colors, players and preferences on subsequent loads', async () => {
         const newColor = '#123456'
         const newPlayerId = faker.string.uuid()
         const updatedColorByPlayerId = new Map([
@@ -413,24 +420,27 @@ describe('createEngine()', () => {
           { id: peerId1, username: 'John', isOwner: true, currentGameId: '' },
           { id: peerId2, username: 'Jack', isGuest: true, currentGameId: '' }
         ]
+        const preferences = [{ playerId, color: 'red' }]
         await engine.load(
           {
             id: '',
             created: Date.now(),
             ...engine.serialize(),
             players,
+            preferences,
             hands: []
           },
           {
             playerId,
             colorByPlayerId: updatedColorByPlayerId,
-            preferences: { playerId }
+            preference: preferences[0]
           }
         )
         expect(
           engine.managers.selection.colorByPlayerId.get(newPlayerId)
         ).toEqual(Color4.FromHexString(newColor))
         expect(engine.managers.rule.players).toEqual(players.slice(0, 2))
+        expect(engine.managers.rule.preferences).toEqual(preferences)
       })
 
       it('has action names mapped by button and shortcut', () => {
@@ -663,7 +673,7 @@ describe('createEngine()', () => {
               ],
               hands: []
             },
-            { playerId, colorByPlayerId, preferences: { playerId } }
+            { playerId, colorByPlayerId, preference: { playerId } }
           )
           expect(engine.scenes[1].getMeshById('card3')).toBeNull()
           expect(simulation.scenes[1].getMeshById('card3')).toBeNull()
@@ -780,7 +790,7 @@ describe('createEngine()', () => {
                 ],
                 hands: []
               },
-              { playerId, colorByPlayerId, preferences: { playerId } }
+              { playerId, colorByPlayerId, preference: { playerId } }
             )
             expect(engine.scenes[1].getMeshById('card3')).toBeDefined()
             expect(simulation.scenes[1].getMeshById('card3')).toBeNull()

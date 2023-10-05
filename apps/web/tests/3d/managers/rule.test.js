@@ -32,15 +32,18 @@ describe('ReplayManager', () => {
   it('has initial state', () => {
     expect(managers.rule.engine).toBe(engine)
     expect(managers.rule.players).toEqual([])
+    expect(managers.rule.preferences).toEqual([])
     expect(managers.rule.ruleEngine).toBeNull()
   })
 
   describe('init()', () => {
     it('handles the lack of rule engine', async () => {
       const players = [{ id: playerId, username: 'John', currentGameId: null }]
-      managers.rule.init({ managers, players })
+      const preferences = [{ playerId, color: 'red' }]
+      managers.rule.init({ managers, players, preferences })
       expect(managers.rule.ruleEngine).toBeNull()
       expect(managers.rule.players).toEqual(players)
+      expect(managers.rule.preferences).toEqual(preferences)
       await engine.onLoadingObservable.notifyObservers(false)
       expect(scores).toBeNull()
     })
@@ -59,15 +62,9 @@ describe('ReplayManager', () => {
   })
 
   it('computes scores on every action', async () => {
-    const engineScript = `let count=0;let engine={computeScore:(action)=>action?.fn==='flip'?{"${playerId}":{total:++count}}:undefined}`
-    managers.rule.init({ managers, engineScript })
-    await managers.control.onActionObservable.notifyObservers({
-      meshId: 'box',
-      fromHand: false,
-      fn: 'flip',
-      args: []
-    })
-    expect(scores).toEqual({ [playerId]: { total: 1 } })
+    const engineScript = `let count=0;let engine={computeScore:(action,state,players,preferences)=>action?.fn==='flip'?{"${playerId}":{total:count+=preferences[0].amount}}:undefined}`
+    const preferences = [{ playerId, amount: 2 }]
+    managers.rule.init({ managers, engineScript, preferences })
     await managers.control.onActionObservable.notifyObservers({
       meshId: 'box',
       fromHand: false,
@@ -75,6 +72,13 @@ describe('ReplayManager', () => {
       args: []
     })
     expect(scores).toEqual({ [playerId]: { total: 2 } })
+    await managers.control.onActionObservable.notifyObservers({
+      meshId: 'box',
+      fromHand: false,
+      fn: 'flip',
+      args: []
+    })
+    expect(scores).toEqual({ [playerId]: { total: 4 } })
   })
 
   it('does computes scores on moves', async () => {

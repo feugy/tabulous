@@ -56,7 +56,7 @@ const history$ = new BehaviorSubject(
 )
 const replayRank$ = new BehaviorSubject(0)
 const scores$ = new BehaviorSubject(
-  /** @type {import('@tabulous/types').Scores} */ ({})
+  /** @type {?import('@tabulous/types').Scores} */ (null)
 )
 
 /**

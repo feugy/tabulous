@@ -102,7 +102,7 @@ export async function runMutation(query, variables) {
   if (!data || keys.length !== 1) {
     throw new Error('graphQL mutation returned no results')
   }
-  return data[keys[0]]
+  return deserialize(data[keys[0]])
 }
 
 /**
@@ -134,7 +134,7 @@ export async function runQuery(query, variables, cache = true) {
   if (!data || keys.length !== 1) {
     throw new Error('graphQL mutation returned no results')
   }
-  return data[keys[0]]
+  return deserialize(data[keys[0]])
 }
 
 /**
@@ -152,7 +152,7 @@ export function runSubscription(subscription, variables) {
     const sub = pipe(
       // @ts-expect-error: 'undefined' could not be assigned to Variable
       client.subscription(subscription, variables),
-      subscribe(value => observer.next(value))
+      subscribe(value => observer.next(deserialize(value)))
     )
     return () => {
       logger.info({ subscription, variables }, 'stopping graphQL subscription')
@@ -184,4 +184,25 @@ function processErrors(
   if (combinedError?.graphQLErrors) {
     throw new Error(combinedError.graphQLErrors[0].message)
   }
+}
+
+/**
+ * Parses schemaString into schema and preferencesString into preferences.
+ * @template T
+ * @param {T} value - serialized value.
+ * @returns deserialized value.
+ */
+function deserialize(value) {
+  const obj = /** @type {Record<string, ?> & {schema?: ?, preferences?: ?}} */ (
+    value
+  )
+  if ('schemaString' in obj) {
+    obj.schema = JSON.parse(obj.schemaString)
+    delete obj.schemaString
+  }
+  if ('preferencesString' in obj) {
+    obj.preferences = JSON.parse(obj.preferencesString)
+    delete obj.preferencesString
+  }
+  return value
 }

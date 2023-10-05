@@ -17,6 +17,8 @@ export class RuleManager {
     this.engine = engine
     /** @type {import('@src/graphql').LightPlayer[]} ordered list of player. */
     this.players = []
+    /** @type {import('@tabulous/types').PlayerPreference[]} preferences for all players. */
+    this.preferences = []
     /** @type {Observable<import('@tabulous/types').Scores>} emits on score changes. */
     this.onScoreUpdateObservable = new Observable()
     /** @internal @type {import('@babylonjs/core').Observer<import('@tabulous/types').ActionOrMove>?} */
@@ -34,11 +36,12 @@ export class RuleManager {
    * @param {import('@src/3d/managers').Managers} params.managers - current managers.
    * @param {string} [params.engineScript] - bundled rule engine, if any.
    * @param {import('@src/graphql').LightPlayer[]} [params.players] - list of players.
+   * @param {import('@tabulous/types').PlayerPreference[]} [params.preferences] - list of player preferences.
    */
-  async init({ managers, engineScript, players }) {
+  async init({ managers, engineScript, ...updateParams }) {
     this.dispose()
     this.managers = managers
-    this.updatePlayers(players)
+    this.update(updateParams)
 
     if (engineScript) {
       logger.debug({ engineScript }, 'loading rules script')
@@ -54,10 +57,13 @@ export class RuleManager {
 
   /**
    * Update the list of player, only retaining the active ones.
-   * @param {import('@src/graphql').LightPlayer[]|undefined} players - list of players.
+   * @param {object} params - parameters, including
+   * @param {import('@src/graphql').LightPlayer[]} [params.players] - list of players.
+   * @param {import('@tabulous/types').PlayerPreference[]} [params.preferences] - list of player preferences.
    */
-  updatePlayers(players) {
+  update({ players, preferences }) {
     this.players = players?.filter(({ isGuest }) => !isGuest) ?? []
+    this.preferences = preferences ?? []
   }
 
   /**
@@ -77,6 +83,7 @@ async function evaluateScore(
     ruleEngine,
     engine,
     players,
+    preferences,
     onScoreUpdateObservable
   },
   /** @type {?import('@tabulous/types').ActionOrMove} */ action
@@ -88,7 +95,8 @@ async function evaluateScore(
     const scores = await ruleEngine?.computeScore?.(
       action,
       engine.serialize(),
-      players
+      players,
+      preferences
     )
     if (scores) {
       onScoreUpdateObservable.notifyObservers(scores)

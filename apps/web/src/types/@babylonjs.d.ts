@@ -31,7 +31,7 @@ interface LoadPlayerData {
   /** current player id (to determine their hand)). */
   playerId: string
   /** current player's preferences. */
-  preferences: Omit<PlayerPreference, 'playerId'>
+  preference: Omit<PlayerPreference, 'playerId'>
   /** map of hexadecimal color string for each player Id. */
   colorByPlayerId: Map<string, string>
 }

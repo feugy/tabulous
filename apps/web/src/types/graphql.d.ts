@@ -25,6 +25,7 @@ import type {
   TargetedPlayerArgs,
   UpdateCurrentPlayerArgs
 } from '@tabulous/server/graphql'
+import type { PlayerPreference, Schema } from '@tabulous/types'
 import type { TypedDocumentNode } from '@urql/core'
 
 declare module '@src/graphql' {
@@ -41,21 +42,26 @@ declare module '@src/graphql' {
     GamePlayer,
     'id' | 'username' | 'avatar' | 'currentGameId' | 'isGuest' | 'isOwner'
   >
-  type Game = Omit<FullGame, 'players'> & { players?: LightPlayer[] }
+  type Game = Omit<FullGame, 'players' | 'preferences'> & {
+    preferences?: PlayerPreference[]
+    players?: LightPlayer[]
+  }
   type LightGame = Pick<Game, 'id' | 'created' | 'kind' | 'players' | 'locales'>
   type GameOrGameParameters =
     | Game
     | (Pick<
         GameParameters,
-        | 'schemaString'
         | 'error'
         | 'id'
         | 'kind'
-        | 'preferences'
         | 'rulesBookPageCount'
         | 'availableSeats'
         | 'colors'
-      > & { players?: LightPlayer[] })
+      > & {
+        preferences?: PlayerPreference[]
+        schema?: Schema
+        players?: LightPlayer[]
+      })
   const createGame: TypedDocumentNode<{ createGame: LightGame }, CreateGameArgs>
   const deleteGame: TypedDocumentNode<
     { deleteGame: Pick<Game, 'id'> | null },

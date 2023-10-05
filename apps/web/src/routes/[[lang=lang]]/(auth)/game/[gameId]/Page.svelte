@@ -12,6 +12,7 @@
     playerColor,
     replayHistory,
     replayRank,
+    scores,
     sendToThread,
     thread,
     toastError,
@@ -28,6 +29,7 @@
     meshDetails
   } from '@src/stores/game-engine'
   import {
+    areIndicatorsVisible,
     initIndicators,
     visibleFeedbacks,
     visibleIndicators
@@ -48,6 +50,7 @@
   import MeshDetails from './MeshDetails.svelte'
   import Parameters from './Parameters'
   import RadialMenu from './RadialMenu.svelte'
+  import Scores from './Scores.svelte'
 
   /** @type {import('./$types').PageData} */
   export let data
@@ -137,11 +140,9 @@
         throw new Error($_('errors.unexisting-game'))
       }
       restoreColors = applyGameColors(result.colors ?? {})
-      if (result && 'schemaString' in result && result.schemaString) {
+      if (result && 'schema' in result && result.schema) {
         gameParameters =
-          /** @type {import('@tabulous/types').GameParameters<?>} */ ({
-            schema: JSON.parse(result.schemaString)
-          })
+          /** @type {import('@tabulous/types').GameParameters<?>} */ (result)
       }
       if (isLobby(result)) {
         goto(`/${$locale}/home`)
@@ -198,6 +199,10 @@
       meshCount={$handMeshCount}
       color={$playerColor}
       bind:node={hand}
+    />
+    <Scores
+      scores={$areIndicatorsVisible ? $scores : null}
+      playerById={$gamePlayerById}
     />
     {#if gameParameters}
       <Parameters

@@ -4,7 +4,6 @@ import {
   applyGameColors,
   buildPlayerColors,
   findPlayerColor,
-  findPlayerPreferences,
   isGuest,
   isLobby
 } from '@src/utils/game'
@@ -20,29 +19,6 @@ describe('Game utils', () => {
       { playerId: 'b', color: 'blue' }
     ]
   }
-
-  describe('findPlayerPreferences()', () => {
-    it('returns an empty object on games with no preferences', async () => {
-      expect(
-        findPlayerPreferences({ id: '', created: Date.now() }, 'whatever')
-      ).toEqual({})
-    })
-
-    it('returns an empty object for an unknown player', async () => {
-      expect(findPlayerPreferences(game, 'whatever')).toEqual({})
-    })
-
-    it('returns preferences of a given player, omitting the playerId', async () => {
-      expect(findPlayerPreferences(game, 'a')).toEqual({
-        ...game.preferences[0],
-        playerId: undefined
-      })
-      expect(findPlayerPreferences(game, 'b')).toEqual({
-        ...game.preferences[1],
-        playerId: undefined
-      })
-    })
-  })
 
   describe('findPlayerColor()', () => {
     const defaultColor = '#ff4500'
