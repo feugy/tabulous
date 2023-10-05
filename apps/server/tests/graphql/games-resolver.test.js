@@ -216,7 +216,7 @@ describe('given a started server', () => {
         const playerId = players[0].id
         const kind = faker.helpers.arrayElement(['coinche', 'tarot', 'belote'])
         // @ts-expect-error: missing properties
-        const game = /** @type {GameData} */ ({
+        const game = /** @type {import('@tabulous/types').GameData} */ ({
           id: faker.string.uuid(),
           kind,
           created: Date.now(),
@@ -296,7 +296,7 @@ describe('given a started server', () => {
         const playerId = players[0].id
         const kind = faker.helpers.arrayElement(['coinche', 'tarot', 'belote'])
         // @ts-expect-error: missing properties
-        const game = /** @type {GameData} */ ({
+        const game = /** @type {import('@tabulous/types').GameData} */ ({
           id: faker.string.uuid(),
           kind,
           created: Date.now(),
@@ -353,6 +353,63 @@ describe('given a started server', () => {
         )
         expect(services.promoteGame).toHaveBeenCalledOnce()
       })
+
+      it('serializes preferences', async () => {
+        const playerId = players[0].id
+        const id = faker.string.uuid()
+        const kind = faker.helpers.arrayElement(['coinche', 'tarot', 'belote'])
+        const preferences = [{ playerId, color: 'red' }]
+        services.getPlayerById.mockResolvedValueOnce(players[0])
+        services.promoteGame.mockResolvedValueOnce({
+          id,
+          name: kind,
+          kind,
+          locales: { en: { title: kind }, fr: { title: kind } },
+          preferences,
+          created: Date.now(),
+          ownerId: playerId,
+          guestIds: [],
+          playerIds: [playerId],
+          availableSeats: 3,
+          meshes: [],
+          messages: [],
+          history: [],
+          cameras: [],
+          hands: []
+        })
+
+        const response = await server.inject({
+          method: 'POST',
+          url: 'graphql',
+          headers: {
+            authorization: `Bearer ${signToken(
+              playerId,
+              configuration.auth.jwt.key
+            )}`
+          },
+          payload: {
+            query: `mutation {
+  promoteGame(gameId: "${id}", kind: "${kind}") {
+    ...on Game {
+      id
+      preferencesString
+    }
+  }
+}`
+          }
+        })
+
+        expect(response.json()).toEqual({
+          data: {
+            promoteGame: { id, preferencesString: JSON.stringify(preferences) }
+          }
+        })
+        expect(response.statusCode).toEqual(200)
+        expect(services.getPlayerById).toHaveBeenCalledWith(playerId)
+        expect(services.getPlayerById).toHaveBeenCalledOnce()
+        expect(services.promoteGame).toHaveBeenCalledWith(id, kind, players[0])
+        expect(services.promoteGame).toHaveBeenCalledOnce()
+      })
     })
 
     describe('joinGame mutation', () => {
@@ -380,7 +437,8 @@ describe('given a started server', () => {
           created: faker.date.past().getTime(),
           ownerId: player.id,
           playerIds: players.map(({ id }) => id),
-          guestIds: guests.map(({ id }) => id)
+          guestIds: guests.map(({ id }) => id),
+          preferences: [{ playerId: player.id, color: 'red' }]
         })
         services.getPlayerById
           .mockResolvedValueOnce(players[0])
@@ -404,6 +462,7 @@ describe('given a started server', () => {
       id
       kind
       created
+      preferencesString
       players {
         id
         username
@@ -425,6 +484,8 @@ describe('given a started server', () => {
               ownerId: undefined,
               playerIds: undefined,
               guestIds: undefined,
+              preferences: undefined,
+              preferencesString: JSON.stringify(game.preferences),
               players: [...players, ...guests].map(obj => ({
                 ...obj,
                 isGuest: guests.includes(obj),
@@ -446,13 +507,18 @@ describe('given a started server', () => {
 
       it('loads game parameters', async () => {
         const [player] = players
+        /** @type {import('@tabulous/types').GameParameters<?>} */
         const gameParameters =
-          /** @type {import('@tabulous/types').GameParameters<?>} */ ({
+          /** @type {?} */
+          ({
             id: faker.string.uuid(),
-            schema: {},
             ownerId: player.id,
             playerIds: players.map(({ id }) => id),
-            guestIds: guests.map(({ id }) => id)
+            guestIds: guests.map(({ id }) => id),
+            preferences: [{ playerId: player.id, color: 'red' }],
+            schema: {
+              color: { type: 'string', enum: ['red', 'green', 'blue'] }
+            }
           })
         const value = faker.lorem.words()
         services.getPlayerById
@@ -478,6 +544,8 @@ describe('given a started server', () => {
               } 
               ... on GameParameters { 
                 id 
+                preferencesString
+                schemaString
                 players {
                   id
                   username
@@ -496,6 +564,10 @@ describe('given a started server', () => {
               id: gameParameters.id,
               playerIds: undefined,
               guestIds: undefined,
+              preferences: undefined,
+              schema: undefined,
+              preferencesString: JSON.stringify(gameParameters.preferences),
+              schemaString: JSON.stringify(gameParameters.schema),
               players: [...players, ...guests].map(obj => ({
                 ...obj,
                 isGuest: guests.includes(obj),
@@ -665,7 +737,7 @@ describe('given a started server', () => {
           }
         ]
         // @ts-expect-error: missing properties
-        const game = /** @type {GameData} */ ({
+        const game = /** @type {import('@tabulous/types').GameData} */ ({
           id: faker.string.uuid(),
           kind,
           created: faker.date.past().getTime(),
@@ -754,7 +826,7 @@ describe('given a started server', () => {
         const playerId = players[0].id
         const peerIds = players.slice(1, 3).map(({ id }) => id)
         // @ts-expect-error: missing properties
-        const game = /** @type {GameData} */ ({
+        const game = /** @type {import('@tabulous/types').GameData} */ ({
           id: faker.string.uuid(),
           kind: 'belote',
           created: faker.date.past().getTime(),
@@ -834,7 +906,7 @@ describe('given a started server', () => {
         const playerId = players[0].id
         const kickedId = players[1].id
         // @ts-expect-error: missing properties
-        const game = /** @type {GameData} */ ({
+        const game = /** @type {import('@tabulous/types').GameData} */ ({
           id: faker.string.uuid(),
           kind: 'belote',
           created: faker.date.past().getTime(),
@@ -913,7 +985,7 @@ describe('given a started server', () => {
       it('deletes an existing game and resolves player objects', async () => {
         const playerId = players[0].id
         // @ts-expect-error: missing properties
-        const game = /** @type {GameData} */ ({
+        const game = /** @type {import('@tabulous/types').GameData} */ ({
           id: faker.string.uuid(),
           kind: 'coinche',
           created: faker.date.past().getTime(),

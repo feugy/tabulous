@@ -60,11 +60,10 @@ export type Game = Pick<
       | 'meshes'
       | 'cameras'
       | 'hands'
-      | 'preferences'
       | 'availableSeats'
       | 'history'
     >
-  > & { players?: GamePlayer[] }
+  > & { preferencesString?: string; players?: GamePlayer[] }
 
 export type GameParameters = Pick<
   FullGameParameters<unknown>,
@@ -73,13 +72,13 @@ export type GameParameters = Pick<
   Partial<
     Pick<
       FullGameParameters<unknown>,
-      | 'locales'
-      | 'preferences'
-      | 'rulesBookPageCount'
-      | 'availableSeats'
-      | 'colors'
+      'locales' | 'rulesBookPageCount' | 'availableSeats' | 'colors'
     >
-  > & { schemaString?: string; players?: GamePlayer[] }
+  > & {
+    preferencesString?: string
+    schemaString?: string
+    players?: GamePlayer[]
+  }
 
 export interface CreateGameArgs {
   kind?: string // created game kind (omit to create a lobby).

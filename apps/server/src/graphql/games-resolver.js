@@ -255,12 +255,25 @@ export default {
     }
   },
 
+  Game: {
+    /**
+     * Serializer for preferences.
+     * @param {import('@tabulous/types').GameData} obj - serialized game.
+     */
+    preferencesString: obj => JSON.stringify(obj.preferences)
+  },
+
   GameParameters: {
     /**
      * Serializer for schema.
-     * @param {import('@tabulous/types').GameParameters<?>} obj - serialized game parameter schema
+     * @param {import('@tabulous/types').GameParameters<?>} obj - serialized game parameters.
      */
-    schemaString: obj => JSON.stringify(obj.schema)
+    schemaString: obj => JSON.stringify(obj.schema),
+    /**
+     * Serializer for preferences.
+     * @param {import('@tabulous/types').GameParameters<?>} obj - serialized game parameters.
+     */
+    preferencesString: obj => JSON.stringify(obj.preferences)
   },
 
   HistoryRecord: {

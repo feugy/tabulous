@@ -24,7 +24,7 @@ type Game {
   meshes: [Mesh]
   cameras: [CameraPosition]
   hands: [Hand]
-  preferences: [PlayerPreference]
+  preferencesString: String
   rulesBookPageCount: Int
   availableSeats: Int
   zoomSpec: ZoomSpec
@@ -211,12 +211,6 @@ type CameraPosition {
 type Hand {
   playerId: ID!
   meshes: [Mesh]!
-}
-
-type PlayerPreference {
-  playerId: ID!
-  color: String
-  angle: Float
 }
 
 type ZoomSpec {
@@ -489,7 +483,7 @@ type GameParameters {
   kind: String
   locales: ItemLocales
   players: [GamePlayer]!
-  preferences: [PlayerPreference]
+  preferencesString: String
   rulesBookPageCount: Int
   availableSeats: Int
   colors: ColorSpec
