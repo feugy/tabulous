@@ -15,3 +15,21 @@ export function findAvailableValues(preferences, name, possibleValues) {
     preferences.every(pref => value !== pref[name])
   )
 }
+
+/**
+ * Find game preferences of a given player.
+ * @param {import('@tabulous/types').PlayerPreference[]|undefined} preferences - list of all players preferences.
+ * @param {string} playerId - desired player
+ * @returns found preferences, or an empty object.
+ */
+export function findPlayerPreferences(preferences, playerId) {
+  /** @type {Omit<import('@tabulous/types').PlayerPreference, 'playerId'>} */
+  const preference = {
+    ...(preferences?.find(preference => preference.playerId === playerId) ?? {
+      color: undefined,
+      angle: undefined
+    })
+  }
+  delete preference.playerId
+  return preference
+}
