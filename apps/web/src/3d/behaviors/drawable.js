@@ -188,7 +188,7 @@ export class DrawBehavior extends AnimateBehavior {
  * @returns {Promise<{ fadeKeys: import('../utils').FloatKeyFrame[], moveKeys: import('../utils').Vector3KeyFrame[] }>} generated key frames.
  */
 async function buildAnimationKeys(mesh, invert = false) {
-  // delay so that all observer of onAction to perform: we need the mesh to be have not parents before getting its position
+  // delay to let onAction obervers finish: we need the mesh to be have not parents before getting its position
   await Promise.resolve()
   const { x, y, z } = mesh.position
   return {

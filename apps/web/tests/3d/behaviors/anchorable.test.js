@@ -488,6 +488,45 @@ describe('AnchorBehavior', () => {
       expect(registerFeedbackSpy).not.toHaveBeenCalled()
     })
 
+    it('can flip snapped mesh when hydrating', () => {
+      const snapped = meshes[0]
+      snapped.addBehavior(
+        new FlipBehavior({ isFlipped: false }, managers),
+        true
+      )
+      expectFlipped(snapped, false)
+
+      behavior.fromState({
+        anchors: [
+          {
+            id: '1',
+            width: 1,
+            height: 2,
+            depth: 0.5,
+            snappedId: snapped.id,
+            flip: true
+          }
+        ]
+      })
+      expect(behavior.state.duration).toEqual(100)
+      expect(behavior.state.anchors).toEqual([
+        {
+          id: '1',
+          width: 1,
+          height: 2,
+          depth: 0.5,
+          snappedId: 'box1',
+          flip: true
+        }
+      ])
+      expectAnchor(0, behavior.state.anchors[0], false)
+      expectSnapped(mesh, snapped, 0)
+      expectFlipped(snapped)
+      expect(behavior.getSnappedIds()).toEqual([snapped.id])
+      expect(actionRecorded).not.toHaveBeenCalled()
+      expect(registerFeedbackSpy).not.toHaveBeenCalled()
+    })
+
     it('can reset snapped mesh rotation when hydrating', () => {
       const snapped = meshes[0]
       snapped.addBehavior(
