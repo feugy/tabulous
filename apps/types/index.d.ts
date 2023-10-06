@@ -163,14 +163,11 @@ declare module '.' {
   export type Build = () => GameSetup | Promise<GameSetup>
 
   /** Function invoked when adding a player to the game. */
-  export type AddPlayer<
-    Parameters extends Record<string, any>,
-    Game extends GameData = GameData
-  > = (
-    game: Game,
+  export type AddPlayer<Parameters extends Record<string, any>> = (
+    game: StartedGame,
     guest: Player,
     parameters: Parameters
-  ) => Game | Promise<Game>
+  ) => StartedGame | Promise<StartedGame>
 
   export type Schema<Parameters extends Record<string, any>> =
     JSONSchemaType<Parameters>

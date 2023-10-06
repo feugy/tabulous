@@ -7,8 +7,9 @@ import { mergeProps } from './utils.js'
 
 /**
  * Creates a unique game from a game descriptor.
+ * @template {Record<string, ?>} Parameters
  * @param {string} kind - created game's kind.
- * @param {Partial<import('@tabulous/types').GameDescriptor>} descriptor - to create game from.
+ * @param {Partial<import('@tabulous/types').GameDescriptor<Parameters>>} descriptor - to create game from.
  * @returns a list of serialized 3D meshes.
  */
 export async function createMeshes(kind, descriptor) {

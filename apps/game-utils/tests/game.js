@@ -14,7 +14,8 @@ const ajv = new Ajv({
 /** @template {Record<string, ?>} Parameters */
 export function buildDescriptorTestSuite(
   /** @type {string} */ name,
-  /** @type {Partial<import('@tabulous/types').GameDescriptor<Parameters>>} */ descriptor
+  /** @type {Partial<import('@tabulous/types').GameDescriptor<Parameters>>} */ descriptor,
+  /** @type {(utils: GameTestUtils) => void} */ customTests = () => {}
 ) {
   describe(`${name} game descriptor`, () => {
     let counter = 1
@@ -95,7 +96,7 @@ export function buildDescriptorTestSuite(
       () => {
         it('enrolls each allowed players with a valid JSON schema', async () => {
           let game = await buildGame(
-            /** @type {import('@tabulous/types').GameDescriptor} */ ({
+            /** @type {import('@tabulous/types').GameDescriptor<Parameters>} */ ({
               ...descriptor,
               name
             })
@@ -113,7 +114,9 @@ export function buildDescriptorTestSuite(
               }
             }
             game = await enroll(
-              descriptor,
+              /** @type {Required<Pick<import('@tabulous/types').GameDescriptor<Parameters>, 'addPlayer'>>} */ (
+                descriptor
+              ),
               game,
               player,
               buildParameters(schema)
@@ -124,8 +127,19 @@ export function buildDescriptorTestSuite(
         })
       }
     )
+
+    customTests?.({ name, makePlayer, buildGame, enroll, buildParameters })
   })
 }
+
+/**
+ * @typedef {object} GameTestUtils
+ * @property {string} name - tested game name.
+ * @property {typeof makePlayer} makePlayer - buils a player.
+ * @property {typeof buildGame} buildGame - builds a game from a game setup.
+ * @property {typeof enroll} enroll - enrolls a player in a game.
+ * @property {typeof buildParameters} buildParameters - builds game parameters from the provided schema.
+ */
 
 /** @returns {import('@tabulous/types').Player} */
 function makePlayer(/** @type {number} */ rank) {
@@ -136,9 +150,12 @@ function makePlayer(/** @type {number} */ rank) {
   }
 }
 
-/** @returns {Promise<import('@tabulous/types').StartedGame>} */
+/**
+ * @template {Record<string, ?>} Parameters
+ * @returns {Promise<import('@tabulous/types').StartedGame>}
+ */
 async function buildGame(
-  /** @type {import('@tabulous/types').GameDescriptor} */ descriptor
+  /** @type {import('@tabulous/types').GameDescriptor<Parameters>} */ descriptor
 ) {
   return {
     id: 'game-unique-id',
@@ -161,7 +178,7 @@ async function buildGame(
 
 /** @template {Record<string, ?>} Parameters */
 async function enroll(
-  /** @type {Partial<import('@tabulous/types').GameDescriptor<Parameters>>} */ descriptor,
+  /** @type {Required<Pick<import('@tabulous/types').GameDescriptor<Parameters>, 'addPlayer'>>} */ descriptor,
   /** @type {import('@tabulous/types').StartedGame} */ game,
   /** @type {import('@tabulous/types').Player} */ guest,
   /** @type {Record<string, ?>} */ parameters
@@ -177,13 +194,16 @@ async function enroll(
         game.preferences.map(({ color }) => color)
       )
   })
-  return await /** @type {import('@tabulous/types').GameDescriptor & { addPlayer: import('@tabulous/types').AddPlayer<?, typeof game> }} */ (
-    descriptor
-  ).addPlayer(game, guest, /** @type {?} */ (parameters))
+  return await descriptor.addPlayer(
+    game,
+    guest,
+    /** @type {Parameters} */ (parameters)
+  )
 }
 
+/** @template {Record<string, ?>} Parameters */
 function buildParameters(
-  /** @type {?import('@tabulous/types').Schema<?>} */ schema
+  /** @type {?import('@tabulous/types').Schema<Parameters>} */ schema
 ) {
   /** @type {Record<string, ?>} */
   const result = {}
