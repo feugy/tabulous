@@ -91,10 +91,12 @@ async function evaluateScore(
   if (action && !('fn' in action)) {
     return
   }
+  const state = engine.serialize()
+  logger.debug({ action, state }, `evaluate score`)
   try {
     const scores = await ruleEngine?.computeScore?.(
       action,
-      engine.serialize(),
+      state,
       players,
       preferences
     )

@@ -1,4 +1,6 @@
 // @ts-check
+import { createBox } from '@src/3d/meshes'
+import { serializeMeshes } from '@src/3d/utils'
 import { beforeEach, describe, expect, it, vi } from 'vitest'
 
 import { configures3dTestEngine, mockLogger } from '../../test-utils'
@@ -6,19 +8,29 @@ import { configures3dTestEngine, mockLogger } from '../../test-utils'
 describe('ReplayManager', () => {
   /** @type {import('@babylonjs/core').Engine} */
   let engine
+  /** @type {import('@babylonjs/core').Scene} */
+  let scene
+  /** @type {import('@babylonjs/core').Scene} */
+  let handScene
   /** @type {?import('@tabulous/types').Scores} */
   let scores = null
   /** @type {import('@src/3d/managers').Managers} */
   let managers
   /** @type {string} */
   let playerId
+  /** @type {import('@babylonjs/core').Mesh} */
+  let mesh
 
   const logger = mockLogger('rule')
 
   configures3dTestEngine(
     created => {
-      ;({ engine, playerId, managers } = created)
-      engine.serialize = vi.fn()
+      ;({ engine, scene, handScene, playerId, managers } = created)
+      engine.serialize = () => ({
+        meshes: serializeMeshes(scene),
+        handMeshes: serializeMeshes(handScene),
+        history: managers.replay.history
+      })
       managers.rule.onScoreUpdateObservable.add(data => (scores = data))
     },
     { isSimulation: globalThis.use3dSimulation }
@@ -27,6 +39,11 @@ describe('ReplayManager', () => {
   beforeEach(() => {
     vi.clearAllMocks()
     scores = null
+    mesh = createBox(
+      { id: 'box', texture: '', rotable: {}, flippable: {} },
+      managers,
+      scene
+    )
   })
 
   it('has initial state', () => {
@@ -66,33 +83,36 @@ describe('ReplayManager', () => {
     const preferences = [{ playerId, amount: 2 }]
     managers.rule.init({ managers, engineScript, preferences })
     await managers.control.onActionObservable.notifyObservers({
-      meshId: 'box',
+      meshId: mesh.id,
       fromHand: false,
       fn: 'flip',
       args: []
     })
     expect(scores).toEqual({ [playerId]: { total: 2 } })
-    await managers.control.onActionObservable.notifyObservers({
-      meshId: 'box',
-      fromHand: false,
-      fn: 'flip',
-      args: []
-    })
+    await mesh.metadata.flip?.()
     expect(scores).toEqual({ [playerId]: { total: 4 } })
   })
 
-  it('does computes scores on moves', async () => {
+  it.skip('computes score after action is finished', async () => {
+    const engineScript = `let engine={computeScore:({meshId},{meshes})=>({"${playerId}":{total:meshes.find(({id})=>id===meshId)?.rotable.angle}})}`
+    engine.serialize
+    managers.rule.init({ managers, engineScript, preferences: [] })
+    await mesh.metadata.rotate?.()
+    expect(scores).toEqual({ [playerId]: { total: Math.PI * 0.5 } })
+  })
+
+  it('does not compute scores on moves', async () => {
     const engineScript = `let engine={computeScore:()=>({"${playerId}":{total:1}})}`
     managers.rule.init({ managers, engineScript })
     await managers.control.onActionObservable.notifyObservers({
-      meshId: 'box',
+      meshId: mesh.id,
       fromHand: false,
       pos: [1, 0, 0],
       prev: [0, 0, 0]
     })
     expect(scores).toBeNull()
     await managers.control.onActionObservable.notifyObservers({
-      meshId: 'box',
+      meshId: mesh.id,
       fromHand: false,
       pos: [2, 0, 0],
       prev: [1, 0, 0]
@@ -104,7 +124,7 @@ describe('ReplayManager', () => {
     const engineScript = `let engine={computeScore:()=>{throw new Error('boom')}}`
     managers.rule.init({ managers, engineScript })
     const action = {
-      meshId: 'box',
+      meshId: mesh.id,
       fromHand: false,
       fn: /** @type {const} */ ('flip'),
       args: []
