@@ -21,14 +21,16 @@ export function drawInHand(
   const hand = findOrCreateHand(game, playerId)
   const meshes = game.meshes
   const anchor = findAnchor(fromAnchor, meshes)
-  const stack = findMesh(anchor.snappedId, meshes, false)
+  const stack = findMesh(anchor.snappedIds[0], meshes, false)
   if (!stack) {
     throw new Error(`Anchor ${fromAnchor} has no snapped mesh`)
   }
   for (let i = 0; i < count; i++) {
     /** @type {import('@tabulous/types').Mesh} */
     const drawn =
-      stack.stackable?.stackIds?.length === 0 ? stack : popMesh(stack, meshes)
+      (stack.stackable?.stackIds?.length ?? 0) === 0
+        ? stack
+        : popMesh(stack, meshes)
     mergeProps(drawn, props)
     hand.meshes.push(drawn)
     meshes.splice(meshes.indexOf(drawn), 1)
@@ -36,8 +38,8 @@ export function drawInHand(
       break
     }
   }
-  if (stack.stackable?.stackIds?.length === 0) {
-    anchor.snappedId = null
+  if ((stack.stackable?.stackIds?.length ?? 0) === 0) {
+    anchor.snappedIds.splice(0, 1)
   }
 }
 

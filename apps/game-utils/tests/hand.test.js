@@ -18,7 +18,12 @@ describe('drawInHand()', () => {
           id: 'B',
           texture: '',
           shape: 'box',
-          anchorable: { anchors: [{ id: 'discard', snappedId: 'C' }] }
+          anchorable: {
+            anchors: [
+              { id: 'discard', snappedIds: ['C'] },
+              { id: 'reserve', snappedIds: ['F', 'G'], max: 2 }
+            ]
+          }
         },
         {
           id: 'C',
@@ -27,7 +32,9 @@ describe('drawInHand()', () => {
           stackable: { stackIds: ['A', 'E', 'D'] }
         },
         { id: 'D', texture: '', shape: 'box' },
-        { id: 'E', texture: '', shape: 'box' }
+        { id: 'E', texture: '', shape: 'box' },
+        { id: 'F', texture: '', shape: 'box' },
+        { id: 'G', texture: '', shape: 'box' }
       ]
     })
   })
@@ -40,16 +47,30 @@ describe('drawInHand()', () => {
 
   it('draws one mesh into a new hand', () => {
     drawInHand(game, { playerId, fromAnchor: 'discard' })
+    drawInHand(game, { playerId, fromAnchor: 'reserve' })
     expect(game).toEqual(
       expect.objectContaining({
-        hands: [{ playerId, meshes: [{ id: 'D', texture: '', shape: 'box' }] }],
+        hands: [
+          {
+            playerId,
+            meshes: [
+              { id: 'D', texture: '', shape: 'box' },
+              { id: 'F', texture: '', shape: 'box' }
+            ]
+          }
+        ],
         meshes: [
           { id: 'A', texture: '', shape: 'box' },
           {
             id: 'B',
             texture: '',
             shape: 'box',
-            anchorable: { anchors: [{ id: 'discard', snappedId: 'C' }] }
+            anchorable: {
+              anchors: [
+                { id: 'discard', snappedIds: ['C'] },
+                { id: 'reserve', snappedIds: ['G'], max: 2 }
+              ]
+            }
           },
           {
             id: 'C',
@@ -57,7 +78,8 @@ describe('drawInHand()', () => {
             shape: 'box',
             stackable: { stackIds: ['A', 'E'] }
           },
-          { id: 'E', texture: '', shape: 'box' }
+          { id: 'E', texture: '', shape: 'box' },
+          { id: 'G', texture: '', shape: 'box' }
         ]
       })
     )
@@ -83,9 +105,21 @@ describe('drawInHand()', () => {
             id: 'B',
             texture: '',
             shape: 'box',
-            anchorable: { anchors: [{ id: 'discard', snappedId: 'C' }] }
+            anchorable: {
+              anchors: [
+                { id: 'discard', snappedIds: ['C'] },
+                { id: 'reserve', snappedIds: ['F', 'G'], max: 2 }
+              ]
+            }
           },
-          { id: 'C', texture: '', shape: 'box', stackable: { stackIds: ['A'] } }
+          {
+            id: 'C',
+            texture: '',
+            shape: 'box',
+            stackable: { stackIds: ['A'] }
+          },
+          { id: 'F', texture: '', shape: 'box' },
+          { id: 'G', texture: '', shape: 'box' }
         ]
       })
     )
@@ -93,6 +127,7 @@ describe('drawInHand()', () => {
 
   it('draws until depletion into a new hand', () => {
     drawInHand(game, { playerId, count: 10, fromAnchor: 'discard' })
+    drawInHand(game, { playerId, count: 10, fromAnchor: 'reserve' })
     expect(game).toEqual(
       expect.objectContaining({
         hands: [
@@ -107,7 +142,8 @@ describe('drawInHand()', () => {
                 texture: '',
                 shape: 'box',
                 stackable: { stackIds: [] }
-              }
+              },
+              { id: 'F', texture: '', shape: 'box' }
             ]
           }
         ],
@@ -116,15 +152,22 @@ describe('drawInHand()', () => {
             id: 'B',
             texture: '',
             shape: 'box',
-            anchorable: { anchors: [{ id: 'discard', snappedId: null }] }
-          }
+            anchorable: {
+              anchors: [
+                { id: 'discard', snappedIds: [] },
+                { id: 'reserve', snappedIds: ['G'], max: 2 }
+              ]
+            }
+          },
+          { id: 'G', texture: '', shape: 'box' }
         ]
       })
     )
   })
 
   it('throws when drawing from empty anchor', () => {
-    delete game.meshes[1].anchorable?.anchors?.[0].snappedId
+    // @ts-expect-error -- we can't use ! operator in JS
+    game.meshes[1].anchorable.anchors[0].snappedIds = []
     expect(() =>
       drawInHand(game, { playerId, count: 2, fromAnchor: 'discard' })
     ).toThrow('Anchor discard has no snapped mesh')
