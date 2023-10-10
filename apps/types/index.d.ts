@@ -421,20 +421,22 @@ declare module '.' {
     duration?: number
   }
 
-  /** A rectangular anchor definition (coordinates are relative to the parent mesh). */
+  /** An anchor definition (coordinates are relative to the parent mesh). */
   export type Anchor = {
     /** this anchor id. */
     id: string
-    /** id of the mesh currently snapped to this anchor. */
-    snappedId?: ?string
+    /** ids of meshes currently snapped to this anchor. */
+    snappedIds: string[]
     /** when set, only this player can snap meshes to this anchor. */
     playerId?: string
-    /** angle applied to any rotable mesh snapped to the anchor. */
+    /** when set, angle applied to any rotable mesh snapped to the anchor. */
     angle?: number
-    /** flip state applied to any flippable mesh snapped to the anchor. */
+    /** when set, flip state applied to any flippable mesh snapped to the anchor. */
     flip?: boolean
     /** when set, and when snapping a multi-part mesh, takes it barycenter into account. */
     ignoreParts?: boolean
+    /** maximum number of snapped meshes, defaults to 1 */
+    max?: number
   } & Point &
     Dimension &
     _Targetable
