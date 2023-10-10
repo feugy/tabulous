@@ -102,7 +102,7 @@ type RandomizableState {
 }
 
 type Anchor {
-  id: ID
+  id: ID!
   x: Float
   y: Float
   z: Float
@@ -110,10 +110,12 @@ type Anchor {
   height: Float
   depth: Float
   diameter: Float
+  enabled: Boolean
   extent: Float
   priority: Float
   kinds: [String]
-  snappedId: ID
+  max: Float
+  snappedIds: [ID]!
   playerId: ID
   ignoreParts: Boolean
   angle: Float
@@ -362,7 +364,7 @@ input RandomizableStateInput {
 }
 
 input AnchorInput {
-  id: ID
+  id: ID!
   x: Float
   y: Float
   z: Float
@@ -370,10 +372,12 @@ input AnchorInput {
   height: Float
   depth: Float
   diameter: Float
+  enabled: Boolean
   extent: Float
   priority: Float
   kinds: [String]
-  snappedId: ID
+  max: Float
+  snappedIds: [ID]!
   playerId: ID
   ignoreParts: Boolean
   angle: Float
