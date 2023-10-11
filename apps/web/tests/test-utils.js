@@ -325,23 +325,29 @@ export function expectScreenPosition(actual, { x, y }, message) {
 
 /**
  * @param {import('@babylonjs/core').Mesh} mesh - actual anchorable mesh.
- * @param {import('@babylonjs/core').Mesh} snapped - expected snapped mesh.
+ * @param {import('@babylonjs/core').Mesh[]} snapped - expected snapped mesh.
  * @param {number} [anchorRank=0] - rank of the snapped anchor, defaults to 0.
  */
 export function expectSnapped(mesh, snapped, anchorRank = 0) {
   const behavior = mesh.getBehaviorByName(AnchorBehaviorName)
   const anchor = behavior?.state.anchors[anchorRank]
   const zone = behavior?.zones[anchorRank]
-  expect(anchor?.snappedId).toEqual(snapped.id)
-  expect(mesh.metadata.anchors?.[anchorRank].snappedId).toEqual(snapped.id)
+  const snappedIds = snapped.map(({ id }) => id)
+  expect(anchor?.snappedIds).toEqual(snappedIds)
+  expect(mesh.metadata.anchors?.[anchorRank].snappedIds).toEqual(snappedIds)
   expectZoneEnabled(mesh, anchorRank, false)
-  expect(behavior?.snappedZone(snapped.id)?.mesh.id).toEqual(zone?.mesh.id)
+  for (const id of snappedIds) {
+    expect(behavior?.snappedZone(id)?.mesh.id).toEqual(zone?.mesh.id)
+  }
   zone?.mesh.computeWorldMatrix(true)
-  expectPosition(snapped, [
-    zone?.mesh.absolutePosition.x ?? 0,
-    getCenterAltitudeAbove(mesh, snapped),
-    zone?.mesh.absolutePosition.z ?? 0
-  ])
+  if ((anchor?.max ?? 1) === 1) {
+    // TODO layout multiple meshes
+    expectPosition(snapped[0], [
+      zone?.mesh.absolutePosition.x ?? 0,
+      getCenterAltitudeAbove(mesh, snapped[0]),
+      zone?.mesh.absolutePosition.z ?? 0
+    ])
+  }
 }
 
 /**
@@ -354,8 +360,8 @@ export function expectUnsnapped(mesh, snapped, anchorRank = 0) {
   const anchor = behavior?.state.anchors[anchorRank]
   expectZoneEnabled(mesh, anchorRank)
   expect(behavior?.snappedZone(snapped.id)).toBeNull()
-  expect(anchor?.snappedId).not.toBeDefined()
-  expect(mesh.metadata.anchors?.[anchorRank].snappedId).not.toBeDefined()
+  expect(anchor?.snappedIds).toHaveLength(0)
+  expect(mesh.metadata.anchors?.[anchorRank].snappedIds).toEqual([])
 }
 
 /**

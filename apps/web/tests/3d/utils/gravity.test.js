@@ -4,6 +4,7 @@ import { faker } from '@faker-js/faker'
 import {
   altitudeGap,
   applyGravity,
+  getAltitudeAfterGravity,
   getCenterAltitudeAbove,
   getDimensions,
   isAbove,
@@ -107,6 +108,60 @@ describe('applyGravity() 3D utility', () => {
     const box3 = createBox('box3', {})
     box3.setAbsolutePosition(new Vector3(x + 0.5, 3, z))
     expectCloseVector(applyGravity(box), [x, 5 + altitudeGap, z])
+  })
+})
+
+describe('getAltitudeAfterGravity() 3D utility', () => {
+  const x = faker.number.int(999)
+  const z = faker.number.int(999)
+
+  it('returns mesh position on the ground', () => {
+    const box = createBox('box', {})
+    expect(getDimensions(box).height).toEqual(1)
+    box.setAbsolutePosition(new Vector3(x, 10, z))
+    const box2 = createBox('box2', {})
+    box2.setAbsolutePosition(new Vector3(x + 2, 3, z))
+    expectCloseVector(getAltitudeAfterGravity(box), [x, 0.5, z])
+    expect(box.absolutePosition).toEqual(new Vector3(x, 10, z))
+  })
+
+  it('handles mesh with negative position', () => {
+    const box = createBox('box', {})
+    expect(getDimensions(box).height).toEqual(1)
+    box.setAbsolutePosition(new Vector3(x, -10, z))
+    const box2 = createBox('box2', {})
+    box2.setAbsolutePosition(new Vector3(x, 3, z - 2))
+    expectCloseVector(getAltitudeAfterGravity(box), [x, 0.5, z])
+    expect(box.absolutePosition).toEqual(new Vector3(x, -10, z))
+  })
+
+  it('returns position just above another one', () => {
+    const box = createBox('box', {})
+    box.setAbsolutePosition(new Vector3(x, 15, z))
+    const box2 = createBox('box2', {})
+    box2.setAbsolutePosition(new Vector3(x, 3, z))
+    expectCloseVector(getAltitudeAfterGravity(box), [x, 4 + altitudeGap, z])
+    expect(box.absolutePosition).toEqual(new Vector3(x, 15, z))
+  })
+
+  it('returns position above another one with partial overlap', () => {
+    const box = createBox('box', {})
+    box.setAbsolutePosition(new Vector3(x, 10, z))
+    const box2 = createBox('box2', {})
+    box2.setAbsolutePosition(new Vector3(x - 0.5, 2, z - 0.5))
+    expectCloseVector(getAltitudeAfterGravity(box), [x, 3 + altitudeGap, z])
+    expect(box.absolutePosition).toEqual(new Vector3(x, 10, z))
+  })
+
+  it('returns position just above several ones', () => {
+    const box = createBox('box', {})
+    box.setAbsolutePosition(new Vector3(x, 20, z))
+    const box2 = createBox('box2', {})
+    box2.setAbsolutePosition(new Vector3(x - 0.5, 4, z))
+    const box3 = createBox('box3', {})
+    box3.setAbsolutePosition(new Vector3(x + 0.5, 3, z))
+    expectCloseVector(getAltitudeAfterGravity(box), [x, 5 + altitudeGap, z])
+    expect(box.absolutePosition).toEqual(new Vector3(x, 20, z))
   })
 })
 

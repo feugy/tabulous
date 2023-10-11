@@ -12,6 +12,7 @@ import {
   getPositionAboveZone,
   getTargetableBehavior
 } from '../utils/behaviors'
+import { getAltitudeAfterGravity } from '../utils/gravity'
 import { AnchorBehaviorName, FlipBehaviorName } from './names'
 import { TargetBehavior } from './targetable'
 
@@ -139,7 +140,7 @@ export class AnchorBehavior extends TargetBehavior {
    */
   enable() {
     for (const zone of [...this.zones]) {
-      if (!this.state.anchors[zone.anchorIndex].snappedId) {
+      if (canEnableAnchor(this, zone.anchorIndex)) {
         zone.enabled = true
       }
     }
@@ -264,7 +265,7 @@ export class AnchorBehavior extends TargetBehavior {
     this.state = { anchors, duration }
     for (const [
       i,
-      { id, x, y, z, width, depth, height, diameter, snappedId, ...zoneProps }
+      { id, x, y, z, width, depth, height, diameter, snappedIds, ...zoneProps }
     ] of this.state.anchors.entries()) {
       const dropZone = buildTargetMesh(
         id,
@@ -286,7 +287,7 @@ export class AnchorBehavior extends TargetBehavior {
       })
       // relates the created zone with the anchor
       zone.anchorIndex = i
-      if (snappedId) {
+      for (const snappedId of snappedIds ?? []) {
         snapToAnchor(this, snappedId, zone, true)
       }
     }
@@ -354,8 +355,7 @@ async function internalUnsnap(behavior, releasedId, isLocal = false) {
       behavior.managers.control.record({
         mesh: behavior.mesh,
         fn: actionNames.unsnap,
-        args: [releasedId],
-        revert: [releasedId, zone.mesh.id],
+        args: [releasedId, zone.mesh.id],
         isLocal
       })
       unsetAnchor(behavior, zone, released)
@@ -381,7 +381,7 @@ async function snapToAnchor(behavior, snappedId, zone, loading = false) {
   } = behavior
   if (!mesh) return
   const meshId = mesh.id
-  anchors[zone.anchorIndex].snappedId = undefined
+  const anchor = anchors[zone.anchorIndex]
   const snapped = getMeshList(mesh.getScene(), snappedId)?.[0]
 
   if (snapped) {
@@ -392,7 +392,10 @@ async function snapToAnchor(behavior, snappedId, zone, loading = false) {
     setAnchor(behavior, zone, snapped)
 
     // moves it to the final position
-    const position = getPositionAboveZone(snapped, zone)
+    const position =
+      (anchor.max ?? 1) === 1
+        ? getPositionAboveZone(snapped, zone)
+        : getAltitudeAfterGravity(snapped)
     const partCenters = getMeshAbsolutePartCenters(snapped)
     if (!zone.ignoreParts && partCenters) {
       // always use first part as a reference
@@ -413,7 +416,7 @@ async function snapToAnchor(behavior, snappedId, zone, loading = false) {
     if (!loading) {
       await move
     }
-    const isFlipped = anchors[zone.anchorIndex].flip
+    const isFlipped = anchor.flip
     const flippable = snapped.getBehaviorByName(FlipBehaviorName)
     if (
       isFlipped != undefined &&
@@ -426,6 +429,9 @@ async function snapToAnchor(behavior, snappedId, zone, loading = false) {
         await behavior.managers.control.invokeLocal(snapped, actionNames.flip)
       }
     }
+  } else {
+    // removes invalid snappedIds
+    anchor.snappedIds.splice(anchor.snappedIds.indexOf(snappedId), 1)
   }
 }
 
@@ -443,8 +449,10 @@ function setAnchor(behavior, zone, snapped) {
   snapped.setParent(mesh)
   zoneBySnappedId.set(snapped.id, zone)
   const anchor = anchors[zone.anchorIndex]
-  anchor.snappedId = snapped.id
-  zone.enabled = false
+  if (!anchor.snappedIds.includes(snapped.id)) {
+    anchor.snappedIds.push(snapped.id)
+  }
+  zone.enabled = anchor.snappedIds.length < (anchor.max ?? 1)
 }
 
 /**
@@ -460,8 +468,9 @@ function unsetAnchor(behavior, zone, snapped) {
   snapped.setParent(null)
   zoneBySnappedId.delete(snapped.id)
   const anchor = anchors[zone.anchorIndex]
-  anchor.snappedId = undefined
+  anchor.snappedIds.splice(anchor.snappedIds.indexOf(snapped.id), 1)
   zone.enabled = true
+  applyGravityToSnapped(behavior, anchor)
 }
 
 /**
@@ -478,4 +487,25 @@ function getMeshList(scene, meshId) {
     getTargetableBehavior(mesh)
   )
   return stackable?.stack ? [...stackable.stack] : [mesh]
+}
+
+function canEnableAnchor(
+  /** @type {AnchorBehavior} */ { state },
+  /** @type {number} */ anchorIndex
+) {
+  const anchor = state.anchors[anchorIndex]
+  return (anchor.max ?? 1) > 1 || anchor.snappedIds.length === 0
+}
+
+function applyGravityToSnapped(
+  /** @type {AnchorBehavior} */ { mesh },
+  /** @type {import('@tabulous/types').Anchor} */ anchor
+) {
+  const scene = mesh?.getScene()
+  for (const snappedId of anchor.snappedIds) {
+    const snapped = getMeshList(scene, snappedId)?.[0]
+    if (snapped) {
+      snapped.setAbsolutePosition(getAltitudeAfterGravity(snapped))
+    }
+  }
 }

@@ -71,14 +71,16 @@ fragment mesh on Mesh {
       height
       depth
       diameter
+      enabled
       extent
       kinds
       priority
-      snappedId
+      snappedIds
       playerId
       ignoreParts
       angle
       flip
+      max
     }
     duration
   }

@@ -328,8 +328,8 @@ function findSnapped(mesh) {
   const scene = mesh.getScene()
   /** @type {Mesh[]} */
   const anchored = []
-  for (const { snappedId } of mesh.metadata.anchors ?? []) {
-    if (snappedId) {
+  for (const { snappedIds } of mesh.metadata.anchors ?? []) {
+    for (const snappedId of snappedIds) {
       const mesh = scene.getMeshById(snappedId)
       if (mesh) {
         anchored.push(mesh, ...findSnapped(mesh))

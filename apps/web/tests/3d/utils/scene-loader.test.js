@@ -799,8 +799,8 @@ describe('loadMeshes() 3D utility', () => {
       anchorable: {
         duration: 100,
         anchors: [
-          { snappedId: 'card2', x: shift },
-          { snappedId: 'card4', x: -shift }
+          { snappedIds: ['card2'], x: shift },
+          { snappedIds: ['card4'], x: -shift }
         ]
       },
       movable: {}
@@ -810,7 +810,7 @@ describe('loadMeshes() 3D utility', () => {
       id: 'card4',
       anchorable: {
         duration: 100,
-        anchors: [{ snappedId: 'card3' }]
+        anchors: [{ snappedIds: ['card3'] }]
       },
       x: -5,
       y: 2.001,

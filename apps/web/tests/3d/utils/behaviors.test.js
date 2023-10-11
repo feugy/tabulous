@@ -343,7 +343,7 @@ describe('registerBehaviors() 3D utility', () => {
           height: 3.5,
           depth: 1.5,
           kinds: ['card'],
-          snappedId: 'a426f1'
+          snappedIds: ['a426f1']
         }
       ],
       duration: 415
@@ -496,7 +496,7 @@ describe('restoreBehaviors() 3D utility', () => {
           height: 3.5,
           depth: 1.5,
           kinds: ['card'],
-          snappedId: 'a426f1'
+          snappedIds: ['a426f1']
         }
       ],
       duration: 415
@@ -545,7 +545,7 @@ describe('restoreBehaviors() 3D utility', () => {
           height: 3.5,
           depth: 1.5,
           kinds: ['card'],
-          snappedId: 'a426f1'
+          snappedIds: ['a426f1']
         }
       ],
       duration: 415
@@ -679,7 +679,7 @@ describe('serializeBehaviors() 3D utility', () => {
           height: 3.5,
           depth: 1.5,
           kinds: ['card'],
-          snappedId: 'a426f1'
+          snappedIds: ['a426f1']
         }
       ],
       duration: 415
@@ -723,7 +723,7 @@ describe('serializeBehaviors() 3D utility', () => {
           height: 3.5,
           depth: 1.5,
           kinds: ['card'],
-          snappedId: 'a426f1'
+          snappedIds: ['a426f1']
         }
       ],
       duration: 415

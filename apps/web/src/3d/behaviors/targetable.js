@@ -3,7 +3,7 @@ import { Observable } from '@babylonjs/core/Misc/observable.js'
 
 import { TargetBehaviorName } from './names'
 
-/** @typedef {Required<Pick<import('@tabulous/types').Anchor, 'extent'>> & Pick<import('@tabulous/types').Anchor, 'kinds'|'priority'|'enabled'|'playerId'|'ignoreParts'|'angle'>} ZoneProps properties of a drop zone */
+/** @typedef {Required<Pick<import('@tabulous/types').Anchor, 'extent'>> & Pick<import('@tabulous/types').Anchor, 'kinds'|'priority'|'enabled'|'playerId'|'ignoreParts'|'angle'|'max'>} ZoneProps properties of a drop zone */
 
 export class TargetBehavior {
   /**
@@ -77,7 +77,8 @@ export class TargetBehavior {
       ...properties,
       ignoreParts: properties.ignoreParts ?? false,
       enabled: properties.enabled ?? true,
-      priority: properties.priority ?? 0
+      priority: properties.priority ?? 0,
+      max: properties.max ?? 1
     }
     if (properties.playerId) {
       const id = `${properties.playerId}.drop-zone.${mesh.id}`

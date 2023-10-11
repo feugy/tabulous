@@ -93,7 +93,8 @@ describe('createRoundedTile()', () => {
             id: '',
             width: width * 0.5,
             height: height * 0.5,
-            kinds: [faker.lorem.word()]
+            kinds: [faker.lorem.word()],
+            snappedIds: []
           }
         ]
       },

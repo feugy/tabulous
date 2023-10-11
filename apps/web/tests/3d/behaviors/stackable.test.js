@@ -166,8 +166,8 @@ describe('StackBehavior', () => {
           new AnchorBehavior(
             {
               anchors: [
-                { id: `${id}-1`, x: -0.5 },
-                { id: `${id}-2`, x: 0.5 }
+                { id: `${id}-1`, x: -0.5, snappedIds: [] },
+                { id: `${id}-2`, x: 0.5, snappedIds: [] }
               ]
             },
             managers
@@ -979,15 +979,15 @@ describe('StackBehavior', () => {
     it('keeps reordered stack snapped to an anchor', async () => {
       behavior.fromState({ stackIds: ['box1', 'box2'] })
       box3.getBehaviorByName(AnchorBehaviorName)?.fromState({
-        anchors: [{ id: '1', x: -0.5, snappedId: 'box0' }]
+        anchors: [{ id: '1', x: -0.5, snappedIds: ['box0'] }]
       })
-      expectSnapped(box3, mesh)
+      expectSnapped(box3, [mesh])
       expectStacked(managers, [mesh, box1, box2], true, 'box3')
 
       await mesh.metadata.reorder?.(['box1', 'box0', 'box2'])
 
       expectStacked(managers, [box1, mesh, box2], true, 'box3')
-      expectSnapped(box3, box1)
+      expectSnapped(box3, [box1])
 
       expect(actionRecorded).toHaveBeenCalledWith({
         fn: 'reorder',
@@ -1239,13 +1239,13 @@ describe('StackBehavior', () => {
     it('keeps flipped stack snapped to an anchor', async () => {
       behavior.fromState({ stackIds: ['box1', 'box2'] })
       box3.getBehaviorByName(AnchorBehaviorName)?.fromState({
-        anchors: [{ id: '1', x: -0.5, snappedId: 'box0' }]
+        anchors: [{ id: '1', x: -0.5, snappedIds: ['box0'] }]
       })
-      expectSnapped(box3, mesh)
+      expectSnapped(box3, [mesh])
 
       await mesh.metadata.flipAll?.()
       expectStacked(managers, [box2, box1, mesh], true, 'box3')
-      expectSnapped(box3, box2)
+      expectSnapped(box3, [box2])
       expect(actionRecorded).toHaveBeenNthCalledWith(1, {
         fn: 'flipAll',
         meshId: mesh.id,

@@ -339,14 +339,14 @@ describe('HandManager', () => {
       const card2 = createMesh(
         {
           id: 'box6',
-          anchorable: { anchors: [{ id: 'box6-1', snappedId: 'box3' }] }
+          anchorable: { anchors: [{ id: 'box6-1', snappedIds: ['box3'] }] }
         },
         scene
       )
       const card1 = createMesh(
         {
           id: 'box5',
-          anchorable: { anchors: [{ id: 'box5-1', snappedId: 'box6' }] }
+          anchorable: { anchors: [{ id: 'box5-1', snappedIds: ['box6'] }] }
         },
         scene
       )
@@ -378,8 +378,7 @@ describe('HandManager', () => {
         {
           meshId: card1.id,
           fn: 'unsnap',
-          args: [card2.id],
-          revert: [card2.id, 'box5-1'],
+          args: [card2.id, 'box5-1'],
           fromHand: false,
           isLocal: true
         },
@@ -1519,7 +1518,7 @@ describe('HandManager', () => {
               z: -10,
               movable: {},
               anchorable: {
-                anchors: [{ id: 'anchor-0', playerId }],
+                anchors: [{ id: 'anchor-0', playerId, snappedIds: [] }],
                 duration: anchorDuration
               }
             },
@@ -1574,7 +1573,7 @@ describe('HandManager', () => {
           )
           expect(managers.control.isManaging(newMesh)).toBe(true)
           expect(managers.move.isManaging(newMesh)).toBe(true)
-          expectSnapped(dropZone, newMesh)
+          expectSnapped(dropZone, [newMesh])
           expectCloseVector(
             extractDrawnState(),
             newMesh.absolutePosition.asArray()
@@ -1658,7 +1657,7 @@ describe('HandManager', () => {
           expect(managers.move.isManaging(newMesh1)).toBe(true)
           expect(managers.control.isManaging(newMesh2)).toBe(true)
           expect(managers.move.isManaging(newMesh2)).toBe(true)
-          expectSnapped(dropZone, newMesh1)
+          expectSnapped(dropZone, [newMesh1])
           expectStacked(managers, [newMesh1, newMesh2], true, dropZone.id)
         })
 
@@ -1727,7 +1726,7 @@ describe('HandManager', () => {
           )
           expect(managers.control.isManaging(newMesh)).toBe(true)
           expect(managers.move.isManaging(newMesh)).toBe(true)
-          expectSnapped(dropZone, newMesh)
+          expectSnapped(dropZone, [newMesh])
           expectCloseVector(
             extractDrawnState(),
             newMesh.absolutePosition.asArray()
@@ -1828,7 +1827,7 @@ describe('HandManager', () => {
           expect(managers.move.isManaging(newMesh1)).toBe(true)
           expect(managers.control.isManaging(newMesh2)).toBe(true)
           expect(managers.move.isManaging(newMesh2)).toBe(true)
-          expectSnapped(dropZone, newMesh1)
+          expectSnapped(dropZone, [newMesh1])
           expectStacked(managers, [newMesh1, newMesh2], true, dropZone.id)
           expectCloseVector(
             extractDrawnState(),

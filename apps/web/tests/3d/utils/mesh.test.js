@@ -79,12 +79,12 @@ describe('isContaining() 3D utility', () => {
   })
 
   it('returns false when testing boxes that do not interesects', () => {
-    smallBox.setAbsolutePosition(new Vector3(0, 20, 0))
+    smallBox.setAbsolutePosition(new Vector3(20, 0, 0))
     expect(isContaining(bigBox, smallBox)).toBe(false)
   })
 
   it('returns false when testing boxes that interesects', () => {
-    smallBox.setAbsolutePosition(new Vector3(0, 4, 0))
+    smallBox.setAbsolutePosition(new Vector3(0, 0, 4))
     expect(isContaining(bigBox, smallBox)).toBe(false)
   })
 })

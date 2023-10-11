@@ -9,6 +9,7 @@ import {
   getTargetableBehavior
 } from '../utils/behaviors'
 import { isAbove } from '../utils/gravity'
+import { isContaining } from '../utils/mesh'
 
 const logger = makeLogger('target')
 
@@ -25,8 +26,8 @@ const logger = makeLogger('target')
  * @property {import('../behaviors').TargetBehavior} targetable - the enclosing targetable behavior.
  * @property {import('@babylonjs/core').Mesh} mesh - invisible, unpickable mesh acting as drop zone.
  *
- * @typedef {Record<string, ?> & Omit<import('@tabulous/types').Anchor, 'id'|'snappedId'|'angle'|'flip'> &
- * Required<Pick<import('@tabulous/types').Anchor, 'ignoreParts'|'enabled'|'extent'|'priority'>> &
+ * @typedef {Record<string, ?> & Omit<import('@tabulous/types').Anchor, 'id'|'snappedIds'|'angle'|'flip'> &
+ * Required<Pick<import('@tabulous/types').Anchor, 'ignoreParts'|'enabled'|'extent'|'priority'|'max'>> &
  * _SingleDropZone} SingleDropZone definition of a target drop zone
  */
 
@@ -343,6 +344,9 @@ function sortCandidates(candidates) {
  * @returns whether this zone is close to the mesh or one of its part.
  */
 function isAPartCenterClose(mesh, partCenters, zone) {
+  if (zone.max > 1) {
+    return isContaining(zone.mesh, mesh)
+  }
   if (zone.ignoreParts) {
     return isCloseTo(mesh.absolutePosition, zone)
   }
