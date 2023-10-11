@@ -26,8 +26,18 @@ export function buildCards(full = false) {
           },
           anchorable: {
             anchors: [
-              { id: `${id}-bottom`, z: spacing.cardAnchor.z, ...sizes.card },
-              { id: `${id}-top`, z: -spacing.cardAnchor.z, ...sizes.card }
+              {
+                id: `${id}-bottom`,
+                z: spacing.cardAnchor.z,
+                ...sizes.card,
+                snappedIds: []
+              },
+              {
+                id: `${id}-top`,
+                z: -spacing.cardAnchor.z,
+                ...sizes.card,
+                snappedIds: []
+              }
             ]
           },
           flippable: { isFlipped: true },
