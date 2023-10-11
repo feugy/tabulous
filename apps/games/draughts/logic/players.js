@@ -3,12 +3,7 @@ import { buildCameraPosition, findAvailableValues } from '@tabulous/game-utils'
 
 import { blackId, cameraPositions, whiteId } from './constants.js'
 
-/**
- * @typedef {object} Parameters
- * @property {import('./constants').Side} side - player and pieces color;
- */
-
-/** @type {import('@tabulous/types').AskForParameters<Parameters>} */
+/** @type {import('@tabulous/types').AskForParameters<import('./constants.js').Parameters>} */
 export function askForParameters({ game: { preferences } }) {
   const sides = findAvailableValues(preferences, 'side', [whiteId, blackId])
   return sides.length <= 1
@@ -28,7 +23,7 @@ export function askForParameters({ game: { preferences } }) {
       }
 }
 
-/** @type {import('@tabulous/types').AddPlayer<Parameters>} */
+/** @type {import('@tabulous/types').AddPlayer<import('./constants.js').Parameters>} */
 export function addPlayer(game, player, parameters) {
   const { cameras, preferences } = game
   // use selected preferences, or look for the first player color, and choose the other one.
