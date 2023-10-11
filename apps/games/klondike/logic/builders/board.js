@@ -20,8 +20,19 @@ export function buildBoard() {
     ...sizes.board,
     anchorable: {
       anchors: [
-        { id: anchorIds.reserve, ...positions.reserve, ...sizes.card },
-        { id: 'discard', ...positions.discard, ...sizes.card, flip: false },
+        {
+          id: anchorIds.reserve,
+          ...positions.reserve,
+          ...sizes.card,
+          snappedIds: []
+        },
+        {
+          id: 'discard',
+          ...positions.discard,
+          ...sizes.card,
+          flip: false,
+          snappedIds: []
+        },
         ...buildGoalAnchors(),
         ...buildColumnAnchors()
       ]
@@ -38,7 +49,8 @@ function buildGoalAnchors() {
       x: positions.goal.x + spacing.column.x * column,
       z: positions.goal.z,
       ...sizes.card,
-      kinds: [suit]
+      kinds: [suit],
+      snappedIds: []
     })
   }
   return anchors
@@ -52,7 +64,8 @@ function buildColumnAnchors() {
       id: `${anchorIds.column}-${column + 1}`,
       x: positions.column.x + spacing.column.x * column,
       z: positions.column.z,
-      ...sizes.card
+      ...sizes.card,
+      snappedIds: []
     })
   }
   return anchors

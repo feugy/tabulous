@@ -19,7 +19,8 @@ export function addPlayer(game, player) {
   )
 
   const reserveId =
-    findAnchor(anchorIds.reserve, game.meshes)?.snappedId ?? 'reserve-not-found'
+    findAnchor(anchorIds.reserve, game.meshes)?.snappedIds[0] ??
+    'reserve-not-found'
 
   for (let column = 0; column < counts.columns; column++) {
     const anchorId = `${anchorIds.column}-${column + 1}`
