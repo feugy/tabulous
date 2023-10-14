@@ -32,26 +32,26 @@
     "typecheck": "pnpm run -r --stream --if-present typecheck"
   },
   "devDependencies": {
-    "@faker-js/faker": "^8.0.2",
-    "@typescript-eslint/eslint-plugin": "^6.7.0",
-    "@typescript-eslint/parser": "^6.7.0",
-    "@vitest/coverage-v8": "^0.34.4",
-    "@vitest/expect": "^0.34.4",
-    "eslint": "^8.49.0",
+    "@faker-js/faker": "^8.1.0",
+    "@typescript-eslint/eslint-plugin": "^6.7.5",
+    "@typescript-eslint/parser": "^6.7.5",
+    "@vitest/coverage-v8": "^0.34.6",
+    "@vitest/expect": "^0.34.6",
+    "eslint": "^8.51.0",
     "eslint-config-prettier": "^9.0.0",
     "eslint-plugin-simple-import-sort": "^10.0.0",
-    "eslint-plugin-svelte": "^2.33.1",
-    "eslint-plugin-vitest": "^0.3.1",
+    "eslint-plugin-svelte": "^2.34.0",
+    "eslint-plugin-vitest": "^0.3.2",
     "husky": "^8.0.3",
-    "jest-extended": "^4.0.1",
+    "jest-extended": "^4.0.2",
     "lint-staged": "^14.0.1",
-    "playwright": "^1.38.0",
+    "playwright": "^1.39.0",
     "prettier": "^3.0.3",
     "prettier-plugin-svelte": "^3.0.3",
-    "svelte": "^4.2.0",
+    "svelte": "^4.2.1",
     "typescript": "^5.2.2",
-    "vite": "^4.4.9",
-    "vitest": "^0.34.4"
+    "vite": "^4.4.11",
+    "vitest": "^0.34.6"
   },
   "lint-staged": {
     "*.{js,ts,svelte}": "eslint --cache --fix",
@@ -59,7 +59,7 @@
   },
   "pnpm": {
     "patchedDependencies": {
-      "@vitest/utils@0.34.4": "patches/@vitest__utils@0.34.4.patch"
+      "@vitest/utils@0.34.6": "patches/@vitest__utils@0.34.6.patch"
     }
   }
 }
