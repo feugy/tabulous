@@ -328,8 +328,7 @@ describe('QuantityBehavior', () => {
         fn: 'decrement',
         meshId: mesh.id,
         duration: behavior.state.duration,
-        args: [state2.quantifiable?.quantity ?? 1, false],
-        revert: [reverted2.id, false],
+        args: [state2.quantifiable?.quantity ?? 1, false, reverted2.id],
         fromHand: false,
         isLocal: true
       })
@@ -337,8 +336,7 @@ describe('QuantityBehavior', () => {
         fn: 'decrement',
         meshId: mesh.id,
         duration: behavior.state.duration,
-        args: [state1.quantifiable?.quantity ?? 1, false],
-        revert: [reverted1.id, false],
+        args: [state1.quantifiable?.quantity ?? 1, false, reverted1.id],
         fromHand: false,
         isLocal: true
       })
@@ -376,8 +374,7 @@ describe('QuantityBehavior', () => {
         fn: 'decrement',
         meshId: mesh.id,
         duration: behavior.state.duration,
-        args: [state1.quantifiable?.quantity ?? 1, true],
-        revert: [other1.id, true],
+        args: [state1.quantifiable?.quantity ?? 1, true, other1.id],
         fromHand: false,
         isLocal: true
       })
@@ -456,20 +453,19 @@ describe('QuantityBehavior', () => {
       expect(actionRecorded).toHaveBeenNthCalledWith(1, {
         fn: 'decrement',
         meshId: mesh.id,
-        args: [1, false],
-        revert: [created1.id, false],
+        args: [1, false, created1.id],
         fromHand: false,
         isLocal: false
       })
 
+      const id = `box-${faker.string.alphanumeric(5)}}`
       const created2 = /** @type {import('@babylonjs/core').Mesh} */ (
-        await mesh.metadata.decrement?.()
+        await mesh.metadata.decrement?.(1, false, id)
       )
-      expect(created2.id).not.toBe(mesh.id)
-      expect(created2.id).not.toBe(created1.id)
+      expect(created2.id).toBe(id)
       expectPosition(created2, mesh.absolutePosition.asArray())
       expect(created2.metadata.serialize()).toMatchObject({
-        id: expect.stringMatching(/^box0-/),
+        id,
         shape: 'box',
         movable: { snapDistance: 0.25, duration: 100 },
         quantifiable: { ...behavior.state, quantity: 1 }
@@ -480,8 +476,7 @@ describe('QuantityBehavior', () => {
       expect(actionRecorded).toHaveBeenNthCalledWith(2, {
         fn: 'decrement',
         meshId: mesh.id,
-        args: [1, false],
-        revert: [created2.id, false],
+        args: [1, false, id],
         fromHand: false,
         isLocal: false
       })
@@ -515,9 +510,8 @@ describe('QuantityBehavior', () => {
       expect(actionRecorded).toHaveBeenCalledWith({
         fn: 'decrement',
         meshId: mesh.id,
-        args: [1, true],
+        args: [1, true, created.id],
         duration: behavior.state.duration,
-        revert: [created.id, true],
         fromHand: false,
         isLocal: false
       })
@@ -547,9 +541,8 @@ describe('QuantityBehavior', () => {
       expect(actionRecorded).toHaveBeenCalledWith({
         fn: 'decrement',
         meshId: mesh.id,
-        args: [2, true],
+        args: [2, true, created.id],
         duration: behavior.state.duration,
-        revert: [created.id, true],
         fromHand: false,
         isLocal: false
       })
@@ -584,8 +577,7 @@ describe('QuantityBehavior', () => {
       expect(actionRecorded).toHaveBeenNthCalledWith(1, {
         fn: 'decrement',
         meshId: mesh.id,
-        args: [1, false],
-        revert: [created.id, false],
+        args: [1, false, created.id],
         fromHand: false,
         isLocal: false
       })

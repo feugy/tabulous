@@ -131,22 +131,21 @@ export class QuantityBehavior extends TargetBehavior {
    *
    * @param {number} [count=1] - amount to decrement.
    * @param {boolean} [withMove=false] - when set to true, moves the created meshes aside this one.
+   * @param {string} [id] - id of the created mesh.
    * @returns the created mesh, if any.
    */
-  async decrement(count = 1, withMove = false) {
+  async decrement(count = 1, withMove = false, id = undefined) {
     const { mesh, state } = this
     /** @type {?import('@babylonjs/core').Mesh} */
     let created = null
     if (!mesh || state.quantity === 1) return created
-    const createdId = makeId(mesh)
+    const createdId = id ?? makeId(mesh)
     const duration = withMove ? state.duration : undefined
     this.managers.control.record({
       mesh,
       fn: actionNames.decrement,
-      args: [count, withMove],
+      args: [count, withMove, createdId],
       duration,
-      // undo by incrementing created id with potential animation
-      revert: [createdId, withMove],
       isLocal: false
     })
 
@@ -191,7 +190,7 @@ export class QuantityBehavior extends TargetBehavior {
    * @param {any[]} [args] - reverted arguments.
    */
   async revert(action, args = []) {
-    if (!this.mesh || args.length !== 2) {
+    if (!this.mesh || args.length < 2) {
       return
     }
     if (action === actionNames.increment) {
@@ -208,9 +207,8 @@ export class QuantityBehavior extends TargetBehavior {
             this.managers.control.record({
               mesh,
               fn: actionNames.decrement,
-              args: [count, withMove],
+              args: [count, withMove, state.id],
               duration,
-              revert: [state.id, withMove],
               isLocal: true
             })
             this.state.quantity -= count
