@@ -46,11 +46,14 @@ export class RuleManager {
     if (engineScript) {
       logger.debug({ engineScript }, 'loading rules script')
       this.ruleEngine = new Function(`${engineScript};return engine`)()
-      // await loadRulesScript(this, gameAssetsUrl, kind)
       this.actionObserver = managers.control.onActionObservable.add(action =>
         evaluateScore(this, action)
       )
       this.engine.onLoadingObservable.addOnce(() => evaluateScore(this, null))
+      this.engine.onDisposeObservable.addOnce(() => {
+        this.players = []
+        this.preferences = []
+      })
     }
     logger.info({ ruleEngine: this.ruleEngine }, 'rule manager initialized')
   }
@@ -62,8 +65,13 @@ export class RuleManager {
    * @param {import('@tabulous/types').PlayerPreference[]} [params.preferences] - list of player preferences.
    */
   update({ players, preferences }) {
-    this.players = players?.filter(({ isGuest }) => !isGuest) ?? []
-    this.preferences = preferences ?? []
+    logger.trace({ players, preferences }, 'updating rule manager')
+    if (Array.isArray(players)) {
+      this.players = players.filter(({ isGuest }) => !isGuest)
+    }
+    if (Array.isArray(preferences)) {
+      this.preferences = preferences
+    }
   }
 
   /**

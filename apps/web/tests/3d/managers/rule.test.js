@@ -78,6 +78,29 @@ describe('ReplayManager', () => {
     })
   })
 
+  describe('update()', () => {
+    const players = [{ id: playerId, username: 'Grace', currentGameId: null }]
+    const preferences = [{ playerId, color: 'blue' }]
+
+    beforeEach(() => {
+      managers.rule.init({ managers, players, preferences })
+    })
+
+    it('handles the lack of players', async () => {
+      const updated = [{ playerId, color: 'green' }]
+      managers.rule.update({ preferences: updated })
+      expect(managers.rule.players).toEqual(players)
+      expect(managers.rule.preferences).toEqual(updated)
+    })
+
+    it('handles the lack of preferences', async () => {
+      const updated = [{ id: playerId, username: 'Kelly', currentGameId: null }]
+      managers.rule.update({ players: updated })
+      expect(managers.rule.preferences).toEqual(preferences)
+      expect(managers.rule.players).toEqual(updated)
+    })
+  })
+
   it('computes scores on every action', async () => {
     const engineScript = `let count=0;let engine={computeScore:(action,state,players,preferences)=>action?.fn==='flip'?{"${playerId}":{total:count+=preferences[0].amount}}:undefined}`
     const preferences = [{ playerId, amount: 2 }]
