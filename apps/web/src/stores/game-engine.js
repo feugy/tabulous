@@ -198,6 +198,8 @@ export function initEngine({ pointerThrottle, longTapDelay, ...engineProps }) {
   cameraSaves$.next(engine.managers.camera.saves)
   currentCamera$.next(engine.managers.camera.saves[0])
 
+  scores$.next(null)
+
   /** @type {import('@src/types').BabylonToRxMapping[]} */
   const mappings = [
     {

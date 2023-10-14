@@ -402,8 +402,9 @@ describe('initEngine()', () => {
         /** @type {import('@tabulous/types').Scores} */
         const scores = { playerId1: { total: 10 } }
         managers.rule.onScoreUpdateObservable.notifyObservers(scores)
-        expect(receiveScores).toHaveBeenCalledWith(scores)
-        expect(receiveScores).toHaveBeenCalledOnce()
+        expect(receiveScores).toHaveBeenNthCalledWith(1, null)
+        expect(receiveScores).toHaveBeenNthCalledWith(2, scores)
+        expect(receiveScores).toHaveBeenCalledTimes(2)
       })
 
       it('prunes peer pointers on connection', () => {
