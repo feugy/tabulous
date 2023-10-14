@@ -626,7 +626,9 @@ declare module '.' {
   export type ActionOrMove = Action | Move
 
   /** A given player's score, with optional components */
-  export type Score = Record<string, number> & { total: number }
+  export type Score = Record<string, string | number> & {
+    total: string | number
+  }
 
   /** All player scores */
   export type Scores = Record<string, Score>

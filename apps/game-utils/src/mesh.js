@@ -206,7 +206,7 @@ export function snapTo(
  * @param {string} anchorId - desired anchor id.
  * @param {import('@tabulous/types').Mesh[]} meshes - all meshes to search the anchor in.
  * @param {boolean} [throwOnMiss=true]
- * @returns {?import('@tabulous/types').Mesh} unsnapped meshes, or null if anchor has no snapped mesh
+ * @returns {import('@tabulous/types').Mesh} unsnapped meshes, or null if anchor has no snapped mesh
  * @throws {Error} when anchor (or snapped mesh) could not be found.
  *
  * @overload

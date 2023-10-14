@@ -2,6 +2,7 @@
 export { build } from './logic/build.js'
 export { colors } from './logic/constants.js'
 export { addPlayer, askForParameters } from './logic/player.js'
+export { computeScore } from './logic/score.js'
 
 /** @type {import('@tabulous/types').GameDescriptor['locales']} */
 export const locales = {

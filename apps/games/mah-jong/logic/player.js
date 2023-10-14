@@ -40,7 +40,7 @@ export function addPlayer(game, player) {
   const angle = Math.PI * 0.5 * rank
   Object.assign(game.preferences[rank], { angle })
 
-  game.meshes.push(...buildSticks(rank))
+  game.meshes.push(...buildSticks(rank, game.meshes))
 
   game.cameras.push(
     buildCameraPosition({

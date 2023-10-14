@@ -1,5 +1,14 @@
 // @ts-check
-import { kinds, riverSize, shapes, walls, wallSize } from '../constants.js'
+import {
+  ids,
+  kinds,
+  positions,
+  riverSize,
+  shapes,
+  stickQuantities,
+  walls,
+  wallSize
+} from '../constants.js'
 
 /** @returns {import('@tabulous/types').Mesh} */
 export function buildMainBoard() {
@@ -11,17 +20,48 @@ export function buildMainBoard() {
     y: 0.01,
     anchorable: {
       anchors: [
-        ...buildWallAnchors({ wall: north, isHorizontal: true, angle: 0 }),
-        ...buildRiverAnchors({ wall: north, isHorizontal: true, angle: 0 }),
-        ...buildWallAnchors({ wall: east, isHorizontal: false, angle: 0.5 }),
-        ...buildRiverAnchors({ wall: east, isHorizontal: false, angle: 0.5 }),
-        ...buildWallAnchors({ wall: south, isHorizontal: true, angle: 1 }),
-        ...buildRiverAnchors({ wall: south, isHorizontal: true, angle: 1 }),
-        ...buildWallAnchors({ wall: west, isHorizontal: false, angle: 1.5 }),
-        ...buildRiverAnchors({ wall: west, isHorizontal: false, angle: 1.5 })
+        ...buildPlayerAnchors({
+          wall: north,
+          isHorizontal: true,
+          angle: 0,
+          rank: 2
+        }),
+        ...buildPlayerAnchors({
+          wall: east,
+          isHorizontal: false,
+          angle: 0.5,
+          rank: 3
+        }),
+        ...buildPlayerAnchors({
+          wall: south,
+          isHorizontal: true,
+          angle: 1,
+          rank: 0
+        }),
+        ...buildPlayerAnchors({
+          wall: west,
+          isHorizontal: false,
+          angle: 1.5,
+          rank: 1
+        })
       ]
     }
   }
+}
+
+function buildPlayerAnchors(
+  /** @type {{ wall: import('../constants').Wall, isHorizontal: boolean, angle: number, rank: number }} */ {
+    wall,
+    isHorizontal,
+    angle,
+    rank
+  }
+) {
+  return [
+    ...buildWallAnchors({ wall, isHorizontal, angle }),
+    ...buildRiverAnchors({ wall, isHorizontal, angle }),
+    buildScoreAnchor({ rank, isHorizontal, angle })
+  ]
 }
 
 function buildWallAnchors(
@@ -52,7 +92,8 @@ function buildWallAnchors(
       height,
       width: isHorizontal ? width : depth,
       depth: isHorizontal ? depth : width,
-      angle: Math.PI * angle
+      angle: Math.PI * angle,
+      snappedIds: []
     })
   }
   return anchors
@@ -92,9 +133,44 @@ function buildRiverAnchors(
         height,
         width: isHorizontal ? width : depth,
         depth: isHorizontal ? depth : width,
-        angle: Math.PI * angle
+        angle: Math.PI * angle,
+        snappedIds: []
       })
     }
   }
   return anchors
+}
+
+function buildScoreAnchor(
+  /** @type {{ rank: number, isHorizontal: boolean, angle: number }} */ {
+    rank,
+    isHorizontal,
+    angle
+  }
+) {
+  const { height, width, depth } = shapes.score
+  const invertX = angle === 0.5 ? -1 : 1
+  const invertZ = angle === 1 ? -1 : 1
+  const { start, offset } = positions.score
+  /** @type {import('@tabulous/types').Anchor} */
+  return {
+    id: `${ids.score}${rank}`,
+    kinds: [
+      kinds.sticks100,
+      kinds.sticks1000,
+      kinds.sticks5000,
+      kinds.sticks10000
+    ],
+    x: start * invertX + (isHorizontal ? 0 : offset * invertX),
+    z: start * invertZ + (isHorizontal ? offset * invertZ : 0),
+    height,
+    width: isHorizontal ? width : depth,
+    depth: isHorizontal ? depth : width,
+    angle: Math.PI * angle,
+    snappedIds: [],
+    max:
+      Object.values(stickQuantities).reduce(
+        (total, quantity) => total + quantity
+      ) * 4
+  }
 }

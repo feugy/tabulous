@@ -177,7 +177,7 @@ async function buildGame(
 }
 
 /** @template {Record<string, ?>} Parameters */
-async function enroll(
+export async function enroll(
   /** @type {Required<Pick<import('@tabulous/types').GameDescriptor<Parameters>, 'addPlayer'>>} */ descriptor,
   /** @type {import('@tabulous/types').StartedGame} */ game,
   /** @type {import('@tabulous/types').Player} */ guest,
@@ -202,7 +202,7 @@ async function enroll(
 }
 
 /** @template {Record<string, ?>} Parameters */
-function buildParameters(
+export function buildParameters(
   /** @type {?import('@tabulous/types').Schema<Parameters>} */ schema
 ) {
   /** @type {Record<string, ?>} */
