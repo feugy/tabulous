@@ -1,0 +1,112 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`No score (not visible) 1`] = `
+<svg
+  class="s-x4jkiioAzbkC"
+  style="width: 0px; height: 0px;"
+>
+  <clippath
+    class="s-x4jkiioAzbkC"
+    clipPathUnits="objectBoundingBox"
+    id="clip-path-10000"
+  >
+    <path
+      class="s-x4jkiioAzbkC"
+      d="M 0 1 C 0.5 1 0.5 0 1 0 V 1 Z"
+      transform="rotate(90) scale(1, 1)"
+      transform-origin="0.5 0.5"
+    />
+  </clippath>
+  <clippath
+    class="s-x4jkiioAzbkC"
+    clipPathUnits="objectBoundingBox"
+    id="clip-path-10010"
+  >
+    <path
+      class="s-x4jkiioAzbkC"
+      d="M 0 0 C 0.5 0 0.5 1 1 1 H 0 Z"
+      transform="rotate(90) scale(1, 1)"
+      transform-origin="0.5 0.5"
+    />
+  </clippath>
+</svg>
+`;
+
+exports[`With score 1`] = `
+HTMLCollection [
+  <div
+    class="s-x4jkiioAzbkC"
+    style="--corner1: url(#clip-path-10020); --corner2: url(#clip-path-10030);"
+  >
+    <span
+      class="s-x4jkiioAzbkC"
+    />
+     
+    <figure
+      class="s-x4jkiioAzbkC"
+      style="--color: #9c3096;"
+      title="Fernand Naudin"
+    >
+      <figcaption
+        class="s-x4jkiioAzbkC"
+      >
+        10
+      </figcaption>
+       
+    </figure>
+    <figure
+      class="s-x4jkiioAzbkC"
+      style="--color: #239646;"
+      title="Pascal"
+    >
+      <figcaption
+        class="s-x4jkiioAzbkC"
+      >
+        12
+      </figcaption>
+       
+    </figure>
+    <figure
+      class="s-x4jkiioAzbkC"
+      style="--color: #ff4500;"
+      title="Maître Follas"
+    >
+      <figcaption
+        class="s-x4jkiioAzbkC"
+      >
+        8
+      </figcaption>
+       
+    </figure>
+  </div>,
+  <svg
+    class="s-x4jkiioAzbkC"
+    style="width: 0px; height: 0px;"
+  >
+    <clippath
+      class="s-x4jkiioAzbkC"
+      clipPathUnits="objectBoundingBox"
+      id="clip-path-10020"
+    >
+      <path
+        class="s-x4jkiioAzbkC"
+        d="M 0 1 C 0.5 1 0.5 0 1 0 V 1 Z"
+        transform="rotate(90) scale(1, 1)"
+        transform-origin="0.5 0.5"
+      />
+    </clippath>
+    <clippath
+      class="s-x4jkiioAzbkC"
+      clipPathUnits="objectBoundingBox"
+      id="clip-path-10030"
+    >
+      <path
+        class="s-x4jkiioAzbkC"
+        d="M 0 0 C 0.5 0 0.5 1 1 1 H 0 Z"
+        transform="rotate(90) scale(1, 1)"
+        transform-origin="0.5 0.5"
+      />
+    </clippath>
+  </svg>,
+]
+`;

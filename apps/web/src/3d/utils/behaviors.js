@@ -398,7 +398,7 @@ export function detachFromParent(mesh, detachChildren = true) {
 }
 
 /**
- * Computes the final position of a given above a drop zone
+ * Computes the final position of a given mesh above a drop zone, aligning their centers.
  * @param {import('@babylonjs/core').Mesh} droppedMesh - mesh dropped above zone.
  * @param {import('../managers').DropZone} zone - drop zone.
  * @returns absolute position for this mesh.

@@ -1,7 +1,10 @@
 // @ts-check
 import { describe, expect, it } from 'vitest'
 
-import { findAvailableValues } from '../src/preference.js'
+import {
+  findAvailableValues,
+  findPlayerPreferences
+} from '../src/preference.js'
 
 describe('findAvailableValues()', () => {
   const colors = ['red', 'green', 'blue']
@@ -48,5 +51,38 @@ describe('findAvailableValues()', () => {
         colors
       )
     ).toEqual(colors)
+  })
+})
+
+describe('findPlayerPreferences()', () => {
+  it('returns an empty object without preferences', async () => {
+    expect(findPlayerPreferences(undefined, 'whatever')).toEqual({})
+  })
+
+  it('returns an empty object for an unknown player', async () => {
+    expect(
+      findPlayerPreferences(
+        [
+          { playerId: 'a', color: 'red' },
+          { playerId: 'b', color: 'blue' }
+        ],
+        'whatever'
+      )
+    ).toEqual({})
+  })
+
+  it('returns preferences of a given player, omitting the playerId', async () => {
+    const preferences = [
+      { playerId: 'a', color: 'red' },
+      { playerId: 'b', color: 'blue' }
+    ]
+    expect(findPlayerPreferences(preferences, 'a')).toEqual({
+      ...preferences[0],
+      playerId: undefined
+    })
+    expect(findPlayerPreferences(preferences, 'b')).toEqual({
+      ...preferences[1],
+      playerId: undefined
+    })
   })
 })

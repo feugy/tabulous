@@ -6,7 +6,7 @@ import { beforeEach, describe, expect, it, vi } from 'vitest'
 
 import { configures3dTestEngine } from '../../test-utils'
 
-describe('managers.Control', () => {
+describe('ReplayManager', () => {
   /** @type {import('@babylonjs/core').Engine} */
   let engine
   /** @type {import('@babylonjs/core').Scene} */
@@ -93,7 +93,7 @@ describe('managers.Control', () => {
       })
 
       it('records action with no revert', () => {
-        /** @type {import('@src/3d/managers').Action} */
+        /** @type {import('@tabulous/types').Action} */
         const action = {
           meshId: mesh.id,
           fn: 'flip',
@@ -113,7 +113,7 @@ describe('managers.Control', () => {
       })
 
       it('can record action with revert', () => {
-        /** @type {import('@src/3d/managers').Action} */
+        /** @type {import('@tabulous/types').Action} */
         const action = {
           meshId: mesh.id,
           fn: 'push',
@@ -278,7 +278,7 @@ describe('managers.Control', () => {
           prev: [0, 0, 0],
           fromHand: false
         }
-        /** @type {import('@src/3d/managers').Action} */
+        /** @type {import('@tabulous/types').Action} */
         const draw1 = { meshId: mesh.id, args: [], fn: 'draw', fromHand: false }
         const move1_2 = {
           meshId: mesh.id,
@@ -292,7 +292,7 @@ describe('managers.Control', () => {
           prev: [0, 0, 0],
           fromHand: false
         }
-        /** @type {import('@src/3d/managers').Action} */
+        /** @type {import('@tabulous/types').Action} */
         const draw2 = {
           meshId: mesh2.id,
           args: [],
@@ -345,7 +345,7 @@ describe('managers.Control', () => {
           prev: [1, 0.5, 1],
           fromHand: false
         }
-        /** @type {import('@src/3d/managers').Action} */
+        /** @type {import('@tabulous/types').Action} */
         const draw1 = { meshId: mesh.id, args: [], fn: 'draw', fromHand: false }
         const move3 = {
           meshId: mesh.id,

@@ -58,7 +58,7 @@ export function findAnchor(
     if (!match) {
       return null
     }
-    candidates = meshes.filter(({ id }) => id === match.anchor.snappedId)
+    candidates = meshes.filter(({ id }) => match.anchor.snappedIds.includes(id))
     anchor = match.anchor
   }
   return anchor ?? null
@@ -188,14 +188,14 @@ export function snapTo(
     }
     return false
   }
-  if (anchor.snappedId) {
-    const snapped = findMesh(anchor.snappedId, meshes, throwOnMiss)
+  if (anchor.snappedIds.length === (anchor.max ?? 1)) {
+    const snapped = findMesh(anchor.snappedIds[0], meshes, throwOnMiss)
     if (!canStack(snapped, mesh)) {
       return false
     }
     stackMeshes([snapped, mesh])
   } else {
-    anchor.snappedId = mesh.id
+    anchor.snappedIds.push(mesh.id)
   }
   return true
 }
@@ -206,7 +206,7 @@ export function snapTo(
  * @param {string} anchorId - desired anchor id.
  * @param {import('@tabulous/types').Mesh[]} meshes - all meshes to search the anchor in.
  * @param {boolean} [throwOnMiss=true]
- * @returns {?import('@tabulous/types').Mesh} unsnapped meshes, or null if anchor has no snapped mesh
+ * @returns {import('@tabulous/types').Mesh} unsnapped meshes, or null if anchor has no snapped mesh
  * @throws {Error} when anchor (or snapped mesh) could not be found.
  *
  * @overload
@@ -222,14 +222,13 @@ export function unsnap(
   throwOnMiss = true
 ) {
   const anchor = findAnchor(anchorId, meshes, throwOnMiss)
-  if (!anchor || !anchor.snappedId) {
+  if (!anchor || anchor.snappedIds.length === 0) {
     if (throwOnMiss) {
       throw new Error(`Anchor ${anchorId} has no snapped mesh`)
     }
     return null
   }
-  const id = anchor.snappedId
-  anchor.snappedId = null
+  const [id] = anchor.snappedIds.splice(0, 1)
   return findMesh(id, meshes, throwOnMiss)
 }
 

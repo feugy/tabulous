@@ -139,7 +139,9 @@ export async function loadMeshes(scene, meshes, managers) {
     }
     const anchorBehavior = mesh.getBehaviorByName(AnchorBehaviorName)
     if (anchorable && anchorBehavior) {
-      if ((anchorable.anchors ?? []).find(({ snappedId }) => snappedId)) {
+      if (
+        (anchorable.anchors ?? []).find(({ snappedIds }) => snappedIds.length)
+      ) {
         // stores for later
         anchorables.push({
           anchorBehavior,

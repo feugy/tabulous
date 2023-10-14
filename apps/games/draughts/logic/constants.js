@@ -1,6 +1,11 @@
 // @ts-check
 /** @typedef {'white'|'black'} Side */
 
+/**
+ * @typedef {object} Parameters
+ * @property {Side} side - player and pieces color;
+ */
+
 export const counts = { pawns: 20, columns: 10 }
 
 /** @type {Side} */
@@ -9,6 +14,12 @@ export const blackId = 'black'
 /** @type {Side} */
 export const whiteId = 'white'
 
+export const ids = {
+  board: 'board',
+  pawnAnchor: 'pawn',
+  scoreAnchor: 'score'
+}
+
 /** @type {Record<Side, string>} */
 export const colors = {
   [blackId]: '#633b21ff',
@@ -16,7 +27,7 @@ export const colors = {
 }
 
 export const sizes = {
-  board: { depth: 30, width: 30, height: 0.5, borderRadius: 0.8 },
+  board: { depth: 30, width: 30, height: 0.6, borderRadius: 0.8 },
   pawn: { diameter: 2.9, height: 0.5 }
 }
 

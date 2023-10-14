@@ -58,7 +58,7 @@ export class StackBehavior extends TargetBehavior {
     this.moveObserver = null
     /** @protected @type {?import('@babylonjs/core').Observer<import('../managers').DropDetails>} */
     this.dropObserver = null
-    /** @protected @type {?import('@babylonjs/core').Observer<import('../managers').ActionOrMove>} */
+    /** @protected @type {?import('@babylonjs/core').Observer<import('@tabulous/types').ActionOrMove>} */
     this.actionObserver = null
     /** @internal @type {boolean} */
     this.isReordering = false

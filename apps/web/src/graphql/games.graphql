@@ -71,14 +71,16 @@ fragment mesh on Mesh {
       height
       depth
       diameter
+      enabled
       extent
       kinds
       priority
-      snappedId
+      snappedIds
       playerId
       ignoreParts
       angle
       flip
+      max
     }
     duration
   }
@@ -108,6 +110,7 @@ fragment mesh on Mesh {
 fragment fullGame on Game {
   id
   kind
+  engineScript
   players {
     ...lightPlayer
   }
@@ -135,11 +138,7 @@ fragment fullGame on Game {
       ...mesh
     }
   }
-  preferences {
-    playerId
-    color
-    angle
-  }
+  preferencesString
   rulesBookPageCount
   zoomSpec {
     min
@@ -207,11 +206,7 @@ fragment gameData on GameOrParameters {
     players {
       ...lightPlayer
     }
-    preferences {
-      playerId
-      color
-      angle
-    }
+    preferencesString
     rulesBookPageCount
     availableSeats
     colors {

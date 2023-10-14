@@ -179,12 +179,12 @@ describe('createMeshes()', () => {
             id: boardId,
             texture: '',
             shape: /** @type {const} */ ('box'),
-            anchorable: { anchors: [{ id: 'anchor' }] }
+            anchorable: { anchors: [{ id: 'anchor', snappedIds: [] }] }
           }
         ],
         bags: new Map([['cards', ids]]),
         slots: [
-          { bagId: 'cards', anchorId: 'anchor', count: 2 },
+          { bagId: 'cards', anchorId: 'anchor', count: 2, name: 'first' },
           { bagId: 'cards', anchorId: 'anchor', count: 3 },
           { bagId: 'cards', anchorId: 'anchor' }
         ]
@@ -200,7 +200,7 @@ describe('createMeshes()', () => {
       const { id: stackId } = expectStackedOnSlot(meshes, slot, ids.length)
       const board = meshes.find(({ id }) => id === boardId)
       expect(board).toBeDefined()
-      expect(board?.anchorable?.anchors?.[0]?.snappedId).toEqual(stackId)
+      expect(board?.anchorable?.anchors?.[0]?.snappedIds).toEqual([stackId])
     })
   })
 
@@ -212,14 +212,23 @@ describe('createMeshes()', () => {
         texture: '',
         shape: /** @type {const} */ ('box'),
         anchorable: {
-          anchors: [{ id: 'first' }, { id: 'second' }, { id: 'third' }]
+          anchors: [
+            { id: 'first', snappedIds: [] },
+            { id: 'second', snappedIds: [], max: 1 },
+            { id: 'third', snappedIds: [], max: 2 }
+          ]
         }
       },
       ...ids.map(id => ({
         id,
         texture: '',
         shape: /** @type {const} */ ('box'),
-        anchorable: { anchors: [{ id: 'top' }, { id: 'bottom' }] }
+        anchorable: {
+          anchors: [
+            { id: 'top', snappedIds: [] },
+            { id: 'bottom', snappedIds: [] }
+          ]
+        }
       }))
     ]
     const bags = new Map([['cards', ids]])
@@ -227,7 +236,7 @@ describe('createMeshes()', () => {
     it('snaps a random mesh on anchor', async () => {
       const slots = [
         { bagId: 'cards', anchorId: 'first', count: 1, name: 'first' },
-        { bagId: 'cards', anchorId: 'third', count: 1, name: 'third' }
+        { bagId: 'cards', anchorId: 'second', count: 1, name: 'second' }
       ]
       const meshes = await createMeshes('cards', {
         build: () => ({ meshes: initialMeshes, slots, bags })
@@ -241,12 +250,12 @@ describe('createMeshes()', () => {
         slots[0].name,
         board?.anchorable?.anchors?.[0]
       )
-      expect(board?.anchorable?.anchors?.[1].snappedId).toBeUndefined()
       expectSnappedByName(
         meshes,
         slots[1].name,
-        board?.anchorable?.anchors?.[2]
+        board?.anchorable?.anchors?.[1]
       )
+      expect(board?.anchorable?.anchors?.[2].snappedIds).toHaveLength(0)
     })
 
     it('snaps a random mesh on chained anchor', async () => {
@@ -262,9 +271,9 @@ describe('createMeshes()', () => {
       const board = meshes.find(({ id }) => id === 'board')
       expect(board).toBeDefined()
 
-      expect(board?.anchorable?.anchors?.[0].snappedId).toBeUndefined()
+      expect(board?.anchorable?.anchors?.[0].snappedIds).toHaveLength(0)
       expectSnappedByName(meshes, 'base', board?.anchorable?.anchors?.[1])
-      expect(board?.anchorable?.anchors?.[2].snappedId).toBeUndefined()
+      expect(board?.anchorable?.anchors?.[2].snappedIds).toHaveLength(0)
 
       const base = meshes.find(mesh => 'name' in mesh && mesh.name === 'base')
       expectSnappedByName(meshes, 'top', base?.anchorable?.anchors?.[0])
@@ -295,27 +304,27 @@ describe('createMeshes()', () => {
       const board = meshes.find(({ id }) => id === 'board')
       expect(board).toBeDefined()
 
-      expect(board?.anchorable?.anchors?.[0].snappedId).toBeUndefined()
+      expect(board?.anchorable?.anchors?.[0].snappedIds).toHaveLength(0)
       expectSnappedByName(meshes, 'base', board?.anchorable?.anchors?.[1])
-      expect(board?.anchorable?.anchors?.[2].snappedId).toBeUndefined()
+      expect(board?.anchorable?.anchors?.[2].snappedIds).toHaveLength(0)
 
       const base = meshes.find(mesh => 'name' in mesh && mesh.name === 'base')
       expectSnappedByName(meshes, 'first', base?.anchorable?.anchors?.[0])
-      expect(base?.anchorable?.anchors?.[1].snappedId).toBeUndefined()
+      expect(base?.anchorable?.anchors?.[1].snappedIds).toHaveLength(0)
 
       const first = meshes.find(mesh => 'name' in mesh && mesh.name === 'first')
       expectSnappedByName(meshes, 'second', first?.anchorable?.anchors?.[0])
-      expect(first?.anchorable?.anchors?.[1].snappedId).toBeUndefined()
+      expect(first?.anchorable?.anchors?.[1].snappedIds).toHaveLength(0)
 
       const second = meshes.find(
         mesh => 'name' in mesh && mesh.name === 'second'
       )
       expectSnappedByName(meshes, 'third', second?.anchorable?.anchors?.[1])
-      expect(second?.anchorable?.anchors?.[0].snappedId).toBeUndefined()
+      expect(second?.anchorable?.anchors?.[0].snappedIds).toHaveLength(0)
 
       const third = meshes.find(mesh => 'name' in mesh && mesh.name === 'third')
-      expect(third?.anchorable?.anchors?.[0].snappedId).toBeUndefined()
-      expect(third?.anchorable?.anchors?.[1].snappedId).toBeUndefined()
+      expect(third?.anchorable?.anchors?.[0].snappedIds).toHaveLength(0)
+      expect(third?.anchorable?.anchors?.[1].snappedIds).toHaveLength(0)
     })
 
     it('can stack on top of an anchor', async () => {
@@ -343,7 +352,7 @@ describe('createMeshes()', () => {
       )
       expect(board).toBeDefined()
       expect(snapped).toHaveLength(3)
-      expect(board?.anchorable?.anchors?.[0].snappedId).toBeUndefined()
+      expect(board?.anchorable?.anchors?.[0].snappedIds).toHaveLength(0)
       const base = snapped.filter(mesh => mesh.stackable)
       expect(base).toHaveLength(1)
       expect(base?.[0]?.stackable?.stackIds).toEqual(
@@ -378,9 +387,9 @@ describe('createMeshes()', () => {
       expect(board).toBeDefined()
       expect(base).toBeDefined()
       expect(base?.x).toBeUndefined()
-      expect(board?.anchorable?.anchors?.[0].snappedId).toBeUndefined()
+      expect(board?.anchorable?.anchors?.[0].snappedIds).toHaveLength(0)
       expectSnappedByName(meshes, 'base', board?.anchorable?.anchors?.[1])
-      expect(board?.anchorable?.anchors?.[2].snappedId).toBeUndefined()
+      expect(board?.anchorable?.anchors?.[2].snappedIds).toHaveLength(0)
       expect(
         meshes
           .filter(
@@ -389,6 +398,27 @@ describe('createMeshes()', () => {
           )
           .every(({ x }) => x === 1)
       ).toBe(true)
+    })
+
+    it('snaps meshes on a multiple anchor', async () => {
+      const slots = [
+        { bagId: 'cards', anchorId: 'third', count: 2, name: 'third' }
+      ]
+      const meshes = await createMeshes('cards', {
+        build: () => ({ meshes: initialMeshes, slots, bags })
+      })
+
+      const board = meshes.find(({ id }) => id === 'board')
+      expect(board).toBeDefined()
+
+      expect(board?.anchorable?.anchors?.[0].snappedIds).toHaveLength(0)
+      expect(board?.anchorable?.anchors?.[1].snappedIds).toHaveLength(0)
+      expectSnappedByName(
+        meshes,
+        slots[0].name,
+        board?.anchorable?.anchors?.[2],
+        2
+      )
     })
   })
 
@@ -663,7 +693,7 @@ describe('reportReusedIds()', () => {
           id: 'box1',
           shape: 'box',
           texture: '',
-          anchorable: { anchors: [{ id: 'anchor1' }] }
+          anchorable: { anchors: [{ id: 'anchor1', snappedIds: [] }] }
         },
         { id: 'box2', shape: 'box', texture: '' }
       ],
@@ -675,7 +705,12 @@ describe('reportReusedIds()', () => {
               id: 'box3',
               shape: 'box',
               texture: '',
-              anchorable: { anchors: [{ id: 'anchor1' }, { id: 'box2' }] }
+              anchorable: {
+                anchors: [
+                  { id: 'anchor1', snappedIds: [] },
+                  { id: 'box2', snappedIds: [] }
+                ]
+              }
             }
           ]
         }

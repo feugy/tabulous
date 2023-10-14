@@ -85,9 +85,15 @@ describe('startServer()', () => {
 
     response = await app.inject({ url: 'splendor/index.js' })
     expect(response.statusCode).toEqual(200)
-    expect(repositories.games.connect).toHaveBeenCalledWith({ url: 'data' })
+    expect(repositories.games.connect).toHaveBeenCalledWith({
+      url: 'data',
+      isProduction: true
+    })
     expect(repositories.games.connect).toHaveBeenCalledOnce()
-    expect(repositories.players.connect).toHaveBeenCalledWith({ url: 'data' })
+    expect(repositories.players.connect).toHaveBeenCalledWith({
+      url: 'data',
+      isProduction: true
+    })
     expect(repositories.players.connect).toHaveBeenCalledOnce()
     expect(repositories.catalogItems.connect).toHaveBeenCalledWith({
       path: 'games'

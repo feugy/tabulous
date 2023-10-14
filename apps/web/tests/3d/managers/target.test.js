@@ -95,6 +95,7 @@ describe('TargetManager', () => {
     /** @type {import('@src/3d/managers').SingleDropZone} */
     let zone2
     const aboveZone1 = new Vector3(5, 1, 5)
+    const partiallyAboveZone1 = new Vector3(5.5, 2, 5)
     const aboveZone2 = new Vector3(-5, 1, -5)
     const aboveZone3 = new Vector3(10, 1, 10)
 
@@ -177,6 +178,15 @@ describe('TargetManager', () => {
       expect(managers.target.findDropZone(mesh)).toBeNull()
     })
 
+    it('ignores partially overlapped multiple anchor', () => {
+      zone1.snappedIds = ['box1']
+      zone1.max = 2
+      const mesh = createBox('box', {})
+      mesh.setAbsolutePosition(partiallyAboveZone1)
+
+      expect(managers.target.findDropZone(mesh)).toBeNull()
+    })
+
     it('returns targets with same playerId below mesh with kind', () => {
       const zone3 = createsTargetZone('target3', {
         position: new Vector3(10, 0, 10),
@@ -196,6 +206,13 @@ describe('TargetManager', () => {
       expectActiveZone(managers.target.findDropZone(mesh, 'box'), zone1, color)
     })
 
+    it('returns anchor partially below mesh', () => {
+      const mesh = createBox('box', {})
+      mesh.setAbsolutePosition(partiallyAboveZone1)
+
+      expectActiveZone(managers.target.findDropZone(mesh, 'box'), zone1, color)
+    })
+
     it('returns targets below mesh with matching kind', () => {
       zone1.kinds = ['card', 'box']
       const mesh = createBox('box', {})
@@ -211,7 +228,7 @@ describe('TargetManager', () => {
       })
       createsTargetZone('target4', { position: new Vector3(-0.5, 1, 0) })
       const zone5 = createsTargetZone('target5', {
-        position: new Vector3(0, 0, 0)
+        position: Vector3.Zero()
       })
 
       const mesh = createBox('box', {})
@@ -222,7 +239,7 @@ describe('TargetManager', () => {
 
     it('returns highest target below mesh regardless of priorities', () => {
       createsTargetZone('target3', {
-        position: new Vector3(0, 0, 0),
+        position: Vector3.Zero(),
         priority: 10
       })
       const zone4 = createsTargetZone('target4', {
@@ -237,13 +254,13 @@ describe('TargetManager', () => {
     })
 
     it('returns highest priority target below mesh', () => {
-      createsTargetZone('target3', new Vector3(0, 0, 0))
+      createsTargetZone('target3', Vector3.Zero())
       const zone4 = createsTargetZone('target4', {
-        position: new Vector3(0, 0, 0),
+        position: Vector3.Zero(),
         priority: 2
       })
       createsTargetZone('target5', {
-        position: new Vector3(0, 0, 0),
+        position: Vector3.Zero(),
         priority: 1
       })
 
@@ -251,6 +268,15 @@ describe('TargetManager', () => {
       mesh.setAbsolutePosition(new Vector3(0, 5, 0))
 
       expectActiveZone(managers.target.findDropZone(mesh, 'box'), zone4, color)
+    })
+
+    it('returns overlapped multiple anchor', () => {
+      zone1.snappedIds = ['box1']
+      zone1.max = 2
+      const mesh = createBox('box', {})
+      mesh.setAbsolutePosition(aboveZone1)
+
+      expectActiveZone(managers.target.findDropZone(mesh), zone1, color)
     })
 
     describe('given a mesh with parts', () => {
@@ -268,7 +294,7 @@ describe('TargetManager', () => {
 
       it('returns a multi drop zone', () => {
         const zone4 = createsTargetZone('target4', {
-          position: new Vector3(0, 0, 0)
+          position: Vector3.Zero()
         })
         const zone5 = createsTargetZone('target5', {
           position: new Vector3(1, 0, 0)
@@ -282,7 +308,7 @@ describe('TargetManager', () => {
       })
 
       it('gives precedence to a single drop zone that ignore part', () => {
-        createsTargetZone('target4', { position: new Vector3(0, 0, 0) })
+        createsTargetZone('target4', { position: Vector3.Zero() })
         createsTargetZone('target5', { position: new Vector3(1, 0, 0) })
         const zone6 = createsTargetZone('target6', {
           position: new Vector3(0.5, 0, 0),
@@ -293,14 +319,14 @@ describe('TargetManager', () => {
       })
 
       it('returns null when at least one part is not covered', () => {
-        createsTargetZone('target4', { position: new Vector3(0, 0, 0) })
+        createsTargetZone('target4', { position: Vector3.Zero() })
         createsTargetZone('target5', { position: new Vector3(-1, 0, 0) })
 
         expect(managers.target.findDropZone(mesh, 'box')).toBeNull()
       })
 
       it('clears an active multi zone', () => {
-        createsTargetZone('target4', { position: new Vector3(0, 0, 0) })
+        createsTargetZone('target4', { position: Vector3.Zero() })
         createsTargetZone('target5', { position: new Vector3(1, 0, 0) })
 
         const multiZone = managers.target.findDropZone(mesh, 'box')
@@ -549,7 +575,7 @@ describe('TargetManager', () => {
   function createsTargetZone(
     /** @type {string} */ id,
     /** @type {Record<string, ?> & Partial<{ position: Vector3, scene: import('@babylonjs/core').Scene }>} */
-    { position = new Vector3(0, 0, 0), scene: usedScene, ...properties }
+    { position = Vector3.Zero(), scene: usedScene, ...properties }
   ) {
     const targetable = createBox(`targetable-${id}`, {}, usedScene ?? scene)
     targetable.isPickable = false

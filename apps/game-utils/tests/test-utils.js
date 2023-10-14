@@ -9,6 +9,7 @@ export function expectStackedOnSlot(
   const stack = meshes.find(
     ({ stackable }) => stackable?.stackIds?.length === count - 1
   )
+  // console.log(slot, JSON.stringify(meshes, null, 2))
   expect(stack).toBeDefined()
   const stackedMeshes = meshes.filter(
     ({ id }) => stack?.stackable?.stackIds?.includes(id) || id === stack?.id
@@ -25,11 +26,14 @@ export function expectStackedOnSlot(
 export function expectSnappedByName(
   /** @type {import('@tabulous/types').Mesh[]} */ meshes,
   /** @type {string} */ name,
-  /** @type {import('@tabulous/types').Anchor|undefined} */ anchor
+  /** @type {import('@tabulous/types').Anchor|undefined} */ anchor,
+  count = 1
 ) {
   const candidates = meshes.filter(mesh => 'name' in mesh && name === mesh.name)
-  expect(candidates).toHaveLength(1)
-  expect(anchor?.snappedId).toEqual(candidates[0].id)
+  expect(candidates).toHaveLength(count)
+  expect(anchor?.snappedIds).toEqual(
+    expect.objectContaining(candidates.map(({ id }) => id))
+  )
 }
 
 /**

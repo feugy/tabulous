@@ -25,7 +25,7 @@ describe('pop()', () => {
           id: 'B',
           texture: '',
           shape: 'box',
-          anchorable: { anchors: [{ id: 'discard', snappedId: 'C' }] }
+          anchorable: { anchors: [{ id: 'discard', snappedIds: ['C'] }] }
         },
         {
           id: 'C',
@@ -108,7 +108,8 @@ describe('findMesh()', () => {
 
 describe('findAnchor()', () => {
   const anchors = Array.from({ length: 10 }, () => ({
-    id: faker.string.uuid()
+    id: faker.string.uuid(),
+    snappedIds: []
   }))
 
   const meshes = [
@@ -167,25 +168,25 @@ describe('findAnchor()', () => {
         id: 'mesh0',
         texture: '',
         shape: /** @type {const} */ ('box'),
-        anchorable: { anchors: [{ id: 'bottom' }] }
+        anchorable: { anchors: [{ id: 'bottom', snappedIds: [] }] }
       },
       {
         id: 'mesh1',
         texture: '',
         shape: /** @type {const} */ ('box'),
-        anchorable: { anchors: [{ id: 'bottom', snappedId: 'mesh3' }] }
+        anchorable: { anchors: [{ id: 'bottom', snappedIds: ['mesh3'] }] }
       },
       {
         id: 'mesh2',
         texture: '',
         shape: /** @type {const} */ ('box'),
-        anchorable: { anchors: [{ id: 'start', snappedId: 'mesh1' }] }
+        anchorable: { anchors: [{ id: 'start', snappedIds: ['mesh1'] }] }
       },
       {
         id: 'mesh3',
         texture: '',
         shape: /** @type {const} */ ('box'),
-        anchorable: { anchors: [{ id: 'bottom', snappedId: 'mesh0' }] }
+        anchorable: { anchors: [{ id: 'bottom', snappedIds: ['mesh0'] }] }
       }
     ]
     expect(findAnchor('start.bottom', meshes)).toEqual(
@@ -214,13 +215,18 @@ describe('snapTo()', () => {
         id: 'mesh1',
         texture: '',
         shape: 'box',
-        anchorable: { anchors: [{ id: 'anchor1' }] }
+        anchorable: { anchors: [{ id: 'anchor1', snappedIds: [] }] }
       },
       {
         id: 'mesh2',
         texture: '',
         shape: 'box',
-        anchorable: { anchors: [{ id: 'anchor2' }, { id: 'anchor3' }] }
+        anchorable: {
+          anchors: [
+            { id: 'anchor2', snappedIds: [] },
+            { id: 'anchor3', snappedIds: [], max: 2 }
+          ]
+        }
       },
       { id: 'mesh3', texture: '', shape: 'box' }
     ]
@@ -233,7 +239,26 @@ describe('snapTo()', () => {
       texture: '',
       shape: 'box',
       anchorable: {
-        anchors: [{ id: 'anchor2' }, { id: 'anchor3', snappedId: 'mesh0' }]
+        anchors: [
+          { id: 'anchor2', snappedIds: [] },
+          { id: 'anchor3', snappedIds: ['mesh0'], max: 2 }
+        ]
+      }
+    })
+  })
+
+  it('snaps meshes to a multiple anchor', () => {
+    expect(snapTo('anchor3', meshes[0], meshes)).toBe(true)
+    expect(snapTo('anchor3', meshes[2], meshes)).toBe(true)
+    expect(meshes[2]).toEqual({
+      id: 'mesh2',
+      texture: '',
+      shape: 'box',
+      anchorable: {
+        anchors: [
+          { id: 'anchor2', snappedIds: [] },
+          { id: 'anchor3', snappedIds: ['mesh0', 'mesh2'], max: 2 }
+        ]
       }
     })
   })
@@ -248,7 +273,10 @@ describe('snapTo()', () => {
       texture: '',
       shape: 'box',
       anchorable: {
-        anchors: [{ id: 'anchor2', snappedId: 'mesh0' }, { id: 'anchor3' }]
+        anchors: [
+          { id: 'anchor2', snappedIds: ['mesh0'] },
+          { id: 'anchor3', snappedIds: [], max: 2 }
+        ]
       }
     })
     expect(meshes[0]).toEqual({
@@ -311,7 +339,10 @@ describe('unsnap()', () => {
         texture: '',
         shape: 'box',
         anchorable: {
-          anchors: [{ id: 'anchor1', snappedId: 'mesh2' }, { id: 'anchor2' }]
+          anchors: [
+            { id: 'anchor1', snappedIds: ['mesh2'] },
+            { id: 'anchor2', snappedIds: [] }
+          ]
         }
       },
       {
@@ -320,16 +351,13 @@ describe('unsnap()', () => {
         shape: 'box',
         anchorable: {
           anchors: [
-            { id: 'anchor3', snappedId: 'mesh3' },
-            { id: 'anchor4', snappedId: 'unknown' }
+            { id: 'anchor3', snappedIds: ['mesh3', 'mesh4'], max: 2 },
+            { id: 'anchor4', snappedIds: ['unknown'] }
           ]
         }
       },
-      {
-        id: 'mesh3',
-        texture: '',
-        shape: 'box'
-      }
+      { id: 'mesh3', texture: '', shape: 'box' },
+      { id: 'mesh4', texture: '', shape: 'box' }
     ]
   })
 
@@ -360,11 +388,25 @@ describe('unsnap()', () => {
   })
 
   it('returns mesh and unsnapps it', () => {
+    expect(unsnap('anchor1', meshes)).toEqual(meshes[1])
+    expect(meshes[0].anchorable?.anchors).toEqual([
+      { id: 'anchor1', snappedIds: [] },
+      { id: 'anchor2', snappedIds: [] }
+    ])
+  })
+
+  it('can unsapps multiple meshes', () => {
     expect(unsnap('anchor3', meshes)).toEqual(meshes[2])
     expect(meshes[1].anchorable?.anchors).toEqual([
-      { id: 'anchor3', snappedId: null },
-      { id: 'anchor4', snappedId: 'unknown' }
+      { id: 'anchor3', snappedIds: ['mesh4'], max: 2 },
+      { id: 'anchor4', snappedIds: ['unknown'] }
     ])
+    expect(unsnap('anchor3', meshes)).toEqual(meshes[3])
+    expect(meshes[1].anchorable?.anchors).toEqual([
+      { id: 'anchor3', snappedIds: [], max: 2 },
+      { id: 'anchor4', snappedIds: ['unknown'] }
+    ])
+    expect(unsnap('anchor3', meshes, false)).toBeNull()
   })
 })
 

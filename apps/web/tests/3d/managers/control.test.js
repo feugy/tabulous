@@ -10,7 +10,7 @@ describe('ControlManager', () => {
   let scene
   /** @type {import('@babylonjs/core').Scene} */
   let handScene
-  /** @type {import('@src/3d/managers').ActionOrMove[]} */
+  /** @type {import('@tabulous/types').ActionOrMove[]} */
   let actions
   /** @type {import('@babylonjs/core').Mesh} */
   let mesh
@@ -55,7 +55,9 @@ describe('ControlManager', () => {
     anchorable = createBox('box2', {})
     const anchorableBehavior = new AnchorBehavior(
       {
-        anchors: [{ id: 'anchor-0', width: 1, height: 1, depth: 0.5 }]
+        anchors: [
+          { id: 'anchor-0', width: 1, height: 1, depth: 0.5, snappedIds: [] }
+        ]
       },
       managers
     )

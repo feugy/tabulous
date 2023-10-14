@@ -525,7 +525,7 @@ describe('Indicators store', () => {
       it('has no player data on drop zones', async () => {
         const [card] = cards
         card.getBehaviorByName(AnchorBehaviorName)?.fromState({
-          anchors: [{ id: 'anchor-0', playerId: players[0].id }]
+          anchors: [{ id: 'anchor-0', playerId: players[0].id, snappedIds: [] }]
         })
         expectIndicators([
           {
@@ -575,12 +575,12 @@ describe('Indicators store', () => {
 
       it('has player indicators for drop zones', async () => {
         const [card1, card2] = cards
-        card1
-          .getBehaviorByName(AnchorBehaviorName)
-          ?.fromState({ anchors: [{ id: '2', playerId: players[0].id }] })
-        card2
-          .getBehaviorByName(AnchorBehaviorName)
-          ?.fromState({ anchors: [{ id: '3', playerId: players[1].id }] })
+        card1.getBehaviorByName(AnchorBehaviorName)?.fromState({
+          anchors: [{ id: '2', playerId: players[0].id, snappedIds: [] }]
+        })
+        card2.getBehaviorByName(AnchorBehaviorName)?.fromState({
+          anchors: [{ id: '3', playerId: players[1].id, snappedIds: [] }]
+        })
         expectIndicators([
           {
             id: `${players[0].id}.drop-zone.2`,

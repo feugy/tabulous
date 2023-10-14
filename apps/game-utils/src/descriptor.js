@@ -7,8 +7,9 @@ import { mergeProps } from './utils.js'
 
 /**
  * Creates a unique game from a game descriptor.
+ * @template {Record<string, ?>} Parameters
  * @param {string} kind - created game's kind.
- * @param {Partial<import('@tabulous/types').GameDescriptor>} descriptor - to create game from.
+ * @param {Partial<import('@tabulous/types').GameDescriptor<Parameters>>} descriptor - to create game from.
  * @returns a list of serialized 3D meshes.
  */
 export async function createMeshes(kind, descriptor) {
@@ -122,6 +123,10 @@ function randomizeBags(bags, meshById) {
 }
 
 /**
+ * Picks in the bag as many random mesh as requested by the slot (defaults to all).
+ * Then snaps as many meshes as possible to the slot's anchor (according to its max), and
+ * stacks the remaining meshes on top of the first one.
+ * When snapping on multiple anchors, meshes are NOT layed out.
  * @param {import('@tabulous/types').Slot} slot - slot to fill.
  * @param {Map<string, import('@tabulous/types').Mesh[]>} meshesByBagId - randomized meshes per bags.
  * @param {import('@tabulous/types').Mesh[]} allMeshes - all meshes
@@ -134,23 +139,28 @@ function fillSlot(
   const candidates = meshesByBagId.get(bagId)
   if (candidates?.length) {
     const meshes = candidates.splice(0, count ?? candidates.length)
+    /** @type {import('@tabulous/types').Mesh[]} */
+    let stack = meshes
     for (const mesh of meshes) {
       mergeProps(mesh, props)
     }
     if (anchorId) {
       const anchor = findAnchor(anchorId, allMeshes)
       if (anchor) {
-        if (anchor.snappedId) {
-          const mesh = findMesh(anchor.snappedId, allMeshes)
-          if (mesh) {
-            meshes.splice(0, 0, mesh)
+        const snapped = findMesh(anchor.snappedIds[0], allMeshes, false)
+        stack = snapped ? [snapped] : []
+        for (const mesh of meshes) {
+          if (anchor.snappedIds.length === (anchor.max ?? 1)) {
+            stack.push(mesh)
+          } else {
+            anchor.snappedIds.push(mesh.id)
+            stack = [mesh]
+            // TODO: lay out multiple meshes
           }
-        } else {
-          anchor.snappedId = meshes[0].id
         }
       }
     }
-    stackMeshes(meshes)
+    stackMeshes(stack)
   }
 }
 

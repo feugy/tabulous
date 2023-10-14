@@ -25,7 +25,7 @@ export class ReplayManager {
     this.onHistoryObservable = new Observable()
     /** @type {Observable<number>} emits when the replay ranks is modified. */
     this.onReplayRankObservable = new Observable()
-    /** @type {import('@babylonjs/core').Observer<import('.').ActionOrMove>?} */
+    /** @type {import('@babylonjs/core').Observer<import('@tabulous/types').ActionOrMove>?} */
     this.actionObserver
     /** @internal avoid concurrent replays */
     this.inhibitReplay = false
@@ -81,7 +81,7 @@ export class ReplayManager {
    * Record a new action or move into history.
    * It collapses redundant moves together and notifies listeners.
    * Only updates current rank if it was on last.
-   * @param {import('.').ActionOrMove} record - received record.
+   * @param {import('@tabulous/types').ActionOrMove} record - received record.
    * @param {string} [playerId] - id of the player who sent the record.
    */
   record(record, playerId = this.playerId) {

@@ -44,11 +44,8 @@ import {
   send as actualSend
 } from '@src/stores/peer-channels'
 import { lastToast } from '@src/stores/toaster'
-import {
-  buildPlayerColors,
-  findPlayerColor,
-  findPlayerPreferences
-} from '@src/utils'
+import { buildPlayerColors, findPlayerColor } from '@src/utils'
+import { findPlayerPreferences } from '@tabulous/game-utils'
 import { translate } from '@tests/test-utils'
 import { Subject } from 'rxjs'
 import { get } from 'svelte/store'
@@ -116,7 +113,7 @@ const lastMessageSent =
     actualLastMessageSent
   )
 const action =
-  /** @type {import('rxjs').BehaviorSubject<import('@src/3d/managers').ActionOrMove>} */ (
+  /** @type {import('rxjs').BehaviorSubject<import('@tabulous/types').ActionOrMove>} */ (
     actualAction
   )
 const engine$ =
@@ -526,7 +523,7 @@ describe('given a mocked game engine', () => {
         {
           playerId: player.id,
           colorByPlayerId,
-          preferences: { color: '#00ff00' }
+          preference: { color: '#00ff00' }
         },
         true
       )
@@ -556,7 +553,7 @@ describe('given a mocked game engine', () => {
       const game = {
         id: gameId,
         players: [player],
-        schemaString: '{}'
+        schema: {}
       }
       runMutation.mockResolvedValueOnce(game)
       expect(await joinGame({ gameId, player, turnCredentials })).toEqual(game)
@@ -625,7 +622,7 @@ describe('given a mocked game engine', () => {
         {
           playerId: player.id,
           colorByPlayerId: buildPlayerColors(game),
-          preferences: {}
+          preference: {}
         },
         true
       )
@@ -686,7 +683,7 @@ describe('given a mocked game engine', () => {
         {
           playerId: player.id,
           colorByPlayerId: buildPlayerColors(game),
-          preferences: {}
+          preference: {}
         },
         true
       )
@@ -728,7 +725,7 @@ describe('given a mocked game engine', () => {
         {
           playerId: player.id,
           colorByPlayerId: buildPlayerColors(game),
-          preferences: {}
+          preference: {}
         },
         true
       )
@@ -744,7 +741,7 @@ describe('given a mocked game engine', () => {
         id: gameId,
         kind: 'belote',
         players: [{ ...player, isGuest: true }],
-        schemaString: '{}'
+        schema: {}
       }
       runMutation.mockResolvedValueOnce(game)
       expect(await joinGame({ gameId, player, turnCredentials })).toEqual(game)
@@ -768,7 +765,7 @@ describe('given a mocked game engine', () => {
         id: gameId,
         kind: 'belote',
         players: [{ ...player, isGuest: true }],
-        schemaString: '{}'
+        schema: {}
       }
       const parameters = { side: 'white' }
       runMutation.mockResolvedValueOnce(game)
@@ -858,7 +855,7 @@ describe('given a mocked game engine', () => {
               player.id,
               {
                 ...player,
-                ...findPlayerPreferences(game, player.id),
+                ...findPlayerPreferences(game.preferences, player.id),
                 isHost: true,
                 playing: true
               }
@@ -867,7 +864,7 @@ describe('given a mocked game engine', () => {
               partner1.id,
               {
                 ...partner1,
-                ...findPlayerPreferences(game, partner1.id),
+                ...findPlayerPreferences(game.preferences, partner1.id),
                 isHost: false,
                 playing: true
               }
@@ -902,7 +899,7 @@ describe('given a mocked game engine', () => {
               player.id,
               {
                 ...player,
-                ...findPlayerPreferences(game, player.id),
+                ...findPlayerPreferences(game.preferences, player.id),
                 isHost: true,
                 playing: true
               }
@@ -911,7 +908,7 @@ describe('given a mocked game engine', () => {
               partner1.id,
               {
                 ...partner1,
-                ...findPlayerPreferences(game, partner1.id),
+                ...findPlayerPreferences(game.preferences, partner1.id),
                 isHost: false,
                 playing: false
               }
@@ -920,7 +917,7 @@ describe('given a mocked game engine', () => {
               partner2.id,
               {
                 ...partner2,
-                ...findPlayerPreferences(game, partner2.id),
+                ...findPlayerPreferences(game.preferences, partner2.id),
                 isHost: false,
                 playing: true
               }
@@ -1252,7 +1249,7 @@ describe('given a mocked game engine', () => {
           {
             playerId: player.id,
             colorByPlayerId: buildPlayerColors(game),
-            preferences: { color: '#00ff00' }
+            preference: { color: '#00ff00' }
           },
           true
         )
@@ -1382,7 +1379,7 @@ describe('given a mocked game engine', () => {
             { ...partner2, isGuest: true },
             { ...partner3, currentGameId: faker.string.uuid() }
           ],
-          schemaString: '{}'
+          schema: {}
         }
         runMutation.mockReset().mockResolvedValueOnce(gameParameters)
         expect(
@@ -1447,7 +1444,7 @@ describe('given a mocked game engine', () => {
             {
               playerId: partner2.id,
               colorByPlayerId: buildPlayerColors(game),
-              preferences: { color: '#ffffff' }
+              preference: { color: '#ffffff' }
             },
             true
           )
@@ -1464,7 +1461,7 @@ describe('given a mocked game engine', () => {
                 gamer.id,
                 {
                   ...gamer,
-                  ...findPlayerPreferences(game, gamer.id),
+                  ...findPlayerPreferences(game.preferences, gamer.id),
                   isHost: gamer.id === partner1.id,
                   playing: gamer.id === partner2.id
                 }
@@ -1489,7 +1486,7 @@ describe('given a mocked game engine', () => {
             {
               playerId: partner2.id,
               colorByPlayerId: buildPlayerColors(game),
-              preferences: { color: '#ffffff' }
+              preference: { color: '#ffffff' }
             },
             false
           )
@@ -1503,7 +1500,7 @@ describe('given a mocked game engine', () => {
                 gamer.id,
                 {
                   ...gamer,
-                  ...findPlayerPreferences(game, gamer.id),
+                  ...findPlayerPreferences(game.preferences, gamer.id),
                   isHost: gamer.id === partner1.id,
                   playing: gamer.id === partner2.id
                 }
@@ -1611,7 +1608,7 @@ describe('given a mocked game engine', () => {
                 partner3.id,
                 {
                   ...(game.players ?? [])[0],
-                  ...findPlayerPreferences(game, partner3.id),
+                  ...findPlayerPreferences(game.preferences, partner3.id),
                   isHost: false,
                   playing: false
                 }
@@ -1620,7 +1617,7 @@ describe('given a mocked game engine', () => {
                 player.id,
                 {
                   ...player,
-                  ...findPlayerPreferences(game, player.id),
+                  ...findPlayerPreferences(game.preferences, player.id),
                   currentGameId: game.id,
                   isHost: false,
                   playing: false
@@ -1630,7 +1627,7 @@ describe('given a mocked game engine', () => {
                 partner1.id,
                 {
                   ...partner1,
-                  ...findPlayerPreferences(game, partner1.id),
+                  ...findPlayerPreferences(game.preferences, partner1.id),
                   currentGameId: game.id,
                   isHost: false,
                   playing: false
@@ -1640,7 +1637,7 @@ describe('given a mocked game engine', () => {
                 partner2.id,
                 {
                   ...partner2,
-                  ...findPlayerPreferences(game, partner2.id),
+                  ...findPlayerPreferences(game.preferences, partner2.id),
 
                   isHost: true,
                   playing: true
@@ -1694,7 +1691,7 @@ describe('given a mocked game engine', () => {
                 partner3.id,
                 {
                   ...(game.players ?? [])[0],
-                  ...findPlayerPreferences(game, partner3.id),
+                  ...findPlayerPreferences(game.preferences, partner3.id),
                   isHost: false,
                   playing: false
                 }
@@ -1703,7 +1700,7 @@ describe('given a mocked game engine', () => {
                 player.id,
                 {
                   ...player,
-                  ...findPlayerPreferences(game, player.id),
+                  ...findPlayerPreferences(game.preferences, player.id),
                   currentGameId: game.id,
                   // this player will not be host when the new host will send their first update
                   isHost: true,
@@ -1714,7 +1711,7 @@ describe('given a mocked game engine', () => {
                 partner1.id,
                 {
                   ...partner1,
-                  ...findPlayerPreferences(game, partner1.id),
+                  ...findPlayerPreferences(game.preferences, partner1.id),
                   currentGameId: game.id,
                   // this player will become host when they'll send their first update
                   isHost: false,
@@ -1725,7 +1722,7 @@ describe('given a mocked game engine', () => {
                 partner2.id,
                 {
                   ...partner2,
-                  ...findPlayerPreferences(game, partner2.id),
+                  ...findPlayerPreferences(game.preferences, partner2.id),
                   isHost: false,
                   playing: true
                 }

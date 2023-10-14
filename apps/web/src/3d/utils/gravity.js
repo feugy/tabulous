@@ -60,6 +60,18 @@ export function getCenterAltitudeAbove(meshBelow, meshAbove) {
  * @returns the mesh's new absolute position
  */
 export function applyGravity(mesh) {
+  mesh.setAbsolutePosition(getAltitudeAfterGravity(mesh))
+  return mesh.absolutePosition
+}
+
+/**
+ * Compute a mesh's Y coordinate so it lies on mesh below, or on the ground.
+ * It'll check all other meshes in the same scene to identify the ones below (partial overlap is supported).
+ * Does not alter any mesh
+ * @param {import('@babylonjs/core').Mesh} mesh - tested mesh.
+ * @returns new vector.
+ */
+export function getAltitudeAfterGravity(mesh) {
   logger.info(
     { y: mesh.absolutePosition.y, mesh },
     `gravity for ${mesh.id} y: ${mesh.absolutePosition.y}`
@@ -78,10 +90,8 @@ export function applyGravity(mesh) {
       `${mesh.id} is above ${ordered.map(({ id }) => id)}`
     )
   }
-  logger.info({ y, mesh }, `${mesh.id} assigned to y: ${y}`)
   const { x, z } = mesh.absolutePosition
-  mesh.setAbsolutePosition(new Vector3(x, y, z))
-  return mesh.absolutePosition
+  return new Vector3(x, y, z)
 }
 
 /**

@@ -23,6 +23,7 @@ import {
   MaterialManager,
   MoveManager,
   ReplayManager,
+  RuleManager,
   SelectionManager,
   TargetManager
 } from './managers'
@@ -134,7 +135,8 @@ function initEngineAnScenes(
     replay: new ReplayManager({
       engine,
       moveDuration: isSimulation ? 0 : 200
-    })
+    }),
+    rule: new RuleManager({ engine })
   }
 
   engine.start = () =>
@@ -160,7 +162,7 @@ function initEngineAnScenes(
 
   engine.load = async (
     gameData,
-    { playerId, preferences, colorByPlayerId },
+    { playerId, preference, colorByPlayerId },
     initial
   ) => {
     const game = removeNulls(gameData)
@@ -198,10 +200,15 @@ function initEngineAnScenes(
       managers.hand.init({
         managers,
         playerId,
-        angleOnPlay: preferences?.angle
+        angleOnPlay: preference?.angle
       })
 
       if (!isSimulation) {
+        await managers.rule.init({
+          managers: managers,
+          engineScript: game.engineScript,
+          ...gameData
+        })
         managers.input.init({ managers })
         createLights({ scene, handScene })
       }
@@ -216,6 +223,7 @@ function initEngineAnScenes(
     }
     managers.selection.init({ managers, playerId, colorByPlayerId })
     await managers.customShape.init(game)
+    managers.rule.update(gameData)
 
     await loadMeshes(scene, game.meshes ?? [], managers)
     if (managers.hand.enabled) {
@@ -253,7 +261,7 @@ function initEngineAnScenes(
   }
 
   engine.applyRemoteAction = async (
-    /** @type {import('@src/3d/managers').ActionOrMove} */ actionOrMove,
+    /** @type {import('@tabulous/types').ActionOrMove} */ actionOrMove,
     /** @type {string} */ playerId
   ) => {
     managers.replay.record(actionOrMove, playerId)

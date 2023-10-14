@@ -15,7 +15,7 @@ const reporters = [
   { name: 'lcov' }
 ]
 const previewURL = 'https://localhost:3000'
-const distFolder = join('dist', 'unused/unused')
+const distFolder = join('.vercel', 'output/static')
 const srcFolder = resolve(__filename, '../../../../src')
 
 export async function initializeCoverage() {

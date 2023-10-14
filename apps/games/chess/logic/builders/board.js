@@ -21,6 +21,7 @@ function buildAnchors() {
   const x = sizes.tile * (max * -0.5 + 0.5)
   for (let column = 0; column < max; column++) {
     for (let row = 0; row < max; row++) {
+      const pieceId = getPieceId({ column, row })
       anchors.push({
         id: `tile-${column}-${row}`,
         x: x + sizes.tile * column,
@@ -29,7 +30,7 @@ function buildAnchors() {
         width: sizes.tile,
         depth: sizes.tile,
         height: 0.01,
-        snappedId: getPieceId({ column, row })
+        snappedIds: pieceId ? [pieceId] : []
       })
     }
   }

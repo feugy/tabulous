@@ -102,7 +102,7 @@ export async function runMutation(query, variables) {
   if (!data || keys.length !== 1) {
     throw new Error('graphQL mutation returned no results')
   }
-  return data[keys[0]]
+  return deserialize(data[keys[0]])
 }
 
 /**
@@ -134,7 +134,7 @@ export async function runQuery(query, variables, cache = true) {
   if (!data || keys.length !== 1) {
     throw new Error('graphQL mutation returned no results')
   }
-  return data[keys[0]]
+  return deserialize(data[keys[0]])
 }
 
 /**
@@ -164,7 +164,7 @@ export function runSubscription(subscription, variables) {
         logger.error({ error }, `Error received on subscription`)
       }
       const keys = Object.keys(data || {})
-      return keys.length !== 1 ? data : data[keys[0]]
+      return keys.length !== 1 ? data : deserialize(data[keys[0]])
     })
   )
 }
@@ -184,4 +184,26 @@ function processErrors(
   if (combinedError?.graphQLErrors) {
     throw new Error(combinedError.graphQLErrors[0].message)
   }
+}
+
+/**
+ * Parses schemaString into schema and preferencesString into preferences.
+ * @template T
+ * @param {T} value - serialized value.
+ * @returns deserialized value.
+ */
+function deserialize(value) {
+  if (value) {
+    const obj =
+      /** @type {Record<string, ?> & {schema?: ?, preferences?: ?}} */ (value)
+    if ('schemaString' in obj) {
+      obj.schema = JSON.parse(obj.schemaString)
+      delete obj.schemaString
+    }
+    if ('preferencesString' in obj) {
+      obj.preferences = JSON.parse(obj.preferencesString)
+      delete obj.preferencesString
+    }
+  }
+  return value
 }

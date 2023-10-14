@@ -40,7 +40,8 @@ describe('TargetBehavior', () => {
         extent: 1.2,
         enabled: true,
         priority: 0,
-        ignoreParts: false
+        ignoreParts: false,
+        max: 1
       })
     )
 
@@ -60,7 +61,8 @@ describe('TargetBehavior', () => {
         kinds: ['box', 'card'],
         enabled: false,
         priority: 10,
-        ignoreParts: true
+        ignoreParts: true,
+        max: 1
       })
     )
     expect(mesh1.isDisposed()).toBe(false)
@@ -109,7 +111,8 @@ describe('TargetBehavior', () => {
       extent: 1,
       priority: 0,
       ignoreParts: true,
-      targetable: behavior
+      targetable: behavior,
+      max: 1
     })
     expect(behavior.zones).toEqual([])
   })

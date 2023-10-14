@@ -377,7 +377,7 @@ describe('RotateBehavior', () => {
       child.addBehavior(
         new AnchorBehavior(
           {
-            anchors: [{ id: 'child-1', snappedId: 'granChild' }]
+            anchors: [{ id: 'child-1', snappedIds: ['granChild'] }]
           },
           managers
         ),
@@ -385,7 +385,7 @@ describe('RotateBehavior', () => {
       )
       mesh.addBehavior(
         new AnchorBehavior(
-          { anchors: [{ id: 'mesh-1', snappedId: 'child' }] },
+          { anchors: [{ id: 'mesh-1', snappedIds: ['child'] }] },
           managers
         ),
         true

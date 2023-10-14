@@ -167,8 +167,6 @@ jobs:
 
       - name: Intall Pnpm
         uses: pnpm/action-setup@v2
-        with:
-          version: 7
 
       - name: Set Node.js up
         uses: actions/setup-node@v3
@@ -241,4 +239,4 @@ jobs:
         uses: codacy/codacy-coverage-reporter-action@master
         with:
           project-token: ${{ secrets.CODACY_PROJECT_TOKEN }}
-          coverage-reports: apps/cli/coverage/clover.xml
+          coverage-reports: apps/games/coverage/clover.xml

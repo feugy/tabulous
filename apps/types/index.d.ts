@@ -66,6 +66,8 @@ declare module '.' {
     addPlayer?: AddPlayer<Parameters>
     /** function invoked to generate a joining player's parameters. */
     askForParameters?: AskForParameters<Parameters>
+    /** function invoked to compute score on an action */
+    computeScore?: ComputeScore
   }
 
   /** All the localized data for a catalog item. */
@@ -161,14 +163,11 @@ declare module '.' {
   export type Build = () => GameSetup | Promise<GameSetup>
 
   /** Function invoked when adding a player to the game. */
-  export type AddPlayer<
-    Parameters extends Record<string, any>,
-    Game extends GameData = GameData
-  > = (
-    game: Game,
+  export type AddPlayer<Parameters extends Record<string, any>> = (
+    game: StartedGame,
     guest: Player,
     parameters: Parameters
-  ) => Game | Promise<Game>
+  ) => StartedGame | Promise<StartedGame>
 
   export type Schema<Parameters extends Record<string, any>> =
     JSONSchemaType<Parameters>
@@ -187,6 +186,14 @@ declare module '.' {
     game: GameData
     player: Player
   }) => ?(Schema<Parameters> | Promise<?Schema<Parameters>>)
+
+  /** Function invoked to compute scores after a given action */
+  export type ComputeScore = (
+    action: ?Action,
+    state: EngineState,
+    players: Pick<Player, 'id' | 'username' | 'avatar'>[],
+    preferences: PlayerPreference[]
+  ) => Promise<Scores | undefined> | Scores | undefined
 
   /**
    * Setup for a given game instance, including meshes, bags and slots.
@@ -263,6 +270,8 @@ declare module '.' {
       preferences: PlayerPreference[]
       /** player actions and move history. */
       history: HistoryRecord[]
+      /** bundled rule engine sent to the client, if any */
+      engineScript?: string
     }
 
   /** Data of a started game. */
@@ -412,20 +421,22 @@ declare module '.' {
     duration?: number
   }
 
-  /** A rectangular anchor definition (coordinates are relative to the parent mesh). */
+  /** An anchor definition (coordinates are relative to the parent mesh). */
   export type Anchor = {
     /** this anchor id. */
     id: string
-    /** id of the mesh currently snapped to this anchor. */
-    snappedId?: ?string
+    /** ids of meshes currently snapped to this anchor. */
+    snappedIds: string[]
     /** when set, only this player can snap meshes to this anchor. */
     playerId?: string
-    /** angle applied to any rotable mesh snapped to the anchor. */
+    /** when set, angle applied to any rotable mesh snapped to the anchor. */
     angle?: number
-    /** flip state applied to any flippable mesh snapped to the anchor. */
+    /** when set, flip state applied to any flippable mesh snapped to the anchor. */
     flip?: boolean
     /** when set, and when snapping a multi-part mesh, takes it barycenter into account. */
     ignoreParts?: boolean
+    /** maximum number of snapped meshes, defaults to 1 */
+    max?: number
   } & Point &
     Dimension &
     _Targetable
@@ -568,6 +579,59 @@ declare module '.' {
     /** required to connect. */
     credentials: string
   }
+
+  /** Local game engine serialized state. */
+  export type EngineState = {
+    meshes: Mesh[]
+    handMeshes: Mesh[]
+    history: HistoryRecord[]
+  }
+
+  /** applied action to a given mesh. */
+  export interface Action {
+    /** name of the applied action. */
+    fn: ActionName
+    /** modified mesh id. */
+    meshId: string
+    /** indicates whether this action comes from hand or main scene. */
+    fromHand: boolean
+    /** modified mesh id. */
+    meshId: string
+    /** indicates whether this action comes from hand or main scene. */
+    fromHand: boolean
+    /** argument array for this action. */
+    args: any[]
+    /** when action can't be reverted with the same args, specific data required. */
+    revert?: any[]
+    /** optional animation duration, in milliseconds. */
+    duration?: number
+    /** indicates a local action that should not be re-recorded nor sent to peers. */
+    isLocal?: boolean
+  }
+
+  /** applied move to a given mesh: */
+  export interface Move {
+    /** absolute position. */
+    pos: number[]
+    /** absolute position before the move. */
+    prev: number[]
+    /** optional animation duration, in milliseconds. */
+    duration?: number
+    /** modified mesh id. */
+    meshId: string
+    /** indicates whether this action comes from hand or main scene. */
+    fromHand: boolean
+  }
+
+  export type ActionOrMove = Action | Move
+
+  /** A given player's score, with optional components */
+  export type Score = Record<string, string | number> & {
+    total: string | number
+  }
+
+  /** All player scores */
+  export type Scores = Record<string, Score>
 }
 
 /** Common properties for targets (stacks, anchors, quantifiable...) */

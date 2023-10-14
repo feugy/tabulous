@@ -54,8 +54,7 @@
 
 <style lang="postcss">
   div {
-    @apply flex-1 flex flex-col items-center overflow-hidden justify-center 
-          z-10 bg-$base-darkest text-$ink-dark transition-colors;
+    @apply flex-1 flex flex-col items-center overflow-hidden justify-center bg-$base-darkest text-$ink-dark transition-colors;
   }
 
   span {

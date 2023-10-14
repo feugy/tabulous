@@ -22,19 +22,37 @@ export const wallSize = 17
 
 export const riverSize = 6
 
+export const ids = {
+  stick: 'sticks-',
+  score: 'score-'
+}
+
 export const kinds = {
   tile: 'tile',
-  sticks100: 'sticks-100',
-  sticks1000: 'sticks-1000',
-  sticks5000: 'sticks-5000',
-  sticks10000: 'sticks-10000'
+  sticks100: `${ids.stick}100`,
+  sticks1000: `${ids.stick}1000`,
+  sticks5000: `${ids.stick}5000`,
+  sticks10000: `${ids.stick}10000`
+}
+
+export const stickQuantities = {
+  100: 10,
+  1000: 4,
+  5000: 2,
+  10000: 1
 }
 
 export const shapes = {
   // Size 6: https://en.wikipedia.org/wiki/Mahjong_tiles#Construction
   tile: { width: 2.4, height: 1.9, depth: 3.6, borderRadius: 0.55 },
   anchor: { width: 2.5, height: 0.1, depth: 3.75 },
-  dealerMark: { width: 5, depth: 2.5, height: 0.3 }
+  dealerMark: { width: 5, height: 0.3, depth: 2.5 },
+  stick: { diameter: 0.3, height: 7 },
+  score: { width: 40, height: 0.1, depth: 8 }
+}
+
+export const positions = {
+  score: { start: 0, offset: 32 }
 }
 
 export const faceUVs = {

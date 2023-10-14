@@ -1,25 +1,27 @@
 /* eslint-disable no-unused-vars */
 import type { Observable, Observer } from '@babylonjs/core'
 import type {
-  AnchorableState,
   AnchorBehavior,
-  DetailableState,
   DetailBehavior,
   DrawBehavior,
   FlipBehavior,
-  FlippableState,
-  LockableState,
   LockBehavior,
-  MovableState,
-  QuantifiableState,
   QuantityBehavior,
   RandomBehavior,
-  RandomizableState,
-  RotableState,
   RotateBehavior,
   StackBehavior
 } from '@src/3d/behaviors'
-import type { Mesh as SerializedMesh } from '@tabulous/types'
+import type {
+  AnchorableState,
+  DetailableState,
+  FlippableState,
+  LockableState,
+  Mesh as SerializedMesh,
+  MovableState,
+  QuantifiableState,
+  RandomizableState,
+  RotableState
+} from '@tabulous/types'
 import type { Observable as RxObservable, Subject } from 'rxjs'
 import type { ComponentType } from 'svelte'
 

@@ -143,7 +143,7 @@ describe('AnchorBehavior', () => {
     beforeEach(() => {
       mesh = createBox('box', { width: 5, depth: 5 })
       mesh.addBehavior(new AnimateBehavior(), true)
-      meshes = Array.from({ length: 2 }, (_, rank) => {
+      meshes = Array.from({ length: 3 }, (_, rank) => {
         const box = createBox(`box${rank + 1}`, {})
         box.addBehavior(new AnimateBehavior(), true)
         box.addBehavior(new DrawBehavior({}, managers), true)
@@ -162,9 +162,10 @@ describe('AnchorBehavior', () => {
               z: 0.5,
               width: 1,
               height: 1.5,
-              depth: 0.5
+              depth: 0.5,
+              snappedIds: []
             },
-            { id: '2', width: 1.5, height: 1, depth: 0.25 }
+            { id: '2', width: 1.5, height: 1, depth: 0.25, snappedIds: [] }
           ]
         },
         managers
@@ -183,9 +184,10 @@ describe('AnchorBehavior', () => {
           z: 0.5,
           width: 1,
           height: 1.5,
-          depth: 0.5
+          depth: 0.5,
+          snappedIds: []
         },
-        { id: '2', width: 1.5, height: 1, depth: 0.25 }
+        { id: '2', width: 1.5, height: 1, depth: 0.25, snappedIds: [] }
       ])
       expect(mesh.metadata).toEqual(
         expect.objectContaining({
@@ -209,29 +211,67 @@ describe('AnchorBehavior', () => {
       behavior.fromState({
         duration,
         anchors: [
-          { id: '4', x: 1, y: 1, z: 0, width: 1, height: 2, depth: 0.5 },
-          { id: '5', x: -1, y: 1, z: 0, width: 2, height: 1, depth: 0.25 },
+          {
+            id: '4',
+            x: 1,
+            y: 1,
+            z: 0,
+            width: 1,
+            height: 2,
+            depth: 0.5,
+            snappedIds: []
+          },
+          {
+            id: '5',
+            x: -1,
+            y: 1,
+            z: 0,
+            width: 2,
+            height: 1,
+            depth: 0.25,
+            snappedIds: []
+          },
           {
             id: '6',
             width: 1,
             height: 1,
             depth: 1,
             kinds: ['cards'],
-            priority: 1
+            priority: 1,
+            snappedIds: []
           }
         ]
       })
       expect(behavior.state.duration).toEqual(duration)
       expect(behavior.state.anchors).toEqual([
-        { id: '4', x: 1, y: 1, z: 0, width: 1, height: 2, depth: 0.5 },
-        { id: '5', x: -1, y: 1, z: 0, width: 2, height: 1, depth: 0.25 },
+        {
+          id: '4',
+          x: 1,
+          y: 1,
+          z: 0,
+          width: 1,
+          height: 2,
+          depth: 0.5,
+          snappedIds: []
+        },
+        {
+          id: '5',
+          x: -1,
+          y: 1,
+          z: 0,
+          width: 2,
+          height: 1,
+          depth: 0.25,
+          snappedIds: []
+        },
         {
           id: '6',
           width: 1,
           height: 1,
           depth: 1,
           kinds: ['cards'],
-          priority: 1
+          priority: 1,
+          snappedIds: []
         }
       ])
       expect(mesh.metadata).toEqual(
@@ -253,7 +293,16 @@ describe('AnchorBehavior', () => {
     it('can hydrate cylindric anchors', () => {
       behavior.fromState({
         anchors: [
-          { id: '1', x: 1, y: 1, z: 0, diameter: 4, height: 0.5, extent: 1.2 },
+          {
+            id: '1',
+            x: 1,
+            y: 1,
+            z: 0,
+            diameter: 4,
+            height: 0.5,
+            extent: 1.2,
+            snappedIds: []
+          },
           {
             id: '2',
             x: 1,
@@ -261,12 +310,22 @@ describe('AnchorBehavior', () => {
             z: 0,
             diameter: 2,
             height: 0.1,
-            extent: undefined
+            extent: undefined,
+            snappedIds: []
           }
         ]
       })
       expect(behavior.state.anchors).toEqual([
-        { id: '1', x: 1, y: 1, z: 0, diameter: 4, height: 0.5, extent: 1.2 },
+        {
+          id: '1',
+          x: 1,
+          y: 1,
+          z: 0,
+          diameter: 4,
+          height: 0.5,
+          extent: 1.2,
+          snappedIds: []
+        },
         {
           id: '2',
           x: 1,
@@ -274,7 +333,8 @@ describe('AnchorBehavior', () => {
           z: 0,
           diameter: 2,
           height: 0.1,
-          extent: undefined
+          extent: undefined,
+          snappedIds: []
         }
       ])
       expectAnchor(0, behavior.state.anchors[0])
@@ -301,10 +361,30 @@ describe('AnchorBehavior', () => {
       )
       mesh.addBehavior(behavior, true)
       behavior.fromState({
-        anchors: [{ id: '1', x: 0, y: -2, z: 0, width: 1, height: 2, depth: 3 }]
+        anchors: [
+          {
+            id: '1',
+            x: 0,
+            y: -2,
+            z: 0,
+            width: 1,
+            height: 2,
+            depth: 3,
+            snappedIds: []
+          }
+        ]
       })
       expect(behavior.state.anchors).toEqual([
-        { id: '1', x: 0, y: -2, z: 0, width: 1, height: 2, depth: 3 }
+        {
+          id: '1',
+          x: 0,
+          y: -2,
+          z: 0,
+          width: 1,
+          height: 2,
+          depth: 3,
+          snappedIds: []
+        }
       ])
       expectAnchor(0, { ...behavior.state.anchors[0], x: 4, y: 3, z: -4 })
       expect(actionRecorded).not.toHaveBeenCalled()
@@ -318,11 +398,11 @@ describe('AnchorBehavior', () => {
       const previousAnchors = behavior.zones.map(({ mesh }) => mesh)
 
       behavior.fromState({
-        anchors: [{ id: '1', width: 1, height: 2, depth: 0.5 }]
+        anchors: [{ id: '1', width: 1, height: 2, depth: 0.5, snappedIds: [] }]
       })
       expect(behavior.state.duration).toEqual(100)
       expect(behavior.state.anchors).toEqual([
-        { id: '1', width: 1, height: 2, depth: 0.5 }
+        { id: '1', width: 1, height: 2, depth: 0.5, snappedIds: [] }
       ])
       expect(mesh.metadata).toEqual(
         expect.objectContaining({
@@ -341,12 +421,12 @@ describe('AnchorBehavior', () => {
     it('discards unknown snapped meshes when hydrating', () => {
       behavior.fromState({
         anchors: [
-          { id: '1', width: 1, height: 2, depth: 0.5, snappedId: 'unknown' }
+          { id: '1', width: 1, height: 2, depth: 0.5, snappedIds: ['unknown'] }
         ]
       })
       expect(behavior.state.duration).toEqual(100)
       expect(behavior.state.anchors).toEqual([
-        { id: '1', width: 1, height: 2, depth: 0.5 }
+        { id: '1', width: 1, height: 2, depth: 0.5, snappedIds: [] }
       ])
       expect(mesh.metadata).toEqual(
         expect.objectContaining({
@@ -365,12 +445,36 @@ describe('AnchorBehavior', () => {
     it('snaps meshes when hydrating', () => {
       behavior.fromState({
         anchors: [
-          { id: '1', width: 1, height: 2, depth: 0.5, snappedId: meshes[0].id }
+          {
+            id: '1',
+            width: 1,
+            height: 2,
+            depth: 0.5,
+            snappedIds: [meshes[0].id]
+          },
+          {
+            id: '2',
+            x: -2,
+            width: 1,
+            height: 2,
+            depth: 0.5,
+            max: 2,
+            snappedIds: [meshes[1].id, meshes[2].id]
+          }
         ]
       })
       expect(behavior.state.duration).toEqual(100)
       expect(behavior.state.anchors).toEqual([
-        { id: '1', width: 1, height: 2, depth: 0.5, snappedId: 'box1' }
+        { id: '1', width: 1, height: 2, depth: 0.5, snappedIds: ['box1'] },
+        {
+          id: '2',
+          x: -2,
+          width: 1,
+          height: 2,
+          depth: 0.5,
+          snappedIds: ['box2', 'box3'],
+          max: 2
+        }
       ])
       expect(mesh.metadata).toEqual(
         expect.objectContaining({
@@ -381,8 +485,13 @@ describe('AnchorBehavior', () => {
       )
       expect(behavior.zones).toHaveLength(behavior.state.anchors.length)
       expectAnchor(0, behavior.state.anchors[0], false)
-      expectSnapped(mesh, meshes[0], 0)
-      expect(behavior.getSnappedIds()).toEqual([meshes[0].id])
+      expectSnapped(mesh, meshes.slice(0, 1), 0)
+      expectSnapped(mesh, meshes.slice(1, 3), 1)
+      expect(behavior.getSnappedIds()).toEqual([
+        meshes[0].id,
+        meshes[1].id,
+        meshes[2].id
+      ])
       expect(actionRecorded).not.toHaveBeenCalled()
       expectMoveRecorded(moveRecorded)
       expect(registerFeedbackSpy).not.toHaveBeenCalled()
@@ -397,12 +506,12 @@ describe('AnchorBehavior', () => {
       expectFlipped(mesh)
       behavior.fromState({
         anchors: [
-          { id: '1', width: 1, height: 2, depth: 0.5, snappedId: snapped.id }
+          { id: '1', width: 1, height: 2, depth: 0.5, snappedIds: [snapped.id] }
         ]
       })
       expect(behavior.state.duration).toEqual(100)
       expect(behavior.state.anchors).toEqual([
-        { id: '1', width: 1, height: 2, depth: 0.5, snappedId: 'box1' }
+        { id: '1', width: 1, height: 2, depth: 0.5, snappedIds: ['box1'] }
       ])
       expect(mesh.metadata).toEqual(
         expect.objectContaining({
@@ -414,7 +523,7 @@ describe('AnchorBehavior', () => {
       expect(behavior.zones).toHaveLength(behavior.state.anchors.length)
       expectAnchor(0, behavior.state.anchors[0], false)
       expectFlipped(mesh)
-      expectSnapped(mesh, snapped, 0)
+      expectSnapped(mesh, [snapped], 0)
       expectFlipped(snapped)
       expect(behavior.getSnappedIds()).toEqual([snapped.id])
       expect(actionRecorded).not.toHaveBeenCalled()
@@ -431,12 +540,12 @@ describe('AnchorBehavior', () => {
       expectRotated(mesh, angle)
       behavior.fromState({
         anchors: [
-          { id: '1', width: 1, height: 2, depth: 0.5, snappedId: snapped.id }
+          { id: '1', width: 1, height: 2, depth: 0.5, snappedIds: [snapped.id] }
         ]
       })
       expect(behavior.state.duration).toEqual(100)
       expect(behavior.state.anchors).toEqual([
-        { id: '1', width: 1, height: 2, depth: 0.5, snappedId: 'box1' }
+        { id: '1', width: 1, height: 2, depth: 0.5, snappedIds: ['box1'] }
       ])
       expect(mesh.metadata).toEqual(
         expect.objectContaining({
@@ -448,7 +557,7 @@ describe('AnchorBehavior', () => {
       expect(behavior.zones).toHaveLength(behavior.state.anchors.length)
       expectAnchor(0, behavior.state.anchors[0], false)
       expectRotated(mesh, angle)
-      expectSnapped(mesh, snapped, 0)
+      expectSnapped(mesh, [snapped], 0)
       expectRotated(snapped, angle)
       expect(behavior.getSnappedIds()).toEqual([snapped.id])
       expect(actionRecorded).not.toHaveBeenCalled()
@@ -471,18 +580,64 @@ describe('AnchorBehavior', () => {
             width: 1,
             height: 2,
             depth: 0.5,
-            snappedId: snapped.id,
+            snappedIds: [snapped.id],
             angle
           }
         ]
       })
       expect(behavior.state.duration).toEqual(100)
       expect(behavior.state.anchors).toEqual([
-        { id: '1', width: 1, height: 2, depth: 0.5, snappedId: 'box1', angle }
+        {
+          id: '1',
+          width: 1,
+          height: 2,
+          depth: 0.5,
+          snappedIds: ['box1'],
+          angle
+        }
       ])
       expectAnchor(0, behavior.state.anchors[0], false)
-      expectSnapped(mesh, snapped, 0)
+      expectSnapped(mesh, [snapped], 0)
       expectRotated(snapped, angle)
+      expect(behavior.getSnappedIds()).toEqual([snapped.id])
+      expect(actionRecorded).not.toHaveBeenCalled()
+      expect(registerFeedbackSpy).not.toHaveBeenCalled()
+    })
+
+    it('can flip snapped mesh when hydrating', () => {
+      const snapped = meshes[0]
+      snapped.addBehavior(
+        new FlipBehavior({ isFlipped: false }, managers),
+        true
+      )
+      expectFlipped(snapped, false)
+
+      behavior.fromState({
+        anchors: [
+          {
+            id: '1',
+            width: 1,
+            height: 2,
+            depth: 0.5,
+            snappedIds: [snapped.id],
+            flip: true
+          }
+        ]
+      })
+      expect(behavior.state.duration).toEqual(100)
+      expect(behavior.state.anchors).toEqual([
+        {
+          id: '1',
+          width: 1,
+          height: 2,
+          depth: 0.5,
+          snappedIds: ['box1'],
+          flip: true
+        }
+      ])
+      expectAnchor(0, behavior.state.anchors[0], false)
+      expectSnapped(mesh, [snapped], 0)
+      expectFlipped(snapped)
       expect(behavior.getSnappedIds()).toEqual([snapped.id])
       expect(actionRecorded).not.toHaveBeenCalled()
       expect(registerFeedbackSpy).not.toHaveBeenCalled()
@@ -504,17 +659,24 @@ describe('AnchorBehavior', () => {
             width: 1,
             height: 2,
             depth: 0.5,
-            snappedId: snapped.id,
+            snappedIds: [snapped.id],
             angle
           }
         ]
       })
       expect(behavior.state.duration).toEqual(100)
       expect(behavior.state.anchors).toEqual([
-        { id: '1', width: 1, height: 2, depth: 0.5, snappedId: 'box1', angle }
+        {
+          id: '1',
+          width: 1,
+          height: 2,
+          depth: 0.5,
+          snappedIds: ['box1'],
+          angle
+        }
       ])
       expectAnchor(0, behavior.state.anchors[0], false)
-      expectSnapped(mesh, snapped, 0)
+      expectSnapped(mesh, [snapped], 0)
       expectRotated(snapped, angle)
       expect(behavior.getSnappedIds()).toEqual([snapped.id])
       expect(actionRecorded).not.toHaveBeenCalled()
@@ -529,7 +691,7 @@ describe('AnchorBehavior', () => {
       /** @type {[string, string, boolean]} */
       const args = [snapped.id, behavior.zones[0].mesh.id, false]
       await mesh.metadata.snap?.(...args)
-      expectSnapped(mesh, snapped, 0)
+      expectSnapped(mesh, [snapped], 0)
       expect(behavior.getSnappedIds()).toEqual([meshes[0].id])
       expect(actionRecorded).toHaveBeenCalledTimes(1)
       expect(actionRecorded).toHaveBeenCalledWith({
@@ -543,6 +705,56 @@ describe('AnchorBehavior', () => {
       })
       expectMoveRecorded(moveRecorded, snapped)
       expectMeshFeedback(registerFeedbackSpy, 'snap', behavior.zones[0].mesh)
+    })
+
+    it('snaps multiple meshes', async () => {
+      behavior.state.anchors[0].max = 2
+      const [snapped1, snapped2] = meshes
+      expect(snapped1.absolutePosition.asArray()).toEqual([10, 10, 10])
+      expect(behavior.snappedZone(snapped1.id)).toBeNull()
+      expect(snapped2.absolutePosition.asArray()).toEqual([11, 11, 11])
+      expect(behavior.snappedZone(snapped2.id)).toBeNull()
+
+      /** @type {[string, string, boolean]} */
+      let args = [snapped1.id, behavior.zones[0].mesh.id, false]
+      await mesh.metadata.snap?.(...args)
+      expectZoneEnabled(mesh, 0)
+      expect(behavior?.snappedZone(snapped1.id)?.mesh.id).toEqual(
+        behavior?.zones[0]?.mesh.id
+      )
+      expect(actionRecorded).toHaveBeenCalledTimes(1)
+      expect(actionRecorded).toHaveBeenCalledWith({
+        fn: 'snap',
+        meshId: mesh.id,
+        args,
+        duration: behavior.state.duration,
+        revert: [snapped1.id, [10, 10, 10], undefined, undefined],
+        fromHand: false,
+        isLocal: false
+      })
+      expectMoveRecorded(moveRecorded, snapped1)
+      expectMeshFeedback(registerFeedbackSpy, 'snap', behavior.zones[0].mesh)
+      expectPosition(snapped1, [10, 0.5, 10])
+      registerFeedbackSpy.mockClear()
+      moveRecorded.mockClear()
+
+      args = [snapped2.id, behavior.zones[0].mesh.id, false]
+      await mesh.metadata.snap?.(...args)
+      expectSnapped(mesh, [snapped1, snapped2], 0)
+
+      expect(actionRecorded).toHaveBeenCalledTimes(2)
+      expect(actionRecorded).toHaveBeenCalledWith({
+        fn: 'snap',
+        meshId: mesh.id,
+        args,
+        duration: behavior.state.duration,
+        revert: [snapped2.id, [11, 11, 11], undefined, undefined],
+        fromHand: false,
+        isLocal: false
+      })
+      expectMoveRecorded(moveRecorded, snapped2)
+      expectMeshFeedback(registerFeedbackSpy, 'snap', behavior.zones[0].mesh)
+      expectPosition(snapped2, [11, 1.5, 11])
     })
 
     it('snaps a stack of mesh', async () => {
@@ -559,7 +771,7 @@ describe('AnchorBehavior', () => {
       /** @type {[string, string, boolean]} */
       const args = [snapped.id, behavior.zones[0].mesh.id, false]
       await mesh.metadata.snap?.(...args)
-      expectSnapped(mesh, snapped, 0)
+      expectSnapped(mesh, [snapped], 0)
       expect(behavior.getSnappedIds()).toEqual([meshes[0].id])
       expectPosition(stacked, [
         snapped.absolutePosition.x,
@@ -585,16 +797,16 @@ describe('AnchorBehavior', () => {
       snapped.addBehavior(
         new AnchorBehavior(
           {
-            anchors: [{ id: '10', z: -1, snappedId: snappedOfSnapped.id }]
+            anchors: [{ id: '10', z: -1, snappedIds: [snappedOfSnapped.id] }]
           },
           managers
         )
       )
-      expectSnapped(snapped, snappedOfSnapped, 0)
+      expectSnapped(snapped, [snappedOfSnapped], 0)
 
       await mesh.metadata.snap?.(snapped.id, behavior.zones[0].mesh.id)
-      expectSnapped(mesh, snapped, 0)
-      expectSnapped(snapped, snappedOfSnapped, 0)
+      expectSnapped(mesh, [snapped], 0)
+      expectSnapped(snapped, [snappedOfSnapped], 0)
       expect(behavior.getSnappedIds()).toEqual([meshes[0].id])
       expect(actionRecorded).toHaveBeenCalledTimes(1)
       expect(actionRecorded).toHaveBeenCalledWith({
@@ -620,7 +832,7 @@ describe('AnchorBehavior', () => {
       })
       await sleep(behavior.state.duration * 2)
 
-      expectSnapped(mesh, snapped, 1)
+      expectSnapped(mesh, [snapped], 1)
       expect(actionRecorded).toHaveBeenCalledTimes(1)
       expect(actionRecorded).toHaveBeenCalledWith({
         fn: 'snap',
@@ -648,7 +860,7 @@ describe('AnchorBehavior', () => {
       /** @type {[string, string, boolean]} */
       const args = [snapped.id, behavior.zones[0].mesh.id, false]
       await mesh.metadata.snap?.(...args)
-      expectSnapped(mesh, snapped, 0)
+      expectSnapped(mesh, [snapped], 0)
       expect(behavior.getSnappedIds()).toEqual([meshes[0].id])
       expectRotated(mesh, angle)
       expectRotated(snapped, angle)
@@ -676,7 +888,9 @@ describe('AnchorBehavior', () => {
       expectRotated(mesh, angle)
       const snapped = meshes[0]
       behavior.fromState({
-        anchors: [{ id: '1', width: 1, height: 2, depth: 0.5, angle }]
+        anchors: [
+          { id: '1', width: 1, height: 2, depth: 0.5, angle, snappedIds: [] }
+        ]
       })
       snapped.addBehavior(
         new RotateBehavior({ angle: Math.PI * -0.5 }, managers),
@@ -689,7 +903,7 @@ describe('AnchorBehavior', () => {
       /** @type {[string, string, boolean]} */
       const args = [snapped.id, behavior.zones[0].mesh.id, false]
       await mesh.metadata.snap?.(...args)
-      expectSnapped(mesh, snapped, 0)
+      expectSnapped(mesh, [snapped], 0)
       expect(behavior.getSnappedIds()).toEqual([meshes[0].id])
       expectRotated(snapped, -angle)
       expectFlipped(snapped)
@@ -714,7 +928,16 @@ describe('AnchorBehavior', () => {
     it('can flip snapped mesh', async () => {
       const snapped = meshes[0]
       behavior.fromState({
-        anchors: [{ id: '1', width: 1, height: 2, depth: 0.5, flip: true }]
+        anchors: [
+          {
+            id: '1',
+            width: 1,
+            height: 2,
+            depth: 0.5,
+            flip: true,
+            snappedIds: []
+          }
+        ]
       })
       const flippable = new FlipBehavior({}, managers)
       snapped.addBehavior(flippable, true)
@@ -724,7 +947,7 @@ describe('AnchorBehavior', () => {
       /** @type {[string, string, boolean]} */
       const args = [snapped.id, behavior.zones[0].mesh.id, false]
       await mesh.metadata.snap?.(...args)
-      expectSnapped(mesh, snapped, 0)
+      expectSnapped(mesh, [snapped], 0)
       expect(behavior.getSnappedIds()).toEqual([meshes[0].id])
       expectFlipped(snapped)
       expect(actionRecorded).toHaveBeenCalledTimes(2)
@@ -756,7 +979,15 @@ describe('AnchorBehavior', () => {
       const snapped = meshes[0]
       behavior.fromState({
         anchors: [
-          { id: '1', width: 1, height: 2, depth: 0.5, angle, flip: false }
+          {
+            id: '1',
+            width: 1,
+            height: 2,
+            depth: 0.5,
+            angle,
+            flip: false,
+            snappedIds: []
+          }
         ]
       })
       const snappedAngle = Math.PI * -0.5
@@ -770,7 +1001,7 @@ describe('AnchorBehavior', () => {
       expectRotated(snapped, snappedAngle)
       expect(snapped.absolutePosition.asArray()).toEqual(position)
       await mesh.metadata.snap?.(snapped.id, behavior.zones[0].mesh.id, false)
-      expectSnapped(mesh, snapped, 0)
+      expectSnapped(mesh, [snapped], 0)
       expectFlipped(snapped, false)
       expectRotated(snapped, -angle)
       const { revert } =
@@ -798,8 +1029,7 @@ describe('AnchorBehavior', () => {
       expect(actionRecorded).toHaveBeenNthCalledWith(2, {
         fn: 'unsnap',
         meshId: mesh.id,
-        args: [snapped.id],
-        revert: [snapped.id, behavior.zones[0].mesh.id],
+        args: [snapped.id, behavior.zones[0].mesh.id],
         fromHand: false,
         isLocal: true
       })
@@ -811,15 +1041,15 @@ describe('AnchorBehavior', () => {
       const stacked = makeStack(managers, snapped)
       behavior.fromState({
         anchors: [
-          { id: '1', width: 1, height: 2, depth: 0.5, snappedId: snapped.id }
+          { id: '1', width: 1, height: 2, depth: 0.5, snappedIds: [snapped.id] }
         ]
       })
-      expectSnapped(mesh, snapped, 0)
+      expectSnapped(mesh, [snapped], 0)
       expectStacked(managers, [snapped, stacked], true, mesh.id)
 
       await stacked.metadata.reorder?.([stacked.id, snapped.id])
       expectStacked(managers, [stacked, snapped], true, mesh.id)
-      expectSnapped(mesh, stacked, 0)
+      expectSnapped(mesh, [stacked], 0)
       expect(registerFeedbackSpy).not.toHaveBeenCalled()
     })
 
@@ -828,15 +1058,15 @@ describe('AnchorBehavior', () => {
       const stacked = makeStack(managers, snapped)
       behavior.fromState({
         anchors: [
-          { id: '1', width: 1, height: 2, depth: 0.5, snappedId: snapped.id }
+          { id: '1', width: 1, height: 2, depth: 0.5, snappedIds: [snapped.id] }
         ]
       })
-      expectSnapped(mesh, snapped, 0)
+      expectSnapped(mesh, [snapped], 0)
       expectStacked(managers, [snapped, stacked], true, mesh.id)
 
       await stacked.metadata.flipAll?.()
       expectStacked(managers, [stacked, snapped], true, mesh.id)
-      expectSnapped(mesh, stacked, 0)
+      expectSnapped(mesh, [stacked], 0)
       expect(registerFeedbackSpy).not.toHaveBeenCalled()
     })
 
@@ -844,13 +1074,13 @@ describe('AnchorBehavior', () => {
       const snapped = meshes[0]
       behavior.fromState({
         anchors: [
-          { id: '1', width: 1, height: 2, depth: 0.5, snappedId: snapped.id }
+          { id: '1', width: 1, height: 2, depth: 0.5, snappedIds: [snapped.id] }
         ]
       })
-      expectSnapped(mesh, snapped, 0)
+      expectSnapped(mesh, [snapped], 0)
 
       await mesh.metadata.snap?.(meshes[1].id, behavior.zones[0].mesh.id)
-      expectSnapped(mesh, snapped, 0)
+      expectSnapped(mesh, [snapped], 0)
       expect(actionRecorded).not.toHaveBeenCalled()
       expect(registerFeedbackSpy).not.toHaveBeenCalled()
     })
@@ -859,10 +1089,10 @@ describe('AnchorBehavior', () => {
       const snapped = meshes[0]
       behavior.fromState({
         anchors: [
-          { id: '1', width: 1, height: 2, depth: 0.5, snappedId: snapped.id }
+          { id: '1', width: 1, height: 2, depth: 0.5, snappedIds: [snapped.id] }
         ]
       })
-      expectSnapped(mesh, snapped, 0)
+      expectSnapped(mesh, [snapped], 0)
 
       mesh.metadata.unsnap?.(snapped.id)
       expectUnsnapped(mesh, snapped, 0)
@@ -871,8 +1101,7 @@ describe('AnchorBehavior', () => {
       expect(actionRecorded).toHaveBeenCalledWith({
         fn: 'unsnap',
         meshId: mesh.id,
-        args: [snapped.id],
-        revert: [snapped.id, '1'],
+        args: [snapped.id, '1'],
         fromHand: false,
         isLocal: false
       })
@@ -885,10 +1114,10 @@ describe('AnchorBehavior', () => {
       const stacked = makeStack(managers, snapped)
       behavior.fromState({
         anchors: [
-          { id: '1', width: 1, height: 2, depth: 0.5, snappedId: snapped.id }
+          { id: '1', width: 1, height: 2, depth: 0.5, snappedIds: [snapped.id] }
         ]
       })
-      expectSnapped(mesh, snapped, 0)
+      expectSnapped(mesh, [snapped], 0)
 
       mesh.metadata.unsnap?.(stacked.id)
       expect(behavior.getSnappedIds()).toEqual([])
@@ -897,8 +1126,7 @@ describe('AnchorBehavior', () => {
       expect(actionRecorded).toHaveBeenCalledWith({
         fn: 'unsnap',
         meshId: mesh.id,
-        args: [stacked.id],
-        revert: [stacked.id, '1'],
+        args: [stacked.id, '1'],
         fromHand: false,
         isLocal: false
       })
@@ -909,10 +1137,10 @@ describe('AnchorBehavior', () => {
       const snapped = meshes[1]
       behavior.fromState({
         anchors: [
-          { id: '1', width: 1, height: 2, depth: 0.5, snappedId: snapped.id }
+          { id: '1', width: 1, height: 2, depth: 0.5, snappedIds: [snapped.id] }
         ]
       })
-      expectSnapped(mesh, snapped, 0)
+      expectSnapped(mesh, [snapped], 0)
 
       managers.move.notifyMove(snapped)
       expectUnsnapped(mesh, snapped, 0)
@@ -921,8 +1149,7 @@ describe('AnchorBehavior', () => {
       expect(actionRecorded).toHaveBeenCalledWith({
         fn: 'unsnap',
         meshId: mesh.id,
-        args: [snapped.id],
-        revert: [snapped.id, '1'],
+        args: [snapped.id, '1'],
         fromHand: false,
         isLocal: false
       })
@@ -939,14 +1166,14 @@ describe('AnchorBehavior', () => {
             height: 2,
             depth: 0.5,
             flip: true,
-            snappedId: snapped.id
+            snappedIds: [snapped.id]
           }
         ]
       })
       const flippable = new FlipBehavior({}, managers)
       snapped.addBehavior(flippable, true)
       expectFlipped(snapped, false)
-      expectSnapped(mesh, snapped, 0)
+      expectSnapped(mesh, [snapped], 0)
 
       await mesh.metadata.unsnap?.(snapped.id)
       expectUnsnapped(mesh, snapped, 0)
@@ -956,8 +1183,7 @@ describe('AnchorBehavior', () => {
       expect(actionRecorded).toHaveBeenCalledWith({
         fn: 'unsnap',
         meshId: mesh.id,
-        args: [snapped.id],
-        revert: [snapped.id, behavior.state.anchors[0].id],
+        args: [snapped.id, behavior.state.anchors[0].id],
         fromHand: false,
         isLocal: false
       })
@@ -968,10 +1194,10 @@ describe('AnchorBehavior', () => {
       const snapped = meshes[1]
       behavior.fromState({
         anchors: [
-          { id: '1', width: 1, height: 2, depth: 0.5, snappedId: snapped.id }
+          { id: '1', width: 1, height: 2, depth: 0.5, snappedIds: [snapped.id] }
         ]
       })
-      expectSnapped(mesh, snapped, 0)
+      expectSnapped(mesh, [snapped], 0)
 
       await snapped.metadata.draw?.()
       expectUnsnapped(mesh, snapped, 0)
@@ -986,10 +1212,48 @@ describe('AnchorBehavior', () => {
       expect(actionRecorded).toHaveBeenNthCalledWith(2, {
         fn: 'unsnap',
         meshId: mesh.id,
-        args: [snapped.id],
-        revert: [snapped.id, behavior.state.anchors[0].id],
+        args: [snapped.id, behavior.state.anchors[0].id],
         fromHand: false,
         isLocal: true
+      })
+      expectMeshFeedback(registerFeedbackSpy, 'unsnap', behavior.zones[0].mesh)
+    })
+
+    it('apply gravity when unsnapping from multiple anchor', async () => {
+      const [snapped1, snapped2] = meshes
+      behavior.fromState({
+        anchors: [
+          {
+            id: '1',
+            width: 1,
+            height: 2,
+            depth: 0.5,
+            snappedIds: [snapped1.id, snapped2.id],
+            max: 2
+          }
+        ]
+      })
+      expectPosition(snapped1, [10, 0.5, 10])
+      expectPosition(snapped2, [11, 1.5, 11])
+      expectSnapped(mesh, [snapped1, snapped2], 0)
+
+      snapped1.setAbsolutePosition(new Vector3(10, 1, 10))
+      managers.move.notifyMove(snapped1)
+
+      expectPosition(snapped2, [11, 0.5, 11])
+      expectZoneEnabled(mesh, 0)
+      expect(behavior?.snappedZone(snapped1.id)?.mesh.id).toBeUndefined()
+      expect(behavior?.snappedZone(snapped2.id)?.mesh.id).toEqual(
+        behavior?.zones[0]?.mesh.id
+      )
+      expect(behavior.getSnappedIds()).toEqual([snapped2.id])
+      expect(actionRecorded).toHaveBeenCalledTimes(1)
+      expect(actionRecorded).toHaveBeenCalledWith({
+        fn: 'unsnap',
+        meshId: mesh.id,
+        args: [snapped1.id, '1'],
+        fromHand: false,
+        isLocal: false
       })
       expectMeshFeedback(registerFeedbackSpy, 'unsnap', behavior.zones[0].mesh)
     })
@@ -1004,21 +1268,21 @@ describe('AnchorBehavior', () => {
             height: 2,
             depth: 0.5,
             x: -1,
-            snappedId: snapped1.id
+            snappedIds: [snapped1.id]
           },
-          { id: '2', width: 1, height: 2, depth: 0.5 },
+          { id: '2', width: 1, height: 2, depth: 0.5, snappedIds: [] },
           {
             id: '3',
             width: 1,
             height: 2,
             depth: 0.5,
             x: 1,
-            snappedId: snapped2.id
+            snappedIds: [snapped2.id]
           }
         ]
       })
-      expectSnapped(mesh, snapped1, 0)
-      expectSnapped(mesh, snapped2, 2)
+      expectSnapped(mesh, [snapped1], 0)
+      expectSnapped(mesh, [snapped2], 2)
 
       mesh.metadata.unsnapAll?.()
 
@@ -1028,16 +1292,14 @@ describe('AnchorBehavior', () => {
       expect(actionRecorded).toHaveBeenCalledWith({
         fn: 'unsnap',
         meshId: mesh.id,
-        args: [snapped1.id],
-        revert: [snapped1.id, '1'],
+        args: [snapped1.id, '1'],
         fromHand: false,
         isLocal: false
       })
       expect(actionRecorded).toHaveBeenCalledWith({
         fn: 'unsnap',
         meshId: mesh.id,
-        args: [snapped2.id],
-        revert: [snapped2.id, '3'],
+        args: [snapped2.id, '3'],
         fromHand: false,
         isLocal: false
       })
@@ -1058,7 +1320,7 @@ describe('AnchorBehavior', () => {
       mesh.addBehavior(new RotateBehavior({ angle }, managers), true)
       expectRotated(mesh, angle)
       await mesh.metadata.snap?.(snapped.id, behavior.zones[0].mesh.id)
-      expectSnapped(mesh, snapped)
+      expectSnapped(mesh, [snapped])
       registerFeedbackSpy.mockClear()
 
       mesh.metadata.unsnap?.(snapped.id)
@@ -1072,24 +1334,24 @@ describe('AnchorBehavior', () => {
       const snapped = meshes[0]
       behavior.fromState({
         anchors: [
-          { id: '1', width: 1, height: 2, depth: 0.5, snappedId: snapped.id }
+          { id: '1', width: 1, height: 2, depth: 0.5, snappedIds: [snapped.id] }
         ]
       })
-      expectSnapped(mesh, snapped, 0)
+      expectSnapped(mesh, [snapped], 0)
       expect(behavior.getSnappedIds()).toEqual([snapped.id])
       mesh.metadata.unsnap?.(snapped.id)
       const position = snapped.absolutePosition.asArray()
       expectUnsnapped(mesh, snapped, 0)
       expect(behavior.getSnappedIds()).toEqual([])
-      const { revert } =
+      const { args } =
         /** @type {Required<import('@src/3d/managers').RecordedAction>} */ (
           actionRecorded.mock.calls[0][0]
         )
       actionRecorded.mockClear()
       registerFeedbackSpy.mockClear()
 
-      await behavior.revert('unsnap', revert)
-      expectSnapped(mesh, snapped, 0)
+      await behavior.revert('unsnap', args)
+      expectSnapped(mesh, [snapped], 0)
       expect(behavior.getSnappedIds()).toEqual([snapped.id])
       expect(actionRecorded).toHaveBeenCalledTimes(1)
       expect(actionRecorded).toHaveBeenCalledWith({
@@ -1107,21 +1369,27 @@ describe('AnchorBehavior', () => {
     it('moves all when dragging current mesh', async () => {
       behavior.fromState({
         anchors: [
-          { id: '1', width: 1, height: 2, depth: 0.5, snappedId: meshes[0].id },
+          {
+            id: '1',
+            width: 1,
+            height: 2,
+            depth: 0.5,
+            snappedIds: [meshes[0].id]
+          },
           {
             id: '2',
             width: 1,
             height: 2,
             depth: 0.5,
-            snappedId: meshes[1].id,
+            snappedIds: [meshes[1].id],
             x: 2,
             y: 3,
             z: 1
           }
         ]
       })
-      expectSnapped(mesh, meshes[0], 0)
-      expectSnapped(mesh, meshes[1], 1)
+      expectSnapped(mesh, meshes.slice(0, 1), 0)
+      expectSnapped(mesh, meshes.slice(1, 2), 1)
       expectPosition(meshes[0], [0, getCenterAltitudeAbove(mesh, meshes[0]), 0])
       expectPosition(meshes[1], [2, getCenterAltitudeAbove(mesh, meshes[1]), 1])
       const x = 5
@@ -1132,8 +1400,8 @@ describe('AnchorBehavior', () => {
       animateMove(mesh, new Vector3(x, y, z), null)
 
       expectPosition(mesh, [x, y, z])
-      expectSnapped(mesh, meshes[0], 0)
-      expectSnapped(mesh, meshes[1], 1)
+      expectSnapped(mesh, meshes.slice(0, 1), 0)
+      expectSnapped(mesh, meshes.slice(1, 2), 1)
       expectPosition(meshes[0], [x, getCenterAltitudeAbove(mesh, meshes[0]), z])
       expectPosition(meshes[1], [
         x + 2,
@@ -1147,28 +1415,34 @@ describe('AnchorBehavior', () => {
     it('moves all when dragging selection with current mesh', () => {
       behavior.fromState({
         anchors: [
-          { id: '1', width: 1, height: 2, depth: 0.5, snappedId: meshes[0].id },
+          {
+            id: '1',
+            width: 1,
+            height: 2,
+            depth: 0.5,
+            snappedIds: [meshes[0].id]
+          },
           {
             id: '2',
             width: 1,
             height: 2,
             depth: 0.5,
-            snappedId: meshes[1].id,
+            snappedIds: [meshes[1].id],
             x: 2,
             y: 3,
             z: 1
           }
         ]
       })
-      expectSnapped(mesh, meshes[0], 0)
-      expectSnapped(mesh, meshes[1], 1)
+      expectSnapped(mesh, meshes.slice(0, 1), 0)
+      expectSnapped(mesh, meshes.slice(1, 2), 1)
 
       managers.selection.select([mesh, meshes[0]])
 
       managers.move.notifyMove(mesh)
 
-      expectSnapped(mesh, meshes[0], 0)
-      expectSnapped(mesh, meshes[1], 1)
+      expectSnapped(mesh, meshes.slice(0, 1), 0)
+      expectSnapped(mesh, meshes.slice(1, 2), 1)
       expect(actionRecorded).not.toHaveBeenCalled()
       expect(registerFeedbackSpy).not.toHaveBeenCalled()
     })
@@ -1192,7 +1466,7 @@ describe('AnchorBehavior', () => {
 
     it('does not enable anchors with snapped meshes', async () => {
       await mesh.metadata.snap?.(meshes[1].id, behavior.zones[1].mesh.id)
-      expectSnapped(mesh, meshes[1], 1)
+      expectSnapped(mesh, meshes.slice(1, 2), 1)
       behavior.disable()
 
       behavior.enable()
@@ -1204,8 +1478,17 @@ describe('AnchorBehavior', () => {
       const [snapped1, snapped2] = meshes
       behavior.fromState({
         anchors: [
-          { id: '1', width: 1, height: 2, depth: 0.5 },
-          { id: '2', width: 1, height: 2, depth: 0.5, x: 2, y: 3, z: 1 }
+          { id: '1', width: 1, height: 2, depth: 0.5, snappedIds: [] },
+          {
+            id: '2',
+            width: 1,
+            height: 2,
+            depth: 0.5,
+            x: 2,
+            y: 3,
+            z: 1,
+            snappedIds: []
+          }
         ]
       })
       expectUnsnapped(mesh, snapped1, 0)
@@ -1218,8 +1501,8 @@ describe('AnchorBehavior', () => {
         mesh.metadata.snap?.(snapped2.id, behavior.zones[1].mesh.id)
       ])
 
-      expectSnapped(mesh, snapped1, 0)
-      expectSnapped(mesh, snapped2, 1)
+      expectSnapped(mesh, [snapped1], 0)
+      expectSnapped(mesh, [snapped2], 1)
       expect(behavior.getSnappedIds()).toEqual([snapped1.id, snapped2.id])
       expect(actionRecorded).toHaveBeenCalledTimes(2)
       expectMoveRecorded(moveRecorded, snapped1, snapped2)

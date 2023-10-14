@@ -6,20 +6,6 @@ import { actionNames } from '../utils/actions'
 import { animateMove } from '../utils/behaviors'
 
 /**
- * @typedef {object} _Action
- * @property {string} meshId - modified mesh id.
- * @property {boolean} fromHand - indicates whether this action comes from hand or main scene.
- *
- * @typedef {Omit<RecordedAction, 'mesh'> & _Action} Action applied action to a given mesh.
- *
- * @typedef {object} _Move applied move to a given mesh:
- * @property {string} meshId - modified mesh id.
- * @property {boolean} fromHand - indicates whether this action comes from hand or main scene.
- *
- * @typedef {Omit<RecordedMove, 'mesh'> & _Move} Move applied move to a given mesh.
- *
- * @typedef {Action|Move} ActionOrMove
- *
  * @typedef {object} RecordedAction applied action to a given mesh:
  * @property {import('@babylonjs/core').Mesh} mesh - modified mesh.
  * @property {import('@tabulous/types').ActionName} fn - name of the applied action.
@@ -51,7 +37,7 @@ export class ControlManager {
    * @param {import('@babylonjs/core').Scene} params.handScene - scene for meshes in hand.
    */
   constructor({ scene, handScene }) {
-    /** @type {Observable<ActionOrMove>} emits applied actions. */
+    /** @type {Observable<import('@tabulous/types').ActionOrMove>} */
     this.onActionObservable = new Observable()
     /** @type {Observable<?MeshDetails>} emits when displaying details of a given mesh. */
     this.onDetailedObservable = new Observable()
@@ -171,7 +157,7 @@ export class ControlManager {
   /**
    * Reverts an action by calling a mesh's behavior revert() function.
    * Reverts a move by positioning it back to its previous position.
-   * @param {Omit<Action, 'fromHand'>|Omit<Move, 'fromHand'>} actionOrMove - reverted action or move.
+   * @param {Omit<import('@tabulous/types').Action, 'fromHand'>|Omit<import('@tabulous/types').Move, 'fromHand'>} actionOrMove - reverted action or move.
    */
   async revert(actionOrMove) {
     const mesh = this.controlables.get(actionOrMove.meshId)
@@ -208,7 +194,7 @@ export class ControlManager {
    * Applies an actions to a controlled meshes (`fn` in its metadatas), or changes its position (action.pos is defined).
    * Does nothing if the target mesh is not controlled.
    * Returns when the action is fully applied.
-   * @param {Omit<Action, 'fromHand'>|Omit<Move, 'fromHand'>} action - applied action.
+   * @param {Omit<import('@tabulous/types').Action, 'fromHand'>|Omit<import('@tabulous/types').Move, 'fromHand'>} action - applied action.
    */
   async apply(action) {
     const mesh = this.controlables.get(action?.meshId)
@@ -235,6 +221,8 @@ export class ControlManager {
   }
 }
 
-function getKey(/** @type {Partial<Pick<Action, 'meshId'|'fn'>>} */ action) {
+function getKey(
+  /** @type {Partial<Pick<import('@tabulous/types').Action, 'meshId'|'fn'>>} */ action
+) {
   return `${action?.meshId}-${action.fn?.toString() || 'pos'}`
 }

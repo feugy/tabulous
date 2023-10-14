@@ -19,11 +19,12 @@ type Game {
   game properties
   """
   kind: String
+  engineScript: String
   locales: ItemLocales
   meshes: [Mesh]
   cameras: [CameraPosition]
   hands: [Hand]
-  preferences: [PlayerPreference]
+  preferencesString: String
   rulesBookPageCount: Int
   availableSeats: Int
   zoomSpec: ZoomSpec
@@ -101,7 +102,7 @@ type RandomizableState {
 }
 
 type Anchor {
-  id: ID
+  id: ID!
   x: Float
   y: Float
   z: Float
@@ -109,10 +110,12 @@ type Anchor {
   height: Float
   depth: Float
   diameter: Float
+  enabled: Boolean
   extent: Float
   priority: Float
   kinds: [String]
-  snappedId: ID
+  max: Float
+  snappedIds: [ID]!
   playerId: ID
   ignoreParts: Boolean
   angle: Float
@@ -210,12 +213,6 @@ type CameraPosition {
 type Hand {
   playerId: ID!
   meshes: [Mesh]!
-}
-
-type PlayerPreference {
-  playerId: ID!
-  color: String
-  angle: Float
 }
 
 type ZoomSpec {
@@ -367,7 +364,7 @@ input RandomizableStateInput {
 }
 
 input AnchorInput {
-  id: ID
+  id: ID!
   x: Float
   y: Float
   z: Float
@@ -375,10 +372,12 @@ input AnchorInput {
   height: Float
   depth: Float
   diameter: Float
+  enabled: Boolean
   extent: Float
   priority: Float
   kinds: [String]
-  snappedId: ID
+  max: Float
+  snappedIds: [ID]!
   playerId: ID
   ignoreParts: Boolean
   angle: Float
@@ -488,7 +487,7 @@ type GameParameters {
   kind: String
   locales: ItemLocales
   players: [GamePlayer]!
-  preferences: [PlayerPreference]
+  preferencesString: String
   rulesBookPageCount: Int
   availableSeats: Int
   colors: ColorSpec

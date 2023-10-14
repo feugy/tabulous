@@ -17,8 +17,18 @@ export function buildCards() {
         },
         anchorable: {
           anchors: [
-            { id: `${id}-bottom`, z: spacing.cardAnchor.z, ...sizes.card },
-            { id: `${id}-top`, z: -spacing.cardAnchor.z, ...sizes.card }
+            {
+              id: `${id}-bottom`,
+              z: spacing.cardAnchor.z,
+              ...sizes.card,
+              snappedIds: []
+            },
+            {
+              id: `${id}-top`,
+              z: -spacing.cardAnchor.z,
+              ...sizes.card,
+              snappedIds: []
+            }
           ]
         },
         movable: { kind: suit },

@@ -187,6 +187,7 @@ export async function promoteGame(gameId, kind, player) {
   )
   reportReusedIds(game)
   notifyAllPeers(game)
+  game.engineScript = await repositories.catalogItems.getEngineScript(kind)
   logger.debug(
     { ctx, res: serializeForLogs(game) },
     'promotted looby into game'
@@ -281,8 +282,11 @@ export async function joinGame(gameId, player, parameters) {
   if (!maybeGame) {
     return null
   }
+  const engineScript = await repositories.catalogItems.getEngineScript(
+    maybeGame.kind
+  )
   if (isPlayer(maybeGame, player.id)) {
-    return maybeGame
+    return { ...maybeGame, engineScript }
   }
   if (!isGuest(maybeGame, player?.id)) {
     return null
@@ -331,7 +335,7 @@ export async function joinGame(gameId, player, parameters) {
     reportReusedIds(savedGame)
     notifyAllPeers(savedGame)
     logger.debug({ ctx, res: serializeForLogs(savedGame) }, 'joined game')
-    return savedGame
+    return { ...savedGame, engineScript }
   } catch (error) {
     logger.warn(
       { ctx, error },

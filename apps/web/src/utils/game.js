@@ -1,31 +1,17 @@
 // @ts-check
+import { findPlayerPreferences } from '@tabulous/game-utils'
 import chroma from 'chroma-js'
 
 import { setCssVariables } from './dom'
 
 /**
- * Find game preferences of a given player.
- * @param {?import('@src/graphql').GameOrGameParameters|undefined} game - game date, including preferences and players arrays.
- * @param {string} playerId - desired player
- * @returns {Record<string, ?> & Omit<import('@tabulous/types').PlayerPreference, 'playerId'>} found preferences, or an empty object.
- */
-export function findPlayerPreferences(game, playerId) {
-  // playerId is unused, and simply ommitted from returned preferences.
-  // eslint-disable-next-line no-unused-vars
-  const { playerId: _unused, ...preferences } = game?.preferences?.find(
-    preferences => preferences.playerId === playerId
-  ) ?? { color: undefined, angle: undefined }
-  return preferences
-}
-
-/**
  * Returns player's color, or orange red.
  * @param {?import('@src/graphql').GameOrGameParameters} game - game date, including preferences and players arrays.
  * @param {string} playerId - desired player
- * @returns {string} player's color.
+ * @returns player's color.
  */
 export function findPlayerColor(game, playerId) {
-  return findPlayerPreferences(game, playerId)?.color ?? '#ff4500'
+  return findPlayerPreferences(game?.preferences, playerId)?.color ?? '#ff4500'
 }
 
 /**

@@ -38,6 +38,7 @@ export function isAnimationInProgress(mesh) {
 
 /**
  * Indicates whether a given container completely contain the tested mesh, using their bounding boxes.
+ * Does not consider Y axis, only X and Z.
  * @template {import('@babylonjs/core').AbstractMesh} M
  * @param {M} container - container that may contain the mesh.
  * @param {M} mesh - tested mesh.
@@ -53,8 +54,6 @@ export function isContaining(container, mesh) {
   return (
     containerMin.x <= meshMin.x &&
     meshMax.x <= containerMax.x &&
-    containerMin.y <= meshMin.y &&
-    meshMax.y <= containerMax.y &&
     containerMin.z <= meshMin.z &&
     meshMax.z <= containerMax.z
   )

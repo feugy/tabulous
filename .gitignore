@@ -19,3 +19,4 @@ test-results
 .last-db
 upload-manually.sh
 en
+engine.min.js

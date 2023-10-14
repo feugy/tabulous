@@ -2,9 +2,10 @@
 
 ## Refactor
 
+- Control manager: trigger rule when action is finished?
 - hand: reuse playMeshes() and pickMesh() in handDrag()
 - replace windicss with a successor (UnoCSS)
-- add tests for web/src/utils/peer-connection
+- add tests for web/src/utils/peer-connection + web/src/stores/graphql
 - group candidate target per kind for performance
 - all manager managing a collection of behaviors should check their capabilities
 - stackable/anchorable should check the capabilities of stacked/anchored meshes
@@ -14,9 +15,10 @@
 
 ## UI
 
-- when hovering target, highlight should have the dragged mesh's shape, not the target shape (what about parts?)
+- fix(web): indicators attach point does not consider the camera position.
+- when hovering target, highlight could have the dragged mesh's shape, not the target shape (what about parts?)
+- improve selection accuracy, especially with cylindric meshes
 - hand count on peer pointers/player tab?
-- score (Mah-jong, Belote)
 - command to reset some mesh state and restart a game (Mah-jong, Belote)
 - "box" space for unusued/undesired meshes
 - hide/distinguish non-connected participants?
@@ -212,3 +214,11 @@ For choosing game colors:
 Besides being hard to debug and troubleshoot, it requires many encoding/decoding operations since GraphQL only allows text,
 discards any database migrations or server-side operations (unless rebuilding the document on server-side), and the overall effort of
 refactoring all communciation pipes and storage code does not really worth it.
+
+Finite State Machines (FSM) could be a good fit for game rules. Chess for example: a global FSM for game, one for each player, one for each piece.
+Transition are possible moves, all relative to the piece's position and direction. FSM could be used to restict action menu items, highlight possible location when starting moving, or revert invalid moves after they are made.
+[XState](https://xstate.js.org/docs/) could match (what about the performance?), especially because of designing and debugging tools.
+
+Good [read](https://gameprogrammingpatterns.com)
+
+TypeScript compiler's `checkJS` is the root of evil. It checks files in transitive dependencies we have no control on, and that are extremely hard to trace and exclude. Selective opt-in with `@ts-check` is annoying but yields much better results.

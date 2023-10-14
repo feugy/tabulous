@@ -10,7 +10,7 @@ import {
   expectMeshIds
 } from '../../test-utils'
 
-describe('managers.Selection', () => {
+describe('SelectionManager', () => {
   /** @type {import('@babylonjs/core').Scene} */
   let scene
   /** @type {import('@babylonjs/core').Scene} */
@@ -108,13 +108,14 @@ describe('managers.Selection', () => {
         const box2 = createBox('box2', {})
         const box3 = createBox('box3', {})
         const box4 = createBox('box4', {})
+        const box5 = createBox('box5', {})
         box1.addBehavior(
           new AnchorBehavior(
             {
               anchors: [
-                { id: '1', snappedId: box2.id },
-                { id: '2', snappedId: null },
-                { id: '3', snappedId: box3.id }
+                { id: '1', snappedIds: [box2.id] },
+                { id: '2', snappedIds: [] },
+                { id: '3', snappedIds: [box3.id, box5.id], max: 2 }
               ]
             },
             managers
@@ -124,8 +125,8 @@ describe('managers.Selection', () => {
           new AnchorBehavior(
             {
               anchors: [
-                { id: '6', snappedId: box4.id },
-                { id: '5', snappedId: null }
+                { id: '6', snappedIds: [box4.id] },
+                { id: '5', snappedIds: [] }
               ]
             },
             managers
@@ -136,11 +137,13 @@ describe('managers.Selection', () => {
         expect(managers.selection.meshes.has(box2)).toBe(true)
         expect(managers.selection.meshes.has(box3)).toBe(true)
         expect(managers.selection.meshes.has(box4)).toBe(true)
-        expect(managers.selection.meshes.size).toBe(4)
+        expect(managers.selection.meshes.has(box5)).toBe(true)
+        expect(managers.selection.meshes.size).toBe(5)
         expectSelected(box1, colorByPlayerId.get(playerId))
         expectSelected(box2, colorByPlayerId.get(playerId))
         expectSelected(box3, colorByPlayerId.get(playerId))
         expectSelected(box4, colorByPlayerId.get(playerId))
+        expectSelected(box5, colorByPlayerId.get(playerId))
         expect(selectionChanged).toHaveBeenCalledOnce()
       })
 
@@ -235,13 +238,14 @@ describe('managers.Selection', () => {
         const box2 = createBox('box2', {})
         const box3 = createBox('box3', {})
         const box4 = createBox('box4', {})
+        const box5 = createBox('box5', {})
         box1.addBehavior(
           new AnchorBehavior(
             {
               anchors: [
-                { id: '1', snappedId: box2.id },
-                { id: '2', snappedId: null },
-                { id: '3', snappedId: box3.id }
+                { id: '1', snappedIds: [box2.id] },
+                { id: '2', snappedIds: [] },
+                { id: '3', snappedIds: [box3.id] }
               ]
             },
             managers
@@ -251,15 +255,15 @@ describe('managers.Selection', () => {
           new AnchorBehavior(
             {
               anchors: [
-                { id: 'a', snappedId: box4.id },
-                { id: 'b', snappedId: null }
+                { id: 'a', snappedIds: [box4.id, box5.id], max: 2 },
+                { id: 'b', snappedIds: [] }
               ]
             },
             managers
           )
         )
         managers.selection.select(box1)
-        expect(managers.selection.meshes.size).toBe(4)
+        expect(managers.selection.meshes.size).toBe(5)
 
         managers.selection.unselect(box3)
         expect(managers.selection.meshes.size).toBe(2)
@@ -267,10 +271,12 @@ describe('managers.Selection', () => {
         expect(managers.selection.meshes.has(box2)).toBe(true)
         expect(managers.selection.meshes.has(box3)).toBe(false)
         expect(managers.selection.meshes.has(box4)).toBe(false)
+        expect(managers.selection.meshes.has(box5)).toBe(false)
         expectSelected(box1, colorByPlayerId.get(playerId))
         expectSelected(box2, colorByPlayerId.get(playerId))
         expectSelected(box3, null, false)
         expectSelected(box4, null, false)
+        expectSelected(box5, null, false)
         expect(selectionChanged).toHaveBeenCalledTimes(2)
         expect(selectionChanged.mock.calls[1][0].size).toBe(2)
       })
