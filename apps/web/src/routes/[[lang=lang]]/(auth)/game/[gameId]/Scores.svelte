@@ -1,6 +1,5 @@
 <script>
   // @ts-check
-  //import { PlayerThumbnail } from '@src/components'
   import { buildCornerClipPath } from '@src/utils'
   import { fly } from 'svelte/transition'
 
@@ -24,7 +23,6 @@
     <span />
     {#each Object.entries(scores) as [playerId, score]}
       {@const player = playerById.get(playerId)}
-      <!--<PlayerThumbnail player={playerById.get(playerId)} dimension={40} />-->
       <figure style="--color: {player?.color}" title={player?.username}>
         <figcaption>{score.total}</figcaption>
       </figure>
@@ -46,10 +44,6 @@
     --corner-overlap: 0.6rem;
     --corner-size: 3.5rem;
 
-    :global(& > *) {
-      @apply z-1;
-    }
-
     &::before {
       @apply absolute inset-x-0 bg-$base-darker;
       bottom: calc(100% - var(--corner-overlap) - 1px);
@@ -66,19 +60,14 @@
     }
 
     & > span {
-      @apply absolute inset-x-0 bg-$base-darker;
+      @apply absolute inset-x-0 z-1 bg-$base-darker;
       top: var(--corner-overlap);
       bottom: var(--corner-overlap);
     }
   }
 
   figure {
-    @apply grid justify-center items-center rounded-md w-10 text-$ink-dark;
+    @apply z-1 grid justify-center items-center rounded-md w-min min-w-10 py-0.5 px-1 text-$ink-dark;
     background-color: var(--color);
   }
-
-  /* figure {
-    @apply grid justify-center items-center rounded-full w-10 h-10 text-$ink-dark border-5 bg-$base-darkest;
-    border-color: var(--color);
-  } */
 </style>

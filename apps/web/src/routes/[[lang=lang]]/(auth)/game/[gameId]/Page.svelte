@@ -179,6 +179,10 @@
     on:sendMessage={({ detail }) => sendToThread(detail.text)}
     on:replay={({ detail }) => replayHistory(detail)}
   />
+  <Scores
+    scores={$areIndicatorsVisible ? $scores : null}
+    playerById={$gamePlayerById}
+  />
 </div>
 <GameMenu {longTapDelay} />
 <main>
@@ -199,10 +203,6 @@
       meshCount={$handMeshCount}
       color={$playerColor}
       bind:node={hand}
-    />
-    <Scores
-      scores={$areIndicatorsVisible ? $scores : null}
-      playerById={$gamePlayerById}
     />
     {#if gameParameters}
       <Parameters
