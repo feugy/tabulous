@@ -152,7 +152,7 @@ export function runSubscription(subscription, variables) {
     const sub = pipe(
       // @ts-expect-error: 'undefined' could not be assigned to Variable
       client.subscription(subscription, variables),
-      subscribe(value => observer.next(deserialize(value)))
+      subscribe(value => observer.next(value))
     )
     return () => {
       logger.info({ subscription, variables }, 'stopping graphQL subscription')
@@ -164,7 +164,7 @@ export function runSubscription(subscription, variables) {
         logger.error({ error }, `Error received on subscription`)
       }
       const keys = Object.keys(data || {})
-      return keys.length !== 1 ? data : data[keys[0]]
+      return keys.length !== 1 ? data : deserialize(data[keys[0]])
     })
   )
 }
