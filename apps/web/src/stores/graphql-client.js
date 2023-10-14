@@ -193,16 +193,17 @@ function processErrors(
  * @returns deserialized value.
  */
 function deserialize(value) {
-  const obj = /** @type {Record<string, ?> & {schema?: ?, preferences?: ?}} */ (
-    value
-  )
-  if ('schemaString' in obj) {
-    obj.schema = JSON.parse(obj.schemaString)
-    delete obj.schemaString
-  }
-  if ('preferencesString' in obj) {
-    obj.preferences = JSON.parse(obj.preferencesString)
-    delete obj.preferencesString
+  if (value) {
+    const obj =
+      /** @type {Record<string, ?> & {schema?: ?, preferences?: ?}} */ (value)
+    if ('schemaString' in obj) {
+      obj.schema = JSON.parse(obj.schemaString)
+      delete obj.schemaString
+    }
+    if ('preferencesString' in obj) {
+      obj.preferences = JSON.parse(obj.preferencesString)
+      delete obj.preferencesString
+    }
   }
   return value
 }

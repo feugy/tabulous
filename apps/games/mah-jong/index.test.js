@@ -3,7 +3,8 @@ import { findMesh, snapTo, unsnap } from '@tabulous/game-utils'
 import {
   buildDescriptorTestSuite,
   buildParameters,
-  enroll
+  enroll,
+  toEngineState
 } from '@tabulous/game-utils/tests/game.js'
 import { beforeEach, describe, expect, it } from 'vitest'
 
@@ -37,16 +38,6 @@ buildDescriptorTestSuite('mah-jong', descriptor, utils => {
         )
       )
     })
-
-    function toEngineState(
-      /** @type {import('@tabulous/types').StartedGame} */ game
-    ) {
-      return {
-        meshes: game.meshes,
-        handMeshes: [],
-        history: []
-      }
-    }
 
     it('computes initial score', async () => {
       expect(

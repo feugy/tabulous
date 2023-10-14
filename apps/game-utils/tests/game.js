@@ -333,3 +333,15 @@ function expectNumber(
 function last(/** @type {string} */ property) {
   return /** @type {string} */ (property.split('.').pop())
 }
+
+export function toEngineState(
+  /** @type {import('@tabulous/types').StartedGame} */ game,
+  /** @type {import('@tabulous/types').Player|undefined} */ player
+) {
+  return {
+    meshes: game.meshes,
+    handMeshes:
+      game.hands.find(({ playerId }) => playerId === player?.id)?.meshes ?? [],
+    history: []
+  }
+}
