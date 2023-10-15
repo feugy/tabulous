@@ -19,7 +19,7 @@
 - when hovering target, highlight could have the dragged mesh's shape, not the target shape (what about parts?)
 - improve selection accuracy, especially with cylindric meshes
 - hand count on peer pointers/player tab?
-- command to reset some mesh state and restart a game (Mah-jong, Belote)
+- command to reset some mesh state and move to the next round (Mah-jong, Belote)
 - "box" space for unusued/undesired meshes
 - hide/distinguish non-connected participants?
 - distribute multiple meshes to players' hand

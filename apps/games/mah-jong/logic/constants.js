@@ -10,7 +10,10 @@ export const colors = {
 
 /** @typedef {'east'|'south'|'west'|'north'} Wall */
 
-/** @type {Record<Wall, Wall>} */
+/**
+ * Order matters here! esast goes for first player, then we rotates clockwise.
+ * @type {Record<Wall, Wall>}
+ */
 export const walls = {
   east: 'east',
   south: 'south',

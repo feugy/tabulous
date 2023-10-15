@@ -10,35 +10,13 @@ export function buildSticks(
   /** @type {import('@tabulous/types').Mesh[]} */
   const sticks = []
   const anchor = findAnchor(`${ids.score}${playerRank}`, meshes)
-  const start = 3
-  const { x, z, angle, offset } =
-    playerRank === 0
-      ? {
-          x: positions.score.start,
-          z: -positions.score.offset + start,
-          angle: 0,
-          offset: -1
-        }
-      : playerRank === 1
-      ? {
-          x: -positions.score.offset + start,
-          z: positions.score.start,
-          angle: Math.PI * 0.5,
-          offset: -1
-        }
-      : playerRank === 2
-      ? {
-          x: positions.score.start,
-          z: positions.score.offset - start,
-          angle: 0,
-          offset: 1
-        }
-      : {
-          x: positions.score.offset - start,
-          z: positions.score.start,
-          angle: Math.PI * 0.5,
-          offset: 1
-        }
+  const { offset } = positions.score
+  const invertX = playerRank === 3 ? 1 : -1
+  const invertZ = playerRank === 0 ? -1 : 1
+  const isHorizontal = playerRank % 2 === 0
+  const { height, diameter } = shapes.stick
+  const spacing = height + 1
+
   for (const [rank, [name, quantity]] of Object.entries(
     stickQuantities
   ).entries()) {
@@ -48,10 +26,15 @@ export function buildSticks(
       id,
       shape: 'roundToken',
       texture: `stick-${name}.ktx2`,
-      ...shapes.stick,
-      x: x + (angle ? rank * offset : 0),
+      diameter,
+      height,
+      x:
+        offset * invertX +
+        (isHorizontal ? offset - spacing * 1.5 + rank * spacing : 0),
       y: 0.15,
-      z: z + (angle ? 0 : rank * offset),
+      z:
+        offset * invertZ +
+        (isHorizontal ? 0 : -offset + spacing * 1.5 - rank * spacing),
       faceUV: [
         [0, 0, 0, 0],
         [1, 0, 0, 1],

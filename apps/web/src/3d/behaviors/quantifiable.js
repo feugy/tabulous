@@ -163,8 +163,8 @@ export class QuantityBehavior extends TargetBehavior {
     )
 
     logger.info(
-      { mesh, oldQuantity: state.quantity, created, quantity },
-      `decrement ${created.id} (remains: ${state.quantity}) from ${mesh.id} (has: ${quantity})`
+      { mesh, oldQuantity: state.quantity, created, quantity, id },
+      `decrement ${mesh.id} (remains: ${state.quantity}), creates ${createdId} (has: ${quantity})`
     )
     let move
     if (duration) {
