@@ -205,9 +205,9 @@ function handleFrame(/** @type {IndicatorManager} */ manager) {
  * @returns if this indicator position has changed.
  */
 function setMeshPosition(indicator) {
-  const { depth } = getDimensions(indicator.mesh)
+  const { height } = getDimensions(indicator.mesh)
   const { x, y } = /** @type {import('../utils').ScreenPosition} */ (
-    getMeshScreenPosition(indicator.mesh, [0, 0, depth / 2])
+    getMeshScreenPosition(indicator.mesh, [0, height / 2, 0])
   )
   const hasChanged =
     x !== indicator.screenPosition?.x || y !== indicator.screenPosition?.y

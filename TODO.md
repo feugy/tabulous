@@ -15,7 +15,6 @@
 
 ## UI
 
-- fix(web): indicators attach point does not consider the camera position.
 - when hovering target, highlight could have the dragged mesh's shape, not the target shape (what about parts?)
 - improve selection accuracy, especially with cylindric meshes
 - hand count on peer pointers/player tab?

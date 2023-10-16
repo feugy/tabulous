@@ -18,9 +18,11 @@
 
 <!-- svelte-ignore a11y-no-static-element-interactions -->
 <div
-  style="top: {screenPosition.y}px; left: {screenPosition.x}px; --color:{color ??
-    '#7a7a7a'}; pointer-events:{onClick ? 'auto' : 'none'};"
+  style="top: {screenPosition.y}px; left: {screenPosition.x}px; --color:{color}; pointer-events:{onClick
+    ? 'auto'
+    : 'none'};"
   class:hovered
+  class:colored={Boolean(color)}
   on:click={interact}
   on:keydown={interact}
   on:pointerdown|stopPropagation
@@ -30,22 +32,26 @@
 
 <style lang="postcss">
   div {
-    @apply absolute transform-gpu 
-            select-none 
-            text-lg text-$primary-lightest opacity-60
-            rounded-md
-            p-2 pt-1 pb-3 -translate-y-[100%] -translate-x-[50%];
-    background-color: var(--color);
-    --offset: 85%;
-    clip-path: polygon(
-      0% 0%,
-      100% 0%,
-      100% var(--offset),
-      70% var(--offset),
-      50% 100%,
-      30% var(--offset),
-      0% var(--offset)
-    );
+    @apply absolute transform-gpu rounded-full min-w-8 p-1 text-center
+            select-none opacity-60 text-$ink-dark bg-$secondary-dark
+            -translate-y-[125%] -translate-x-[50%];
+
+    &.colored {
+      background-color: var(--color);
+
+      &::after {
+        background-color: var(--color);
+      }
+    }
+
+    &::after {
+      @apply absolute bg-$secondary-dark h-1.5;
+      top: 95%;
+      left: 35%;
+      right: 35%;
+      content: '';
+      clip-path: polygon(0% 0%, 100% 0%, 50% 100%);
+    }
 
     &.hovered,
     &:hover {
