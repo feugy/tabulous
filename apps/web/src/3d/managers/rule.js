@@ -49,7 +49,7 @@ export class RuleManager {
       this.actionObserver = managers.control.onActionObservable.add(action =>
         evaluateScore(this, action)
       )
-      this.engine.onLoadingObservable.addOnce(() => evaluateScore(this, null))
+      evaluateScore(this, null)
       this.engine.onDisposeObservable.addOnce(() => {
         this.players = []
         this.preferences = []

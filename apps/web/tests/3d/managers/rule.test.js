@@ -133,19 +133,20 @@ describe('ReplayManager', () => {
       pos: [1, 0, 0],
       prev: [0, 0, 0]
     })
-    expect(scores).toBeNull()
+    expect(scores).toEqual({ [playerId]: { total: 1 } })
     await managers.control.onActionObservable.notifyObservers({
       meshId: mesh.id,
       fromHand: false,
       pos: [2, 0, 0],
       prev: [1, 0, 0]
     })
-    expect(scores).toBeNull()
+    expect(scores).toEqual({ [playerId]: { total: 1 } })
   })
 
   it('handles score computation error', async () => {
     const engineScript = `let engine={computeScore:()=>{throw new Error('boom')}}`
     managers.rule.init({ managers, engineScript })
+    logger.warn.mockClear()
     const action = {
       meshId: mesh.id,
       fromHand: false,

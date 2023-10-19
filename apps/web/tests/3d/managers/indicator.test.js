@@ -50,7 +50,7 @@ describe('IndicatorManager', () => {
       expect(managers.indicator.isManaging(indicator)).toBe(true)
       expect(managers.indicator.getById(indicator.id)).toEqual(indicator)
       expectChanged([
-        { id: mesh.id, screenPosition: { x: 1024, y: 500.85 }, size: 1 }
+        { id: mesh.id, screenPosition: { x: 1024, y: 507.32 }, size: 1 }
       ])
     })
 
@@ -59,7 +59,7 @@ describe('IndicatorManager', () => {
       managers.indicator.registerMeshIndicator(indicator)
       expect(managers.indicator.isManaging(indicator)).toBe(true)
       expectChanged([
-        { id: mesh.id, screenPosition: { x: 1024, y: 500.85 }, size: 1 }
+        { id: mesh.id, screenPosition: { x: 1024, y: 507.32 }, size: 1 }
       ])
 
       mesh.dispose()
@@ -205,9 +205,9 @@ describe('IndicatorManager', () => {
       indicator2.mesh.setAbsolutePosition(new Vector3(10, 0, 10))
       await waitNextRender(scene)
       expect(indicator1.screenPosition?.x).toBeCloseTo(1024)
-      expect(indicator1.screenPosition?.y).toBeCloseTo(500.85)
-      expect(indicator2.screenPosition?.x).toBeCloseTo(1248.18)
-      expect(indicator2.screenPosition?.y).toBeCloseTo(294.53)
+      expect(indicator1.screenPosition?.y).toBeCloseTo(507.32)
+      expect(indicator2.screenPosition?.x).toBeCloseTo(1250.93)
+      expect(indicator2.screenPosition?.y).toBeCloseTo(298)
       expectChanged([...indicators, ...pointers])
     })
 
@@ -215,13 +215,13 @@ describe('IndicatorManager', () => {
       const [indicator1] = indicators
       await waitNextRender(scene)
       expect(indicator1.screenPosition?.x).toBeCloseTo(1024)
-      expect(indicator1.screenPosition?.y).toBeCloseTo(500.85)
+      expect(indicator1.screenPosition?.y).toBeCloseTo(507.32)
       expect(changeReceived).not.toHaveBeenCalled()
 
       indicator1.mesh.setAbsolutePosition(new Vector3(1, 0, 1))
       await waitNextRender(scene)
-      expect(indicator1.screenPosition?.x).toBeCloseTo(1047.94)
-      expect(indicator1.screenPosition?.y).toBeCloseTo(478.82)
+      expect(indicator1.screenPosition?.x).toBeCloseTo(1048.26)
+      expect(indicator1.screenPosition?.y).toBeCloseTo(484.95)
       expectChanged([...indicators, ...pointers])
     })
 
@@ -229,13 +229,13 @@ describe('IndicatorManager', () => {
       const [indicator1, indicator2] = indicators
       await waitNextRender(scene)
       expect(indicator1.screenPosition?.x).toBeCloseTo(1024)
-      expect(indicator1.screenPosition?.y).toBeCloseTo(500.85)
+      expect(indicator1.screenPosition?.y).toBeCloseTo(507.32)
       expect(changeReceived).not.toHaveBeenCalled()
 
       indicator1.mesh.setAbsolutePosition(new Vector3(200, 0, 200))
       await waitNextRender(scene)
-      expect(indicator1.screenPosition?.x).toBeCloseTo(2935.17)
-      expect(indicator1.screenPosition?.y).toBeCloseTo(-1258.1)
+      expect(indicator1.screenPosition?.x).toBeCloseTo(2945.07)
+      expect(indicator1.screenPosition?.y).toBeCloseTo(-1264.68)
       expectChanged([indicator2, ...pointers])
     })
 

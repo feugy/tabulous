@@ -204,11 +204,6 @@ function initEngineAnScenes(
       })
 
       if (!isSimulation) {
-        await managers.rule.init({
-          managers: managers,
-          engineScript: game.engineScript,
-          ...gameData
-        })
         managers.input.init({ managers })
         createLights({ scene, handScene })
       }
@@ -223,7 +218,11 @@ function initEngineAnScenes(
     }
     managers.selection.init({ managers, playerId, colorByPlayerId })
     await managers.customShape.init(game)
-    managers.rule.update(gameData)
+    if (!isSimulation && game.engineScript) {
+      await managers.rule.init({ managers: managers, ...game })
+    } else {
+      managers.rule.update(game)
+    }
 
     await loadMeshes(scene, game.meshes ?? [], managers)
     if (managers.hand.enabled) {
