@@ -34,6 +34,9 @@ const colors = [
 /** @type {Subject<string[]>} */
 const gameListsUpdate$ = new Subject()
 
+/** @type {Subject<import('@tabulous/types').Game[]>} */
+const gameKindUpdate$ = new Subject()
+
 /**
  * @typedef {object} GameListUpdate an updated list of player games.
  * @property {string} playerId - the corresponding player id.
@@ -48,6 +51,11 @@ export const gameListsUpdate = gameListsUpdate$.pipe(
   concatMap(n => n),
   mergeMap(playerId => listGames(playerId).then(games => ({ playerId, games })))
 )
+
+/**
+ * Emits updates of game list for individual players.
+ */
+export const gameKindUpdate = gameKindUpdate$.asObservable()
 
 /**
  * Creates a new game of a given kind, registering the creator as a guest.
@@ -583,6 +591,35 @@ export async function countOwnGames(playerId, excludedGameIds = []) {
       count + (ownerId === playerId && !excludedGameIds.includes(id) ? 1 : 0),
     0
   )
+}
+
+/**
+ * Sends a reloaded descriptor to all players current playing games of the given kind.
+ * @param {string} kind - reloaded game kind.
+ */
+export async function reloadGames(kind) {
+  await repositories.catalogItems.reload(kind)
+
+  async function* listGames() {
+    /** @type {Awaited<ReturnType<typeof repositories.games.list>>} */
+    let page = { from: 0, size: 20, total: 1, results: [] }
+    while (page.from < page.total) {
+      page = await repositories.games.list(page)
+      yield* page.results
+      page.from += page.size
+    }
+  }
+
+  /** @type {import('@tabulous/types').Game[]} */
+  const updated = []
+  for await (const game of listGames()) {
+    if (game.kind === kind) {
+      updated.push(game)
+    }
+  }
+  if (updated.length) {
+    gameKindUpdate$.next(updated)
+  }
 }
 
 /**

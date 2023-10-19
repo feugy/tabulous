@@ -1,4 +1,6 @@
 // @ts-check
+import { join } from 'node:path'
+
 import { faker } from '@faker-js/faker'
 import fastify from 'fastify'
 import { Subject } from 'rxjs'
@@ -14,6 +16,7 @@ import {
 } from 'vitest'
 
 import graphQL from '../../src/plugins/graphql.js'
+import { catalogItems } from '../../src/repositories/index.js'
 import realServices from '../../src/services/index.js'
 import { makeLogger } from '../../src/utils/index.js'
 import {
@@ -34,7 +37,7 @@ describe('given a started server', () => {
   /** @type {ReturnType<typeof mockMethods>} */
   let restoreServices
   const services =
-    /** @type {import('../test-utils').MockedMethods<typeof realServices> & {gameListsUpdate: Subject<import('@src/services/games').GameListUpdate>}} */ (
+    /** @type {import('../test-utils').MockedMethods<typeof realServices> & {gameListsUpdate: Subject<import('@src/services/games').GameListUpdate>, gameKindUpdate: Subject<import('@tabulous/types').Game[]>}} */ (
       realServices
     )
   vi.spyOn(makeLogger('graphql-plugin'), 'warn').mockImplementation(() => {})
@@ -61,6 +64,9 @@ describe('given a started server', () => {
     restoreServices = mockMethods(services)
     /** @type {Subject<import('@src/services/games').GameListUpdate>} */
     services.gameListsUpdate = new Subject()
+    /** @type {Subject<import('@tabulous/types').Game[]>} */
+    services.gameKindUpdate = new Subject()
+    await catalogItems.connect({ path: join('tests', 'fixtures', 'games') })
   })
 
   beforeEach(() => {
@@ -1128,18 +1134,21 @@ describe('given a started server', () => {
         {
           id: faker.string.uuid(),
           created: faker.date.past().getTime(),
+          kind: 'klondike',
           playerIds: [playerId],
           guestIds: []
         },
         {
           id: faker.string.uuid(),
           created: faker.date.past().getTime(),
+          kind: 'klondike',
           playerIds: [playerId, players[1].id],
           guestIds: []
         },
         {
           id: faker.string.uuid(),
           created: faker.date.past().getTime(),
+          kind: 'belote',
           playerIds: [players[1].id, players[2].id],
           guestIds: []
         }
@@ -1158,13 +1167,15 @@ describe('given a started server', () => {
         await stopSubscription(ws)
       })
 
-      it('sends updates on game change', async () => {
+      it('sends update on game change', async () => {
         await startSubscription(
           ws,
           `subscription { 
             receiveGameUpdates(gameId: "${games[0].id}") { 
               id
               created
+              kind
+              engineScript
               players { id username }
             } 
           }`,
@@ -1178,6 +1189,7 @@ describe('given a started server', () => {
               data: {
                 receiveGameUpdates: {
                   ...games[0],
+                  engineScript: null,
                   playerIds: undefined,
                   guestIds: undefined,
                   players: players.slice(0, 1)
@@ -1191,7 +1203,7 @@ describe('given a started server', () => {
         expect(services.getPlayerById).toHaveBeenCalledTimes(2)
       })
 
-      it('ignores updates from other players', async () => {
+      it('ignores update from other players', async () => {
         await startSubscription(
           ws,
           `subscription { 
@@ -1220,7 +1232,7 @@ describe('given a started server', () => {
         expect(services.getPlayerById).toHaveBeenCalledOnce()
       })
 
-      it('send update on game deletion', async () => {
+      it('sends update on game deletion', async () => {
         await startSubscription(
           ws,
           `subscription { 
@@ -1241,6 +1253,37 @@ describe('given a started server', () => {
         )
         expect(services.getPlayerById).toHaveBeenCalledWith(playerId)
         expect(services.getPlayerById).toHaveBeenCalledOnce()
+      })
+
+      it('sends update on game reload', async () => {
+        await startSubscription(
+          ws,
+          `subscription { 
+            receiveGameUpdates(gameId: "${games[0].id}") { 
+              id
+              created
+              kind
+              engineScript
+            } 
+          }`,
+          signToken(playerId, configuration.auth.jwt.key)
+        )
+        const data = waitOnMessage(ws, data => data.type === 'data')
+        services.gameKindUpdate.next(games.slice(0, 2))
+        expect(await data).toEqual(
+          expect.objectContaining({
+            payload: {
+              data: {
+                receiveGameUpdates: {
+                  ...games[0],
+                  engineScript: expect.stringContaining('var engine=('),
+                  playerIds: undefined,
+                  guestIds: undefined
+                }
+              }
+            }
+          })
+        )
       })
     })
   })

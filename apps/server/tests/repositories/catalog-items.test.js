@@ -1,5 +1,5 @@
 // @ts-check
-import { readdir, rm, stat } from 'node:fs/promises'
+import { mkdir, readdir, rm, stat, writeFile } from 'node:fs/promises'
 import { join } from 'node:path'
 
 import { faker } from '@faker-js/faker'
@@ -125,6 +125,92 @@ tests/fixtures/unbuildable-games/import/index.js:2:9: ERROR: Could not resolve "
             size: Number.POSITIVE_INFINITY,
             results: items
           })
+        })
+      })
+
+      describe('reload()', () => {
+        const kind = 'new-game'
+
+        beforeEach(async () => {
+          await mkdir(join(fixtures, kind), { recursive: true })
+          await writeFile(
+            join(fixtures, kind, 'index.js'),
+            `export function build() {
+              return { meshes: [] }
+            }
+            export const rulesBookPageCount = 4`
+          )
+        })
+
+        afterEach(() =>
+          rm(join(fixtures, kind), { force: true, recursive: true })
+        )
+
+        it('loads new game', async () => {
+          await catalogItems.reload(kind)
+          expect(await catalogItems.getById(kind)).toEqual({
+            name: kind,
+            build: expect.any(Function),
+            rulesBookPageCount: 4
+          })
+          expect(await catalogItems.list()).toEqual(
+            expect.objectContaining({
+              total: 6
+            })
+          )
+        })
+
+        it('can change a game metadata', async () => {
+          await catalogItems.reload(kind)
+          await writeFile(
+            join(fixtures, kind, 'index.js'),
+            `export function build() {
+              return { meshes: [] }
+            }
+            export const maxSeats = 4
+            export const rulesBookPageCount = 6`
+          )
+          await catalogItems.reload(kind)
+          expect(await catalogItems.getById(kind)).toEqual({
+            name: kind,
+            build: expect.any(Function),
+            maxSeats: 4,
+            rulesBookPageCount: 6
+          })
+          expect(await catalogItems.list()).toEqual(
+            expect.objectContaining({
+              total: 6
+            })
+          )
+        })
+
+        it('rebuilds script', async () => {
+          await catalogItems.reload(kind)
+          const script = await catalogItems.getEngineScript(kind)
+          await writeFile(
+            join(fixtures, kind, 'index.js'),
+            `export function build() {
+              return { meshes: [] }
+            }
+            export function addPlayer() {}
+            export const rulesBookPageCount = 4`
+          )
+
+          await catalogItems.reload(kind)
+          expect(await catalogItems.getEngineScript(kind)).not.toEqual(script)
+        })
+
+        it('reports invalid descriptor', async () => {
+          await writeFile(
+            join(fixtures, kind, 'index.js'),
+            `export function build() {
+              return { meshes: [] }
+            export const rulesBookPageCount = 4`
+          )
+
+          await expect(catalogItems.reload(kind)).rejects.toThrow(
+            `Failed to load game ${kind}: Failed to parse source for import analysis because the content contains invalid JS syntax. If you are using JSX, make sure to name the file with the .jsx or .tsx extension.`
+          )
         })
       })
 

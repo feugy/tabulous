@@ -208,6 +208,9 @@ importers:
         specifier: ^7.8.1
         version: 7.8.1
     devDependencies:
+      '@types/nodemon':
+        specifier: ^1.19.3
+        version: 1.19.3
       nodemon:
         specifier: ^3.0.1
         version: 3.0.1
@@ -1599,7 +1602,7 @@ packages:
       '@jest/schemas': 29.6.3
       '@types/istanbul-lib-coverage': 2.0.4
       '@types/istanbul-reports': 3.0.1
-      '@types/node': 20.6.1
+      '@types/node': 20.8.6
       '@types/yargs': 17.0.24
       chalk: 4.1.2
     dev: true
@@ -2008,14 +2011,16 @@ packages:
     resolution: {integrity: sha512-xPSg0jm4mqgEkNhowKgZFBNtwoEwF6gJ4Dhww+GFpm3IgtNseHQZ5IqdNwnquZEoANxyDAKDRAdVo4Z72VvD/g==}
     dev: true
 
-  /@types/node@20.6.1:
-    resolution: {integrity: sha512-4LcJvuXQlv4lTHnxwyHQZ3uR9Zw2j7m1C9DfuwoTFQQP4Pmu04O6IfLYgMmHoOCt0nosItLLZAH+sOrRE0Bo8g==}
-    dev: true
-
   /@types/node@20.8.6:
     resolution: {integrity: sha512-eWO4K2Ji70QzKUqRy6oyJWUeB7+g2cRagT3T/nxYibYcT4y2BDL8lqolRXjTHmkZCdJfIPaY73KbJAZmcryxTQ==}
     dependencies:
       undici-types: 5.25.3
+    dev: true
+
+  /@types/nodemon@1.19.3:
+    resolution: {integrity: sha512-LcKdWgch8uHOF73yYpdE7YPVLT0HnFI60zyNBpJyfAiDDwPy3WAxReQeB84UseE8e8qdJsBqmFXWbjxv7jlXBg==}
+    dependencies:
+      '@types/node': 20.8.6
     dev: true
 
   /@types/prop-types@15.7.8:
@@ -4686,7 +4691,7 @@ packages:
     engines: {node: ^14.15.0 || ^16.10.0 || >=18.0.0}
     dependencies:
       '@jest/types': 29.6.3
-      '@types/node': 20.6.1
+      '@types/node': 20.8.6
       chalk: 4.1.2
       ci-info: 3.8.0
       graceful-fs: 4.2.11

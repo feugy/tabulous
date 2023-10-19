@@ -1,7 +1,8 @@
 // @ts-check
+import { join } from 'node:path'
+import { setTimeout } from 'node:timers/promises'
+
 import { faker } from '@faker-js/faker'
-import { join } from 'path'
-import { setTimeout } from 'timers/promises'
 import {
   afterAll,
   afterEach,
@@ -19,6 +20,7 @@ import {
   countOwnGames,
   createGame,
   deleteGame,
+  gameKindUpdate,
   gameListsUpdate,
   invite,
   joinGame,
@@ -26,6 +28,7 @@ import {
   listGames,
   notifyRelatedPlayers,
   promoteGame,
+  reloadGames,
   saveGame
 } from '../../src/services/games.js'
 import { clearDatabase, getRedisTestUrl } from '../test-utils.js'
@@ -81,7 +84,7 @@ describe('given a subscription to game lists and an initialized repository', () 
 
   beforeEach(async () => {
     await repositories.catalogItems.connect({
-      path: join('tests', 'fixtures', 'games')
+      path: join('tests', 'fixtures/games')
     })
     await revokeAccess(player.id, 'splendor')
     vi.restoreAllMocks()
@@ -244,6 +247,47 @@ describe('given a subscription to game lists and an initialized repository', () 
       await expect(
         await countOwnGames(player.id, [games[0].id, games[2].id])
       ).toBe(count - 2)
+    })
+  })
+
+  describe('reloadGames()', () => {
+    const updateReceived = vi.fn()
+    /** @type {import('rxjs').Subscription} */
+    let subscription
+    const kinds = ['belote', 'klondike', 'splendor']
+
+    beforeAll(async () => {
+      subscription = gameKindUpdate.subscribe({ next: updateReceived })
+      const saved = []
+      for (let rank = 0; rank < 30; rank++) {
+        saved.push({
+          id: `reloaded_${rank}`,
+          ownerId: player.id,
+          kind: kinds[rank % 3]
+        })
+      }
+      games.push(...(await repositories.games.save(saved)))
+    })
+
+    afterAll(() => {
+      subscription.unsubscribe()
+    })
+
+    it('reloads all games of a given kind', async () => {
+      const reloadSpy = vi.spyOn(repositories.catalogItems, 'reload')
+      const kind = 'klondike'
+      await reloadGames(kind)
+
+      expect(reloadSpy).toHaveBeenCalledOnce()
+      expect(reloadSpy).toHaveBeenCalledWith(kind)
+      expect(updateReceived).toHaveBeenCalledOnce()
+      const reloadedGames = updateReceived.mock.calls[0][0]
+      expect(reloadedGames).toHaveLength(10)
+      expect(reloadedGames).toEqual(
+        [1, 4, 7, 10, 13, 16, 19, 22, 25, 28].map(rank =>
+          expect.objectContaining({ id: `reloaded_${rank}`, kind })
+        )
+      )
     })
   })
 

@@ -1,6 +1,7 @@
 // @ts-check
-import { filter } from 'rxjs/operators'
+import { filter, map } from 'rxjs/operators'
 
+import { catalogItems } from '../repositories/index.js'
 import services from '../services/index.js'
 import { makeLogger } from '../utils/index.js'
 import { isAuthenticated } from './utils.js'
@@ -217,23 +218,42 @@ export default {
          */
         async (obj, { gameId }, { player, pubsub }) => {
           const topic = `receiveGameUpdates-${player.id}-${gameId}`
-          const subscription = services.gameListsUpdate
-            .pipe(filter(({ playerId }) => playerId === player.id))
-            .subscribe(({ games }) => {
-              const game = games.find(({ id }) => id === gameId) ?? null
-              pubsub.publish({ topic, payload: { receiveGameUpdates: game } })
-              logger.debug(
-                {
-                  res: {
-                    topic,
-                    game: { id: gameId, kind: game?.kind, removed: !game }
-                  }
-                },
-                'sent single game update'
+          const subscriptions = [
+            services.gameListsUpdate
+              .pipe(filter(({ playerId }) => playerId === player.id))
+              .subscribe(({ games }) => {
+                const game = games.find(({ id }) => id === gameId) ?? null
+                pubsub.publish({ topic, payload: { receiveGameUpdates: game } })
+                logger.debug(
+                  {
+                    res: {
+                      topic,
+                      game: { id: gameId, kind: game?.kind, removed: !game }
+                    }
+                  },
+                  'sent single game update'
+                )
+              }),
+            services.gameKindUpdate
+              .pipe(
+                map(games => games.find(({ id }) => id === gameId) ?? null),
+                filter(Boolean)
               )
-            })
+              .subscribe(async (/** @type {import('.').Game} */ game) => {
+                game.engineScript = await catalogItems.getEngineScript(
+                  game.kind
+                )
+                pubsub.publish({ topic, payload: { receiveGameUpdates: game } })
+                logger.debug(
+                  { res: { topic, game: { id: gameId, kind: game.kind } } },
+                  'sent single game kind update'
+                )
+              })
+          ]
           const queue = await pubsub.subscribe(topic)
-          queue.once('close', () => subscription.unsubscribe())
+          queue.once('close', () =>
+            subscriptions.forEach(subscription => subscription.unsubscribe())
+          )
           logger.debug(
             { ctx: { topic, playerId: player.id } },
             'subscribed to single game updates'

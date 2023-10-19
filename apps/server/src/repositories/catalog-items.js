@@ -49,54 +49,63 @@ class CatalogItemRepository {
     }
     for (const entry of entries) {
       if (entry.isDirectory() || entry.isSymbolicLink()) {
-        const { name } = entry
-        const descriptor = `${this.root}/${name}/index.js`
-        const rules = `${this.root}/${name}/engine.min.js`
-
-        try {
-          /** @type {import('@tabulous/types').GameDescriptor} */
-          const item = {
-            name,
-            ...(await import(descriptor))
-          }
-
-          this.logger.debug(
-            { ctx, gameName: name },
-            `bundling rule engine for ${name}`
-          )
-          const buildResult = await build({
-            entryPoints: [descriptor],
-            bundle: true,
-            minify: true,
-            globalName: 'engine',
-            sourcemap: 'inline',
-            outfile: rules
-          })
-          if (buildResult.errors.length) {
-            throw new Error(
-              `can not bundle rule engine: ${buildResult.errors
-                .map(({ text }) => text)
-                .join('\n')}`
-            )
-          }
-
-          this.models.push(item)
-          this.modelsByName.set(name, item)
-        } catch (err) {
-          // ignore folders with no index.js or invalid symbolic links
-          if (
-            err instanceof Error &&
-            !err.message.includes(`Cannot find module '${descriptor}'`)
-          ) {
-            throw new Error(`Failed to load game ${entry.name}: ${err.message}`)
-          }
-        }
+        await this.reload(entry.name)
       }
     }
     this.logger.info(
       { ctx, res: [...this.modelsByName.keys()] },
       'initialized repository'
     )
+  }
+
+  /**
+   * Loads a catalog item from the file system, bundling its rules with esbuild.
+   * @param {string} name - name of the catalog item, relative to the root folder.
+   */
+  async reload(name) {
+    const descriptor = `${this.root}/${name}/index.js`
+    const rules = `${this.root}/${name}/engine.min.js`
+    const ctx = { root: this.root }
+
+    try {
+      /** @type {import('@tabulous/types').GameDescriptor} */
+      const item = {
+        name,
+        ...(await import(`${descriptor}?cache_buster=${Date.now()}`))
+      }
+
+      this.logger.debug(
+        { ctx, gameName: name },
+        `bundling rule engine for ${name}`
+      )
+      const buildResult = await build({
+        entryPoints: [descriptor],
+        bundle: true,
+        minify: true,
+        globalName: 'engine',
+        sourcemap: 'inline',
+        outfile: rules
+      })
+      if (buildResult.errors.length) {
+        throw new Error(
+          `can not bundle rule engine: ${buildResult.errors
+            .map(({ text }) => text)
+            .join('\n')}`
+        )
+      }
+
+      this.modelsByName.set(name, item)
+      this.models = [...this.modelsByName.values()]
+      this.logger.trace({ ctx, name }, `game ${name} loaded`)
+    } catch (err) {
+      // ignore folders with no index.js or invalid symbolic links
+      if (
+        err instanceof Error &&
+        !err.message.includes(`Cannot find module '${descriptor}'`)
+      ) {
+        throw new Error(`Failed to load game ${name}: ${err.message}`)
+      }
+    }
   }
 
   /**
