@@ -8,9 +8,9 @@ import {
 import { ids } from './constants.js'
 
 /** @type {import('@tabulous/types').ComputeScore} */
-export function computeScore(action, state, players, preferences) {
+export function computeScore({ action, state, players, preferences }) {
   if (
-    action === null ||
+    !action ||
     action.fn === 'pop' ||
     action.fn === 'push' ||
     ((action.fn === 'snap' || action.fn === 'unsnap') &&

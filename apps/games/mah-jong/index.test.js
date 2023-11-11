@@ -41,12 +41,11 @@ buildDescriptorTestSuite('mah-jong', descriptor, utils => {
 
     it('computes initial score', async () => {
       expect(
-        descriptor.computeScore(
-          null,
-          toEngineState(game),
-          [player, player2],
-          []
-        )
+        descriptor.computeScore({
+          state: toEngineState(game),
+          players: [player, player2],
+          preferences: []
+        })
       ).toEqual({
         [player.id]: { total: '25k' },
         [player2.id]: { total: '25k' }
@@ -58,17 +57,17 @@ buildDescriptorTestSuite('mah-jong', descriptor, utils => {
       const anchorId = `${ids.score}1`
       snapTo(anchorId, stick, game.meshes)
       expect(
-        descriptor.computeScore(
-          {
+        descriptor.computeScore({
+          action: {
             fn: 'snap',
             args: [stick.id, anchorId, true],
             fromHand: false,
             meshId: stick.id
           },
-          toEngineState(game),
-          [player, player2],
-          []
-        )
+          state: toEngineState(game),
+          players: [player, player2],
+          preferences: []
+        })
       ).toEqual({
         [player.id]: { total: '24k' },
         [player2.id]: { total: '26k' }
@@ -79,17 +78,17 @@ buildDescriptorTestSuite('mah-jong', descriptor, utils => {
       const anchorId = `${ids.score}0`
       const stick = unsnap(anchorId, game.meshes)
       expect(
-        descriptor.computeScore(
-          {
+        descriptor.computeScore({
+          action: {
             fn: 'unsnap',
             args: [stick.id, anchorId, true],
             fromHand: false,
             meshId: stick.id
           },
-          toEngineState(game),
-          [player],
-          []
-        )
+          state: toEngineState(game),
+          players: [player],
+          preferences: []
+        })
       ).toEqual({ [player.id]: { total: '24k' } })
     })
 
@@ -99,17 +98,17 @@ buildDescriptorTestSuite('mah-jong', descriptor, utils => {
       // @ts-expect-error -- can not use ! operator in JS.
       stick2.quantifiable.quantity += stick1.quantifiable?.quantity ?? 1
       expect(
-        descriptor.computeScore(
-          {
+        descriptor.computeScore({
+          action: {
             fn: 'increment',
             args: [[], true],
             fromHand: false,
             meshId: stick2.id
           },
-          toEngineState(game),
-          [player, player2],
-          []
-        )
+          state: toEngineState(game),
+          players: [player, player2],
+          preferences: []
+        })
       ).toEqual({
         [player.id]: { total: '24k' },
         [player2.id]: { total: '26k' }
@@ -121,17 +120,17 @@ buildDescriptorTestSuite('mah-jong', descriptor, utils => {
       // @ts-expect-error -- can not use ! operator in JS.
       stick.quantifiable.quantity -= 2
       expect(
-        descriptor.computeScore(
-          {
+        descriptor.computeScore({
+          action: {
             fn: 'decrement',
             args: [2, true, `stick-1000-0-whatever`],
             fromHand: false,
             meshId: stick.id
           },
-          toEngineState(game),
-          [player],
-          []
-        )
+          state: toEngineState(game),
+          players: [player],
+          preferences: []
+        })
       ).toEqual({
         [player.id]: { total: '23k' }
       })
@@ -145,17 +144,17 @@ buildDescriptorTestSuite('mah-jong', descriptor, utils => {
       const anchorId = `river-east-1-1`
       snapTo(anchorId, tile, game.meshes)
       expect(
-        descriptor.computeScore(
-          {
+        descriptor.computeScore({
+          action: {
             fn,
             args: [tile.id, anchorId, true],
             fromHand: false,
             meshId: tile.id
           },
-          toEngineState(game),
-          [player],
-          []
-        )
+          state: toEngineState(game),
+          players: [player],
+          preferences: []
+        })
       ).toBeUndefined()
     })
   })

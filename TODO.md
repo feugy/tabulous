@@ -1,5 +1,8 @@
 # TODO
 
+- cumulative scores
+- hand stack ordering
+
 ## Refactor
 
 - Control manager: trigger rule when action is finished?

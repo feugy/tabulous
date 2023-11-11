@@ -23,7 +23,7 @@ export class RuleManager {
     this.onScoreUpdateObservable = new Observable()
     /** @internal @type {import('@babylonjs/core').Observer<import('@tabulous/types').ActionOrMove>?} */
     this.actionObserver = null
-    /** @internal @type {?{ computeScore: import('@tabulous/types').ComputeScore }} */
+    /** @internal @type {?{ computeScore: import('@tabulous/types').ComputeScore, buildNextRound: import('@tabulous/types').BuildNextRound }} */
     this.ruleEngine = null
 
     this.engine.onDisposeObservable.addOnce(() => this.dispose())
@@ -49,7 +49,7 @@ export class RuleManager {
       this.actionObserver = managers.control.onActionObservable.add(action =>
         evaluateScore(this, action)
       )
-      evaluateScore(this, null)
+      evaluateScore(this)
       this.engine.onDisposeObservable.addOnce(() => {
         this.players = []
         this.preferences = []
@@ -84,6 +84,25 @@ export class RuleManager {
     }
     this.ruleEngine = null
   }
+
+  /**
+   * Builds meshes for the next round if supported.
+   * @param {import('@tabulous/types').StartedGame} game - current game.
+   */
+  async buildNextRound(game) {
+    const { ruleEngine, players, managers } = this
+    if (!ruleEngine?.buildNextRound || !managers) {
+      return
+    }
+    logger.debug({ game }, `building next round`)
+    try {
+      const newRound = await ruleEngine.buildNextRound({ game, players })
+      logger.debug({ game, newRound }, `new round built`)
+      return newRound
+    } catch (error) {
+      logger.warn({ error }, `failed to build next round`)
+    }
+  }
 }
 
 async function evaluateScore(
@@ -94,7 +113,7 @@ async function evaluateScore(
     preferences,
     onScoreUpdateObservable
   },
-  /** @type {?import('@tabulous/types').ActionOrMove} */ action
+  /** @type {import('@tabulous/types').ActionOrMove|undefined} */ action
 ) {
   if (action && !('fn' in action)) {
     return
@@ -102,12 +121,12 @@ async function evaluateScore(
   const state = engine.serialize()
   logger.debug({ action, state }, `evaluate score`)
   try {
-    const scores = await ruleEngine?.computeScore?.(
+    const scores = await ruleEngine?.computeScore?.({
       action,
       state,
       players,
       preferences
-    )
+    })
     if (scores) {
       onScoreUpdateObservable.notifyObservers(scores)
     }

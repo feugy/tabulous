@@ -329,7 +329,9 @@ export class StackBehavior extends TargetBehavior {
       angle,
       ignoreParts: true
     }
-
+    for (const mesh of this.stack) {
+      setBase(mesh, null)
+    }
     this.stack = [this.mesh]
     // dispose previous drop zone
     if (this.dropZone) {

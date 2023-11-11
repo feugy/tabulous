@@ -74,6 +74,12 @@ export class MoveManager {
    * @param {import('../utils').ScreenPosition} event - mouse or touch event containing the screen position.
    */
   start(mesh, event) {
+    console.log(
+      '> start',
+      mesh.id,
+      this.isManaging(mesh),
+      this.behaviorByMeshId.get(mesh.id)
+    )
     if (!this.isManaging(mesh) || isDisabled(this, mesh)) {
       return
     }
@@ -379,6 +385,7 @@ export class MoveManager {
    */
   registerMovable(behavior) {
     if (behavior?.mesh?.id) {
+      console.log('register', behavior.mesh.id)
       this.meshIds.add(behavior.mesh.id)
       this.behaviorByMeshId.set(behavior.mesh.id, behavior)
     }
@@ -395,6 +402,7 @@ export class MoveManager {
       this.isManaging(behavior?.mesh) &&
       !behavior.mesh.isPhantom
     ) {
+      console.log('delete', behavior.mesh.id)
       this.meshIds.delete(behavior.mesh.id)
       this.behaviorByMeshId.delete(behavior.mesh.id)
     }

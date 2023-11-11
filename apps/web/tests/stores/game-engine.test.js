@@ -46,6 +46,8 @@ let pruneUnusedPointers
 let applyAction
 /** @type {import('vitest').Spy<import('@src/3d/managers').ReplayManager['replayHistory']>} */
 let replayHistory
+/** @type {import('vitest').Spy<import('@src/3d/managers').RuleManager['buildNextRound']>} */
+let buildNextRound
 
 beforeEach(() => {
   vi.resetAllMocks()
@@ -101,6 +103,7 @@ describe('initEngine()', () => {
     pruneUnusedPointers = vi.spyOn(managers.indicator, 'pruneUnusedPointers')
     applyAction = vi.spyOn(managers.control, 'apply')
     replayHistory = vi.spyOn(managers.replay, 'replayHistory')
+    buildNextRound = vi.spyOn(managers.rule, 'buildNextRound')
     subscriptions = [
       gameEngine.action.subscribe({ next: receiveAction }),
       gameEngine.meshDetails.subscribe({ next: receiveMeshDetail }),
@@ -470,6 +473,15 @@ describe('initEngine()', () => {
           await gameEngine.replayHistory(5)
           expect(replayHistory).toHaveBeenCalledWith(5)
           expect(replayHistory).toHaveBeenCalledOnce()
+        })
+      })
+
+      describe('buildNextRound()', () => {
+        it('invokes rule manager', async () => {
+          const results = { meshes: [], hands: [] }
+          buildNextRound.mockResolvedValueOnce(results)
+          expect(await gameEngine.buildNextRound()).toEqual(results)
+          expect(buildNextRound).toHaveBeenCalledOnce()
         })
       })
     })

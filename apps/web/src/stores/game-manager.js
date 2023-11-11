@@ -29,7 +29,7 @@ import {
   makeLogger,
   sleep
 } from '@src/utils'
-import { findPlayerPreferences } from '@tabulous/game-utils'
+import { enrichAssets, findPlayerPreferences } from '@tabulous/game-utils'
 import {
   BehaviorSubject,
   combineLatest,
@@ -72,6 +72,7 @@ import { get } from 'svelte/store'
  */
 
 const logger = makeLogger('game-manager')
+const GameSync = 'game-sync'
 const currentGame$ = new BehaviorSubject(
   /** @type {?import('@src/graphql').GameOrGameParameters} */ (null)
 )
@@ -338,7 +339,7 @@ export async function joinGame({
     }
     return game
   }
-  await load(engine, game, currentPlayerId, true)
+  await load({ engine, game, currentPlayerId, initial: true })
   if (isHost) {
     currentGameSubscriptions.push(
       ...takeHostRole(gameEngine, gameId, currentPlayerId)
@@ -346,16 +347,7 @@ export async function joinGame({
   } else {
     currentGameSubscriptions.push(
       gameEngine.cameraSaves.subscribe(shareCameras(currentPlayerId)),
-      gameEngine.handMeshes.subscribe(shareHand(currentPlayerId)),
-      lastMessageReceived
-        .pipe(filter(({ data }) => data?.type === 'game-sync'))
-        .subscribe(({ data, playerId }) => {
-          if (!isCurrentHost(playerId)) {
-            hostId$.next(playerId)
-            logger.info({ playerId }, `updating host to ${playerId}`)
-          }
-          load(engine, data, currentPlayerId)
-        })
+      gameEngine.handMeshes.subscribe(shareHand(currentPlayerId))
     )
   }
   return game
@@ -393,12 +385,44 @@ export async function leaveGame({ id: currentPlayerId }) {
   clearThread()
 }
 
-async function load(
-  /** @type {import('@babylonjs/core').Engine} */ engine,
-  /** @type {import('@src/graphql').GameOrGameParameters} */ game,
-  /** @type {string} */ playerId,
-  firstLoad = false
-) {
+/**
+ * If the current game supports it, builds next round meshes and loads them into the engine.
+ * Notifies all other peers.
+ * @param {Pick<PlayerWithPref, 'id'>} player - the current player details.
+ */
+export async function triggerNextRound({ id: currentPlayerId }) {
+  const game = currentGame$.value
+  const gameEngine = await import('./game-engine')
+  const engine = get(gameEngine.engine)
+  if (!game || !engine) {
+    return
+  }
+  const nextRound = await gameEngine.buildNextRound(
+    /** @type {import('@tabulous/types').StartedGame} */ (game)
+  )
+  if (nextRound) {
+    const newGame = { ...game, ...nextRound }
+    enrichAssets(newGame)
+    await load({ engine, game: newGame, currentPlayerId, newRound: true })
+    shareGame({ engine, currentPlayerId, newRound: true })
+  }
+}
+
+/**
+ * @param {object} params
+ * @param {import('@babylonjs/core').Engine} params.engine
+ * @param {import('@src/graphql').GameOrGameParameters} params.game
+ * @param {string} params.currentPlayerId
+ * @param {boolean} [params.initial]
+ * @param {boolean} [params.newRound]
+ */
+async function load({
+  engine,
+  game,
+  currentPlayerId,
+  initial = false,
+  newRound = false
+}) {
   const { loadCameraSaves } = await import('./game-engine')
   currentGame$.next(game)
   hands = ('hands' in game ? game.hands : null) ?? []
@@ -410,27 +434,28 @@ async function load(
   if ('messages' in game && game.messages) {
     loadThread(game.messages)
   }
-  if (cameras.length && firstLoad) {
+  if (cameras.length && initial) {
     const playerCameras = cameras
-      .filter(save => save.playerId === playerId)
+      .filter(save => save.playerId === currentPlayerId)
       .sort((a, b) => a.index - b.index)
     if (playerCameras.length) {
       loadCameraSaves(playerCameras)
     }
   }
   if (
-    engine &&
-    (game.players ?? []).find(({ id }) => id === playerId)?.isGuest === false
+    (game.players ?? []).find(({ id }) => id === currentPlayerId)?.isGuest ===
+    false
   ) {
-    await engine.load(
-      /** @type {import('@src/graphql').Game} */ (game),
-      {
-        playerId,
-        preference: findPlayerPreferences(game.preferences, playerId),
+    await engine.load({
+      game: /** @type {import('@src/graphql').Game} */ (game),
+      playerData: {
+        playerId: currentPlayerId,
+        preference: findPlayerPreferences(game.preferences, currentPlayerId),
         colorByPlayerId: buildPlayerColors(game)
       },
-      firstLoad
-    )
+      initial,
+      newRound
+    })
   }
 }
 
@@ -507,7 +532,7 @@ function takeHostRole(
   logger.info({ gameId, game }, `taking game host role`)
   hostId$.next(currentPlayerId)
   if (shouldShareGame && !isLobby(game)) {
-    shareGame(engine, currentPlayerId)
+    shareGame({ engine, currentPlayerId })
   }
 
   return [
@@ -520,7 +545,7 @@ function takeHostRole(
       .subscribe(action => {
         logger.info({ gameId, action }, `persisting game scene on action`)
         runMutation(graphQL.saveGame, {
-          game: shareGame(engine, currentPlayerId)
+          game: shareGame({ engine, currentPlayerId })
         })
       }),
     // save discussion thread
@@ -579,13 +604,25 @@ function takeHostRole(
 function subscribePeerStatusesAndGameUpdates(
   /** @type {JoinGameContext} */ params
 ) {
-  const { gameId } = params
+  const { gameEngine, gameId, currentPlayerId } = params
   return [
     runSubscription(graphQL.receiveGameUpdates, { gameId }).subscribe(
       handleServerUpdate(params)
     ),
     lastConnectedId.subscribe(handlePeerConnection(params)),
-    lastDisconnectedId.subscribe(handlePeerDisconnection(params))
+    lastDisconnectedId.subscribe(handlePeerDisconnection(params)),
+    lastMessageReceived
+      .pipe(filter(({ data }) => data?.type === GameSync))
+      .subscribe(({ data: { newRound, ...game }, playerId }) => {
+        const engine = get(gameEngine.engine)
+        if (!isCurrentHost(playerId)) {
+          hostId$.next(playerId)
+          logger.info({ playerId }, `updating host to ${playerId}`)
+        }
+        if (engine) {
+          load({ engine, game, currentPlayerId, newRound })
+        }
+      })
   ]
 }
 
@@ -612,14 +649,13 @@ function handleServerUpdate(
         { gameId: game.id, currentPlayerId, wasLobby, game },
         'loading game update from server'
       )
-      await load(
-        /** @type {import('@babylonjs/core').Engine} */ (
+      await load({
+        engine: /** @type {import('@babylonjs/core').Engine} */ (
           get(gameEngine.engine)
         ),
         game,
-        currentPlayerId,
-        false
-      )
+        currentPlayerId
+      })
       if (wasLobby && !isLobby(game)) {
         onPromotion?.(/** @type {import('@src/graphql').Game} */ (game))
       }
@@ -645,11 +681,14 @@ function serializeGame(
   }
 }
 
-function shareGame(
-  /** @type {import('@babylonjs/core').Engine} */ engine,
-  /** @type {string} */ currentPlayerId,
-  /** @type {string} */ peerId
-) {
+/**
+ * @param {object} params
+ * @param {import('@babylonjs/core').Engine} params.engine
+ * @param {string} params.currentPlayerId
+ * @param {?string} [params.peerId]
+ * @param {boolean} [params.newRound]
+ */
+function shareGame({ engine, currentPlayerId, peerId, newRound = false }) {
   const { id: gameId, ...otherGameData } =
     /** @type {import('@src/graphql').Game} */ (currentGame$.value)
   logger.info(
@@ -657,7 +696,10 @@ function shareGame(
     `sending game data ${gameId} to peer${peerId ? ` ${peerId}` : 's'}`
   )
   const game = serializeGame(engine, currentPlayerId)
-  send({ type: 'game-sync', ...otherGameData, ...game, selections }, peerId)
+  send(
+    { type: GameSync, ...otherGameData, ...game, selections, newRound },
+    peerId
+  )
   return game
 }
 
@@ -682,13 +724,13 @@ function handlePeerConnection(
       currentGame$.next({ ...game, players })
     }
     if (isCurrentHost(currentPlayerId)) {
-      shareGame(
-        /** @type {import('@babylonjs/core').Engine} */ (
+      shareGame({
+        engine: /** @type {import('@babylonjs/core').Engine} */ (
           get(gameEngine.engine)
         ),
         currentPlayerId,
-        playerId
-      )
+        peerId: playerId
+      })
     }
     toastInfo({
       icon: 'person_add_alt_1',

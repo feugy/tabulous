@@ -24,17 +24,17 @@ buildDescriptorTestSuite('draughts', descriptor, utils => {
       const pawn = findMesh(`${blackId}-1`, meshes)
       snapTo(ids.scoreAnchor, pawn, meshes)
       expect(
-        descriptor.computeScore(
-          {
+        descriptor.computeScore({
+          action: {
             fn: 'snap',
             args: [pawn.id, ids.scoreAnchor, true],
             fromHand: false,
             meshId: pawn.id
           },
-          { meshes, handMeshes: [], history: [] },
-          [player],
-          [{ playerId: player.id, side: whiteId }]
-        )
+          state: { meshes, handMeshes: [], history: [] },
+          players: [player],
+          preferences: [{ playerId: player.id, side: whiteId }]
+        })
       ).toEqual({ [player.id]: { total: 1 } })
     })
 
@@ -46,20 +46,20 @@ buildDescriptorTestSuite('draughts', descriptor, utils => {
       snapTo(ids.scoreAnchor, pawn2, meshes)
       snapTo(ids.scoreAnchor, pawn3, meshes)
       expect(
-        descriptor.computeScore(
-          {
+        descriptor.computeScore({
+          action: {
             fn: 'unsnap',
             args: [pawn1.id, ids.scoreAnchor],
             fromHand: false,
             meshId: pawn1.id
           },
-          { meshes, handMeshes: [], history: [] },
-          [player, player2],
-          [
+          state: { meshes, handMeshes: [], history: [] },
+          players: [player, player2],
+          preferences: [
             { playerId: player.id, side: whiteId },
             { playerId: player2.id, side: blackId }
           ]
-        )
+        })
       ).toEqual({ [player.id]: { total: 2 }, [player2.id]: { total: 1 } })
     })
 
@@ -69,20 +69,20 @@ buildDescriptorTestSuite('draughts', descriptor, utils => {
       snapTo(ids.scoreAnchor, pawn1, meshes)
       stackMeshes([pawn1, pawn2])
       expect(
-        descriptor.computeScore(
-          {
+        descriptor.computeScore({
+          action: {
             fn: 'push',
             args: [pawn2.id, true],
             fromHand: false,
             meshId: pawn1.id
           },
-          { meshes, handMeshes: [], history: [] },
-          [player, player2],
-          [
+          state: { meshes, handMeshes: [], history: [] },
+          players: [player, player2],
+          preferences: [
             { playerId: player.id, side: whiteId },
             { playerId: player2.id, side: blackId }
           ]
-        )
+        })
       ).toEqual({ [player.id]: { total: 2 }, [player2.id]: { total: 0 } })
     })
 
@@ -99,12 +99,12 @@ buildDescriptorTestSuite('draughts', descriptor, utils => {
       const pawn = findMesh(`${blackId}-1`, meshes)
       snapTo(ids.scoreAnchor, pawn, meshes)
       expect(
-        descriptor.computeScore(
-          { fn, args, fromHand: false, meshId: pawn.id },
-          { meshes, handMeshes: [], history: [] },
-          [player],
-          [{ playerId: player.id, side: whiteId }]
-        )
+        descriptor.computeScore({
+          action: { fn, args, fromHand: false, meshId: pawn.id },
+          state: { meshes, handMeshes: [], history: [] },
+          players: [player],
+          preferences: [{ playerId: player.id, side: whiteId }]
+        })
       ).toBeUndefined()
     })
   })

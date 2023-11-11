@@ -714,6 +714,58 @@ describe('loadMeshes() 3D utility', () => {
     })
   })
 
+  it('restores existing stacked mesh with different ordering', async () => {
+    const mesh1 = await createCard(
+      { id: 'card1', texture: '', stackable: {} },
+      managers,
+      scene
+    )
+    const mesh2 = await createCard(
+      { id: 'card2', texture: '', stackable: {} },
+      managers,
+      scene
+    )
+    const mesh3 = await createCard(
+      { id: 'card3', texture: '', stackable: {} },
+      managers,
+      scene
+    )
+    mesh1.metadata.push?.(mesh2.id, true)
+    mesh1.metadata.push?.(mesh3.id, true)
+    await loadMeshes(
+      scene,
+      /** @type {import('@tabulous/types').Mesh[]} */ ([
+        { shape: 'card', id: mesh1.id, stackable: {} },
+        {
+          shape: 'card',
+          id: mesh3.id,
+          stackable: { stackIds: [mesh2.id, mesh1.id] }
+        },
+        { shape: 'card', id: mesh2.id, stackable: {} }
+      ]),
+      managers
+    )
+
+    expect(scene.getMeshById(mesh1.id)).toBeDefined()
+    expect(scene.getMeshById(mesh1.id)?.metadata.serialize()).toEqual(
+      expect.objectContaining({
+        stackable: { stackIds: [], extent: 2, duration: 100 }
+      })
+    )
+    expect(scene.getMeshById(mesh2.id)).toBeDefined()
+    expect(scene.getMeshById(mesh2.id)?.metadata.serialize()).toEqual(
+      expect.objectContaining({
+        stackable: { stackIds: [], extent: 2, duration: 100 }
+      })
+    )
+    expect(scene.getMeshById(mesh3.id)).toBeDefined()
+    expect(scene.getMeshById(mesh3.id)?.metadata.serialize()).toEqual(
+      expect.objectContaining({
+        stackable: { stackIds: [mesh2.id, mesh1.id], extent: 2, duration: 100 }
+      })
+    )
+  })
+
   it('restores mesh stacks with proper Y-ordering', async () => {
     const card1 = {
       shape: 'card',

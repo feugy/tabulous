@@ -518,15 +518,15 @@ describe('given a mocked game engine', () => {
         gameId
       })
       expect(runSubscription).toHaveBeenCalledOnce()
-      expect(engine.load).toHaveBeenCalledWith(
+      expect(engine.load).toHaveBeenCalledWith({
         game,
-        {
+        playerData: {
           playerId: player.id,
           colorByPlayerId,
           preference: { color: '#00ff00' }
         },
-        true
-      )
+        initial: true
+      })
       expect(engine.load).toHaveBeenCalledOnce()
       expect(loadCameraSaves).not.toHaveBeenCalled()
       expect(loadThread).not.toHaveBeenCalled()
@@ -617,15 +617,15 @@ describe('given a mocked game engine', () => {
         parameters: undefined
       })
       expect(runMutation).toHaveBeenCalledOnce()
-      expect(engine.load).toHaveBeenCalledWith(
+      expect(engine.load).toHaveBeenCalledWith({
         game,
-        {
+        playerData: {
           playerId: player.id,
           colorByPlayerId: buildPlayerColors(game),
           preference: {}
         },
-        true
-      )
+        initial: true
+      })
       expect(engine.serialize).toHaveBeenCalledOnce()
       expect(engine.load).toHaveBeenCalledOnce()
       expect(loadCameraSaves).toHaveBeenCalledWith([cameras[2], cameras[0]])
@@ -678,15 +678,15 @@ describe('given a mocked game engine', () => {
         parameters: undefined
       })
       expect(runMutation).toHaveBeenCalledOnce()
-      expect(engine.load).toHaveBeenCalledWith(
+      expect(engine.load).toHaveBeenCalledWith({
         game,
-        {
+        playerData: {
           playerId: player.id,
           colorByPlayerId: buildPlayerColors(game),
           preference: {}
         },
-        true
-      )
+        initial: true
+      })
       expect(engine.load).toHaveBeenCalledOnce()
       expect(loadCameraSaves).not.toHaveBeenCalled()
       expect(send).toHaveBeenCalledWith(
@@ -720,15 +720,15 @@ describe('given a mocked game engine', () => {
         parameters: undefined
       })
       expect(runMutation).toHaveBeenCalledOnce()
-      expect(engine.load).toHaveBeenCalledWith(
+      expect(engine.load).toHaveBeenCalledWith({
         game,
-        {
+        playerData: {
           playerId: player.id,
           colorByPlayerId: buildPlayerColors(game),
           preference: {}
         },
-        true
-      )
+        initial: true
+      })
       expect(engine.load).toHaveBeenCalledOnce()
       expect(playerColorReceived).toHaveBeenLastCalledWith(
         findPlayerColor(game, player.id)
@@ -1244,15 +1244,15 @@ describe('given a mocked game engine', () => {
           }
         )
         expect(runSubscription).toHaveBeenCalledOnce()
-        expect(engine.load).toHaveBeenCalledWith(
+        expect(engine.load).toHaveBeenCalledWith({
           game,
-          {
+          playerData: {
             playerId: player.id,
             colorByPlayerId: buildPlayerColors(game),
             preference: { color: '#00ff00' }
           },
-          true
-        )
+          initial: true
+        })
         expect(engine.load).toHaveBeenCalledOnce()
         expect(loadCameraSaves).toHaveBeenCalledWith(
           (game.cameras ?? []).slice(0, 1)
@@ -1439,15 +1439,15 @@ describe('given a mocked game engine', () => {
           expect(connectWith).toHaveBeenCalledWith(partner1.id, turnCredentials)
           expect(connectWith).toHaveBeenCalledTimes(2)
           expect(send).not.toHaveBeenCalled()
-          expect(engine.load).toHaveBeenCalledWith(
+          expect(engine.load).toHaveBeenCalledWith({
             game,
-            {
+            playerData: {
               playerId: partner2.id,
               colorByPlayerId: buildPlayerColors(game),
               preference: { color: '#ffffff' }
             },
-            true
-          )
+            initial: true
+          })
           expect(engine.load).toHaveBeenCalledOnce()
           expect(loadCameraSaves).toHaveBeenCalledWith(
             (game.cameras ?? []).slice(2)
@@ -1481,15 +1481,14 @@ describe('given a mocked game engine', () => {
           const data = { type: 'game-sync', ...game }
           lastMessageReceived.next({ data, playerId: partner1.id })
           await nextPromise()
-          expect(engine.load).toHaveBeenCalledWith(
-            data,
-            {
+          expect(engine.load).toHaveBeenCalledWith({
+            game: data,
+            playerData: {
               playerId: partner2.id,
               colorByPlayerId: buildPlayerColors(game),
               preference: { color: '#ffffff' }
-            },
-            false
-          )
+            }
+          })
           expect(engine.load).toHaveBeenCalledOnce()
           expect(loadCameraSaves).not.toHaveBeenCalled()
           expect(loadThread).toHaveBeenCalledWith(game.messages)

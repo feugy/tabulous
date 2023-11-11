@@ -63,8 +63,10 @@ export class SelectionManager {
    * @param {Map<string, string>} params.colorByPlayerId - map of hexadecimal color strings used for selection box, and selected mesh overlay, by player id.
    */
   init({ managers, playerId, colorByPlayerId }) {
+    this.clear()
     this.playerId = playerId
     this.managers = managers
+    this.selectionByPeerId = new Map()
     this.colorByPlayerId = new Map(
       [...colorByPlayerId.entries()].map(([playerId, color]) => [
         playerId,

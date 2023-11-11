@@ -4,9 +4,9 @@ import { findAnchor, findMesh } from '@tabulous/game-utils'
 import { ids } from './constants.js'
 
 /** @type {import('@tabulous/types').ComputeScore} */
-export function computeScore(action, state, players) {
+export function computeScore({ action, state, players }) {
   if (
-    action === null ||
+    !action ||
     action.fn === 'increment' ||
     action.fn === 'decrement' ||
     ((action.fn === 'snap' || action.fn === 'unsnap') &&

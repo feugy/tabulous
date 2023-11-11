@@ -188,12 +188,18 @@ declare module '.' {
   }) => ?(Schema<Parameters> | Promise<?Schema<Parameters>>)
 
   /** Function invoked to compute scores after a given action */
-  export type ComputeScore = (
-    action: ?Action,
-    state: EngineState,
-    players: Pick<Player, 'id' | 'username' | 'avatar'>[],
+  export type ComputeScore = (params: {
+    action?: Action
+    state: EngineState
+    players: Player[]
     preferences: PlayerPreference[]
-  ) => Promise<Scores | undefined> | Scores | undefined
+  }) => Promise<Scores | undefined> | Scores | undefined
+
+  /** Function invoked to build new game data for the next round */
+  export type BuildNextRound = (params: {
+    game: StartedGame
+    players: Player[]
+  }) => Promise<StartedGame> | StartedGame | undefined
 
   /**
    * Setup for a given game instance, including meshes, bags and slots.

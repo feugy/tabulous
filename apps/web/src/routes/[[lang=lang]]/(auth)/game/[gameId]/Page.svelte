@@ -5,14 +5,10 @@
     connected,
     currentGame,
     gamePlayerById,
-    history,
     joinGame,
     leaveGame,
     listFriends,
     playerColor,
-    replayHistory,
-    replayRank,
-    scores,
     sendToThread,
     thread,
     toastError,
@@ -24,9 +20,13 @@
     handMeshCount,
     handVisible,
     highlightHand,
+    history,
     initEngine,
     longInputs,
-    meshDetails
+    meshDetails,
+    replayHistory,
+    replayRank,
+    scores
   } from '@src/stores/game-engine'
   import {
     areIndicatorsVisible,
@@ -184,7 +184,7 @@
     playerById={$gamePlayerById}
   />
 </div>
-<GameMenu {longTapDelay} />
+<GameMenu user={session.player} {longTapDelay} />
 <main>
   <!-- svelte-ignore a11y-autofocus -->
   <div

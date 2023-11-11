@@ -114,7 +114,7 @@ export async function loadMeshes(scene, meshes, managers) {
       disposables.delete(mesh)
       mesh.setAbsolutePosition(new Vector3(state.x, state.y, state.z))
       mesh.computeWorldMatrix(true)
-      restoreBehaviors(mesh.behaviors, state)
+      restoreBehaviors(mesh.behaviors, skipDelayableBehaviors(state))
     } else {
       logger.debug({ state }, `create new ${name} ${state.id}`)
       mesh = await createMeshFromState(
@@ -180,7 +180,7 @@ function skipDelayableBehaviors({ stackable, anchorable, ...state }) {
   return {
     ...state,
     anchorable: anchorable ? { ...anchorable, anchors: [] } : undefined,
-    stackable: stackable ? { ...stackable, stackIds: undefined } : undefined
+    stackable: stackable ? { ...stackable, stackIds: [] } : undefined
   }
 }
 

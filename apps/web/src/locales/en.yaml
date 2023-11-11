@@ -173,6 +173,7 @@ tooltips:
   increment: Group the active selection together
   lock: Lock
   move: Move
+  next-round: Skip to the next round
   open-menu: Open action menu
   pan-camera: Move
   play: Play on the table

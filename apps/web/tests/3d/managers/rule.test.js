@@ -102,7 +102,7 @@ describe('ReplayManager', () => {
   })
 
   it('computes scores on every action', async () => {
-    const engineScript = `let count=0;let engine={computeScore:(action,state,players,preferences)=>action?.fn==='flip'?{"${playerId}":{total:count+=preferences[0].amount}}:undefined}`
+    const engineScript = `let count=0;let engine={computeScore:({action,state,players,preferences})=>action?.fn==='flip'?{"${playerId}":{total:count+=preferences[0].amount}}:undefined}`
     const preferences = [{ playerId, amount: 2 }]
     managers.rule.init({ managers, engineScript, preferences })
     await managers.control.onActionObservable.notifyObservers({
@@ -114,14 +114,6 @@ describe('ReplayManager', () => {
     expect(scores).toEqual({ [playerId]: { total: 2 } })
     await mesh.metadata.flip?.()
     expect(scores).toEqual({ [playerId]: { total: 4 } })
-  })
-
-  it.skip('computes score after action is finished', async () => {
-    const engineScript = `let engine={computeScore:({meshId},{meshes})=>({"${playerId}":{total:meshes.find(({id})=>id===meshId)?.rotable.angle}})}`
-    engine.serialize
-    managers.rule.init({ managers, engineScript, preferences: [] })
-    await mesh.metadata.rotate?.()
-    expect(scores).toEqual({ [playerId]: { total: Math.PI * 0.5 } })
   })
 
   it('does not compute scores on moves', async () => {

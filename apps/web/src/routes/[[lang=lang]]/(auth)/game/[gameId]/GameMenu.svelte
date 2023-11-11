@@ -1,6 +1,6 @@
 <script>
   // @ts-check
-  import { Dropdown } from '@src/components'
+  import { Button, Dropdown } from '@src/components'
   import { isFullscreen, toggleFullscreen } from '@src/stores'
   import {
     cameraSaves,
@@ -9,6 +9,7 @@
     restoreCamera,
     saveCamera
   } from '@src/stores/game-engine'
+  import { triggerNextRound } from '@src/stores/game-manager'
   import {
     areIndicatorsVisible,
     toggleIndicators
@@ -21,6 +22,8 @@
 
   import CameraSwitch from './CameraSwitch.svelte'
 
+  /** @type {import('@src/graphql').PlayerWithSearchable} authenticated player. */
+  export let user
   /** @type {number} number of milliseconds to hold pointer down before it is considered as long. */
   export let longTapDelay
   const homeAction = 'home'
@@ -67,6 +70,10 @@
     }
     setTimeout(() => (value = null), 0)
   }
+
+  function handleNextRound() {
+    triggerNextRound(user)
+  }
 </script>
 
 <aside style="--corner: url(#{cornerId});">
@@ -78,6 +85,13 @@
     bind:value
     on:select={handleSelect}><span slot="icon"><Logo /></span></Dropdown
   >
+  <!-- TODO: hide if game does not have rounds, ask for confirmation -->
+  <Button
+    icon="next_plan"
+    title={$_('tooltips.next-round')}
+    transparent
+    on:click={handleNextRound}
+  />
   <CameraSwitch
     {longTapDelay}
     current={$currentCamera}

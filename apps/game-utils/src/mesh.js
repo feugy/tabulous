@@ -149,6 +149,7 @@ export function stackMeshes(meshes) {
   if (stackIds.length) {
     mergeProps(base, { stackable: { stackIds } })
   }
+  return meshes
 }
 
 /**

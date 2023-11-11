@@ -27,49 +27,49 @@ import type {
   PlayerPreference
 } from '@tabulous/types'
 
-interface LoadPlayerData {
-  /** current player id (to determine their hand)). */
-  playerId: string
-  /** current player's preferences. */
-  preference: Omit<PlayerPreference, 'playerId'>
-  /** map of hexadecimal color string for each player Id. */
-  colorByPlayerId: Map<string, string>
+interface LoadedData {
+  /** Serialized game data. */
+  game: GameWithSelections
+  /** Players data. */
+  playerData: {
+    /** Current player id (to determine their hand)). */
+    playerId: string
+    /** Current player's preferences. */
+    preference: Omit<PlayerPreference, 'playerId'>
+    /** Map of hexadecimal color string for each player Id. */
+    colorByPlayerId: Map<string, string>
+  }
+  /** Set to true to show Babylon's loading UI while loading assets. */
+  initial?: boolean
+  /** Set to true to reset managers (history, selection...) */
+  newRound?: boolean
 }
 
 declare module '@babylonjs/core' {
   interface Engine {
-    /** indicates whether the engine is still loading data and materials. */
+    /** Indicates whether the engine is still loading data and materials. */
     isLoading: boolean
-    /** simulator bound to this engine, when relevant. */
+    /** Simulator bound to this engine, when relevant. */
     simulation: Engine | null
-    /** a map of action ids by (localized) keystroke. */
+    /** A map of action ids by (localized) keystroke. */
     actionNamesByKey: Map<string, ActionName[]>
-    /** a map of action ids by(mouse / finger) button. */
+    /** A map of action ids by(mouse / finger) button. */
     actionNamesByButton: Map<ButtonName, ActionName[]>
-    /** emits while data and materials are being loaded. */
+    /** Emits while data and materials are being loaded. */
     onLoadingObservable: Observable<boolean>
-    /** emits just before disposing the engien, to allow synchronous access to its content. */
+    /** Emits just before disposing the engien, to allow synchronous access to its content. */
     onBeforeDisposeObservable: Observable<void>
-    /** managers configures with this engine. */
+    /** Managers configures with this engine. */
     managers: Managers
-    /** starts the renderig loop. */
+    /** Starts the rendering loop. */
     start(): void
     /**
-     * loads all meshes into the game engine
-     * - shows and hides Babylon's loading UI while loading assets (initial loading only)
-     * - loads data into the main scene
-     * - if needed, loads data into player's hand scene
-     * @param game - serialized game data.
-     * @param playerData - players data.
-     * @param inital - set to true to show Babylon's loading UI while loading assets.
+     * Initializes the 3D engine and its managers, then loads all game and hand meshes.
+     * Shows and hides Babylon's loading UI while loading assets (initial loading only).
      */
-    load(
-      game: GameWithSelections,
-      playerData: LoadPlayerData,
-      inital?: boolean
-    ): Promise<void>
+    load(params: LoadedData): Promise<void>
     /**
-     * serializes all meshes rendered in the game engines.
+     * Serializes all meshes rendered in the game engines.
      */
     serialize(): EngineState
     /**
@@ -91,21 +91,21 @@ declare module '@babylonjs/core' {
   }
 
   interface AbstractMesh {
-    /** indicates a cylindric mesh like a round token. */
+    /** Indicates a cylindric mesh like a round token. */
     isCylindric: boolean
-    /** indicates whether this mesh could be hit by a ray. */
+    /** Indicates whether this mesh could be hit by a ray. */
     isHittable: boolean
-    /** indicates a mesh used for animation purpose that should not be serialized nor hitted. */
+    /** Indicates a mesh used for animation purpose that should not be serialized nor hitted. */
     isPhantom: boolean
-    /** indicates a mesh used as a drop zone (anchors, stacks).  */
+    /** Indicates a mesh used as a drop zone (anchors, stacks).  */
     isDropZone: boolean
-    /** indicates a behavior's animation in progress (could be only one at a time). */
+    /** Indicates a behavior's animation in progress (could be only one at a time). */
     animationInProgress: boolean
     /** List of children temporaly detached during animations  */
     detachedChildren: AbstractMesh[]
-    /** emits when a behavior's animation has ended. */
+    /** Emits when a behavior's animation has ended. */
     onAnimationEnd: Observable<void>
-    /** this mesh's attached behaviors. */
+    /** This mesh's attached behaviors. */
     behaviors: Behavior[]
     getBehaviorByName(name: 'anchorable'): ?AnchorBehavior
     getBehaviorByName(name: 'animatable'): ?AnimateBehavior
@@ -119,7 +119,7 @@ declare module '@babylonjs/core' {
     getBehaviorByName(name: 'rotable'): ?RotateBehavior
     getBehaviorByName(name: 'stackable'): ?StackBehavior
     getBehaviorByName(name: 'targetable'): ?TargetBehavior
-    /** metadata used to extend a mesh's state. */
+    /** Metadata used to extend a mesh's state. */
     metadata: MeshMetadata
   }
 

@@ -60,5 +60,6 @@ export class MoveBehavior extends AnimateBehavior {
     }
     attachProperty(this, 'partCenters', () => this.state.partCenters)
     this.state = { kind, snapDistance, duration, partCenters }
+    this.enabled = true
   }
 }

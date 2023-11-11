@@ -386,3 +386,8 @@ export async function loadCameraSaves(...args) {
 export async function replayHistory(...args) {
   await engine$.value?.managers.replay.replayHistory(...args)
 }
+
+/** @type {import('../3d/managers').RuleManager['buildNextRound']} */
+export async function buildNextRound(...args) {
+  return engine$.value?.managers.rule.buildNextRound(...args)
+}

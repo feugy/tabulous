@@ -160,15 +160,16 @@ function initEngineAnScenes(
   })
   Object.defineProperty(engine, 'managers', { get: () => managers })
 
-  engine.load = async (
-    gameData,
-    { playerId, preference, colorByPlayerId },
-    initial
-  ) => {
+  engine.load = async ({
+    game: gameData,
+    playerData: { playerId, preference, colorByPlayerId },
+    initial = false,
+    newRound = false
+  }) => {
     const game = removeNulls(gameData)
     managers.camera.adjustZoomLevels(game.zoomSpec)
     managers.hand.enabled = hasHandsEnabled(game)
-    if (initial) {
+    if (initial || newRound) {
       actionNamesByButton.clear()
       for (const [button, actions] of Object.entries(
         game.actions ?? {
@@ -178,8 +179,10 @@ function initEngineAnScenes(
       )) {
         actionNamesByButton.set(button, actions)
       }
-      isLoading = true
-      engine.onLoadingObservable.notifyObservers(isLoading)
+      isLoading = initial
+      if (initial) {
+        engine.onLoadingObservable.notifyObservers(isLoading)
+      }
 
       actionNamesByKey = buildActionNamesByKey(
         [
@@ -193,7 +196,6 @@ function initEngineAnScenes(
         playerId,
         color: colorByPlayerId.get(playerId) ?? 'red'
       })
-      managers.material.init(game)
       managers.replay.init({ managers, playerId, history: game.history })
       managers.control.init({ managers })
       managers.move.init({ managers })
@@ -202,19 +204,21 @@ function initEngineAnScenes(
         playerId,
         angleOnPlay: preference?.angle
       })
+      if (initial) {
+        managers.material.init(game)
+        if (!isSimulation) {
+          managers.input.init({ managers })
+          createLights({ scene, handScene })
+        }
+        createTable(game.tableSpec, managers, scene)
 
-      if (!isSimulation) {
-        managers.input.init({ managers })
-        createLights({ scene, handScene })
+        scene.onDataLoadedObservable.addOnce(async () => {
+          isLoading = false
+          // slight delay to let the UI disappear
+          await sleep(100)
+          engine.onLoadingObservable.notifyObservers(isLoading)
+        })
       }
-
-      createTable(game.tableSpec, managers, scene)
-      scene.onDataLoadedObservable.addOnce(async () => {
-        isLoading = false
-        // slight delay to let the UI disappear
-        await sleep(100)
-        engine.onLoadingObservable.notifyObservers(isLoading)
-      })
     }
     managers.selection.init({ managers, playerId, colorByPlayerId })
     await managers.customShape.init(game)
@@ -225,20 +229,14 @@ function initEngineAnScenes(
     }
 
     await loadMeshes(scene, game.meshes ?? [], managers)
-    if (managers.hand.enabled) {
+    if (hasHandsEnabled(game)) {
+      const { playerId } = managers.hand
       await loadMeshes(
         handScene,
         (game.hands ?? []).find(hand => playerId === hand.playerId)?.meshes ??
           [],
         managers
       )
-    }
-    if (gameData.selections) {
-      for (const { playerId: peerId, selectedIds } of gameData.selections) {
-        if (peerId !== playerId) {
-          managers.selection.apply(selectedIds, peerId)
-        }
-      }
     }
   }
 
