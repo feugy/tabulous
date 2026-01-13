@@ -92,5 +92,8 @@
     "webrtc-adapter": "^8.2.3",
     "whatwg-fetch": "^3.6.19",
     "wonka": "^6.3.4"
+  },
+  "dependencies": {
+    "@vercel/analytics": "^1.6.1"
   }
 }
